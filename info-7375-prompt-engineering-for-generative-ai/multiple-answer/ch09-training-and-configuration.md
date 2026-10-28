@@ -2,1430 +2,1342 @@
 
 ## MA-ch09.1
 
-A teammate writes up an improved answer as "we trained Claude on our policies" after uploading documents and revising a system prompt. Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
+A team uploads policy documents to an assistant product's project store and rewrites the project's system prompt. The assistant now answers policy questions better. The product supplies the documents and the prompt to the model at request time and runs no fine-tuning job. A teammate reports: "we trained the model on our policies." Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. If the change was a prompt, the improvement lives in a text file you can diff and copy into another project.
-- [ ] B. If the change was retrieval, the improvement would remain after the corpus is deleted.
-- [ ] C. Prompting and retrieval change the parameters of an already configured model.
-- [ ] D. Training changes parameters through an objective and an update rule.
-- [ ] E. The input available during that interaction did change.
+- [ ] A. Reverting the change does not require re-running a training job.
+- [ ] B. "Trained" is an accurate word for this change because the improved behavior persists across sessions.
+- [ ] C. Copying the prompt text and the documents into another project that uses the same model can reproduce the improvement there.
+- [ ] D. The model's parameters are unchanged by these two actions.
+- [ ] E. Deleting the documents from the store would remove the document-based part of the improvement without touching the model's parameters.
 
-**Key:** A=T B=F C=F D=T E=T
+**Key:** A=T B=F C=T D=T E=T
 
 **Why:**
 
-- A: A prompt is text you can diff and copy.
-- B: Retrieval lives in a corpus and a selection step, and it disappears when the corpus does.
-- C: They change the information supplied for inference, not the parameters.
-- D: That is the chapter's definition of training.
-- E: Something did change: the input available during that interaction.
+- A: A prompt or document change is undone by restoring the earlier text or corpus.
+- B: Persistence comes from saved text being re-supplied; training is identified by parameter updates from an objective.
+- C: Prompt text and documents are portable inputs, so the same model given the same inputs can behave similarly.
+- D: Both actions only change the input supplied at inference time; no optimizer ran.
+- E: Retrieved content lives in the corpus and its selection step, so removing it removes its effect while the weights stay the same.
 
-**Source:** Chapter 9 - Training and configuration (opening)
+**Source:** Name the mutable object before you change it
 
 ## MA-ch09.2
 
-A report says: "Average loss fell from 0.6931471806 to 0.0215209850 and four of four held-out points were right, so the model learned and it generalizes." Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
+Five kinds of change can alter an LLM-based system's behavior: model weights, prompt text, supplied context, tools and permissions, and run-time sampling settings. A team proposes the edits below. Check each statement that classifies the edit correctly. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The four-of-four held-out result shows that the model generalizes.
-- [ ] B. The loss is the number the optimizer was told to lower, on the data it was shown.
-- [ ] C. The "learned" half of the sentence is fine, because the parameters changed by a rule you can print.
-- [ ] D. The four held-out points were drawn at random from a natural population.
-- [ ] E. The unsupported half of the sentence is caused by a bug in the training code.
+- [ ] A. Enabling a tool server that lets the agent query a ticketing system changes which actions and information sources the system can use, with the model unchanged.
+- [ ] B. Appending three sample question-and-answer pairs to the instruction text changes the model's parameters.
+- [ ] C. Adding a document to a retrieval index changes what the model can see at inference time, not what the model is.
+- [ ] D. Adding a rule that denies shell commands modifies the model's learned behavior.
+- [ ] E. Lowering the sampling temperature from 1.0 to 0.2 is a run-time setting change; no parameter is modified.
 
-**Key:** A=F B=T C=T D=F E=F
+**Key:** A=T B=F C=T D=F E=T
 
 **Why:**
 
-- A: The second half is unsupported; four constructed points do not say that.
-- B: It measures the training objective on the training pairs.
-- C: The chapter accepts the first half.
-- D: One person chose them around the same sign boundary as the training data.
-- E: The chapter says no line of code is at fault.
+- A: A tool server changes capability and information access, which is a different object from the weights.
+- B: In-context examples are part of the input; they demonstrate a pattern for the current request and update nothing.
+- C: Retrieval changes the context supplied to a fixed model.
+- D: A permission rule changes which operations the runtime allows; it is a governance control, not a change to what the model learned.
+- E: Temperature changes how outputs are drawn from the model's scores at run time and leaves the stored parameters alone.
 
-**Source:** Chapter 9 - Training and configuration (opening)
+**Source:** Name the mutable object before you change it
 
 ## MA-ch09.3
 
-Check each statement that is true about Chapter 1's three jobs as the chapter applies them to a change request. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Claude decides what the update was for and whether four fixtures are a fair test.
-- [ ] B. Check means deciding what kind of question you are answering.
-- [ ] C. Conduct means stating what should change, and how you will tell, before you change it.
-- [ ] D. Drive means deciding what kind of question you are answering, because the causal question and its justification are yours.
-- [ ] E. Claude will derive the gradient, write the loop, and tabulate the output more slowly than you can.
-
-**Key:** A=F B=F C=T D=T E=F
-
-**Why:**
-
-- A: Claude will not decide those; they are yours.
-- B: That describes Drive; Check is claiming only what the record supports and signing or withholding.
-- C: That is the gate.
-- D: That is the driver's seat.
-- E: The chapter says Claude does the mechanical half faster than you can.
-
-**Source:** Chapter 9 - Training and configuration (opening)
-
-## MA-ch09.4
-
-Check each statement that is true about the classifier built in this chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Its training data are four constructed examples.
-- [ ] B. It is a transparent case of one row in a table of five things a system can change.
-- [ ] C. Training it modifies Claude's weights.
-- [ ] D. It has a learned weight, a learned bias, and a learned learning rate.
-- [ ] E. It is a miniature language model in every relevant sense.
-
-**Key:** A=T B=T C=F D=F E=F
-
-**Why:**
-
-- A: The data are constructed, not collected.
-- B: It lets you tell the weights row from the other four.
-- C: Nothing in the exercise modifies Claude's weights.
-- D: The rate is a setting of the experiment; the classifier has two learned parameters.
-- E: The chapter says it is not a miniature language model in every relevant sense.
-
-**Source:** Chapter 9 - Training and configuration (opening)
-
-## MA-ch09.5
-
-Check each statement that is true about the two predictions the chapter asks you to write down and date before reading the reference. Each statement is worth 1 point (5 points total).
-
-- [ ] A. One prediction is the initial probability for every point when both parameters are zero.
-- [ ] B. The other is the final value of the weight after 200 steps.
-- [ ] C. Beside the predictions you also write what a wrong answer would look like.
-- [ ] D. The predictions can be skipped if Claude returns plausible decimals.
-- [ ] E. A prediction written after you have seen the output still works as a prediction.
-
-**Key:** A=T B=F C=T D=F E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: It is the direction the weight should move on the first update.
-- C: Stated in the chapter.
-- D: A model that returns plausible decimals is no substitute for knowing which direction should reduce the loss.
-- E: It then describes the output.
-
-**Source:** Chapter 9 - Training and configuration (opening)
-
-## MA-ch09.6
-
-Check each statement that is true about the five objects a system change can modify. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For settings, what shows the change is both texts side by side.
-- [ ] B. A prompt is instruction text and examples in a file or message you can diff.
-- [ ] C. For tools, what shows the change is the configuration diff and the decision that authorized it.
-- [ ] D. Weights are edited through an objective and an update rule, and the change lives in the saved parameter values.
-- [ ] E. Context is which documents, passages, or records are supplied this turn, and what shows the change is the passages that actually entered the input.
-
-**Key:** A=F B=T C=T D=T E=T
-
-**Why:**
-
-- A: That is the evidence for a prompt; for settings it is the recorded setting for each run.
-- B: Second row of the table.
-- C: Fourth row of the table.
-- D: First row of the table.
-- E: Third row of the table.
-
-**Source:** Name the mutable object before you change it
-
-## MA-ch09.7
-
-Check each statement that is true about system prompts and few-shot examples. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Few-shot examples demonstrate a pattern inside the current context.
-- [ ] B. If changing a few-shot example changes the answer, the evidence supports prompt-context sensitivity under the recorded interaction.
-- [ ] C. If changing a few-shot example changes the answer, the evidence supports the claim that Claude was retrained.
-- [ ] D. Revising a system prompt can change behavior dramatically while the stored parameters stay untouched.
-- [ ] E. A system prompt is text in the input of an interaction.
-
-**Key:** A=T B=T C=F D=T E=T
-
-**Why:**
-
-- A: They are input too.
-- B: That is the claim the chapter allows.
-- C: It supports prompt-context sensitivity, not retraining.
-- D: Stated in the chapter.
-- E: It is input, not a parameter.
-
-**Source:** Name the mutable object before you change it
-
-## MA-ch09.8
-
-Check each statement that is true about retrieval, MCP servers, and permission rules. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An MCP server changes the actions and information the host exposes.
-- [ ] B. Retrieval decides which source passages enter the context.
-- [ ] C. In Chapter 7's implementation, adding a document changes the model.
-- [ ] D. A permission rule changes which proposed operations the runtime allows.
-- [ ] E. A system cannot become more capable through tooling unless the model itself changes.
-
-**Key:** A=T B=T C=F D=T E=F
-
-**Why:**
-
-- A: Chapter 8.
-- B: Stated in the chapter.
-- C: It changes what inference can see and nothing about the model.
-- D: Stated in the chapter.
-- E: A system can become more capable through tooling while the model stays exactly as it was.
-
-**Source:** Name the mutable object before you change it
-
-## MA-ch09.9
-
-Check each statement that is true about permission changes and settings. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An MCP server changes the model's parameters so that it can use new actions.
-- [ ] B. A permission rule retrains the model so that it stops proposing disallowed operations.
-- [ ] C. A tool or permission change leaves the system's capability and governance unchanged.
-- [ ] D. Calling a permission change "learning" turns a human governance decision into something that sounds like a property of the machine.
-- [ ] E. A setting such as temperature fits the model's parameters to new data.
-
-**Key:** A=F B=F C=F D=T E=F
-
-**Why:**
-
-- A: It changes capability and governance; the model is unchanged.
-- B: It changes which proposed operations the runtime allows; the model is untouched.
-- C: Both change capability and governance.
-- D: That is the chapter's objection.
-- E: A setting changes how an output is drawn from scores; it does not fit anything.
-
-**Source:** Name the mutable object before you change it
-
-## MA-ch09.10
-
-Check each statement that is true about how the chapter orders the five objects. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The ordering that helps is by reversibility and inspectability.
-- [ ] B. The chapter ranks weights as the best row to change.
-- [ ] C. Training can be expensive, unnecessary, or out of reach.
-- [ ] D. Prompting and retrieval are often the right tool for task-specific behavior.
-- [ ] E. Parameters you can only refit sit at the end that is easiest to reverse.
-
-**Key:** A=T B=F C=T D=T E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: None of this ranks the rows.
-- C: Stated in the chapter.
-- D: Stated in the chapter.
-- E: Text you can diff and revert in a second is the easy end.
-
-**Source:** Name the mutable object before you change it
-
-## MA-ch09.11
-
-A configuration file holds several entries, and you are asked what it changed. Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For Claude, interface and configuration details are best taken from the model's own description of itself.
-- [ ] B. You should trace the object, not the filename.
-- [ ] C. A configuration file can hold several kinds of setting at once.
-- [ ] D. Using Claude Code gives you the access needed to claim knowledge of Claude's proprietary weights.
-- [ ] E. A file named "config" can be assumed to change only settings.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: Take them from current official documentation.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: Claim no access to proprietary weights or private training procedures.
-- E: Its entries may belong to different rows.
-
-**Source:** Name the mutable object before you change it
-
-## MA-ch09.12
-
-Several non-training changes persist after the interaction that made them. Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A saved prompt influences later requests by updating the model's parameters.
-- [ ] B. Training is identified by its mechanism, not by later influence.
-- [ ] C. A saved system prompt remains in a project without any training having happened.
-- [ ] D. A retrieved document remains in a workspace without any training having happened.
-- [ ] E. "It stuck" is a valid test for whether the system learned.
+A deployment configuration file contains these entries: a system prompt reading "Answer only from the provided documents", a sampling temperature of 0.2, a list of allowed tools (search_docs, read_file), and a retrieval setting that supplies the top 5 passages per query. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Editing the system prompt line changes the model's weights.
+- [ ] B. Adding write_file to the list of allowed tools changes the tools and permissions the system exposes.
+- [ ] C. Raising the retrieval setting from 5 passages to 8 changes how much context the model is given.
+- [ ] D. Changing the temperature changes how outputs are drawn at run time, not the stored parameters.
+- [ ] E. Because all four entries live in one file, every edit to the file modifies the same kind of object.
 
 **Key:** A=F B=T C=T D=T E=F
 
 **Why:**
 
-- A: It influences them by being included again as input.
-- B: Stated in the chapter.
-- C: Persistence is not proof of training.
-- D: Same point.
-- E: Several non-training changes persist, so it cannot be the test.
-
-**Source:** Persistence is not proof of training
-
-## MA-ch09.13
-
-A product remembers a user's preferences in later sessions. Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Without evidence of parameter updates, you describe the memory or context behavior you observed.
-- [ ] B. The system may retrieve stored preferences or prepend them to the context.
-- [ ] C. You may say the model "learned the user" in the technical sense used here once the preferences persist.
-- [ ] D. Remembering preferences across sessions is itself evidence that the model's weights changed.
-- [ ] E. Personalization is a different case from saved prompts and retrieved documents.
-
-**Key:** A=T B=T C=F D=F E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: That needs evidence of parameter updates.
-- D: Persistence is not proof of training.
-- E: The chapter says it is the same case.
-
-**Source:** Persistence is not proof of training
-
-## MA-ch09.14
-
-Check each statement that is true about the intervention test that separates training from other changes. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For a Claude interaction, you remove the saved text and run the same input again; if the behavior goes with it, the text was holding it.
-- [ ] B. In the toy, setting w and b back to zero removes the learned boundary.
-- [ ] C. With sampling in play, you run each condition repeatedly rather than once.
-- [ ] D. The test is an intervention on your own system: change one object and hold the rest fixed.
-- [ ] E. Asking what correlates with the improvement is the same move as intervening on the system.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: The learned boundary is gone, whatever else you did.
-- C: One run per condition shows little; Chapter 1's repeated runs apply.
-- D: Stated in the chapter.
-- E: The chapter distinguishes the two.
-
-**Source:** Persistence is not proof of training
-
-## MA-ch09.15
-
-Check each statement that is true about the before-and-after record the chapter asks you to keep. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An observed output difference usually identifies the mechanism uniquely.
-- [ ] B. For tools, keep the configuration diff and the authorized decision.
-- [ ] C. For a prompt, keep both texts.
-- [ ] D. For retrieval, the corpus alone is enough; the selected passages need not be recorded.
-- [ ] E. For training, keep the parameter values and the data, objective, rate, and budget that produced them.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: Usually it does not.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: Keep the corpus and the selected passages.
-- E: Stated in the chapter.
-
-**Source:** What a production record can and cannot show
-
-## MA-ch09.16
-
-Check each statement that is true about attributing a change and reproducing a result. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A different answer could come from prompt text, retrieved context, tool output, model version, or sampling conditions.
-- [ ] B. If a service exposes only the current model label and a response, you should say which internal details remain unknown.
-- [ ] C. Identical output is not the only acceptable repeat.
-- [ ] D. Another reader can rerun the Python training from supplied data, replay a prompt under recorded but aging service conditions, or inspect a configuration diff, and each has different dependencies.
-- [ ] E. You may reconstruct a plausible before state for the part you cannot see.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: That is why the surrounding record matters.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: Those are the kinds of reproducibility the chapter names.
-- E: Do not invent a before state you cannot see.
-
-**Source:** What a production record can and cannot show
-
-## MA-ch09.17
-
-At w = 0 and b = 0, check each statement that is true about the classifier a = wx + b, followed by the sigmoid. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Every score is zero regardless of x.
-- [ ] B. Sigmoid zero is one-half, since e^0 = 1.
-- [ ] C. The linear score is a = wx + b.
-- [ ] D. The initial predictions for the label-one points are higher than for the label-zero points.
-- [ ] E. The returned value is interpreted as the probability of label zero.
-
-**Key:** A=T B=T C=T D=F E=F
-
-**Why:**
-
-- A: Both parameters are zero.
-- B: 1 / (1 + 1) = 0.5.
-- C: Definition.
-- D: All four initial predictions are 0.5.
-- E: It is read as the probability for label one.
-
-**Source:** The model: two numbers and a squashing function
-
-## MA-ch09.18
-
-Check each statement that is true about the two-branch sigmoid in the reference implementation. Each statement is worth 1 point (5 points total).
-
-- [ ] A. It avoids evaluating an unnecessarily large positive exponential when x is very negative.
-- [ ] B. The negative branch rewrites the same mathematical quantity.
-- [ ] C. The lesson test checks that sigmoid of negative one thousand is approximately zero without overflow.
-- [ ] D. For negative x the two-branch code computes a different function from 1 / (1 + e^(-x)).
-- [ ] E. The lesson test of sigmoid(-1000) is a promise about arbitrary types and all floating-point edge cases.
-
-**Key:** A=T B=T C=T D=F E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: e / (1 + e) with e = exp(x).
-- C: Stated in the chapter.
-- D: It is the same quantity written differently.
-- E: It is evidence for the demonstrated numeric behavior only.
-
-**Source:** The model: two numbers and a squashing function
-
-## MA-ch09.19
-
-Check each statement that is true about what the weight in this classifier means. Each statement is worth 1 point (5 points total).
-
-- [ ] A. With a positive learned weight and the bias near zero, negative x values produce probabilities below one-half.
-- [ ] B. The numerical results in the chapter come from the logistic-regression chapter draft it cites.
-- [ ] C. The weight learns a causal relationship between feature sign and label.
-- [ ] D. The weight learns a word meaning.
-- [ ] E. A positive learned weight makes positive x values produce positive scores and probabilities above one-half.
-
-**Key:** A=T B=F C=F D=F E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: The cited source supports the mechanism; the numbers come from the local implementation and an independent calculation.
-- C: It fits the relationship represented in the supplied pairs, not a causal one.
-- D: It fits the relationship represented in the supplied pairs.
-- E: Stated in the chapter.
-
-**Source:** The model: two numbers and a squashing function
-
-## MA-ch09.20
-
-Check each statement that is true about the Change and Objective lines of this chapter's gate. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The Objective is the average binary logistic loss on the four training pairs, and nothing else.
-- [ ] B. Claude's own weights are in play in a limited way.
-- [ ] C. The prompt, context, tools, and settings are not in play.
-- [ ] D. "Better" in this gate means higher accuracy on the held-out pairs.
-- [ ] E. The Change is weights only: w and b, starting from zero.
-
-**Key:** A=T B=F C=T D=F E=T
-
-**Why:**
-
-- A: Stated in the gate.
-- B: They are not in play at all.
-- C: Stated in the gate.
-- D: "Better" means lower on this objective on these pairs.
-- E: Stated in the gate.
-
-**Source:** The gate: say what should change before you change it
-
-## MA-ch09.21
-
-Check each statement that is true about the Held-out and Stop rule lines of the gate. Each statement is worth 1 point (5 points total).
-
-- [ ] A. You may add extra steps if the held-out result looks bad.
-- [ ] B. The held-out pairs are fixed in advance and never passed to train.
-- [ ] C. You may stop early if the loss looks flat.
-- [ ] D. The stop rule is 200 updates at rate 0.2 starting from the trained parameters.
-- [ ] E. The held-out pairs follow a different sign pattern from the training data.
-
-**Key:** A=F B=T C=F D=F E=F
-
-**Why:**
-
-- A: The gate forbids extra steps for that reason.
-- B: Stated in the gate.
-- C: The gate forbids stopping early because the loss looks flat.
-- D: The start is zero.
-- E: They share the training data's sign pattern by construction.
-
-**Source:** The gate: say what should change before you change it
-
-## MA-ch09.22
-
-Check each statement that is true about the three wrong versions the gate says your tests must catch. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Summing the gradient over the examples instead of averaging makes the first step four times too large while the loss still falls.
-- [ ] B. If your tests cannot tell these from the right program, the gate is not finished.
-- [ ] C. Letting a held-out point into the training list makes the "held-out" result stop meaning anything.
-- [ ] D. The summed version is easy to detect because its loss rises on the first step.
-- [ ] E. Copying the x factor into the bias update makes b move on the first step although the symmetric data say it should not.
-
-**Key:** A=T B=T C=T D=F E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: Its loss still falls.
-- E: Stated in the chapter.
-
-**Source:** The gate: say what should change before you change it
-
-## MA-ch09.23
-
-Check each statement that is true about the failure sentence and the pass condition. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The gate passes when every test you wrote from it passes on the code and every sentence in your report fits inside the "may claim" line.
-- [ ] B. The failure sentence is written and dated before the run.
-- [ ] C. If the first update is right, w moves positive and b stays at zero.
-- [ ] D. If the first update is right, b moves by 0.15.
-- [ ] E. If w moves negative on the first update, the training labels must be wrong.
-
-**Key:** A=T B=T C=T D=F E=F
-
-**Why:**
-
-- A: That is the pass condition.
-- B: Written after you read the output, it describes the output.
-- C: Stated in the example.
-- D: The bias stays at zero on the first step.
-- E: The chapter says a sign or an x factor is wrong.
-
-**Source:** The gate: say what should change before you change it
-
-## MA-ch09.24
-
-Check each statement that this experiment may claim, according to the chapter's "may claim" line. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Increasing x causes label one.
-- [ ] B. The probabilities are calibrated.
-- [ ] C. The classifier generalizes.
-- [ ] D. The run changed Claude.
-- [ ] E. Four constructed points were classified correctly.
-
-**Key:** A=F B=F C=F D=F E=T
-
-**Why:**
-
-- A: It may not claim any cause.
-- B: It may not claim calibration.
-- C: The experiment may not claim generalization.
-- D: It may not claim a change to Claude.
-- E: That is one of the three permitted claims.
-
-**Source:** The gate: say what should change before you change it
-
-## MA-ch09.25
-
-Check each statement that is true about why the gate's lines cannot be delegated. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For a real change request, the objective can be left implicit until after the run.
-- [ ] B. Claude can choose the objective for you without changing whose objective the report states.
-- [ ] C. For the toy, a model produced the gate's lines.
-- [ ] D. None of the gate's lines can be derived from the data, because the data have no opinion about what "better" should mean.
-- [ ] E. Claude cannot help with the gate at all.
-
-**Key:** A=F B=F C=F D=T E=F
-
-**Why:**
-
-- A: The objective, held-out set, and stop rule are the items most often left implicit, and they must be written first.
-- B: Then your report would be a statement about someone else's objective.
-- C: They are the author's choices; no model produced them.
-- D: Stated in the chapter.
-- E: Claude can sharpen the gate by proposing the wrong version and the test that catches it.
-
-**Source:** The gate: say what should change before you change it
-
-## MA-ch09.26
-
-Check each statement that is true about the loss used in this chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The stable form is a different objective from the ordinary logistic one.
-- [ ] B. The reference averages the loss across the data.
-- [ ] C. The reference evaluates an equivalent stable expression from the score a: max(a, 0) - y*a + log(1 + e^(-|a|)).
-- [ ] D. The stable form avoids computing logarithms of probabilities rounded too close to zero or one for large scores.
-- [ ] E. The ordinary binary cross-entropy for probability p is -y log(p) - (1 - y) log(1 - p).
-
-**Key:** A=F B=T C=T D=T E=T
-
-**Why:**
-
-- A: It is a numerically safer route to the same objective.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: That is why it is safer numerically.
-- E: Stated in the chapter.
-
-**Source:** Loss makes the objective explicit
-
-## MA-ch09.27
-
-Check each statement that is true about the initial loss and the history list. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The history list records the loss at every step.
-- [ ] B. At the origin the average loss equals negative log one-half, because all four examples share the same prediction.
-- [ ] C. Two recorded values are not a learning curve.
-- [ ] D. Called directly on an empty list, the loss function returns zero.
-- [ ] E. At the origin the loss for either label is negative log one-half, about 0.6931471806.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: It appends only the initial and the final loss.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: It would divide by zero; training validates nonempty data before calling it.
-- E: Prediction is 0.5 for every point.
-
-**Source:** Loss makes the objective explicit
-
-## MA-ch09.28
-
-Check each statement that is true about the gradient at the origin for the data [(-2, 0), (-1, 0), (1, 1), (2, 1)]. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For logistic loss, the derivative with respect to the score for one example is prediction minus label.
-- [ ] B. The contribution to the weight gradient is e times x, where e is prediction minus label.
-- [ ] C. The average bias gradient is -0.75.
-- [ ] D. With rate 0.2 the new weight is 0 - 0.2(-0.75) = 0.15.
-- [ ] E. The four weight contributions are -1.0, -0.5, -0.5, -1.0, which sum to -3 and average to -0.75.
+- A: Prompt text is input to the model and is re-read on each request; it does not alter parameters.
+- B: The allowed-tools list controls which actions the host exposes and permits.
+- C: The number of retrieved passages determines which text enters the input.
+- D: Temperature rescales the scores before sampling; the weights are not touched.
+- E: A single file can hold several kinds of setting, so the object changed must be traced by what each line controls, not by the filename.
+
+**Source:** Name the mutable object before you change it
+
+## MA-ch09.4
+
+An agent host enables a new tool server with read and write access to a project folder, and a developer adds a permission rule requiring human approval before any write. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Enabling the tool server expands what the system can do without changing the model.
+- [ ] B. Appropriate evidence for the change is the configuration diff plus a record of who authorized it.
+- [ ] C. Both changes modify the model's weights.
+- [ ] D. The approval rule governs which proposed operations the runtime will carry out.
+- [ ] E. Describing the approval rule as "the model learned to be careful" attributes a human governance decision to the machine.
 
 **Key:** A=T B=T C=F D=T E=T
 
 **Why:**
 
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: The errors sum to zero, so the average bias gradient is zero.
-- D: Gradient descent subtracts rate times gradient.
-- E: -3 / 4 = -0.75.
+- A: Tooling adds capability and information sources while the model stays exactly as it was.
+- B: For tool and permission changes, the diff and the authorization decision are what show what changed and why.
+- C: Neither tool configuration nor a permission rule touches parameters.
+- D: A permission rule sits in the runtime and decides which operations are allowed.
+- E: Calling a governance change "learning" disguises a decision someone made as a property of the system.
 
-**Source:** Derive the first update
+**Source:** Name the mutable object before you change it
 
-## MA-ch09.29
+## MA-ch09.5
 
-Check each statement that is true about checking the gradient by finite difference. Each statement is worth 1 point (5 points total).
+Softmax with temperature T converts logits into sampling probabilities by taking p_i proportional to exp(logit_i / T). For logits [2, 1, 0], the probabilities are about (0.665, 0.245, 0.090) at T = 1 and about (0.867, 0.117, 0.016) at T = 0.5. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The result at zero is approximately -0.74999999999.
-- [ ] B. A central finite difference evaluates the loss at a small positive and a small negative perturbation and divides the difference by twice the perturbation.
-- [ ] C. The finite-difference check is an independent dataset.
-- [ ] D. The finite-difference check fails differently from the derivation, because it never uses the derivative formula.
-- [ ] E. If logistic loss is the wrong objective for your task, the finite difference will disagree with the derivative.
+- [ ] A. Changing T alters the model's stored parameters.
+- [ ] B. As T approaches 0, sampling approaches always choosing the highest-logit option.
+- [ ] C. Raising T above 1 makes the distribution flatter.
+- [ ] D. Lowering T from 1 to 0.5 concentrates probability on the highest-logit option.
+- [ ] E. Because outputs are sampled, one run at each of two temperature settings is enough to compare how the settings behave.
 
-**Key:** A=T B=T C=F D=T E=F
+**Key:** A=F B=T C=T D=T E=F
 
 **Why:**
 
-- A: It agrees with the analytic -0.75.
-- B: Stated in the chapter.
-- C: It is an independent calculation, not an independent dataset.
-- D: Stated in the chapter.
-- E: Both describe the objective you wrote, so they still agree.
+- A: Temperature is applied after the model computes its scores; no parameter changes.
+- B: In the limit of T near 0 the softmax becomes greedy selection of the largest logit.
+- C: A larger T shrinks the gaps between logits and spreads probability more evenly.
+- D: Dividing logits by a smaller T widens the gaps, so the top option's probability rises from 0.665 to 0.867.
+- E: With sampling, a single draw per condition reveals little; repeated runs are needed to see a distribution.
 
-**Source:** Derive the first update
+**Source:** Name the mutable object before you change it
 
-## MA-ch09.30
+## MA-ch09.6
 
-Check each statement that is true about what the independent gradient check (the finite difference) covers. Each statement is worth 1 point (5 points total).
+An assistant product "remembers" that a user prefers metric units. Engineers confirm the mechanism: a note is saved in a database and prepended to the prompt of later conversations. No fine-tuning occurs. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The check is an independent reviewer of whether the objective is right.
-- [ ] B. A passing finite-difference check shows the optimizer will behave under every dataset.
-- [ ] C. The check compares the gradient with the loss function, and nothing more.
-- [ ] D. Agreement confirms that logistic loss is the objective you meant.
-- [ ] E. The check is an independent calculation.
+- [ ] A. Saying the model "learned the user" in the technical sense of training is unsupported without evidence of parameter updates.
+- [ ] B. The preference persisting across sessions shows that the model's weights were updated for this user.
+- [ ] C. Deleting the stored note would remove the behavior without any retraining.
+- [ ] D. The behavior is a result of supplying stored context, not of a parameter update.
+- [ ] E. The retrieval or selection step might fail to surface the note, so the preference could be applied unreliably.
+
+**Key:** A=T B=F C=T D=T E=T
+
+**Why:**
+
+- A: A careful report describes the memory or context behavior observed rather than claiming learning in the training sense.
+- B: Several non-training mechanisms persist across sessions; persistence is not proof of training.
+- C: Because the behavior comes from the stored text, removing the text removes it.
+- D: The note is added to the input each time, which is context supply.
+- E: Any retrieval-based memory depends on a selection step that can miss relevant records.
+
+**Source:** Persistence is not proof of training
+
+## MA-ch09.7
+
+A team must adapt an LLM-based assistant to a company's policies and compares three approaches: editing the prompt, adding retrieval over a policy corpus, and fine-tuning the model. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Once passages are retrieved, the model will use them faithfully.
+- [ ] B. A prompt edit can be undone by restoring the earlier text.
+- [ ] C. Fine-tuning produces new parameter values that must be stored, versioned, and served.
+- [ ] D. Fine-tuning on a policy document does not guarantee the model will quote it verbatim.
+- [ ] E. An edit to a document in the retrieval corpus can affect the next query without any training run.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: A model can ignore, misread, or contradict supplied passages, which is why faithfulness is evaluated separately.
+- B: Prompt text is a diffable file that can be reverted immediately.
+- C: Training yields an artifact of changed parameters that the deployment must manage.
+- D: Fine-tuning shifts behavior statistically and gives no guarantee of exact recall.
+- E: Corpus changes are visible as soon as the new passages are retrieved into the input.
+
+**Source:** Name the mutable object before you change it
+
+## MA-ch09.8
+
+A team ranks ways to change an assistant's behavior by how easily each change can be inspected and reversed. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reverting a permission rule requires retraining, because the rule changes how the model behaves.
+- [ ] B. A fine-tuned model cannot be edited line by line; reverting generally means redeploying an earlier checkpoint or retraining.
+- [ ] C. A change to a retrieval corpus is reversible if the earlier corpus version is kept.
+- [ ] D. Prompt text can be diffed and reverted in seconds.
+- [ ] E. Since weights are the hardest object to revert, a team should prefer prompt or retrieval changes over training even when training would solve the problem better.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: Permission rules are runtime configuration and can be restored from version control; no retraining is involved.
+- B: Parameters are refit or restored from a saved artifact, not hand-edited.
+- C: Keeping versions of the corpus makes the selection and content changes recoverable.
+- D: Text under version control supports an immediate revert and a precise comparison.
+- E: Training can be the right tool when behavior must be internalized; reversibility is one cost among several, not a veto.
+
+**Source:** Name the mutable object before you change it
+
+## MA-ch09.9
+
+An assistant keeps replying in a house style across many sessions. An investigation finds three things in the deployment: a saved system prompt attached to the project, a memory store of user notes that is prepended to each request, and a permissions file. No fine-tuning job was ever run. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A permission rule that persists in configuration is a form of learning by the model.
+- [ ] B. If behavior is stable over time, the cause must lie in the weights.
+- [ ] C. The saved system prompt influences later requests by being included again as input.
+- [ ] D. Training is identified by how long its effects last.
+- [ ] E. Persistence across sessions is not evidence of training, because saved text is re-supplied as input on each request.
 
 **Key:** A=F B=F C=T D=F E=T
 
 **Why:**
 
-- A: It is not an independent reviewer or causal source.
-- B: It checks one gradient at one point.
-- C: Stated in the chapter.
-- D: Whether it is the objective you meant is the gate's question.
-- E: Stated in the chapter.
+- A: A permission rule is a runtime setting that persists, not a change in the model's parameters.
+- B: Stability is equally explained by stable inputs; it does not point to weights.
+- C: Saved prompt text works by being part of every request's input.
+- D: Several non-training changes last; training is identified by its mechanism, a parameter update from an objective.
+- E: Several non-training changes last: saved prompts, retrieved documents, memory records, permission rules.
 
-**Source:** Derive the first update
+**Source:** Persistence is not proof of training
 
-## MA-ch09.31
+## MA-ch09.10
 
-Check each statement that is true about the training function and its loop. Each statement is worth 1 point (5 points total).
+A team suspects one saved instruction line is what makes an assistant refuse off-topic questions. They run the same 30 off-topic questions twice at temperature 0.8, once with the line present and once with it deleted, holding the model, the rest of the prompt, and the settings fixed. The assistant refuses 29 of 30 with the line and 6 of 30 without it. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. It is batch gradient descent on the complete declared dataset, without minibatches or an adaptive rate.
-- [ ] B. Each step builds errors from the current parameters, averages the gradient contributions, and updates weight and bias.
-- [ ] C. It shuffles the examples each step.
-- [ ] D. Labels must be zero or one and features must be finite.
-- [ ] E. It returns the parameters plus a two-value loss list.
-
-**Key:** A=T B=T C=F D=T E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: It does not shuffle.
-- D: Stated in the validation description.
-- E: Stated in the chapter.
-
-**Source:** The loop, its rate, and its stop rule
-
-## MA-ch09.32
-
-After 200 steps at rate 0.2, check each statement that is true about the recorded run. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The bias is substantially nonzero.
-- [ ] B. The training loss after 200 steps is about 0.5877.
-- [ ] C. The weight is approximately 3.1669517461.
-- [ ] D. Passing the existing lesson tests shows the optimizer would behave well under every dataset or rate.
-- [ ] E. The existing tests check held-out accuracy.
-
-**Key:** A=F B=F C=T D=F E=F
-
-**Why:**
-
-- A: The bias is effectively zero.
-- B: That is the average loss after the first step; after 200 steps it is 0.0215209850.
-- C: Stated in the chapter.
-- D: They do not show that.
-- E: They check that the loss fell and that the weight is positive.
-
-**Source:** The loop, its rate, and its stop rule
-
-## MA-ch09.33
-
-Check each statement that is true about the learning rate in this chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A very large rate can overshoot or become unstable on some data.
-- [ ] B. The first step, 0.15, does not arise from the data alone; it is the average gradient -0.75 scaled by a rate you chose.
-- [ ] C. The research establishes a safe universal range for the rate.
-- [ ] D. The rate is a learned parameter.
-- [ ] E. A different positive rate would take a different step.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: It establishes no safe universal range.
-- D: It is a setting of the experiment, never updated by train.
-- E: Stated in the chapter.
-
-**Source:** The loop, its rate, and its stop rule
-
-## MA-ch09.34
-
-Check each statement that is true about the step count and about comparing runs. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The training function stops when it detects convergence.
-- [ ] B. A lower final training loss shows the step budget was right.
-- [ ] C. When comparing rates or step counts you should hold the data and initial parameters fixed.
-- [ ] D. It is acceptable to report only the best run, if you label it as the result.
-- [ ] E. Two hundred is the demo setting, not a discovered natural stopping point.
-
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: It has no convergence test, early stopping, or best-checkpoint selection.
-- B: It shows what happened after the configured loop only.
-- C: Stated in the chapter.
-- D: Keep every result, including runs that behave badly; otherwise the comparison becomes a search.
-- E: Stated in the chapter.
-
-**Source:** The loop, its rate, and its stop rule
-
-## MA-ch09.35
-
-Check each statement that is true about the two practice cases of reversing labels and duplicating evaluation points. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Duplicating the evaluation points into the training data contaminates the separation between fit and held-out assessment.
-- [ ] B. If you reverse the labels, the preferred weight direction should reverse.
-- [ ] C. The practice cases are designed so that memorizing the published positive weight is enough to pass them.
-- [ ] D. If you reverse the labels, the preferred weight direction should stay positive.
-- [ ] E. After duplication, apparent improvement on those points is easy to interpret.
-
-**Key:** A=T B=T C=F D=F E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: They test whether you understand the relationship rather than memorized it.
-- D: It should reverse.
-- E: It becomes hard to interpret, because the optimizer has already used them.
-
-**Source:** The loop, its rate, and its stop rule
-
-## MA-ch09.36
-
-Check each statement that is true about the held-out evaluation of the trained parameters. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Thresholding at one-half predicts all four labels correctly.
-- [ ] B. Being held out makes the points representative of a natural population.
-- [ ] C. "Held out" is a statement about how the points were handled.
-- [ ] D. For the held-out points x = -3, -0.5, 0.5, and 3, the predicted probabilities are approximately 0.00007478, 0.17030378, 0.82969622, and 0.99992522.
-- [ ] E. The demo function returns a held-out evaluation.
+- [ ] A. Running each condition only once would give much weaker evidence, because sampling varies from run to run.
+- [ ] B. The experiment identifies which other component produces the 6 remaining refusals.
+- [ ] C. Deleting the line and rerunning is an intervention on the system, which supports a causal reading better than noting that the line and the refusals co-occur.
+- [ ] D. The result supports the claim that the line was holding the behavior in this setup.
+- [ ] E. The drop from 29 to 6 shows the model's weights contain no refusal behavior.
 
 **Key:** A=T B=F C=T D=T E=F
 
 **Why:**
 
-- A: Stated in the chapter.
-- B: They were designed around the same sign boundary as the training examples.
-- C: They were not passed into the training function.
-- D: Stated in the chapter, for x = -3, -0.5, 0.5, 3.
-- E: It returns training parameters and initial and final training loss.
+- A: With sampling, repeated runs per condition are needed to separate an effect from run-to-run variation.
+- B: Residual refusals could come from the model's own tendencies, other prompt text, or chance; the design does not isolate them.
+- C: Changing one object while holding the rest fixed tests what the object does rather than what correlates with it.
+- D: The behavior largely goes away when the line is removed, so the text was holding it.
+- E: The weights may well contribute to refusals; the result only shows the line makes a large difference.
 
-**Source:** Held-out means separately specified, not magically representative
+**Source:** Persistence is not proof of training
 
-## MA-ch09.37
+## MA-ch09.11
 
-Check each statement that is true about what four correct held-out labels support. Each statement is worth 1 point (5 points total).
+To test whether an assistant is sensitive to the choice of a few-shot example, a team runs each of two prompts 20 times at temperature 0.8 on the same question. Prompt 1 (original example) is correct in 11 runs; Prompt 2 (a different example) is correct in 17. A Fisher exact test comparing 11 of 20 with 17 of 20 gives p of about 0.08. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Designing the held-out points around the same sign boundary makes them a harder test than the training data.
-- [ ] B. They support the claim that the model generalized.
-- [ ] C. A broader performance claim needs a justified sampling process, a task definition, and a larger evaluation.
-- [ ] D. They establish performance on a natural population.
-- [ ] E. They support the claim that the trained parameters classified four separately specified sign-pattern fixtures correctly.
+- [ ] A. The data are suggestive that the example matters but are not conclusive at the conventional 0.05 level.
+- [ ] B. Running each prompt only once would have been equally informative.
+- [ ] C. If real, the difference supports a claim about context sensitivity for this task and setup, not about changed weights.
+- [ ] D. If the difference is real, it shows the model was retrained by the new example.
+- [ ] E. Doubling to 40 repetitions per condition would push p below 0.05.
 
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: It means they cannot support more than the narrow claim.
-- B: That is too broad.
-- C: Stated in the chapter.
-- D: They establish behavior on these four constructed points only.
-- E: That matches the evidence.
-
-**Source:** Held-out means separately specified, not magically representative
-
-## MA-ch09.38
-
-Check each statement that is true about the lifespan of a held-out set. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The change of role should be recorded when it happens.
-- [ ] B. The toy has two roles, training and held-out.
-- [ ] C. Once a held-out set has guided a choice, its next use is no longer independent.
-- [ ] D. Once you tune anything, two roles are still enough.
-- [ ] E. Once a held-out set guides a choice, such as a rate, a step count, or a decision to keep going, it has become development data.
-
-**Key:** A=T B=T C=T D=F E=T
+**Key:** A=T B=F C=T D=F E=F
 
 **Why:**
 
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: You then need training, a development set, and a held-out set you touch once.
-- E: Stated in the chapter.
-
-**Source:** Held-out means separately specified, not magically representative
-
-## MA-ch09.39
-
-Check each statement that is true about what lower training loss claims. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Lower training loss establishes that the model is better.
-- [ ] B. Lower training loss establishes that the update rule reduced the objective on the pairs it was shown.
-- [ ] C. Lower training loss does not establish that the objective was the right one.
-- [ ] D. Lower training loss establishes that the probabilities are calibrated.
-- [ ] E. Lower training loss does not establish fit to pairs it was not shown.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: "Better" is a claim about the task, and the task is not in the loss.
-- B: Stated in the chapter.
-- C: No dataset can establish that for you.
-- D: Calibration needs a separate study.
-- E: That is what the held-out set is for.
-
-**Source:** What a lower loss claims
-
-## MA-ch09.40
-
-Suppose label one means "escalate this message to a person," and a missed escalation is far worse than a false alarm. Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The loss already weights a missed escalation more heavily because it is worse.
-- [ ] B. Binary logistic loss penalizes each error by how confident the model was in the wrong direction.
-- [ ] C. You should write "training loss decreased" when that is what you measured.
-- [ ] D. A lower loss can sit comfortably beside the wrong behavior.
-- [ ] E. The missing measure is one the gate should have named: the costs of the two errors.
-
-**Key:** A=F B=T C=T D=T E=T
-
-**Why:**
-
-- A: It penalizes by confidence, not by what each error costs you.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: Stated in the chapter.
-- E: Stated in the chapter.
-
-**Source:** What a lower loss claims
-
-## MA-ch09.41
-
-Check each statement that is true about score, probability, and decision. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The score wx + b comes from the parameters.
-- [ ] B. The decision comes from a threshold, here one-half, which you chose.
-- [ ] C. Moving the threshold moves the decisions while the parameters stay identical.
-- [ ] D. The probability comes from the sigmoid.
-- [ ] E. Training chose the threshold.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: Stated in the chapter.
-- E: Training never saw the threshold.
-
-**Source:** Score, probability, and decision are three layers
-
-## MA-ch09.42
-
-Check each statement that is true about the symmetry of the constructed data and the bias. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The near-zero learned bias shows that bias is unnecessary.
-- [ ] B. Each negative feature with label zero has a positive partner with label one.
-- [ ] C. Bias shifts the decision boundary whenever the relationship is not centered at zero.
-- [ ] D. The decision boundary sits where wx + b = 0, because sigmoid zero is one-half.
-- [ ] E. At the origin the errors sum to zero, so the first bias update is zero.
-
-**Key:** A=F B=T C=T D=T E=T
-
-**Why:**
-
-- A: The chapter warns against that conclusion.
-- B: That is the symmetry.
-- C: Stated in the chapter.
-- D: Stated in the chapter.
-- E: Stated in the chapter.
-
-**Source:** Score, probability, and decision are three layers
-
-## MA-ch09.43
-
-Check each statement that is true about the held-out probabilities and calibration. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Held-out values farther from zero get more extreme probabilities under the learned positive weight.
-- [ ] B. Whether a probability matches observed frequencies takes a calibration study on suitable labeled data.
-- [ ] C. Probabilities growing more extreme away from zero is an observed property of this fitted curve on selected points.
-- [ ] D. Probabilities growing more extreme away from zero is evidence that the confidence is calibrated.
-- [ ] E. Four sign fixtures can support a calibration claim.
-
-**Key:** A=T B=T C=T D=F E=F
-
-**Why:**
-
-- A: Compare x = 3 (0.99992522) with x = 0.5 (0.82969622).
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: It is not evidence of calibration.
-- E: They cannot.
-
-**Source:** Score, probability, and decision are three layers
-
-## MA-ch09.44
-
-Suppose x counts the reminder emails a student opened in the first month, y records whether they passed, and a fitted weight is positive. Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. "For a student who opened four emails, what label will the model assign?" is answered by evaluating the fitted function.
-- [ ] B. The number at a larger x is the model's response to a changed input.
-- [ ] C. Answering the first question requires a causal study.
-- [ ] D. Evaluating the function at a larger x gives the course's response to a changed behavior.
-- [ ] E. "If we require every student to open the emails, will more of them pass?" asks about the world, so the function answers a different question.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: That asks about the model.
-- B: Stated in the chapter.
-- C: It requires only evaluating the function.
-- D: It gives the model's response to a changed input.
-- E: Stated in the chapter.
-
-**Source:** Decide what kind of question you are asking
-
-## MA-ch09.45
-
-In the same email hypothetical, check each statement that is true about possible sources of a positive weight. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The positive weight tells you which of the possible sources of the association is the true one.
-- [ ] B. A third factor, such as motivation or free time, might raise both opening and passing.
-- [ ] C. Students who are already on track might open more emails, so the arrow runs the other way.
-- [ ] D. The sample might contain only students who stayed enrolled.
-- [ ] E. Opening the emails might help students pass.
-
-**Key:** A=F B=T C=T D=T E=T
-
-**Why:**
-
-- A: Each is consistent with a positive weight, so the weight cannot tell you.
-- B: A possible source.
-- C: A possible source.
-- D: A possible source.
-- E: A possible source.
-
-**Source:** Decide what kind of question you are asking
-
-## MA-ch09.46
-
-Check each statement that is true about acting on predictions and about the four constructed pairs. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The four constructed pairs contain information about a real process.
-- [ ] B. A model fit to a period in which nobody acted on its flags can say little about what happens once people do.
-- [ ] C. Acting on a prediction can change the process that generated the data.
-- [ ] D. A causal sentence about the four pairs is a finding.
-- [ ] E. The four pairs were collected from a real course.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: They contain no information about any process in the world.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: It is a story attached to a fixture.
-- E: They are constructed and are not a study.
-
-**Source:** Decide what kind of question you are asking
-
-## MA-ch09.47
-
-Check each statement that is true about Judea Pearl's ladder as the chapter uses it. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The chapter treats the limit as a proof that no machine architecture could ever reason causally.
-- [ ] B. The chapter claims observational data can never support a causal claim.
-- [ ] C. Intervention asks what happens if I do this.
-- [ ] D. Counterfactual asks what would have happened to this case had we done otherwise.
-- [ ] E. Association asks what goes with what.
-
-**Key:** A=F B=F C=T D=T E=T
-
-**Why:**
-
-- A: The limit is about information, and the book warns against the stronger claim.
-- B: It can, under assumptions you state and defend.
-- C: Second rung.
-- D: Third rung.
-- E: First rung.
-
-**Source:** Decide what kind of question you are asking
-
-## MA-ch09.48
-
-Check each statement that is true about "prediction is not identification" in this chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Someone must supply and defend the causal assumptions.
-- [ ] B. A model's fluent explanation can supply the causal assumptions.
-- [ ] C. Interventional and counterfactual answers generally cannot be recovered from purely observational data without structural assumptions that did not come from the data.
-- [ ] D. Observational data can support a causal claim under assumptions you state and defend.
-- [ ] E. More data supplies the causal assumptions.
-
-**Key:** A=T B=F C=T D=T E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Neither a confident intuition nor a fluent explanation does.
-- C: Stated in the chapter.
-- D: Stated in the chapter.
-- E: More data does not supply them.
-
-**Source:** Decide what kind of question you are asking
-
-## MA-ch09.49
-
-Check each statement that is true about the division of labor in the causal part of the chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Claude can list the confounders it can think of for a given setup.
-- [ ] B. Claude can work out what follows if you assume a stated structure.
-- [ ] C. Claude can write the notation for a causal diagram.
-- [ ] D. Claude has your study design, how the data were collected, and the domain facts about your students.
-- [ ] E. The identification judgment stays with the person who will act.
-
-**Key:** A=T B=T C=T D=F E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: It does not have those.
-- E: Stated in the chapter.
-
-**Source:** What is Claude's here, and what is yours
-
-## MA-ch09.50
-
-Check each statement that is true about Claude's writing on causation and about deciding whether a question is causal. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Claude writes fluent paragraphs about confounding because text about confounding is abundant in what such systems learn from.
-- [ ] B. Before you hand Claude the algebra, you write one sentence saying whether the question is "what will the model say" or "what happens if we act," and who decided.
-- [ ] C. Fluency about causation is identification of it.
-- [ ] D. Deciding whether a question is causal at all is a clerical step with no causal judgment in it.
-- [ ] E. Claude has nothing riding on the decision.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Stated as the working rule.
-- C: It is not.
-- D: The book's observation is that this decision is itself a causal judgment.
-- E: Stated in the chapter.
-
-**Source:** What is Claude's here, and what is yours
-
-## MA-ch09.51
-
-Check each statement that is true about the Build It stage. Each statement is worth 1 point (5 points total).
-
-- [ ] A. If your value differs from 0.15, you adjust the expected result to match your code.
-- [ ] B. If your first-step weight differs from 0.15, you inspect averaging, signs, and use of the current parameters.
-- [ ] C. You read the six lesson tests after the reference implementation.
-- [ ] D. The expected result came from your hand derivation, which is the independent route.
-- [ ] E. You implement one gradient step before writing the full loop.
+- A: A p-value near 0.08 leaves a real chance that sampling noise alone produced the gap.
+- B: A single run per condition cannot separate an effect from sampling variation.
+- C: The evidence concerns how outputs respond to input text under the recorded conditions.
+- D: Examples in a prompt change the input; they cannot retrain the model.
+- E: More runs narrow the uncertainty, but the outcome depends on what the extra runs show.
+
+**Source:** Persistence is not proof of training
+
+## MA-ch09.12
+
+A hosted assistant gives a different answer on Tuesday than on Monday to the same user question. The only records are the two responses and the model's display name, which is unchanged. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Because the display name is unchanged, the model weights must be identical.
+- [ ] B. The difference could come from changed prompt text, different retrieved passages, different tool output, a silent model update, or sampling variation.
+- [ ] C. The report can state exactly what the Monday system state was, because the Monday answer exists.
+- [ ] D. When internal details are not observable, a careful report says which details remain unknown instead of asserting a mechanism.
+- [ ] E. Logging the full input, the settings, the tool results, and the model identifier for each call would allow a cautious attribution of such a change.
 
 **Key:** A=F B=T C=F D=T E=T
 
 **Why:**
 
-- A: Do not adjust the expected result until the discrepancy is explained.
-- B: Stated in the chapter.
-- C: You read them before the reference.
-- D: Stated in the chapter.
-- E: Stated in the chapter.
+- A: A label can persist across silent updates; it is not evidence about the underlying parameters.
+- B: An output difference alone does not identify which of several inputs or conditions produced it.
+- C: A past output does not reveal the unrecorded inputs and conditions that produced it, so the earlier state cannot be reconstructed.
+- D: Honest attribution distinguishes what was observed from what is unknown.
+- E: A before-and-after record of each possible cause is what makes attribution defensible.
 
-**Source:** Build It: the baseline that lets you audit
+**Source:** What a production record can and cannot show
 
-## MA-ch09.52
+## MA-ch09.13
 
-Check each statement that is true about the summed-gradient wrong version in Build It. Each statement is worth 1 point (5 points total).
+Three people each claim their result is reproducible. Person 1 supplies a short training script, the dataset, the hyperparameters, and a fixed seed, with deterministic code. Person 2 supplies a recorded prompt and sampling settings to replay against a hosted model. Person 3 supplies a configuration diff showing a permission change. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Tests 03 and 04 check only that the loss fell and that the weight is positive.
-- [ ] B. Tests 03 and 04 can tell the summed version from the averaged one.
-- [ ] C. If the summed version ends at a lower loss at step 200, that shows the code is right.
-- [ ] D. Before running it, you predict which of the six lesson tests will fail.
-- [ ] E. Its first step is four times as large as the reference's.
+- [ ] A. Only byte-identical output counts as a successful repeat for all three kinds of reproducibility.
+- [ ] B. Person 3's diff lets a reader inspect exactly what changed but does not by itself reproduce a behavior.
+- [ ] C. Setting temperature to 0 makes a hosted model's output byte-identical across weeks.
+- [ ] D. Person 2's replay may legitimately differ later if the hosted model is updated or sampling is stochastic.
+- [ ] E. A reader can rerun Person 1's computation and expect the same parameter values, given the same code, data, numeric libraries, and hardware.
 
-**Key:** A=T B=F C=F D=T E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: The chapter asks what they can distinguish, because both versions have a falling loss and a positive weight.
-- C: The chapter asks what a lower number can tell you about whether the code is right.
-- D: One of the three predictions.
-- E: 0.6 instead of 0.15.
-
-**Source:** Build It: the baseline that lets you audit
-
-## MA-ch09.53
-
-Check each statement that is true about conducting Claude Code against your gate. Each statement is worth 1 point (5 points total).
-
-- [ ] A. You give Claude Code the gate (change, objective, held-out list, stop rule, and test list) but not your implementation.
-- [ ] B. You run your own tests on what Claude returns.
-- [ ] C. If Claude adds early stopping you never asked for, that shows your stop rule had no hole.
-- [ ] D. Whether your tests are enough can be judged by the system they are testing.
-- [ ] E. A failing test is often a gap in your gate that Claude could not see, because it had only what you wrote.
-
-**Key:** A=T B=T C=F D=F E=T
+**Key:** A=F B=T C=F D=T E=T
 
 **Why:**
 
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: It shows your stop rule had a hole.
-- D: It cannot.
-- E: Stated in the chapter.
+- A: The three kinds of repeat have different dependencies, and identical output is not the only acceptable standard.
+- B: A diff documents the change; observing behavior requires running the system.
+- C: Providers can update models and infrastructure, and floating-point effects can still vary results even at temperature 0.
+- D: A hosted service can change underneath a recorded prompt, and sampling adds variation.
+- E: Deterministic computation on fixed inputs can be rerun and compared value by value.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** What a production record can and cannot show
 
-## MA-ch09.54
+## MA-ch09.14
 
-Check each statement that is true about the three things to do with Claude Code's result and the transcript. Each statement is worth 1 point (5 points total).
+A one-feature logistic classifier has weight w = 0.5 and bias b = -1. Its probability for label 1 is the sigmoid of the linear score, sigma(a) = 1 / (1 + e^(-a)), with a = w*x + b, and it predicts label 1 when the probability is at least 0.5. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. You ask Claude to propose a deliberately wrong version that still passes your tests, and check by hand whether it does.
-- [ ] B. If a session failed or did not run, you may substitute a fixture for it.
-- [ ] C. If the deliberately wrong version passes your tests, your test list was strong enough.
-- [ ] D. You need preserve only the final code, not the prompt, plan, or commands.
-- [ ] E. You compare its implementation with your baseline and name one difference in behavior.
+- [ ] A. For x = 4 the linear score is 1.0.
+- [ ] B. At x = 0 the probability is below 0.5.
+- [ ] C. At x = 2 the probability is exactly 0.5.
+- [ ] D. For x = 4 the predicted probability is about 0.73.
+- [ ] E. The decision boundary is at x = 4.
 
-**Key:** A=T B=F C=F D=F E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: Record that it failed or did not run.
-- C: Then your test list was too weak.
-- D: Preserve the prompt, plan, diff, commands, and outputs, with the date and displayed model label.
-- E: Stated in the chapter.
-
-**Source:** Use It: conduct Claude Code against your gate
-
-## MA-ch09.55
-
-Check each statement that is true about the second task, which touches Claude's behavior. Each statement is worth 1 point (5 points total).
-
-- [ ] A. You write your prediction for each condition first.
-- [ ] B. If you do not run the conditions, you label the design proposed.
-- [ ] C. You change only one object between conditions.
-- [ ] D. These conditions change Claude's weights.
-- [ ] E. You prepare a baseline prompt, a few-shot prompt, and a retrieved-context condition on the same bounded task.
-
-**Key:** A=T B=T C=T D=F E=T
+**Key:** A=T B=T C=T D=T E=F
 
 **Why:**
 
-- A: Stated in the chapter.
-- B: Stated in the chapter.
-- C: That is the one-object-at-a-time test.
-- D: They change inputs, not Claude's weights.
-- E: Stated in the chapter.
+- A: a = 0.5*4 - 1 = 1.0.
+- B: At x = 0 the score is -1 and sigma(-1) is about 0.27.
+- C: a = 0.5*2 - 1 = 0 and sigma(0) = 0.5.
+- D: sigma(1.0) is about 0.731.
+- E: The boundary is where w*x + b = 0, so x = 2, not 4.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** The model: two numbers and a squashing function
 
-## MA-ch09.56
+## MA-ch09.15
 
-Check each statement that is true about what the Ship It report contains. Each statement is worth 1 point (5 points total).
+A one-feature logistic classifier is initialized with weight 0 and bias 0, then evaluated on 100 labeled examples, 70 with label 1 and 30 with label 0, whose feature values range between -5 and 5. It predicts label 1 when the probability is at least 0.5. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Its table has mutable object, mechanism, persistence, evidence, and remaining limits, keeping permissions and tools separate from model parameters.
-- [ ] B. It may report the loss history as a full learning curve.
-- [ ] C. It ends with two predictive claims supported by the toy evaluation.
-- [ ] D. It says which results came from the lesson and which from your extension.
-- [ ] E. It records the interpreter, step count, rate, initial values, final values, and threshold.
-
-**Key:** A=T B=F C=F D=T E=T
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: The demo records two values, initial and final.
-- C: It ends with one predictive claim and one intervention claim the evaluation does not establish.
-- D: Stated in the chapter.
-- E: Stated in the chapter.
-
-**Source:** Ship It: the comparison report and its sign-off
-
-## MA-ch09.57
-
-Check each statement that is true about the sign-off. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A pass names the obligation it passed, and no more.
-- [ ] B. The "Not claiming" line includes that lower training loss means better.
-- [ ] C. The template is a signature you can sign as written.
-- [ ] D. The "Not checked" line is the one an AI-written sign-off omits, because the system that wrote it has no record of what you did not do.
-- [ ] E. If your evidence does not support signing, you must sign anyway and add caveats.
-
-**Key:** A=T B=T C=F D=T E=F
-
-**Why:**
-
-- A: Stated in the chapter.
-- B: It is in the template.
-- C: It is a template, not a signature.
-- D: Stated in the chapter.
-- E: Withholding is an honest result.
-
-**Source:** Ship It: the comparison report and its sign-off
-
-## MA-ch09.58
-
-Check each statement that is true about choosing verbs for the claim in the sign-off. Each statement is worth 1 point (5 points total).
-
-- [ ] A. "Causes" is supported once the held-out points are classified correctly.
-- [ ] B. "Better" is acceptable whenever training loss decreased.
-- [ ] C. "Lowered the objective on four pairs" describes what the optimizer did.
-- [ ] D. "Learned" overclaims here, because the parameters changed only by hand.
-- [ ] E. "Generalizes" needs a criterion you have not run.
-
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: It needs assumptions the fixture cannot supply.
-- B: Write "training loss decreased" when that is all you measured.
-- C: Stated in the chapter.
-- D: "Learned" describes a parameter change, and that is accurate here.
-- E: Stated in the chapter.
-
-**Source:** Ship It: the comparison report and its sign-off
-
-## MA-ch09.59
-
-Check each statement that is true about the driver's seat table. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For the objective, held-out set, and stop rule, you write them first and Claude challenges them.
-- [ ] B. For prediction or intervention, Claude decides which kind of question it is.
-- [ ] C. For which object changed, you choose the object you may change and run the one-at-a-time test.
-- [ ] D. For what the result supports, Claude chooses the verb and signs.
-- [ ] E. For the derivation and the loop, Claude derives, writes, and runs, while you reproduce the first step by hand and by finite difference.
-
-**Key:** A=T B=F C=T D=F E=T
-
-**Why:**
-
-- A: Second row.
-- B: You decide, justify the assumptions, and get domain evidence.
-- C: Third row.
-- D: You choose the verb and sign; your name is on the claim.
-- E: First row.
-
-**Source:** The driver's seat
-
-## MA-ch09.60
-
-Four proposed changes are a rewritten system prompt, a new document in a workspace, a newly enabled tool, and a lowered temperature. Check each statement that is true according to the chapter. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The lowered temperature modifies the weights.
-- [ ] B. The newly enabled tool modifies the tools.
-- [ ] C. The rewritten system prompt modifies the prompt.
-- [ ] D. If the only evidence is a different output, you may claim changed weights.
-- [ ] E. The new document in the workspace modifies the context.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: It modifies a run-time setting.
-- B: Evidence is the configuration diff and the authorizing decision.
-- C: Both texts side by side show it.
-- D: Do not jump to a claim about changed weights.
-- E: Evidence is the passages that entered the input.
-
-**Source:** Verify and reflect
-
-## MA-ch09.61
-
-Check each statement that is true about the checks the chapter asks you to run when you verify your work. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Four designed points count as evidence of population performance.
-- [ ] B. You recompute the first update independently.
-- [ ] C. You preserve exact outputs rather than reconstructing them after reading the expected values.
-- [ ] D. You check every use of the words "history" and "generalization."
-- [ ] E. You narrow the claim if the data and design cannot support it.
+- [ ] A. The initial average loss would be lower than 0.693 because 70% of the labels are 1.
+- [ ] B. Every example receives predicted probability 0.5.
+- [ ] C. The average binary cross-entropy is ln 2, about 0.693.
+- [ ] D. Accuracy at this point is 70%.
+- [ ] E. At this point the prediction does not depend on the feature value.
 
 **Key:** A=F B=T C=T D=T E=T
 
 **Why:**
 
-- A: They are separate fixtures.
-- B: Stated in the chapter.
-- C: Stated in the chapter.
-- D: Stated in the chapter.
-- E: Stated in the chapter.
+- A: The loss is the same for both labels at p = 0.5, so label balance does not change it.
+- B: With w = 0 and b = 0 every score is 0, and sigma(0) = 0.5.
+- C: Each example's loss is -ln(0.5) for either label, so the average is 0.693.
+- D: The at-least-0.5 rule predicts 1 for every example, which is right for the 70 positives.
+- E: The score w*x + b is 0 whatever x is.
 
-**Source:** Verify and reflect
+**Source:** The model: two numbers and a squashing function
 
-## MA-ch09.62
+## MA-ch09.16
 
-Check each statement that is true about the ungraded Assessments at the end of the chapter. Each statement is worth 1 point (5 points total).
+In IEEE double precision, math.exp(709) is about 8.2e307, while math.exp(710) raises an overflow error. A programmer writes sigmoid(x) = 1 / (1 + math.exp(-x)) and calls sigmoid(-1000). Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. In the one-update Assessment you also write the version that sums instead of averaging and name the lesson tests that cannot tell the two apart.
-- [ ] B. In the prediction-versus-intervention Assessment you must prove the causal claim.
-- [ ] C. In the finite-difference Assessment you claim the check would catch a wrong objective.
-- [ ] D. You write predictions before execution.
-- [ ] E. The Assessments carry no points.
+- [ ] A. Using 1/(1+e^(-x)) for x >= 0 and e^x/(1+e^x) for x < 0 computes the same function while avoiding the huge exponential.
+- [ ] B. For moderate inputs such as x = 2 the two-branch version gives materially different probabilities from the naive formula.
+- [ ] C. A passing test that sigmoid(-1000) is approximately 0 proves correctness for every input type and floating-point edge case.
+- [ ] D. The call fails because exp(1000) overflows.
+- [ ] E. The true value of sigmoid(-1000) is exactly 0.
 
-**Key:** A=T B=F C=F D=T E=T
+**Key:** A=T B=F C=F D=T E=F
 
 **Why:**
 
-- A: Assessment 4.
-- B: You write one supported predictive claim and one unsupported causal claim, and name the assumptions the latter needs.
-- C: You state one thing the check would not catch.
-- D: Stated in the Assessments.
-- E: They are ungraded practice.
+- A: Multiplying numerator and denominator by e^x rewrites the same quantity using only a small exponent for negative x.
+- B: The branches are algebraically identical, so they differ only by rounding for ordinary inputs.
+- C: One test covers one behavior; it says nothing about NaN, infinities, or other types.
+- D: With x = -1000 the naive code evaluates exp(1000), which exceeds the largest double.
+- E: The sigmoid is strictly positive; double precision merely rounds its value to 0.0.
 
-**Source:** Assessments - ungraded practice
+**Source:** The model: two numbers and a squashing function
 
-## MA-ch09.63
+## MA-ch09.17
 
-Check each statement that is true about what you can now explain at the end of the chapter. Each statement is worth 1 point (5 points total).
+A one-feature logistic model has weight w = -1.5 and bias b = 3. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. You can reproduce the first-step values by two routes, the derivative and a finite difference.
-- [ ] B. You drove by handing Claude the question of whether the problem was one of prediction or intervention.
-- [ ] C. Behavioral change alone is enough to identify the mechanism.
-- [ ] D. You conducted by asking Claude to write the gate for you.
-- [ ] E. Evaluation data stay held out even after they guide a choice.
+- [ ] A. The location of the boundary does not depend on the bias.
+- [ ] B. At x = 0 the predicted probability for label 1 is above 0.9.
+- [ ] C. At x = 3 the model predicts label 0.
+- [ ] D. The probability of label 1 increases as x increases.
+- [ ] E. The decision boundary, where the probability is 0.5, is at x = 2.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: The boundary is x = -b/w, so changing b moves it.
+- B: At x = 0 the score is 3 and sigma(3) is about 0.953.
+- C: At x = 3 the score is -1.5 and sigma(-1.5) is about 0.18, below 0.5.
+- D: The weight is negative, so the score and probability fall as x rises.
+- E: The boundary solves -1.5x + 3 = 0, which gives x = 2.
+
+**Source:** The model: two numbers and a squashing function
+
+## MA-ch09.18
+
+A fitted logistic regression has a weight of 0.7 on a feature x. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Each one-unit increase in x adds 0.7 to the log-odds of label 1.
+- [ ] B. Each one-unit increase in x multiplies the odds of label 1 by 0.7.
+- [ ] C. The change in probability per unit of x is the same at every value of x.
+- [ ] D. The weight shows that x causes label 1.
+- [ ] E. Each one-unit increase in x raises the probability of label 1 by 0.7.
 
 **Key:** A=T B=F C=F D=F E=F
 
 **Why:**
 
-- A: Stated in the chapter.
-- B: You kept that question.
-- C: It does not identify the mechanism.
-- D: You wrote the change, objective, held-out list, and stop rule before the loop ran.
-- E: Once they guide a choice they stop being held out.
+- A: The model is linear in log-odds, so the weight is the log-odds change per unit.
+- B: The log-odds rise by 0.7, so the odds are multiplied by e^0.7, about 2.01, not by 0.7.
+- C: Through the sigmoid, the same step in x moves probability most near 0.5 and least near 0 or 1.
+- D: A fitted weight describes an association in the training data and does not identify a cause.
+- E: Probabilities are bounded by 1 and change nonlinearly; the weight does not add to the probability.
 
-**Source:** What you can now explain
+**Source:** The model: two numbers and a squashing function
 
-## MA-ch09.64
+## MA-ch09.19
 
-Check each statement that is true about the Irreducibly Human note on AI and human responsibilities. Each statement is worth 1 point (5 points total).
+A logistic model has weight w = 2 and bias b = -3. Its score is a = w*x + b, its probability is sigma(a), and its decision is label 1 when the probability is at least a chosen threshold. For a probability threshold of 0.8, the score threshold is ln 4, about 1.386. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Humans should hand the decision to act to the AI once its explanation is fluent.
-- [ ] B. Human intuition is sufficient causal proof.
-- [ ] C. The chapter uses the companion passage to claim no machine architecture can represent causal reasoning.
-- [ ] D. AI should inspect calculations, run bounded experiments, tabulate predictions, and challenge assumptions.
-- [ ] E. AI can compute consequences under an explicitly stated model and propose candidate confounders.
+- [ ] A. With threshold 0.5 the decision boundary is at x = 1.5.
+- [ ] B. Because the sigmoid is increasing, thresholding the probability is the same as thresholding the score.
+- [ ] C. At x = 1.5 the predicted probability is 0.75.
+- [ ] D. Raising the probability threshold to 0.8 with the same parameters moves the boundary to about x = 2.19.
+- [ ] E. Training updates the threshold along with the weight and bias.
 
-**Key:** A=F B=F C=F D=T E=T
+**Key:** A=T B=T C=F D=T E=F
 
 **Why:**
 
-- A: Humans own the decision to act.
-- B: Human intuition is not sufficient causal proof either.
-- C: It uses the information boundary, not that claim.
-- D: Stated in the chapter.
-- E: Stated in the chapter.
+- A: The score is zero when 2x - 3 = 0, so x = 1.5.
+- B: A monotonic function preserves order, so each probability threshold corresponds to one score threshold.
+- C: At x = 1.5 the score is 0, so the probability is 0.5.
+- D: The score must reach 1.386, so x = (1.386 + 3)/2, about 2.19.
+- E: The threshold is a decision rule chosen outside the fitting loop.
 
-**Source:** Irreducibly Human
+**Source:** Score, probability, and decision are three layers
 
-## MA-ch09.65
+## MA-ch09.20
 
-The chapter ends by asking you to state your intervention claim with provisos. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A one-feature classifier predicts whether a job will run long from its input size x; long jobs mostly have x above 5 and short jobs mostly have x below 5. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. If you can fill in P, Q, and R, you have found the assumptions to defend and the evidence to go and get.
-- [ ] B. Changing x in the fitted Python function measures the effect of changing the real-world variable.
-- [ ] C. You point to the transcript line or edit showing that you, not Claude, wrote the sentence naming the assumptions.
-- [ ] D. If you cannot fill in P, Q, and R, you still have a supported causal claim.
-- [ ] E. The form is "if I change x by doing D, the outcome changes by about this much, provided P, Q, and R."
+- [ ] A. The boundary is where w*x + b = 0 because the sigmoid of 0 is 0.5.
+- [ ] B. If the data are mirror-image symmetric around zero, the learned bias can stay near zero, which shows a bias term is unnecessary.
+- [ ] C. On mirror-image symmetric data, removing one point or flipping one label can move the learned bias away from zero.
+- [ ] D. With w = 0.8 and b = -4 the boundary is at x = 3.2.
+- [ ] E. With the bias fixed at 0, the decision boundary is forced to x = 0, so a boundary near 5 cannot be represented.
 
 **Key:** A=T B=F C=T D=F E=T
 
 **Why:**
 
-- A: Stated in the chapter.
-- B: It measures the model's response, not necessarily the real-world effect.
-- C: Stated in the chapter.
-- D: Then you have a prediction.
-- E: Stated in the chapter.
+- A: Probability 0.5 corresponds to a score of 0.
+- B: Symmetric data can hide the need for a bias; it is needed whenever the relationship is not centered at zero.
+- C: A small asymmetry changes the error balance that keeps the bias near zero.
+- D: The boundary is x = -b/w = 4/0.8 = 5, not 3.2.
+- E: Without a bias, w*x = 0 only at x = 0.
 
-**Source:** Irreducibly Human
+**Source:** Score, probability, and decision are three layers
+
+## MA-ch09.21
+
+A binary logistic model gives score a = 2 for an example. The usual loss is -y*ln(p) - (1-y)*ln(1-p) with p = sigma(a), where sigma(2) is about 0.8808. An algebraically equivalent score-based form is max(a, 0) - y*a + ln(1 + e^(-|a|)). Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. For label 0 the loss is about 2.127.
+- [ ] B. The two forms give different values, which is why the score-based one is preferred.
+- [ ] C. At this score, a label-0 example has a smaller loss than a label-1 example.
+- [ ] D. The score-based form avoids taking the log of a probability that has rounded to exactly 0 or 1 when |a| is large.
+- [ ] E. For label 1 the loss is about 0.127.
+
+**Key:** A=T B=F C=F D=T E=T
+
+**Why:**
+
+- A: -ln(1 - 0.8808) is about 2.127.
+- B: The forms are algebraically equivalent; the second is chosen for numerical safety.
+- C: A positive score favors label 1, so a label-0 example is penalized more (2.127 versus 0.127).
+- D: It never forms p or 1-p, so large scores do not push a log argument to zero.
+- E: -ln(0.8808) is about 0.127.
+
+**Source:** Loss makes the objective explicit
+
+## MA-ch09.22
+
+A float64 implementation computes p = 1/(1 + exp(-a)) for score a = 40 and label y = 0, then evaluates -ln(1 - p). In double precision, e^(-40) is about 4.2e-18, which is below the spacing of numbers near 1, so 1 + e^(-40) rounds to 1.0 and p is exactly 1.0. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The naive computation ends up evaluating ln(0).
+- [ ] B. The score-based form max(a,0) - y*a + ln(1 + e^(-|a|)) returns about 40 here.
+- [ ] C. The true loss for this example is about 40.
+- [ ] D. Clipping p to the range [1e-15, 1-1e-15] before taking logs would return about 34, a capped value that is no longer the true loss.
+- [ ] E. A loss of about 40 means the model assigned a probability near 0.5 to the correct label.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: With p exactly 1.0, 1 - p is 0 and its logarithm is undefined or negative infinity.
+- B: With a = 40 and y = 0 the formula gives 40 + ln(1 + e^-40), about 40.
+- C: The loss is ln(1 + e^40), which is about 40.
+- D: The clipped 1 - p is on the order of 1e-15, and -ln of that is roughly 34, so clipping changes the value.
+- E: A loss near 40 means the correct label was given a probability of roughly e^-40, far below 0.5.
+
+**Source:** Loss makes the objective explicit
+
+## MA-ch09.23
+
+A model outputs probabilities for label 1 on three examples: 0.9 (true label 1), 0.2 (true label 0), and 0.5 (true label 1). Use natural logs. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The average loss equals the misclassification rate at threshold 0.5.
+- [ ] B. The p = 0.5 example has the largest of the three losses, about 0.693.
+- [ ] C. The p = 0.2, label-0 example has a loss of about 1.61.
+- [ ] D. The average loss over the three examples is about 0.34.
+- [ ] E. The p = 0.9 example has a binary cross-entropy loss of about 0.105.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: Loss is a continuous measure of confidence in the right label, not a count of errors.
+- B: -ln(0.5) is 0.693, larger than 0.105 and 0.223.
+- C: For label 0 the loss is -ln(1 - 0.2) = -ln(0.8), about 0.223; 1.61 is -ln(0.2), which would apply to a true label of 1.
+- D: (0.105 + 0.223 + 0.693) / 3 is about 0.341.
+- E: -ln(0.9) is about 0.105.
+
+**Source:** Loss makes the objective explicit
+
+## MA-ch09.24
+
+Two models predict the probability of label 1 for the same example whose true label is 1. Model P outputs 0.01 and Model Q outputs 0.4. Use natural logs. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Cross-entropy for a label-1 example is bounded above by 1.
+- [ ] B. Model P's cross-entropy loss, about 4.6, is more than five times Model Q's, about 0.92.
+- [ ] C. A prediction of 0.99 for this example would have a loss of about 0.01.
+- [ ] D. At threshold 0.5 both models are wrong, so accuracy treats the two predictions as equally bad.
+- [ ] E. As the probability assigned to the true class approaches 0, the loss grows without bound.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: The loss -ln(p) is unbounded as p approaches 0.
+- B: -ln(0.01) is 4.61 and -ln(0.4) is 0.92, a ratio of about 5.0.
+- C: -ln(0.99) is about 0.01, since a confident correct answer costs almost nothing.
+- D: Both probabilities fall below 0.5, so both count as one error.
+- E: Cross-entropy punishes confident wrong answers without limit.
+
+**Source:** Loss makes the objective explicit
+
+## MA-ch09.25
+
+Binary cross-entropy for label y and predicted probability p is -y*ln(p) - (1-y)*ln(1-p). Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. For a label-1 example it reduces to -ln(1-p).
+- [ ] B. Minimizing the average of this loss over a dataset maximizes the Bernoulli likelihood of the observed labels.
+- [ ] C. For p = sigma(a), its derivative with respect to the score a is p - y.
+- [ ] D. Mean squared error between p and y has the same derivative with respect to the score.
+- [ ] E. It equals the zero-one error.
+
+**Key:** A=F B=T C=T D=F E=F
+
+**Why:**
+
+- A: With y = 1 the second term vanishes, leaving -ln(p).
+- B: Cross-entropy is the negative log-likelihood of independent Bernoulli labels.
+- C: The sigmoid and the log-loss combine so that the score derivative is the prediction error.
+- D: The squared-error derivative carries an extra factor p(1-p), which shrinks when predictions saturate.
+- E: Cross-entropy is continuous and graded, while zero-one error counts mistakes.
+
+**Source:** Loss makes the objective explicit
+
+## MA-ch09.26
+
+One training example has feature x = 3 and label y = 0. The model has w = 0.2 and b = 0.1, with p = sigma(w*x + b). Recall that the derivative of the binary logistic loss with respect to the score a = w*x + b is p - y. Here a = 0.7 and p is about 0.668. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The derivative of the loss with respect to b is about 0.67.
+- [ ] B. A gradient descent step with a positive learning rate will increase w.
+- [ ] C. The derivatives with respect to w and b are equal because both parameters multiply the same error.
+- [ ] D. The loss for this example is about 0.40.
+- [ ] E. The derivative of the loss with respect to w is about 2.00.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: The score changes by 1 per unit of b, so dL/db = p - y, about 0.67.
+- B: The gradient is positive, and descent subtracts it, so w decreases.
+- C: The weight's derivative carries the extra factor x = 3, so the two differ.
+- D: For label 0 the loss is -ln(1 - 0.668), about 1.10.
+- E: By the chain rule dL/dw = (p - y)*x = 0.668*3, about 2.00.
+
+**Source:** Derive the first update
+
+## MA-ch09.27
+
+Training data as (x, y) pairs: (0, 0), (1, 0), (2, 1). A model starts at w = 0 and b = 0 with p = sigma(w*x + b), uses the average binary logistic loss, and takes one full-batch gradient descent step with learning rate 0.6. The per-example derivative with respect to the score is p - y. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The bias does not move on this step because the errors sum to zero.
+- [ ] B. The averaged weight gradient is about -0.167.
+- [ ] C. The three initial errors p - y are 0.5, 0.5, and -0.5.
+- [ ] D. The average loss after the step is higher than the initial 0.693.
+- [ ] E. After the step, w is 0.1 and b is -0.1.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: The errors sum to +0.5, so the bias gradient is +0.167 and b moves.
+- B: The sum of error times x is 0 + 0.5 - 1.0 = -0.5, and dividing by 3 gives -0.167.
+- C: Every prediction is 0.5, so the errors are 0.5 - y for each label.
+- D: The loss falls to about 0.661 after a correctly signed step.
+- E: w = 0 - 0.6*(-0.167) = 0.1 and b = 0 - 0.6*(0.167) = -0.1.
+
+**Source:** Derive the first update
+
+## MA-ch09.28
+
+Training data as (x, y) pairs: (-1, 1), (1, 0), (2, 0), so larger x goes with label 0. A model starts at w = 0, b = 0, uses the average binary logistic loss and the error p - y, and takes one full-batch gradient descent step with a positive learning rate. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The averaged weight gradient is about +0.67, so w decreases on the first step.
+- [ ] B. After the first step, b is positive.
+- [ ] C. The averaged bias gradient is 0, so b stays at 0.
+- [ ] D. The first step makes w positive because the model must raise probabilities for positive x.
+- [ ] E. The initial average loss is below ln 2 because the label-0 points have larger x.
+
+**Key:** A=T B=F C=F D=F E=F
+
+**Why:**
+
+- A: Errors are -0.5, 0.5, 0.5; weighted by x they sum to 2.0, and the mean is 0.667.
+- B: The bias gradient is positive and descent subtracts it, so b becomes negative.
+- C: The errors sum to 0.5, giving a bias gradient of about +0.167.
+- D: The positive-x points carry label 0, so the weight must fall, not rise.
+- E: At w = 0 and b = 0 every probability is 0.5, so the initial loss is ln 2 whatever the data.
+
+**Source:** Derive the first update
+
+## MA-ch09.29
+
+Before running an AI-written training script, a student writes down, with the date: "On the first update the weight should move in the positive direction and the bias should not move; if the weight moves negative or the bias moves, a sign or a feature factor in the gradient is wrong." The student reasoned this from the labels and the signs of the features. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A prediction that states what a wrong result would look like can be falsified by the output.
+- [ ] B. A prediction written after reading the output only describes the output.
+- [ ] C. Plausible-looking decimals from the script confirm the gradient code is correct.
+- [ ] D. A prediction made before the run gives a check that does not depend on the script's output.
+- [ ] E. Predicting the direction of the first update requires running the code.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: A claim with a stated failure condition risks being wrong, which is what makes it a test.
+- B: After seeing the output, any story fits it, so it can no longer test anything.
+- C: Numbers that look reasonable can still come from a sign error or a missing factor.
+- D: Reasoning done in advance is an independent route to compare against the code.
+- E: The direction follows from the labels, the feature signs, and the sign of the gradient formula.
+
+**Source:** Derive the first update
+
+## MA-ch09.30
+
+Two implementations of full-batch gradient descent for logistic regression on N = 50 examples differ in one line. Version M divides the summed per-example gradients by N. Version S does not divide. Both use learning rate 0.1. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Version S takes steps 50 times larger than Version M.
+- [ ] B. Version S is equivalent to Version M with a learning rate of 5.0.
+- [ ] C. Doubling the dataset doubles the size of Version S's step but not Version M's.
+- [ ] D. A test that only checks that the training loss decreased cannot reliably tell the two versions apart.
+- [ ] E. Version S's step points in a different direction from Version M's.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: The sum is N times the mean, so the step is multiplied by 50.
+- B: 0.1 times 50 equals 5.0 applied to the mean gradient.
+- C: The sum grows with N while the mean does not.
+- D: A too-large step can still reduce the loss early on, so a "loss fell" test may pass.
+- E: Scaling a vector by a positive constant leaves its direction unchanged.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.31
+
+Training data as (x, y) pairs: (-3, 0), (-1, 0), (1, 1), (3, 1). A model starts at w = 0, b = 0 and takes a full-batch step with learning rate 0.5. A correct implementation uses mean((p - y)*x) for the weight and mean(p - y) for the bias. A buggy version also uses mean((p - y)*x) for the bias. At the start p is 0.5 for every example. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The correct bias gradient at the start is 0, so b stays at 0 after the first step.
+- [ ] B. The bug can only be detected by examining final held-out accuracy.
+- [ ] C. The buggy version moves b because the data are asymmetric around zero.
+- [ ] D. The buggy bias gradient at the start is -1.0, so b moves to 0.5.
+- [ ] E. The derivative of the loss with respect to the bias includes a factor of x.
+
+**Key:** A=T B=F C=F D=T E=F
+
+**Why:**
+
+- A: The errors are 0.5, 0.5, -0.5, -0.5, which sum to zero.
+- B: A test of the exact first-step values would catch the bug without any held-out data.
+- C: The data are symmetric; the movement comes from the extra x factor, which stops the errors cancelling.
+- D: The x-weighted errors are -1.5, -0.5, -0.5, -1.5, whose mean is -1.0, and 0 - 0.5*(-1.0) = 0.5.
+- E: The score changes by 1 per unit of bias, so the bias derivative is just the error.
+
+**Source:** The gate: say what should change before you change it
+
+## MA-ch09.32
+
+To check a hand-derived gradient of a loss L(w), a developer compares it with the central finite difference [L(w+h) - L(w-h)] / (2h) for a small h. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The central difference does not use the derivative formula being checked.
+- [ ] B. Agreement within tolerance shows the analytic gradient matches the derivative of the loss function as coded.
+- [ ] C. Shrinking h toward 1e-16 keeps improving the accuracy of the estimate.
+- [ ] D. Agreement shows the loss function is the right objective for the application.
+- [ ] E. For a smooth loss, the central difference error shrinks roughly with h squared, while a one-sided difference shrinks roughly with h.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: It only evaluates the loss at two nearby points, so it fails differently from the algebra.
+- B: Both quantities describe the same coded objective, so agreement confirms the derivation.
+- C: Subtracting nearly equal numbers loses digits, so very small h adds round-off error.
+- D: If the objective is wrong for the task, derivative and finite difference still agree.
+- E: Taylor expansion shows the odd terms cancel in the central difference.
+
+**Source:** Derive the first update
+
+## MA-ch09.33
+
+For a single example with x = 2, y = 1, and b = 0, the loss as a function of the weight is L(w) = ln(1 + e^(-2w)). A developer estimates the derivative at w = 0 with h = 0.01. The central difference [L(h) - L(-h)]/(2h) is about -1.0000, and the one-sided difference [L(h) - L(0)]/h is about -0.995. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The central difference is within 0.0001 of the exact derivative.
+- [ ] B. The exact derivative at w = 0 is -0.5.
+- [ ] C. Increasing h to 0.1 makes the one-sided estimate more accurate.
+- [ ] D. The negative sign means L increases as w increases.
+- [ ] E. The one-sided difference is off by about 0.05.
+
+**Key:** A=T B=F C=F D=F E=F
+
+**Why:**
+
+- A: The central estimate agrees with -1 to many decimal places.
+- B: The derivative is (p - y)*x = (0.5 - 1)*2 = -1, not -0.5.
+- C: The one-sided error grows roughly in proportion to h; at h = 0.1 the estimate is about -0.95.
+- D: A negative derivative means L decreases as w increases.
+- E: The one-sided estimate of -0.995 differs from -1 by about 0.005, not 0.05.
+
+**Source:** Derive the first update
+
+## MA-ch09.34
+
+Gradient descent minimizes L(w) = w^2, whose gradient is 2w, starting from w = 1 with learning rate r. Each step gives w <- (1 - 2r)w. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. With r = 0.1 the iterates fall steadily: 1, 0.8, 0.64, and so on.
+- [ ] B. With r = 0.5 the iterate reaches the minimizer w = 0 in one step.
+- [ ] C. With r = 0.9 the iterates converge without ever changing sign.
+- [ ] D. With r = 1.0 the iterates alternate between 1 and -1 forever.
+- [ ] E. With r = 1.1 the iterates diverge, growing in magnitude by a factor of 1.2 each step.
+
+**Key:** A=T B=T C=F D=T E=T
+
+**Why:**
+
+- A: The multiplier 1 - 0.2 = 0.8 shrinks the iterate without changing sign.
+- B: The multiplier 1 - 1 = 0 sends w to 0 at once.
+- C: The multiplier is -0.8, so the sign flips each step even though the magnitude shrinks.
+- D: The multiplier is -1, so the magnitude never shrinks.
+- E: The multiplier is -1.2, which has magnitude above 1.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.35
+
+Consider the learning rate in gradient descent for a logistic classifier. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A very small rate can make progress too slow within a limited step budget.
+- [ ] B. The rate is a setting of the experiment: the update rule changes the weight and bias but never the rate.
+- [ ] C. Picking the rate by looking at accuracy on the final test set turns the test set into tuning data.
+- [ ] D. Reducing the rate is the usual remedy when training makes progress too slowly.
+- [ ] E. A rate that works well for one dataset is safe for every dataset.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: Tiny steps may not get far enough in the budget.
+- B: The rate scales the gradient but is chosen by the practitioner, not learned.
+- C: Once a choice depends on a set, that set is development data and its estimate is optimistic.
+- D: Slow progress usually calls for a larger rate or better-scaled features; a smaller rate slows it further.
+- E: The stable range depends on the loss surface and the feature scales.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.36
+
+A training function runs exactly 500 updates at a fixed learning rate, with no convergence test, and returns the final parameters. The final average training loss is 0.04. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. If held-out accuracy looks poor, extending training until it looks good keeps the held-out set a clean test.
+- [ ] B. On linearly separable data with no regularization, training loss reaches exactly zero after enough steps.
+- [ ] C. Deciding the budget before the run protects against stopping at a flattering point.
+- [ ] D. A final loss of 0.04 does not show that 500 steps was the right budget.
+- [ ] E. A fixed step budget and early stopping on a validation loss are the same stopping criterion.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: Tuning on the held-out set turns it into development data.
+- B: Logistic loss approaches zero as weights grow but is positive for every finite weight.
+- C: A budget fixed beforehand cannot be tuned to the observed result.
+- D: The number of updates is a choice, and a low loss does not validate it.
+- E: The first stops by count, the second by observed validation performance.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.37
+
+A one-feature logistic model with the bias fixed at 0 is fit to a single example x = 1, y = 1 using the loss ln(1 + e^(-w)). The loss is about 0.313 at w = 1, about 0.0067 at w = 5, and about 0.000045 at w = 10. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A loss of 0.000045 means the model will be 99.9955% accurate on future data.
+- [ ] B. Adding an L2 penalty on w would give a finite minimizer.
+- [ ] C. At w = 5 the model's probability for label 1 on this example is about 0.993.
+- [ ] D. Gradient descent on this problem has no finite minimizer.
+- [ ] E. The loss keeps decreasing as w increases and approaches, but never reaches, 0.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: Training loss on one example says nothing about accuracy on new data.
+- B: The penalty grows with w and balances the shrinking loss, so a minimum appears at finite w.
+- C: sigma(5) is about 0.9933, consistent with a loss of -ln(0.9933), about 0.0067.
+- D: Since the loss keeps falling, no finite w is optimal.
+- E: The loss is positive for every finite w but falls toward zero as w grows.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.38
+
+A training routine returns a "history" list containing exactly two numbers: the loss before the first update and the loss after the last. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Recording loss only on the training set is enough to choose a stopping point.
+- [ ] B. Two values do not form a learning curve.
+- [ ] C. From these two values one cannot tell whether the loss fell steadily, oscillated, or spiked and recovered.
+- [ ] D. The two values show the run was numerically stable throughout.
+- [ ] E. A final value below the initial value proves the loss decreased at every step.
+
+**Key:** A=F B=T C=T D=F E=F
+
+**Why:**
+
+- A: Training loss usually keeps falling, so choosing where to stop needs a separate validation signal.
+- B: A curve needs the loss at many steps.
+- C: The endpoints are consistent with many different paths.
+- D: Stability concerns every step, and only the endpoints were recorded.
+- E: Endpoints say nothing about the intermediate steps.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.39
+
+For a logistic classifier, the weight gradient for one example is (p - y)*x, while the bias gradient is (p - y). Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The bias gradient depends on the feature value x.
+- [ ] B. Weight steps scale with the magnitude of the feature, so features in the thousands can need a smaller learning rate than features near 1.
+- [ ] C. Rescaling a feature from meters to millimeters leaves the optimal weight unchanged.
+- [ ] D. A rate that works for x in [0, 1] will work unchanged for x in [0, 1000].
+- [ ] E. Standardizing features to zero mean and unit variance usually lets a single learning rate work across features.
+
+**Key:** A=F B=T C=F D=F E=T
+
+**Why:**
+
+- A: The bias gradient is the mean error with no x factor.
+- B: A large x multiplies the error, so the weight update can overshoot at a rate fine for small x.
+- C: Multiplying the feature by 1000 requires dividing the optimal weight by 1000.
+- D: A thousandfold larger feature gives much larger weight steps, which can destabilize training.
+- E: Comparable scales give comparable gradient magnitudes.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.40
+
+A dataset has N = 1,000 examples. Full-batch gradient descent uses all 1,000 examples per update. Minibatch stochastic gradient descent uses randomly shuffled batches of 100. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. With minibatches of 100, each update uses a gradient computed from all 1,000 examples.
+- [ ] B. The gradient from a randomly drawn minibatch is a noisy but unbiased estimate of the full-batch gradient.
+- [ ] C. One pass over the data with batch size 100 performs 100 updates.
+- [ ] D. A trainer that uses full batches, never shuffles, and never adapts its rate represents every aspect of large-scale training.
+- [ ] E. Minibatch gradients have lower variance than full-batch gradients.
+
+**Key:** A=F B=T C=F D=F E=F
+
+**Why:**
+
+- A: Each update sees only its 100 examples.
+- B: The average over a random subset has expectation equal to the full average.
+- C: 1,000 / 100 = 10 batches, so a pass performs 10 updates.
+- D: A simple full-batch loop omits shuffling, minibatches, and adaptive rates, so the analogy is limited.
+- E: A minibatch gradient is a noisier estimate with higher variance than the full-batch gradient; its benefit is cheaper updates.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.41
+
+A student tries learning rates 0.01, 0.1, 1, and 10 on the same data, and reports only the run with the lowest final training loss. The rate-10 run diverged to NaN and was left out of the write-up. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The run with the lowest final training loss is the right one to deploy without further evaluation.
+- [ ] B. Choosing the evaluation criterion after seeing the results is fine as long as the chosen run is labeled.
+- [ ] C. Dropping the diverged run is acceptable because failures are not informative.
+- [ ] D. Omitting the diverged run hides information about the method's sensitivity to the rate.
+- [ ] E. Holding the data and initial parameters fixed across runs makes the comparison meaningful.
+
+**Key:** A=F B=F C=F D=T E=T
+
+**Why:**
+
+- A: Lowest training loss can reflect overfitting and says nothing about unseen data.
+- B: Picking the criterion after the fact turns a comparison into a search for the most attractive run.
+- C: Failed runs show where the method breaks, and reports should keep them.
+- D: A divergence at a large rate is a finding about stability.
+- E: Changing only the rate isolates its effect.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.42
+
+A one-feature classifier is trained from w = 0, b = 0 on (-2, 0), (-1, 0), (1, 1), (2, 1) and learns a positive weight. Now every label is flipped: (-2, 1), (-1, 1), (1, 0), (2, 0). Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The learned weight should become negative.
+- [ ] B. The first update moves w in the same direction as in the original run.
+- [ ] C. The learned bias should become clearly negative.
+- [ ] D. The initial loss is higher than in the original run.
+- [ ] E. By the symmetry sigma(-a) = 1 - sigma(a), the final training loss should match the original run's.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: Larger x now goes with label 0, so a negative weight reduces the loss.
+- B: The gradient sign reverses, so w moves the opposite way.
+- C: The data stay symmetric about zero, so the bias stays near zero.
+- D: At w = 0 and b = 0 every probability is 0.5, so the initial loss is ln 2 in both runs.
+- E: Flipping labels and negating w maps one problem exactly onto the other.
+
+**Source:** The loop, its rate, and its stop rule
+
+## MA-ch09.43
+
+An engineer sets aside four evaluation points before training and never passes them to the training function. The engineer chose them near the same decision boundary as the training points, and the trained model classifies all four correctly at threshold 0.5. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. If the engineer uses these four points to choose a learning rate, they become development data and are no longer an independent test.
+- [ ] B. A broader performance claim needs a justified sampling process, a task definition, and a larger evaluation.
+- [ ] C. The result supports "these four points are classified correctly" but not "the model generalizes."
+- [ ] D. "Held out" here describes how the points were handled: they were not used for fitting.
+- [ ] E. The four points are a random sample of the deployment population.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Once a set guides a choice, later results on it are no longer independent of that choice.
+- B: Population claims need an explicit sampling design and enough data to estimate error.
+- C: Four hand-built points support a narrow claim about those points only.
+- D: Being held out is a statement about procedure, not about representativeness.
+- E: Points chosen by the engineer around the training pattern are not a random sample of any population.
+
+**Source:** Held-out means separately specified, not magically representative
+
+## MA-ch09.44
+
+A team has 200 evaluation examples and measures 82% accuracy (164 correct). Later, 50 of those examples are accidentally copied into the training set and the model is retrained. Suppose the model now answers all 50 copied examples correctly, while its accuracy on the other 150 examples stays at 82% (123 correct). Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The 150 untouched examples can no longer give a usable estimate of accuracy on unseen data.
+- [ ] B. A rise in reported accuracy from 82% to 86.5% would reflect better generalization.
+- [ ] C. The 50 copied examples no longer measure performance on unseen data.
+- [ ] D. Reporting 86.5% as unseen-data accuracy is acceptable if the leak is disclosed in a footnote.
+- [ ] E. Accuracy on the full 200 would now read 86.5%.
+
+**Key:** A=F B=F C=T D=F E=T
+
+**Why:**
+
+- A: Those 150 were never trained on, so they still estimate unseen-data accuracy.
+- B: The rise comes from memorized training examples; nothing about unseen data changed.
+- C: The model was fit on them, so correct answers there are expected regardless of generalization.
+- D: A footnote does not fix an inflated number; the clean estimate is the 150-example result or a rebuilt split.
+- E: (123 + 50) / 200 = 173/200 = 0.865.
+
+**Source:** Held-out means separately specified, not magically representative
+
+## MA-ch09.45
+
+A team trains a classifier, tries 12 combinations of learning rate and step count, picks the combination with the highest accuracy on their single evaluation set, and reports that accuracy as the model's expected performance. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The reported accuracy is likely to be optimistic relative to fresh data.
+- [ ] B. After the choice is made, the final estimate should come from data that played no role in any choice.
+- [ ] C. Using a separate development set for choosing settings and a test set consulted once for the final estimate addresses the problem.
+- [ ] D. The evaluation set has become development data.
+- [ ] E. A development set can be reused for any number of selections without its estimate becoming biased.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: The winner is selected partly for lucky noise on that set, so its score overstates its true performance.
+- B: Only data untouched by any decision gives an unbiased final estimate.
+- C: Splitting the roles keeps the final estimate independent of the selection.
+- D: Choosing among settings by their score on a set makes that set part of tuning.
+- E: Every selection made on a set adds some optimism to its estimate.
+
+**Source:** Held-out means separately specified, not magically representative
+
+## MA-ch09.46
+
+A team compares 30 prompt variants on the same 100 questions. Suppose every variant truly has 70% accuracy and observed scores vary only by chance. By the binomial distribution, the expected best observed score among 30 such variants is about 79%, and the best is at or above 75% in over 99% of repeated experiments. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Trying more variants reduces the overstatement.
+- [ ] B. Reporting the top variant's score would overstate its true accuracy.
+- [ ] C. The best variant's observed score is an unbiased estimate of its own true accuracy.
+- [ ] D. The expected overstatement in this setup is roughly 9 percentage points.
+- [ ] E. Re-scoring only the winner on fresh questions gives a less biased estimate.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: More candidates raise the expected maximum of noise, which increases the overstatement.
+- B: The maximum of many noisy scores is above the average, and all variants truly score 70%.
+- C: Selecting the maximum creates an upward bias.
+- D: Expected best about 79% against a true 70% is about 9 points.
+- E: Fresh questions have not influenced the selection, so the winner's score on them is not inflated by it.
+
+**Source:** Held-out means separately specified, not magically representative
+
+## MA-ch09.47
+
+A classifier gets 4 of 4 held-out points right. Another classifier gets 40 of 40 right on a different test set. If a classifier's true accuracy were p, the chance of a perfect score on n points is p^n. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. After 4 of 4 correct, a true accuracy of 60% is still plausible, since 0.6^4 is about 0.13.
+- [ ] B. A perfect score on any finite test set proves the true error rate is zero.
+- [ ] C. A perfect score on 40 points is no stronger evidence of high accuracy than a perfect score on 4 points.
+- [ ] D. Getting 4 of 4 correct demonstrates that accuracy is above 95%.
+- [ ] E. After 40 of 40 correct, a true accuracy of 90% is about as plausible as it was after 4 of 4 correct.
+
+**Key:** A=T B=F C=F D=F E=F
+
+**Why:**
+
+- A: A 13% chance of a perfect score is far from negligible.
+- B: Finite samples only bound the error rate; they never prove it is zero.
+- C: More points shrink the range of accuracies compatible with a perfect score.
+- D: A true accuracy of 95% would give 4 of 4 about 81% of the time, so 4 of 4 cannot rule it out.
+- E: 0.9^4 is about 0.66 while 0.9^40 is about 0.015, so the longer perfect run makes 90% far less plausible.
+
+**Source:** Held-out means separately specified, not magically representative
+
+## MA-ch09.48
+
+Six held-out examples have predicted probabilities of label 1 and true labels as follows: (0.90, label 1), (0.80, label 1), (0.40, label 1), (0.35, label 0), (0.20, label 0), (0.10, label 0). A prediction is label 1 when the probability is at least the chosen threshold. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A threshold of 0.38 classifies all six correctly.
+- [ ] B. Changing the threshold leaves the model's parameters unchanged.
+- [ ] C. Accuracy at threshold 0.3 is higher than at 0.5.
+- [ ] D. Accuracy at threshold 0.5 is 5 of 6.
+- [ ] E. Every positive example has a higher probability than every negative one, so the ranking is perfect (AUC of 1).
+
+**Key:** A=T B=T C=F D=T E=T
+
+**Why:**
+
+- A: At 0.38 the 0.40 positive is caught and 0.35 stays negative.
+- B: The threshold is a decision rule applied after scoring; the parameters are untouched.
+- C: At 0.3 the 0.35 negative becomes a false positive, giving 5 of 6, the same as at 0.5.
+- D: At 0.5 the 0.40 positive is missed and the other five are right.
+- E: The lowest positive score (0.40) exceeds the highest negative score (0.35).
+
+**Source:** Score, probability, and decision are three layers
+
+## MA-ch09.49
+
+A classifier decides whether to escalate a message to a human. A missed escalation (false negative) costs 20 units and an unnecessary escalation (false positive) costs 1 unit. On 1,000 messages at threshold 0.5, Model A makes 10 false negatives and 40 false positives and has average log loss 0.30. Model B makes 25 false negatives and 10 false positives and has average log loss 0.28. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Model A's total cost is 240 units and Model B's is 510 units.
+- [ ] B. Lower log loss implies lower expected cost.
+- [ ] C. Threshold 0.5 is the cost-optimal threshold for calibrated probabilities here.
+- [ ] D. If probabilities are calibrated, minimizing expected cost means escalating when the probability exceeds 1/21, about 0.048.
+- [ ] E. Model B makes more total errors than Model A.
+
+**Key:** A=T B=F C=F D=T E=F
+
+**Why:**
+
+- A: Model A costs 10*20 + 40*1 = 240; Model B costs 25*20 + 10*1 = 510.
+- B: Log loss weights errors by confidence, not by the real cost of each kind of error.
+- C: Unequal error costs move the optimal threshold far below 0.5.
+- D: Escalate when p*20 > (1-p)*1, which gives p > 1/21.
+- E: Model B makes 35 errors against Model A's 50.
+
+**Source:** What a lower loss claims
+
+## MA-ch09.50
+
+A model assigns probability 0.9 to each of 1,000 test items, and 600 of those items are actually positive. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A model trained with cross-entropy loss will be well calibrated without further checks.
+- [ ] B. Among these items the observed positive rate is 0.6, so the model is overconfident there.
+- [ ] C. The model's accuracy at threshold 0.5 could still be high.
+- [ ] D. Checking calibration requires labeled data grouped by predicted probability.
+- [ ] E. A handful of correct predictions with extreme probabilities shows that the model is calibrated.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: Cross-entropy training does not guarantee calibration, especially under overfitting or distribution shift.
+- B: A calibrated model would be right about 90% of the time at probability 0.9.
+- C: Accuracy depends only on which side of the threshold predictions fall, not on how confident they are.
+- D: A reliability analysis compares predicted probabilities with observed frequencies in groups.
+- E: Calibration is a statement about frequencies over many cases; a few correct predictions cannot establish it.
+
+**Source:** Score, probability, and decision are three layers
+
+## MA-ch09.51
+
+A report on a small experiment gives these facts: average training loss fell from 0.69 to 0.11 over the run; six separately specified held-out points, built from the same pattern as the training data, were all classified correctly at threshold 0.5. Check each statement that the evidence supports. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Training loss decreased from 0.69 to 0.11 under the stated procedure.
+- [ ] B. The predicted probabilities are calibrated.
+- [ ] C. The model generalizes to new real-world data.
+- [ ] D. Increasing the feature by one unit causes the outcome to change in the real world.
+- [ ] E. The six held-out points were classified correctly.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: That is exactly what was measured.
+- B: Calibration needs a labeled sample large enough to compare probabilities with frequencies.
+- C: Six constructed points of the same pattern cannot establish performance on a real population.
+- D: A fitted association does not identify what happens when a real-world variable is changed.
+- E: That is the recorded held-out result.
+
+**Source:** What a lower loss claims
+
+## MA-ch09.52
+
+A logistic model fit to historical records of an online class has a positive weight on x, the number of reminder emails a student opened in the first month, for the label "passed." Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A third factor such as motivation could raise both email opening and passing.
+- [ ] B. Evaluating the function at a larger x answers what would happen to pass rates if the class required students to open emails.
+- [ ] C. The positive weight is consistent with students who are already on track opening more emails.
+- [ ] D. Collecting ten times more records from the same observational source would settle whether opening emails helps students pass.
+- [ ] E. For a student with x = 4, evaluating the fitted function answers what label the model will assign.
+
+**Key:** A=T B=F C=T D=F E=T
+
+**Why:**
+
+- A: A common cause produces a positive weight without any effect of the emails.
+- B: The function's response to a changed input is not the world's response to a changed behavior.
+- C: Reverse causation produces the same positive association.
+- D: More data from the same source reduces noise but cannot remove confounding or reverse causation.
+- E: A prediction question about the model is answered by evaluating the fitted function.
+
+**Source:** Decide what kind of question you are asking
+
+## MA-ch09.53
+
+Judea Pearl's ladder of causation separates association, intervention, and counterfactual questions. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. "Do patients who take drug X recover more often than those who do not?" is an association question.
+- [ ] B. Predicting the label of a new record with a fitted classifier is an intervention question.
+- [ ] C. "If we give drug X to everyone in this clinic, will the recovery rate rise?" is an intervention question.
+- [ ] D. Interventional answers can generally be recovered from purely observational data without further assumptions.
+- [ ] E. "Would this particular patient have recovered had she not taken X?" is a counterfactual question.
+
+**Key:** A=T B=F C=T D=F E=T
+
+**Why:**
+
+- A: It asks what goes with what in observed data.
+- B: Prediction is an association-level task, answered from the fitted pattern.
+- C: It asks what happens if the treatment is imposed.
+- D: Interventional claims need causal assumptions or randomization that the data alone do not supply.
+- E: It asks what would have happened to a specific case under a different action.
+
+**Source:** Decide what kind of question you are asking
+
+## MA-ch09.54
+
+Two treatments, X and Y, were assigned by clinicians. Success counts for mild cases: X succeeded in 8 of 10, Y in 70 of 90. For severe cases: X succeeded in 30 of 90, Y in 2 of 10. Pooled over all patients, X succeeded in 38 of 100 and Y in 72 of 100. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Within severe cases, X has the higher success rate (about 33% versus 20%).
+- [ ] B. The pooled result differs from the within-group results because X was given mostly to severe cases and severity strongly affects the outcome.
+- [ ] C. Within mild cases, X has the higher success rate (80% versus about 78%).
+- [ ] D. Pooled over all patients, X's success rate (38%) is lower than Y's (72%).
+- [ ] E. The pooled comparison is the right one for choosing a treatment because it uses all of the patients.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: 30/90 is 33.3% and 2/10 is 20%.
+- B: X's pool is 90% severe cases, which have low success for either treatment.
+- C: 8/10 is 80% and 70/90 is 77.8%.
+- D: 38/100 against 72/100.
+- E: Which comparison is right depends on the causal structure; here severity drives both assignment and outcome, so the pooled rate is misleading.
+
+**Source:** Decide what kind of question you are asking
+
+## MA-ch09.55
+
+A model that flags at-risk students was fit on a year in which nobody acted on its flags. The next year advisors contact every flagged student, and the model is later refit on that year's outcomes. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Refitting on the new year's data without recording who was contacted mixes the prediction task with the effect of the intervention.
+- [ ] B. The relationship between features and outcomes can change once people act on flags, so the first model's accuracy may not carry over.
+- [ ] C. The first-year fit tells directly how much advisor contact will raise pass rates.
+- [ ] D. If the model is accurate on historical data, acting on it cannot change the process that generated the data.
+- [ ] E. Flagged students who pass after being contacted may reflect the success of the contact rather than errors in the model.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: Without records of the intervention, the new labels confound the original pattern with the response to contact.
+- B: Acting on predictions alters the process that produced the data the model learned from.
+- C: A model fit when nobody acted contains no information about what acting does.
+- D: Historical accuracy gives no protection against feedback from the model's own use.
+- E: A pass after contact is consistent with a helpful intervention, so it is not clear evidence the flag was wrong.
+
+**Source:** Decide what kind of question you are asking
+
+## MA-ch09.56
+
+A researcher wants to learn whether a job-training program causes higher wages. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A regression coefficient on participation equals the causal effect whenever R-squared is high.
+- [ ] B. Random assignment makes participation independent of pre-existing differences between people, in expectation.
+- [ ] C. An unmeasured variable that affects both participation and wages can bias the observational estimate.
+- [ ] D. Observational data can support a causal claim when the assumptions are stated and defended.
+- [ ] E. A very large observational dataset with many recorded covariates is enough for an unbiased causal estimate.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: A good fit measures prediction quality, not causal identification.
+- B: Randomization breaks the link between assignment and confounders.
+- C: An omitted common cause creates a spurious or distorted association.
+- D: Methods such as adjustment, instruments, and natural experiments work under explicit assumptions.
+- E: Size does not remove bias from unmeasured confounders or selection.
+
+**Source:** Decide what kind of question you are asking
+
+## MA-ch09.57
+
+An analyst asks a language model to help with a causal question about an observational dataset. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The analyst remains responsible for defending the assumptions they act on.
+- [ ] B. The model knows how the dataset was collected even if nobody has told it.
+- [ ] C. Fluent text about confounding is evidence that the model has identified the causal effect in this dataset.
+- [ ] D. The model can work out what follows under a causal structure the analyst stipulates.
+- [ ] E. The model can list candidate confounders drawn from patterns in the text it has seen.
+
+**Key:** A=T B=F C=F D=T E=T
+
+**Why:**
+
+- A: The person who acts on the conclusion must justify the causal assumptions.
+- B: Study design and data collection details come only from the people who hold them.
+- C: Fluency about causation is not identification of it in a particular dataset.
+- D: Computing consequences under a stated model is within reach, and the result is conditional on the stated structure.
+- E: Candidate confounders can be proposed from general knowledge and prompted for.
+
+**Source:** What is Claude's here, and what is yours
+
+## MA-ch09.58
+
+A team is changing a classifier that decides which messages to escalate to a human, with an AI coding assistant available. Check each statement about tasks that should stay with the accountable person. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Typing out the training loop.
+- [ ] B. Running the unit tests.
+- [ ] C. Asserting the causal assumptions the team will defend when acting on the result.
+- [ ] D. Deciding what "better" means for the task, such as how much a missed escalation costs relative to a false alarm.
+- [ ] E. Deciding whether the stakeholder's question is "what will the model say" or "what happens if we act."
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: Writing code is delegable as long as its output is checked by an independent route.
+- B: Executing tests is mechanical work; what stays with the person is judging whether the tests are enough.
+- C: Whoever acts on the conclusion must supply and defend the causal assumptions.
+- D: The objective expresses values about the task that the data cannot supply.
+- E: Choosing between a prediction question and an intervention question determines what evidence is relevant.
+
+**Source:** What is Claude's here, and what is yours
+
+## MA-ch09.59
+
+Before running any experiment that changes a system, a team writes down the objective, the held-out evaluation set, and the stopping rule. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Fixing the evaluation set before seeing results prevents choosing flattering test cases afterwards.
+- [ ] B. Extending training after a poor held-out result leaves the held-out set a clean test.
+- [ ] C. Pre-specifying helps only for experiments that involve training, not for prompt changes.
+- [ ] D. If the plan must change after a disappointing result, the held-out points already seen can still serve as an untouched test.
+- [ ] E. The data themselves determine what counts as "better."
+
+**Key:** A=T B=F C=F D=F E=F
+
+**Why:**
+
+- A: Choosing test cases after the fact lets the answer shape the question.
+- B: Adjusting the run in response to the held-out result makes that set part of the tuning.
+- C: Any change evaluated against evidence benefits from criteria written down before the result.
+- D: Points that have been seen and have influenced a decision are development data.
+- E: Data contain no opinion about the objective; people choose what to optimize.
+
+**Source:** The gate: say what should change before you change it
+
+## MA-ch09.60
+
+A test suite for a logistic-regression trainer checks only (1) that the average loss after training is lower than before and (2) that the learned weight is positive on positively correlated data. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A bug that accidentally includes held-out points in the training list would be caught by these two tests.
+- [ ] B. Passing both tests shows the optimizer behaves correctly for all datasets and rates.
+- [ ] C. Writing a deliberately wrong version is unnecessary if the tests pass on the correct implementation.
+- [ ] D. A test asserting the exact weight after one step at a stated rate, derived by hand, would catch an implementation that sums instead of averaging the gradient.
+- [ ] E. An implementation that sums instead of averaging the gradient would likely still pass both tests.
+
+**Key:** A=F B=F C=F D=T E=T
+
+**Why:**
+
+- A: Leakage changes what the evaluation means, not whether the loss fell or the weight is positive.
+- B: Two checks on one dataset say nothing about other data or rates.
+- C: Passing on correct code does not show the tests would fail on wrong code.
+- D: The summed version's first step is N times too large and would miss the hand-derived value.
+- E: A step that is too large can still lower the loss and still make the weight positive.
+
+**Source:** The gate: say what should change before you change it
+
+## MA-ch09.61
+
+An AI assistant writes a gradient function and, in the same session, writes a unit test that compares the function against the function's own earlier output. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A hand-derived expected value for one update provides a check that does not depend on the code.
+- [ ] B. When the hand value and the code disagree, the hand value should be changed to match the code.
+- [ ] C. When one author writes both the function and its test from the same understanding, a shared misreading is impossible.
+- [ ] D. A test that compares code to its own earlier output can pass even if both are wrong.
+- [ ] E. Agreement between the derivative and a finite-difference estimate shows that the objective matches the application's goal.
+
+**Key:** A=T B=F C=F D=T E=F
+
+**Why:**
+
+- A: An independent derivation can fail differently from the code.
+- B: The disagreement must be explained; adjusting the expected value to fit the code removes the check.
+- C: A single misunderstanding can corrupt both artifacts the same way.
+- D: The test measures consistency with itself, not correctness.
+- E: Both quantities describe the objective as coded; whether it is the right objective is a separate question.
+
+**Source:** Derive the first update

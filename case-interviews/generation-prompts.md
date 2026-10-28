@@ -1,6 +1,6 @@
 # Case-generation prompt templates
 
-Ten prompt templates for generating practice cases: 2 styles (interviewer-led = McKinsey, candidate-led = BCG) x 5 types (management, product management, healthcare, financial, marketing). Pasted by Bear on 2026-10-28; the text below is verbatim. Source project and licence not recorded (see Notes). Cleaned, ready-to-use versions are in `prompts/` (built by `scripts/build_case_prompts.py`); this file keeps the originals unchanged.
+Ten prompt templates for generating practice cases: 2 styles (interviewer-led = McKinsey, candidate-led = BCG) x 5 types (management, product management, healthcare, financial, marketing). Pasted by Bear on 2026-10-28; the text below is verbatim. Source project and licence not recorded (see Notes). Cleaned, ready-to-use versions are in [prompts.md](prompts.md) and [prompts.json](prompts.json) (built by `scripts/build_case_prompts.py`); this file keeps the originals unchanged.
 
 Placeholders: `{difficulty}` (complexity level) and `{user_text}` (the field or industry the user names). Square-bracket items such as `[Company Name]` are for the model to fill.
 

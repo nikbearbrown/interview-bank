@@ -2,1008 +2,992 @@
 
 ## ES-ch02.1
 
-The chapter opens with a source whose only sentence is "The color is blue." (identifier s1) and a response that says the fixture says red while citing s1. Explain why this response passes the validator, and what the chapter says the failure actually is.
+A company deploys a policy question-answering assistant that must answer only from supplied policy documents. Its monitoring dashboard shows that 98% of responses pass a validator: the reply is valid JSON, it has an answer string and a list of document identifiers, and every identifier names a document that was supplied. A manual spot check finds that roughly one answer in five misstates the policy it cites. Explain how both figures can be true at once, what the 98% actually measures, and what additional evaluation the team needs.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the source sentence for s1 says blue while the response claims red.
-2. Says the response is valid in form: well-shaped, nonblank answer, and a known identifier, so every implemented rule is satisfied.
-3. Says the validator's pass does not involve any comparison between the answer and the source's content.
-4. Notes that nothing crashed and the program returned exactly the result its rules required.
-5. Locates the failure in the distance between what the validator checks and what a reader might assume a green result means, not in an exotic model behavior.
+1. Explains that the validator checks structure and identifier membership only, so a well-formed answer that contradicts its cited document still passes.
+2. Says the 98% is a rate of structural and identifier compliance and should be named that way, not as accuracy or faithfulness.
+3. Points out that the validator never compares the content of the answer with the text of the cited document, so a valid address can sit next to a false claim.
+4. Proposes a content-level evaluation such as labeled reference answers, claim-by-claim review against sources, quote verification, entailment checks, or a calibrated judge model.
+5. Recommends reporting structural pass rate and support rate as separate figures, with a defined way to handle answers that cannot be judged.
 
-**Source:** Opening section (untitled introduction)
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.2
 
-The chapter reports a format-pass rate of one-third for its three constructed responses. Name the three responses, say which one is accepted, and explain why calling the result an accuracy score would misname it.
+Distinguish two questions a reviewer can ask about a citation in a generated answer: whether the cited source exists in the supplied collection, and whether that source supports the claim made. Explain how the two relate, give a concrete example in which the first is answered yes and the second no, and say who or what is suited to answer the second question and what limits apply to each candidate.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Identifies the three responses: a string that is not JSON, a response citing an unknown identifier, and a properly shaped response citing a known identifier.
-2. States that only the third is accepted, so the rate is one accepted out of three, 1/3.
-3. Notes that the accepted response contradicts the supplied sentence, so it is accepted without being correct.
-4. Explains that the rate measures acceptance by the format and identifier rules.
-5. Concludes that calling it an accuracy score would misname the measurement.
+1. States the first question as a registry or membership check and the second as a support or entailment relation between claim and source text.
+2. Explains that a yes to the first makes the second answerable but does not answer it.
+3. Gives a valid example, such as citing a real document whose text says something different from, or silent on, the claim.
+4. Names suitable reviewers for the second question, such as a human reading the cited text, a quote-matching check, or a validated model judge.
+5. Notes a limit on a model checking its own answer, namely that the generator reviewing itself is not independent, and that explanations are output to be evaluated.
 
-**Source:** Opening section (untitled introduction)
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.3
 
-The chapter calls its example "an executed, constructed counterexample, not a transcript of Claude making a mistake." Explain what that means and what the chapter says about keeping constructed strings and real model responses apart.
+A team is adding a feature that summarizes a customer's contract and cites the clauses it relies on. Design a layered evaluation for it. Describe at least four layers, what each layer can and cannot detect, and how you would use cheap and expensive checks together.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the three responses were constructed by hand and no model was called.
-2. States that the example was executed, so the validator's acceptance results are real results.
-3. States that a locally constructed string is useful test data.
-4. States that it becomes misleading only when presented as an observed model response.
-5. Says that when you later compare actual prompts with Claude Code, the real responses are saved separately from these fixtures.
+1. Describes a structural layer (parses, required fields, types) that is cheap and deterministic but blind to content.
+2. Describes an identifier or reference layer (cited clause exists) and notes that it does not show support.
+3. Describes a content-level layer such as verbatim quote matching, entailment checking, or a calibrated model judge, with its own error rate to be measured.
+4. Describes sampled human review of accepted answers as the independent check against which automated layers are calibrated.
+5. Explains the economics: run cheap layers on everything, spend expensive review where errors are costly, and report each layer's result separately.
 
-**Source:** Opening section (untitled introduction)
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.4
 
-Chapter 1 gave three jobs: conduct, check, and drive. Explain what each becomes in this chapter and what Claude is and is not good at in this setting.
+A developer proposes tuning a prompt for a data-extraction task until the output looks good, and then writing the acceptance tests from the finished output. Explain what is wrong with this order, what the alternative order is, and what each approach does to the meaning of a later pass rate.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Conduct: the gate becomes a contract plus an evaluation set, written for the consuming program before any prompt is tried.
-2. Check: becomes the discipline of naming what a pass covers and what it leaves out.
-3. Drive: becomes deciding what "acceptable" means for this consumer and this claim, which no schema holds.
-4. Says Claude is strong on the near side: given a complete contract it can write the validator, enumerate malformed inputs, draft prompt variants, and tabulate pass rates.
-5. Says whether an answer follows from the sentence it cites is a verification question that belongs on the far side.
+1. Explains that tests written after tuning encode whatever the prompt happened to produce, so the criterion follows the output.
+2. States the alternative: derive the required output and acceptance criteria from the consumer's needs first, then write and tune the prompt against them.
+3. Explains that a criterion fixed before outputs exist can fail an output, whereas one fitted afterward cannot.
+4. Says a pass rate under the post-hoc criterion measures agreement with the developer's own earlier judgment, not fitness for the consumer.
+5. Notes that incomplete specifications are silently filled by plausible choices, so completeness of the criterion is the requester's responsibility.
 
-**Source:** Opening section (untitled introduction)
+**Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.5
 
-A colleague proposes asking Claude whether its own answer follows from the sentence it cited, and treating a "yes" as verification. Using the chapter's argument, explain why this does not give an independent check and what kind of check the chapter wants.
+A colleague says: "I added 'Always obey the schema' to the system prompt, so we can skip output validation." Respond. Explain the difference between asking for a format and checking it, say what other mechanisms exist to improve compliance, and state what would still remain unchecked even if the format were guaranteed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says producing an answer and verifying it are different operations.
-2. Says asking the generator to vouch for itself is more of the first operation, not a second opinion.
-3. Says a check run by the system that produced the answer is not independent of it.
-4. States the part of the argument the chapter keeps: a trustworthy check fails differently from the thing it checks.
-5. Says choosing that check is a human decision, and that the book states its strongest version of the claim as a wager, not a proven fact.
+1. Explains that a prompt instruction is a request that can be ignored or misread, while a validator applies a deterministic accept or reject rule.
+2. Notes that compliance rates below 100% are common and only a check detects the failures that remain.
+3. Names other mechanisms, such as constrained or schema-guided decoding, examples in the prompt, or retry with the error message.
+4. States that even guaranteed structure leaves content unchecked: values can be false, unsupported, or evasive.
+5. Recommends validating at the boundary where the consuming program reads the output and measuring first-attempt compliance, not only final compliance.
 
-**Source:** Opening section (untitled introduction)
+**Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.6
 
-Explain why the chapter says the contract must be written before the prompt. What goes wrong if you tune the prompt until the output looks right, and what role does Claude's handling of incomplete specifications play?
+Two programs consume model output in the same company. Program P unpacks exactly three named fields and crashes on anything else. Program Q stores the whole object in a log for later exploratory analysis and benefits from extra fields the model volunteers. Should both use the same validator? Discuss the trade-off between closed key sets and tolerant key sets, give a recommendation for each program, and state who should decide.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the consumer's need is the only criterion that exists before an output does.
-2. Says that tuning first makes the contract become whatever the output happened to look like.
-3. Says that every later pass rate then measures agreement with your own habituation.
-4. Says Claude implements well against a complete specification but may quietly fill an incomplete one with something plausible instead of flagging the gap.
-5. Concludes that completeness is the human's job and the prompt is derived from the contract, not the other way around.
+1. Explains that a closed key set makes unexpected additions visible and protects consumers that assume a fixed shape.
+2. Explains that a tolerant key set accepts useful extra information and avoids rejecting otherwise good responses.
+3. Recommends strict key checking for P because extra fields cause crashes or silent misuse.
+4. Recommends tolerance (possibly with logging of unknown keys) for Q, or a differently configured validator for each consumer.
+5. Says the choice depends on the downstream job and should be made and recorded by the owner of the consumer, not defaulted from a convenient example.
 
 **Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.7
 
-The teaching contract accepts exactly two keys. A response contains answer, sources, and confidence, and all three values look reasonable. Predict the validator's result and discuss the trade-off, naming one consumer who finds the rule protective and one who finds it an obstacle.
+A grounded question-answering system must answer only from supplied documents. Its current output contract is an object with a nonblank answer and a nonempty list of supplied document identifiers. Users sometimes ask questions the documents do not answer. Explain what problem this contract creates, design a change that lets the system represent "insufficient evidence", and describe the consequences of your change for the validator, the tests, and the evaluation.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Predicts that the validator rejects the response because of the extra key.
-2. Explains that a consumer assuming a fixed shape finds the rule protective, because unexpected additions become visible instead of silently ignored.
-3. Explains that an exploratory analysis wanting extensible metadata finds the same rule an obstacle.
-4. States the trade-off as strict predictability versus accepting some useful objects, and that it cannot be called good or bad without naming the downstream job.
-5. Says this is a choice a schema cannot make for you, so you choose the contract for your consumer.
+1. Identifies that the contract forces every response to look like a supported assertion, so an honest non-answer is indistinguishable from a factual claim.
+2. Proposes an explicit representation such as a status or abstain field, a typed answer variant, or an allowed null answer with a reason.
+3. Explains that the validator must be changed (and the rules for sources when abstaining decided) and treated as a new contract version.
+4. Says tests must cover the new states, including a refusal that cites nothing and an attempt to abstain and assert at the same time.
+5. Notes that evaluation needs unanswerable questions and separate measures for correct abstention and wrongful abstention, and that cases used to motivate the redesign become development evidence.
 
 **Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.8
 
-A teammate says "I added 'always obey the schema' to the prompt, so we do not need to validate the output." Respond using the chapter's distinction between a request and a check.
+Read this validator.
+
+```python
+import json
+
+def ok(text, allowed):
+    try:
+        d = json.loads(text)
+    except ValueError:
+        return False
+    return (isinstance(d, dict) and set(d) == {"answer", "sources"}
+            and isinstance(d["answer"], str) and d["answer"].strip() != ""
+            and isinstance(d["sources"], list) and len(d["sources"]) > 0
+            and all(s in allowed for s in d["sources"]))
+```
+
+With allowed = {"a", "b"}, trace the inputs `not json`, `[1, 2]`, and `{"answer": "x", "sources": ["a", "c"]}`. For each, state the result, the first rule that decides it, and which later rules never run. Then name one input the function accepts that a careful reviewer might still reject.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the prompt requests behavior from the producer.
-2. Says the validator checks the returned object against executable conditions.
-3. Says a request can be ignored or misunderstood.
-4. Says the local check has a definite acceptance rule.
-5. Connects this to Chapter 1's point about the system prompt, one level up: a request is a hope and a check is a gate.
+1. For `not json`: json.loads raises, the except clause returns False, and no shape or field rule is evaluated.
+2. For `[1, 2]`: it parses, but isinstance(d, dict) is False, so the result is False and the short-circuiting and prevents key and field access.
+3. For the third input: it parses, is an object with the right keys, a nonblank string answer, and a nonempty list, but "c" is not in allowed, so the final all(...) rule rejects it.
+4. Notes that and-chaining with short-circuit evaluation is why order matters and why later rules never run once an earlier one fails.
+5. Gives an input that passes but may be wrong in content, such as {"answer": "x", "sources": ["a"]} where the answer contradicts the document labeled a, or a placeholder answer, and explains that nothing compares content.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** What each line of the validator promises
 
 ## ES-ch02.9
 
-The chapter gives a baseline request that asks for a JSON object with exactly two keys and a nonempty list of supplied source identifiers. Which parts of the request's intention does the validator enforce, which does it not, and why does the chapter want this asymmetry made visible now?
+A validator returns only True or False. Argue for and against this design, using a concrete scenario in which 40 of 200 responses were rejected. State what a richer return value would contain and what it would change about how the team could use the results.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the executable function enforces the output contract: exactly the two keys, a nonblank string answer, and a nonempty sources list of known identifiers.
-2. Says it knows which identifiers are allowed.
-3. Says it does not understand whether the answer follows from the contents of those sources.
-4. Says the asymmetry should be made visible before a passing response encourages you to forget it.
-5. Describes the baseline request as a proposal for an experiment, not a proven improvement.
+1. Gives the case for a Boolean: simple, easy to test, easy to aggregate into a pass rate.
+2. Gives the case against: it discards the reason for rejection, so a maintainer cannot see what to repair.
+3. Proposes returning a reason category, such as parse failure, wrong shape, missing or extra key, wrong type, or unknown identifier.
+4. Explains how tallying failures by category directs repair (for example truncation versus bad identifiers) and supports diagnosis.
+5. Notes that adding reasons need not change accept or reject decisions and that reporting counts by category is clearer than one rate.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** What each line of the validator promises
 
 ## ES-ch02.10
 
-Consider the constructed response {"answer":"The sources do not say.","sources":["s1"]}. What does the reference validator do with it, why, and why do the obvious fixes (a status field, "be accurate" in the prompt) not work? What should you do if you redesign the contract?
+A validator accepts a response only if it is a JSON object with exactly the keys answer and sources, answer is a nonblank string, sources is a nonempty list, and every entry of sources is a string in the allowed set. The test suite has these tests: a valid object, text that is not JSON, answer equal to the integer 1, sources equal to a single unknown identifier, and an object with an extra key. Three mutated copies of the validator are made: one changes "every entry" to "at least one entry", one removes the nonblank check on answer, and one removes the nonempty-list check. Predict which mutants the tests detect, explain why, and describe the tests you would add.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the validator accepts it.
-2. Explains it is accepted for the same reason the false claim was: it cannot tell an honest refusal from an assertion.
-3. Notes that the reference has no field for insufficient evidence.
-4. Explains that adding a status field fails because the validator rejects the extra key, and that "be accurate" in the prompt does not supply a refusal state.
-5. Says that whether a refusal is an acceptable answer, and how the consumer should see it, is a decision about the interface.
+1. States that none of the three mutants is detected by the existing five tests.
+2. Explains why for "at least one entry": the only unknown-identifier test has a single entry, which both versions reject.
+3. Explains that no test supplies a blank answer or an empty list, so removing those checks changes no outcome.
+4. Proposes tests: a list mixing known and unknown identifiers, a whitespace-only answer, and an empty sources list.
+5. Concludes that passing tests show only that the exercised behaviors work, and a larger test count is not coverage; each rule needs a test that fails if the rule is deleted.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** What each line of the validator promises
 
 ## ES-ch02.11
 
-The chapter says "none of this makes the design waterfall." Explain what it means by that, using the refusal finding, and say what you must record when a finding reopens an earlier decision.
+A pipeline produced 80 responses to a citation-grounded task. The validator rejected 12 as not JSON, 6 for unknown source identifiers and 2 for extra keys. A reviewer then randomly selected 30 of the accepted responses and found 24 supported by their sources and 6 contradicted. Compute the validator acceptance rate, the supported share among the reviewed answers, and an estimate of the end-to-end proportion of the 80 that are both accepted and supported. State the assumptions behind the estimate and write one accurate sentence for a report.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a finding such as the missing refusal state can reopen an earlier decision.
-2. Says reopening a decision does not make the process waterfall.
-3. Says the change must be recorded.
-4. Names a new contract version and new tests as part of the record.
-5. Says any case that guided the redesign counts as development evidence from then on.
+1. Computes 80 - 20 = 60 accepted, an acceptance rate of 60/80 = 75%.
+2. Computes the reviewed supported share as 24/30 = 80%.
+3. Estimates about 0.8 x 60 = 48 supported answers, or about 48/80 = 60% end to end.
+4. States assumptions: the reviewed sample is random from the accepted answers, rejected responses are counted as failures, and the estimate carries sampling uncertainty (a standard error of about 7 points on the 80%).
+5. Writes a report sentence that keeps the two measurements separate and scoped, rather than calling 75% accuracy.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.12
 
-Describe the "Consumer" and "Contract" lines of the gate for the teaching example. What must each say, who decided them, and how does the contract treat text outside the JSON object?
+A function computes a pass rate as accepted divided by total over a list of responses. Explain what the function should do when the list is empty, and why the obvious alternatives of returning 0 or returning 1 are poor choices. Relate your answer to how experiment reports are read.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The Consumer line is one sentence naming the program that reads the answer and what it does with it.
-2. For each line, you note who decided it: you, or a fixed requirement of the consumer.
-3. The contract allows exactly the keys answer and sources.
-4. The answer is a nonblank string, and sources is a nonempty list of strings, every one in the supplied identifier set.
-5. Text outside the JSON object is a rejection, not something to repair silently, and the validator returns a decision, not a diagnosis.
+1. Says a rate with a zero denominator is undefined and the function should raise an error or return an explicit undefined value.
+2. Explains that returning 0 can be read as a tested system that failed every case.
+3. Explains that returning 1 can be read as a tested system that passed every case.
+4. Notes that 0 divided by 0 raises an error in many languages and the explicit signal makes the problem visible rather than hiding it.
+5. Relates this to reporting: absence of evidence should not be disguised as a performance number, and a report must always give its denominator.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.13
 
-Describe the evaluation set the gate calls for and the rules governing the held-out list. Why must both lists be dated?
+A developer iterates on a prompt using 20 labelled questions. To keep an honest final test, they set aside 8 of the 20 as "held out". Over six rounds, they glance at the held-out failures each time to decide what to change, then report the final held-out score as independent evidence. Explain the problem and propose how to proceed from this point.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States five development questions and five held-out questions.
-2. States that both are listed and dated before any response is inspected.
-3. States that the held-out list is sealed: not shown to Claude.
-4. States that it is not used to revise the prompt until the revision is frozen.
-5. Says these decisions are written down before running anything.
+1. Defines the purpose of a held-out set: an estimate on cases that did not influence design decisions.
+2. Explains that using held-out failures to decide changes turns them into development evidence.
+3. Explains the resulting bias: the held-out score is optimistically inflated because the prompt was fitted to those cases.
+4. Proposes collecting or writing a fresh untouched set, or honestly relabeling and reporting the old one as development data.
+5. Recommends recording what was inspected and when, freezing the revision before measuring on untouched cases, and limiting how many times the final set is used.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.14
 
-Describe the evidence criterion the gate requires: its content, the outcomes it records, and when it must be written.
+You are asked to test whether adding three example input-output pairs to a prompt (few-shot prompting) improves a model's compliance with an output format and its faithfulness to supplied sources. Design the comparison. Cover what you hold fixed, what you change, how you split your cases, what you measure and how you record it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that for each question there is one sentence saying what "supported" means for it.
-2. Names supported and contradicted as recorded outcomes.
-3. Names "cannot be reviewed" as a third recorded outcome.
-4. Connects it to Computational Skepticism for AI: record pass, fail, or unknown against a criterion fixed before you read the output.
-5. Says it must be written before you know which prompt wins.
+1. Holds fixed everything except the examples: task wording, source material, model, settings and cases.
+2. Fixes development and held-out sets before looking at results and ensures the examples are not drawn from evaluation cases.
+3. States a hypothesis in advance, such as "examples will raise format compliance", and a criterion fixed beforehand.
+4. Measures format validity and source support as separate outcomes, with repeated runs to account for sampling variation.
+5. Records exact prompts, model identifier and date, raw responses, and failures as well as successes, and limits conclusions to the conditions tested.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.15
 
-The gate lists wrong versions your tests must catch and one wrong response they cannot. Name each of them and say where the uncatchable one is caught instead.
+A developer reports that prompt v2 beats prompt v1, 8 of 10 correct against 5 of 10. Between the runs they added examples, changed the model version, rewrote the instructions, and replaced the question set with an easier one. Explain why the comparison cannot support the conclusion that the examples helped, and describe a design that could.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names a validator that checks only that the keys exist.
-2. Names a validator that accepts a source list when any entry is known, where the contract says every entry.
-3. Names a validator that skips the nonblank check.
-4. Names the well-formed and wrong response, the color fixture, as the one no validator test will catch.
-5. Says your evidence column must catch the color fixture.
+1. Identifies confounding: several things changed at once, so the effect of any one cannot be separated.
+2. Notes that a different question set means the scores are not like-for-like, and easier questions raise scores independently.
+3. Notes that a model version change alone can change behavior.
+4. Describes a controlled comparison changing one identifiable feature with the same cases and settings.
+5. Adds that sampling noise on ten cases limits the conclusion and that a written change log makes attribution auditable.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.16
 
-For each held-out question the gate asks for a "what a failure looks like" sentence. What must the sentence describe, when must it be written, and what does it mean if you cannot write it?
+Prompt A passes 14 of 20 test cases and prompt B passes 17 of 20 on the same cases. Treating each case as an independent trial, the standard error of a proportion is sqrt(p(1-p)/n). Compute the standard error for each prompt and for their difference, compare the three-case gap with that noise, and explain what you would do to reach a trustworthy conclusion.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says it describes an answer that would pass the validator and fail the evidence criterion.
-2. Says it is written and dated before you see a response.
-3. Says that if you write it afterward you have described the output, not tested your understanding.
-4. Says that if you cannot write the sentence, you do not yet know what you are checking for.
-5. Says one such sentence is needed for every held-out question as part of the pass condition.
+1. Computes about 0.102 for A (p = 0.70) and about 0.080 for B (p = 0.85).
+2. Notes the standard error of the difference is about 0.13 (roughly sqrt(0.0105 + 0.0064)), so the 0.15 gap is only about one standard error.
+3. Concludes the data do not establish that B is better than A, since a gap of about one standard error is well within chance variation.
+4. Proposes more cases (on the order of a hundred or more per prompt for a gap of this size), or a paired comparison on the same cases with repeated runs.
+5. Says to report the numbers with their uncertainty and not to claim superiority, and that the comparison must also fix the other conditions.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.17
 
-State the gate's pass condition and say what the experiment may and may not claim once it is run.
+A teammate says that beginning every prompt with "You are an expert in the subject" improves answer quality. Design a test of this claim for a source-grounded question-answering task, and explain how you would report a positive or negative result without over-reading it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says every line of the contract must have a named test that fails if the line is deleted.
-2. Says both question lists must be dated.
-3. Says each held-out question must have its failure sentence.
-4. Says the experiment may claim acceptance by a stated validator of recorded responses plus a separate support judgment on the claims reviewed.
-5. Says it cannot claim that any answer is correct beyond those reviewed claims.
+1. Treats the claim as a hypothesis: same prompt with and without the line, with everything else fixed.
+2. Uses a fixed set of cases split into development and held-out portions, with the evidence criterion set in advance.
+3. Notes that the role line adds no new source passages and does not change a structural validator, so any effect must be measured on content.
+4. Repeats runs or uses enough cases to separate an effect from sampling variation.
+5. Reports the observed difference with its conditions (task, model, cases, criterion) and does not let the persona label stand in for evidence or generalize beyond those conditions.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.18
 
-How can Claude help sharpen the gate, and why can it not write the gate for you?
+A team asks the same model that wrote an answer to judge whether the answer is supported by the cited source, and treats a "yes" as verification. Explain why this is a weak check, what makes a check independent, and describe two stronger alternatives and one situation where a model judge is nevertheless reasonable.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says you can ask Claude for a malformed input your list lacks.
-2. Says you can ask Claude for a contract line your tests do not defend.
-3. Says Claude cannot write the gate without defeating its purpose.
-4. Says the gate is the criterion fixed before the output exists.
-5. Says a criterion drafted after the outputs arrive is a description of the outputs.
+1. Explains that the judgment is another generation by the same system and shares its blind spots, so it is not independent.
+2. Says that producing an answer and verifying it are different operations, and asking for a verdict is more generation, not a second opinion.
+3. Defines independence: a check that fails differently from the thing it checks.
+4. Names two stronger alternatives, such as quote matching against the source, human review of a sample, or a separately validated classifier.
+5. Describes a legitimate use of a model judge, namely one whose agreement with human labels on a sample has been measured, ideally from a different model family.
 
-**Source:** The gate: write the contract for the consumer first
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.19
 
-Trace the strings "not json" and {"answer":"x","sources":["missing"]} through validate() with allowed identifiers {"s1"}. For each, name the first boundary it fails and the rules that never ran.
+You will use a language model to grade open-ended answers. Describe how you would build confidence in this judge before trusting its scores, including the known biases to control for and how you would keep the judge's verdicts honest over time.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. For "not json": json.loads raises and the exception path returns False.
-2. For "not json": none of the dictionary or field checks runs.
-3. For the second string: parsing and the shape checks succeed.
-4. For the second string: it fails source membership because missing is not in the supplied identifier set.
-5. Notes that validate() returns only False in both cases, so the reviewer must name the reason by stopping at the first relevant boundary.
+1. Names the need to compare judge verdicts with human labels on a sample and report their agreement.
+2. Names position bias and addresses it by swapping presentation order and checking consistency.
+3. Names verbosity or length bias and self-preference bias as risks, and mitigates them by controls or by using a judge from another family.
+4. Specifies a clear rubric and criterion fixed in advance, with an explicit outcome for cases that cannot be determined.
+5. Plans ongoing monitoring, such as periodic human spot checks and rechecking when the judge model, prompt or data changes.
 
-**Source:** What each line of the validator promises
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.20
 
-List the obligations validate() imposes on the answer and sources fields, and for each give an input that violates it.
+For each of three tasks, choose a primary evaluation method (code-graded, model-graded or human-graded) and justify it: (1) checking that a reply is valid JSON with required keys; (2) scoring whether a summary preserves the key facts of an article; (3) deciding whether a medical-information answer is safe to show to patients. Then explain why combining methods is common.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The answer must be a string, so the integer 1 fails because the function does not coerce.
-2. The answer must be nonblank after strip(), so a whitespace-only answer fails.
-3. The sources field must be a list.
-4. The list must not be empty.
-5. Every entry must be a string in source_ids, and one valid identifier cannot compensate for another invalid entry.
+1. Chooses code-graded for the JSON check and justifies it as deterministic, cheap and fully specified.
+2. Chooses model-graded (with human calibration) or rubric-based human grading for summaries, because many wordings are correct and exact match fails.
+3. Chooses human (expert) review for the high-stakes medical case, possibly with automated screens in front.
+4. Notes the cost and speed differences among the methods.
+5. Explains that layering lets cheap checks run on everything and expensive ones target risk, with each result reported separately.
 
-**Source:** What each line of the validator promises
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.21
 
-The reference validator collapses every rejection into a Boolean False. Evaluate this design choice using the chapter's reasoning.
+Explain why people tend to trust fluent, well-formatted model answers more than they should, and how this affects the way automated checks are interpreted. Describe two practices that counter the effect when evaluating model output.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Calls it an intentional simplification worth judging.
-2. Gives the benefit: a Boolean is convenient for a pass rate and easy to test.
-3. Gives the cost: it tells a reviewer nothing about how to repair a response.
-4. Says a richer result naming the parse failure, key mismatch, wrong type, or unknown source is a reasonable extension to your own version, not a behavior of the reference.
-5. Says the absence of a message is not the absence of a reason, so for each failing fixture you stop at the first relevant boundary and name it, instead of saying the output was bad.
+1. States that fluency and correctness are independent properties; smooth text can be false.
+2. Explains that a green result from an automated check has a similar effect, appearing to settle a question it did not examine.
+3. Describes defining the failure condition in advance, before reading the outputs, as a counter-practice.
+4. Describes testing against evidence and recording outcomes as pass, fail or unknown rather than forcing a verdict.
+5. Notes the cost asymmetry: generating is cheap and verifying is expensive, so verification must be planned and budgeted.
 
-**Source:** What each line of the validator promises
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.22
 
-Describe the scratch-copy experiment the chapter proposes on the reference validator and what it shows about "the tests pass."
+A report on a prompt change says only: "The revised prompt achieved a higher pass rate." List the questions a careful reader would need answered before relying on that sentence, and rewrite the sentence so that it could be audited.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to predict the result first, then check.
-2. Says changing all to any in a scratch copy leaves all six tests passing.
-3. Says deleting the nonblank check leaves all six tests passing, as does deleting the nonempty-source check.
-4. Concludes that the contract promises three behaviors the lesson's tests never defend.
-5. Concludes that "the tests pass" means they pass for the behaviors they exercise, and that additional tests should target such a gap chosen by reason, not repeat the happy path.
+1. Asks which check defined a pass (structural validator, reference match, reviewed support) and what it does not cover.
+2. Asks how many cases and responses were involved, and how large the difference was relative to noise.
+3. Asks whether the cases were used while revising the prompt, and whether the same cases were used for both versions.
+4. Asks whether accepted responses remained supported, since a format gain can coincide with a content failure.
+5. Provides a rewritten sentence naming validator, cases, counts, model and date, and scoping the claim to those conditions.
 
-**Source:** What each line of the validator promises
+**Source:** What a pass rate leaves out
 
 ## ES-ch02.23
 
-Someone tells you that validate() "verifies source support." How do you respond using the chapter's argument?
+A single aggregate pass rate compresses information. Describe three things it hides or assumes, explain why each matters to a decision, and say what you would report in addition.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to ask them to point to the comparison between source content and answer content.
-2. Says they cannot, because source_ids supplies identifiers, not passages.
-3. Says the validator receives only the allowed identifier set, not the source sentence.
-4. Says membership in a registry and support for a proposition are different relations.
-5. Says the validator can reject an invented address such as missing but cannot decide whether the words attached to s1 support the answer.
+1. Notes it merges different failure types (for example unparseable output versus one wrong identifier) that call for different repairs.
+2. Notes it weights every case equally, ignoring that some questions or failures have much higher stakes.
+3. Notes it says nothing about completeness or relevance of passing answers, such as a short, evasive but well-formed reply.
+4. Notes it depends on the cases, criterion and sampling of the evaluation, so the number cannot be compared without them.
+5. Recommends reporting counts by failure category, any severity weighting justified in advance, the denominator, and separate content-level results.
 
-**Source:** What each line of the validator promises
+**Source:** What a pass rate leaves out
 
 ## ES-ch02.24
 
-The chapter says the review asks two distinct questions. State them, explain how they relate, and illustrate with the color fixture.
+An invoice-assistant evaluation reports 95 of 100 cases passing. Of the 5 failures, 3 are cosmetic (a typo in a free-text note field) and 2 report an invoice total that is ten times too large. Argue whether a severity-weighted score would be better, how you would choose the weights, and when they should be chosen.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the first question: does the referenced source exist in the supplied collection?
-2. States the second question: does that source support this particular claim?
-3. Says passing the first makes the second possible but does not answer it.
-4. Says an address can point to a real document while the accompanying summary misstates it, as when s1 is cited for red.
-5. Says the address remains useful because it gives the reviewer somewhere to look.
+1. Points out that the flat rate treats cosmetic and consequential failures as equal.
+2. Argues that weights express stakes, so a weighted or tiered report (for example zero tolerance for wrong totals) better reflects risk.
+3. Says weights are a policy decision to be made by whoever bears the cost of errors, with their reasoning written down.
+4. Says weights must be chosen before results are seen, to avoid tuning them to favor an outcome.
+5. Recommends also reporting the unweighted counts by category so the weighting can be inspected and challenged.
 
-**Source:** A source identifier is an address, not an argument
+**Source:** What a pass rate leaves out
 
 ## ES-ch02.25
 
-Why does the chapter say the color counterexample is stronger than a vague warning about hallucination, and does it show that the validator is broken?
+An evaluation harness receives a model reply wrapped in a Markdown code fence with an introductory sentence, and the strict JSON parser rejects it. An engineer proposes stripping the fence before scoring. Discuss whether to do this, what should be recorded, and who decides, covering both measurement integrity and the needs of the consuming program.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says we know which check is absent.
-2. Says we can trace why the response passes without speculating about model internals.
-3. Says the third response satisfies every implemented condition.
-4. Says the validator is not broken because it succeeds at enforcing its stated structural and identifier contract.
-5. Says the validator fails only if someone misrepresents that contract as a complete evidence check.
+1. Explains that scoring only the repaired text measures a different thing from the model's raw output.
+2. Says whether the consumer will tolerate or repair such replies is a contract decision made before measurement.
+3. Recommends preserving the original reply and recording any repair as a separate transformation.
+4. Suggests reporting both rates (strict, and with tolerant parsing) if both behaviors matter to the consumer.
+5. Notes that if repair is in production, it must be implemented in the pipeline and tested, and if a person or assistant did the repair, that should be recorded.
 
-**Source:** A source identifier is an address, not an argument
+**Source:** Ship It: an experiment another person can audit
 
 ## ES-ch02.26
 
-Who should answer the support question for a claim and its cited source? Discuss Claude's role, its limits, and what you should and should not ask for in an explanation.
+A team writes: "The model fails to produce valid JSON in 40% of cases", based on 25 strings the team wrote by hand to exercise its validator, 10 of which were malformed. Explain what is wrong, what claim the data support, and what experiment would support the original claim.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says Claude can be asked to set the two sentences side by side, and in a case this small you can verify the comparison at a glance.
-2. Says that if the generator is the only reviewer of its support, you have the first opinion run twice.
-3. Says a brief explanation with cited evidence makes the answer easier to inspect but is still output to evaluate.
-4. Says not to request hidden chain-of-thought or treat an articulate rationale as access to an authenticated internal process.
-5. Says what you need is a reviewable claim, the referenced material, and a short justification that can be checked against the material.
+1. Identifies that no model produced the strings, so the rate cannot describe any model's behavior.
+2. States that 40% reflects how many malformed items whoever built the set chose to include.
+3. States the supportable claim: the validator rejected 10 of the 25 constructed cases.
+4. Notes constructed cases are still valuable for testing that a validator catches specific defects.
+5. Describes the needed experiment: run the real model on a representative set of tasks, record raw responses with model, date and settings, and compute the rate with its denominator.
 
-**Source:** A source identifier is an address, not an argument
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.27
 
-Before running the three-response experiment you are told to write predictions. Give the predictions the chapter's analysis supports for the validator and for a reviewer holding the source sentence, and say how the third validator prediction should be reached.
+You have run an experiment comparing two prompts. The format validator accepted 4 of 12 baseline responses and 11 of 12 revised responses on the same twelve cases. You reviewed support claim by claim for 5 of the 11 accepted revised answers and found 4 supported and 1 contradicted. Nothing else was checked, on one model on one day. Write a short sign-off that states what was checked, how, what was not checked, and what you are not claiming, and explain your choice of verbs.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says predictions are written before reading the results, using the identifier set {"s1"}.
-2. Says the validator decision and the reviewer's judgment are predicted separately.
-3. Says the third validator prediction should be based on the function, not on whether the answer is true.
-4. Gives the validator sequence false, false, true.
-5. Gives the review sequence: cannot be reviewed, cannot be reviewed, contradicted by s1.
+1. States what was checked: validator decisions on the 24 recorded responses and a support review of 5 accepted revised answers.
+2. States how: the validator rules and the manual claim-by-claim comparison against the sources.
+3. States what was not checked: the support of the other six accepted revised answers, any baseline support review, other models, dates and wordings.
+4. States what is not being claimed: that format pass equals accuracy, that the revision is better in general, that unreviewed answers are supported, or that the one contradicted answer is an isolated case.
+5. Explains verb choice (computed, recorded, reviewed rather than established or proved) so the language matches the evidence, and treats an unfinished review as pending.
 
-**Source:** Work through the three-response experiment
+**Source:** Ship It: an experiment another person can audit
 
 ## ES-ch02.28
 
-Explain how pass_rate computes its result for the three-response fixture and what the denominator and the sample do and do not tell you.
+You are using an AI assistant to help build an evaluation for a source-grounded question-answering feature. Divide the work: say what you would delegate to the assistant, what you would keep, and why. Include at least one judgment that no output schema can hold.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says each accepted response contributes one and each rejected response contributes zero.
-2. Computes one acceptance among three, so 1/3, saved as 0.3333333333333333.
-3. Says the denominator is the number of supplied responses and the function does not know how they were selected.
-4. Says the three cases were constructed to expose three boundaries, are not a random sample, and no model was called to generate them.
-5. Concludes that one-third describes acceptance of this fixture set by this validator and estimates nothing about how often a real service will make these mistakes.
+1. Delegates drafting of test cases, implementing validators, enumerating malformed inputs and tabulating rates.
+2. Keeps the definition of acceptable for the consumer, since stakes and consumers are outside the assistant's view.
+3. Keeps the final support judgments or at least verifies them against the sources, because a check by the generating system is not independent.
+4. Names a judgment a schema cannot hold, such as whether an honest "the sources do not say" is acceptable, whether extra fields are tolerated, or what level of partial support passes.
+5. Explains that the person who bears the cost of a wrong accept should own the decision and sign off on the claim, and that the split should be visible in the record.
 
-**Source:** Work through the three-response experiment
+**Source:** The driver's seat: what counts as acceptable
 
 ## ES-ch02.29
 
-Why does pass_rate raise an error on an empty list of responses instead of returning 0 or 1?
+Many consequential settings in an output-validation project cannot be expressed as fields in a schema or checked by a validator. Name at least four such judgments, explain why a validator cannot make them, and explain how the decisions should be recorded.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that with no responses the function raises an error (ValueError).
-2. Explains that zero could be mistaken for a tested system that failed every case.
-3. Explains that one could be mistaken for perfect performance.
-4. Explains that an empty experiment has no denominator.
-5. Concludes that this makes absence of evidence harder to disguise as a performance number.
+1. Names whether extra fields are tolerated by the consumer.
+2. Names whether an honest abstention such as "the sources do not say" counts as acceptable.
+3. Names whether partially supported answers pass, or whether equal weighting of cases is appropriate when stakes differ.
+4. Names what "the same meaning" requires when a prompt is reworded, or a similar equivalence judgment.
+5. Explains that a validator enforces a decision once made but cannot make it, and the decision, its owner and its rationale should be written down before testing.
 
-**Source:** Work through the three-response experiment
+**Source:** The driver's seat: what counts as acceptable
 
 ## ES-ch02.30
 
-Reproduce the chapter's table for the three responses: for each, give the validate() result, the obligation failed or passed, and the support review. Then say how the report should treat the third row.
+A team wants to know whether its question-answering prompt is robust to rewording. Design a test using three paraphrases of one question. Say what must stay invariant, what may vary, what you will compare, and how to handle the results.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. For "not json": False, failed at parsing with no later rule run, and cannot be reviewed because there is no claim to compare.
-2. For the missing-identifier response: False, parsed and shaped correctly but failed source membership, and cannot be reviewed because the cited address resolves to nothing.
-3. For the red response: True, passed every implemented condition, and contradicted by s1, "The color is blue."
-4. Says "format accepted and evidence contradicted" is the expected report for the third row, not an inconsistent one.
-5. Says not to invent one numeric evidence score to make the table symmetrical; decide how unsupported, contradicted, and cannot-be-reviewed results are represented first.
+1. Specifies that paraphrases keep every fact and requirement fixed, changing only wording.
+2. Decides in advance what must remain invariant (facts, constraints, structure of the answer) and what may vary (tone, organization, phrasing).
+3. Compares format validity, claim content and source support as separate dimensions.
+4. Notes that different wording in an answer is not automatically a failure, and that a change in only one dimension is a different finding from a change in claims.
+5. Notes that if the paraphrase results are used to revise the prompt, those paraphrases become development evidence and a new untouched check is needed.
 
-**Source:** Work through the three-response experiment
+**Source:** Computational Skepticism
 
 ## ES-ch02.31
 
-Explain the fluency trap and how it applies to a True from validate(), including the cost asymmetry between the validator and the support review.
+An agent that can modify files returns a tool call {"tool": "delete_file", "path": "/data/reports"} which passes validation against the tool-call schema. Explain why passing the schema does not make the action acceptable, what controls should surround execution, and how the change from "text" to "action" alters what an evaluation must cover.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Defines the trap: the more fluently an output presents, the more confident you become in it and then in your own evaluation of it.
-2. Says form and content are independent.
-3. Says a True is a verdict in the shape of a settled question.
-4. Gives the defense: define the failure condition before you read the output, test against evidence, and record pass, fail, or unknown.
-5. Says the validator is the cheap check and the support review the expensive one, and the risk is reporting the cheap green as if it were the expensive one's.
+1. Explains that schema validity establishes shape and types only and says nothing about whether the action is permitted or wise.
+2. Names authorization controls enforced outside the model: permissions, allowlists, least privilege, scoped credentials.
+3. Names human approval or confirmation for destructive or irreversible actions, and dry-run or reversible operations.
+4. Explains that evaluation must now include the consequence of acting, such as tests of what could happen if the call is executed.
+5. Notes that logs and an audit trail should record the requested and the executed action.
 
-**Source:** Work through the three-response experiment
+**Source:** From acceptable text to consequential action
 
 ## ES-ch02.32
 
-You replace the constructed strings with real Claude responses. What stays the same, what changes, and what must you preserve?
+You give an AI coding assistant a written contract and a list of tests, but not your own implementation, and ask it to write a validator. Describe how you would evaluate what it returns, including how you would find weaknesses in your own tests, and why you would write a baseline yourself first.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the same calculation applies.
-2. Says the provenance changes.
-3. Names what to preserve: exact prompts, source materials, interface, model label, and date.
-4. Says a fixture evaluation demonstrates validator behavior.
-5. Says a recorded model experiment examines returned outputs under its recorded conditions, and that both must stay distinguishable in the artifact.
+1. Runs your own tests on the assistant's code rather than relying on its tests.
+2. Treats a failing test as possibly revealing a gap in the contract or tests, not only a bug in the code.
+3. Compares behaviors against your baseline, looking for boundaries it handled that you missed or ignored.
+4. Asks for plausible-but-wrong implementations and checks whether the tests catch each one.
+5. Explains that building a baseline first gives an independent reference and means you can explain and audit the logic.
 
-**Source:** Work through the three-response experiment
+**Source:** Use It: conduct Claude Code against your gate
 
 ## ES-ch02.33
 
-The lesson compares a baseline prompt and a few-shot revision on five development questions with five questions held out. What does this design establish, what does it not, and how should the revision be framed and varied?
+You must judge whether model answers are "supported" by supplied sources. Explain why the definition of supported, including what happens when the sources are insufficient, should be fixed before reading any answers, what outcomes the criterion should allow, and what can go wrong otherwise.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says it is a manageable classroom experiment.
-2. Says ten questions do not establish broad reliability.
-3. Says a fixed evaluation set is what makes an improvement measurable, since without one "better" is a feeling.
-4. Says the revision is a hypothesis: predict a specific failure it might address, and treat the idea that examples will help as a testable proposal rather than a result.
-5. Says the revision should differ in a way you can describe, because changing examples, task, source material, persona, and questions at once makes any difference hard to attribute.
+1. Explains that a criterion defined after seeing outputs can drift to favor the preferred outcome.
+2. Defines supported precisely, for example each factual claim entailed by the cited passages.
+3. Allows three outcomes: supported, contradicted, and cannot be determined, and does not count unknowns as passes.
+4. Specifies handling for partial support and for answers that decline to answer.
+5. Recommends independent annotators or a calibration check, and recording agreement.
 
-**Source:** A prompt revision is a hypothesis
+**Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.34
 
-Scenario: a developer tunes a prompt over several rounds, looking at the held-out questions each time to decide what to change, and then reports the held-out score as independent evidence. Using the chapter, explain the problem and a proper way to proceed.
+For each held-out question, a team writes in advance one sentence describing a response that would pass the structural validator and still fail the evidence criterion. Explain the purpose of this practice, give two example sentences for a question about a company's refund policy, and say what it means if a team cannot write them.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a held-out case that has guided a choice has changed its role and is development evidence now.
-2. Says this is bookkeeping, not a moral failing.
-3. Says the change should be recorded.
-4. Says that if another untouched check is needed, a new evaluation should be designed.
-5. Says the old cases must not be relabeled to keep calling the final score independent.
+1. Explains the purpose: forces thought about how the structural check could be satisfied while the content is wrong.
+2. Explains that it must be written before seeing responses, otherwise it only describes the output.
+3. Gives a valid example such as a correctly formed answer citing the refund document but stating a wrong time window.
+4. Gives a second valid example such as a correctly formed answer that asserts a detail (payment method) not in the document.
+5. Says that inability to write such sentences suggests the evidence criterion is not understood and the evaluation is not ready.
 
-**Source:** A prompt revision is a hypothesis
+**Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.35
 
-Why does the chapter ask you to preserve development failures and to specify the evidence criterion before you see which prompt performs better?
+About 4% of a service's JSON replies fail to parse. Inspection shows each failing reply stops partway through a list, and the API reports that generation ended because the maximum output length was reached. Diagnose the problem, propose remedies, and explain how you would instrument the pipeline so the cause is visible.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to preserve development failures rather than showing only the final success.
-2. Says that otherwise you may tighten or relax what a pass means to favor the output you prefer.
-3. Notes that the executable format rule is one fixed criterion.
-4. Says the support review needs an equally explicit question, such as whether each stated claim is supported by the supplied material.
-5. Says the support criterion needs a documented way to handle insufficient evidence.
+1. Diagnoses truncation by the output-length limit rather than a failure to understand the format.
+2. Notes that rewording the format instructions would not address this cause.
+3. Proposes raising the output limit, requesting shorter answers, or restructuring the task into smaller outputs.
+4. Proposes recording the stop reason with each response and classifying parse failures by cause.
+5. Adds that failures should be reported by category, and that truncated replies must not be silently repaired and counted as passes.
 
-**Source:** A prompt revision is a hypothesis
+**Source:** What each line of the validator promises
 
 ## ES-ch02.36
 
-A colleague reports that adding "You are an expert" made answers better. How should the claim be handled according to the chapter?
+A pipeline validates each response and, on failure, resends the request with the error message appended, up to two more times. Out of 100 requests, 60 pass on the first attempt, 25 of the 40 failures pass on a retry, and 15 still fail. Compute the first-attempt and final pass rates, explain how each should be used, and discuss the costs and risks of retry loops.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a persona is a hypothesis to test.
-2. Says it adds no supporting passage to the source collection.
-3. Says it changes none of the validator's checks.
-4. Says that if it helps on your cases, you describe the observed difference and the conditions.
-5. Says the role label must not certify the answer before the evidence review begins.
+1. Computes the first-attempt rate of 60% and the final rate of 85%.
+2. Explains the first-attempt rate describes how well the prompt elicits compliant output, while the final rate describes the system's delivered behavior.
+3. Notes retries add cost and latency and may need a bounded number of attempts.
+4. Notes that passing after a retry is still only a structural pass and says nothing about whether the content is supported.
+5. Recommends reporting both rates and the failure categories, and examining the 15 persistent failures.
 
-**Source:** A prompt revision is a hypothesis
+**Source:** What a pass rate leaves out
 
 ## ES-ch02.37
 
-What can Claude Code do for the experiment, what four items must you keep visibly separate, and how should you label an experiment you have not run?
+Compare three ways of getting structured output from a model: asking in the prompt, using a provider's JSON mode, and using schema-constrained decoding. Explain what each guarantees, what none of them guarantees, and why a validator and a content evaluation are still needed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says Claude Code can organize the experiment, run your local validator, draft candidate prompts, and challenge your interpretation.
-2. Names the proposed prompt as one of the four items.
-3. Names the actual returned text and the executable acceptance result as two more.
-4. Names your evidence judgment as the fourth.
-5. Says an unrun comparison should be labeled a proposed experiment, because a complete-looking table with invented outputs is worse than an honest plan.
+1. Says prompting guarantees nothing; the model may ignore or misread the format request.
+2. Says JSON mode guarantees syntactically valid JSON but not the required keys or types.
+3. Says schema-constrained decoding guarantees conformance to the schema's structure and types.
+4. Says none guarantees truth or support: a correctly typed field can hold a false claim, and rules comparing a field to external material fall outside a schema.
+5. Explains that local validation covers rules and versions the provider does not enforce, and held-out evaluation measures content quality.
 
-**Source:** A prompt revision is a hypothesis
+**Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.38
 
-A report says only "The revised prompt achieved a higher pass rate." List the questions the chapter says a reader would need answered before using that number.
+A developer runs a prompt once at temperature 1.0 on fifty questions and reports 46 correct. Explain what is missing from that report, why a single run can mislead when comparing prompts, and how to design runs to separate prompt effects from sampling variation.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Asks which validator produced it.
-2. Asks which cases and how many responses were used.
-3. Asks whether the cases were used during revision.
-4. Asks whether the accepted responses remained supported.
-5. Asks whether a formatting improvement coincided with an evidence failure.
+1. Notes that sampling at nonzero temperature makes outputs vary from run to run.
+2. Notes that a single run cannot reveal how much of a score is luck.
+3. Proposes several repeated runs per prompt and reporting the spread, not just a mean.
+4. Notes that temperature zero reduces but does not guarantee identical outputs on hosted systems.
+5. Recommends recording sampling settings and model identifier and using enough cases that the difference exceeds the noise.
 
-**Source:** What a pass rate leaves out
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.39
 
-Explain three things a single pass rate compresses or assumes: failure categories, weighting, and completeness.
+You are assembling the evaluation cases for a document-grounded question-answering feature. Describe the kinds of cases you would include, how you would divide them, and what each kind tells you. Explain how the composition of the set changes what the pass rate means.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a non-JSON response and a response with one unknown source identifier both contribute zero, though their repairs differ.
-2. Says counting failures is useful for summary, while preserving categories is useful for diagnosis, and the experiment record can keep the detail the function does not return.
-3. Says every response is weighted equally, and the reference has no notion of which question or claim matters more.
-4. Says equal weighting is simple and transparent but not a discovered fact, and another policy should be justified openly instead of hidden in the aggregate.
-5. Says a format pass does not establish completeness, since a nonblank answer can be short, irrelevant, or evasive.
+1. Includes answerable questions of varied difficulty and phrasing drawn from realistic usage.
+2. Includes unanswerable questions to test abstention instead of fabrication.
+3. Includes adversarial or boundary cases (conflicting passages, near-miss wording, malformed inputs) designed to expose specific failures.
+4. Divides cases into development and held-out sets before looking at outputs, with the split recorded.
+5. Explains that the rate depends on the mix: easy or hand-picked cases inflate it, extreme cases deflate it, and only a representative sample supports claims about real usage.
 
-**Source:** What a pass rate leaves out
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.40
 
-What is the chapter's practical test for whether a reported number is meaningful, and what does it call the chapter's strongest demonstration?
+A grounded system answers 42 of 50 answerable questions correctly, wrongly abstains on 5 and answers 3 incorrectly. On 25 unanswerable questions it abstains on 20 and fabricates answers to 5. Compute the relevant rates and explain why a single overall figure is a poor summary for this system.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the test: could a reader reconstruct how the reported number was produced?
-2. Says that if so, the statistic has a mechanical meaning even if its scope is narrow.
-3. Says that if not, the number may be functioning as decoration.
-4. Says none of this is a reason to abandon the check; name it accurately and pair it with the review the task needs.
-5. Names the strongest demonstration as a correctly interpreted mixed result: two known failures rejected, one semantically false claim accepted, and all three outcomes explained.
+1. Computes 84% accuracy on answerable questions (with 10% wrongful abstention and 6% wrong answers).
+2. Computes 80% correct abstention (20% fabrication) on unanswerable questions.
+3. Computes the overall correct behavior as 62 of 75, about 83%.
+4. Explains that the overall figure hides the 20% fabrication rate on unanswerable questions, the failure users may care about most.
+5. Recommends reporting separate rates for the categories (answerable accuracy, wrongful abstention, correct abstention, fabrication) and weighting by consequence.
 
 **Source:** What a pass rate leaves out
 
 ## ES-ch02.41
 
-Describe how the chapter wants you to build your first validator and why it should be done before consulting the reference or Claude.
+A model answer states two claims: "Employees may carry over five vacation days" and "Unused days are paid out when an employee leaves." It cites one policy document, which supports the first claim and says nothing about payouts. Explain how to judge this answer, why a single correct citation is not enough, and how a team should decide whether partially supported answers pass.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to write it from the stated contract, not from the reference.
-2. Says to make the parsing boundary explicit and decide how a failure will be represented before implementing the shape, answer, and identifier checks.
-3. Says not to begin with a framework or another model call.
-4. Says the standard-library version is short enough to explain completely, and that explanation is the capability being built.
-5. Says your version records what you understood before Claude touched anything and is the instrument for measuring Claude's version.
+1. Decomposes the answer into separate claims and compares each with the cited passage.
+2. Concludes the first claim is supported and the second is unsupported, so the answer is partly supported.
+3. Explains that topical relevance or a valid citation does not establish entailment of every claim.
+4. Explains that whether partial support passes is a policy decision that depends on the consumer and the cost of an unsupported claim.
+5. Recommends recording the decision rule in advance and reporting counts of fully, partly, and unsupported answers.
 
-**Source:** Build It: your validator is the baseline
+**Source:** Ship It: an experiment another person can audit
 
 ## ES-ch02.42
 
-How should you extend the six lesson tests, and what must you do to show that a new test is meaningful?
+To make answers easier to audit, a team asks a model to include a short justification quoting the supporting text from the source. Explain what this makes possible, what it does not guarantee, and how you would treat the justification during evaluation. Address the question of whether a fluent rationale reveals how the model actually reached its answer.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to read the six lesson tests before the reference and predict each result.
-2. Says to add tests that defend the lines the six leave open.
-3. Says to state the defect each test exposes.
-4. Says to state one different defect that could still survive it, and to prove the test works by running it against a scratch copy with that line removed.
-5. Says a larger test count is not coverage.
+1. Explains that a quoted span can be checked mechanically for verbatim presence in the source and gives a reviewer a place to look.
+2. Explains that a genuine quote can still be irrelevant, out of context, or not entailing the claim.
+3. Treats the justification as output to be evaluated, not as evidence.
+4. States that a fluent rationale is generated text and is not a reliable account of the process that produced the answer.
+5. Recommends requiring a reviewable claim, the referenced material and a short justification that can be checked against that material.
 
-**Source:** Build It: your validator is the baseline
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.43
 
-Your own validator rejects the "valid but unsupported" color-fixture response. What does the chapter tell you to do and conclude, and how should an extension such as a status field be handled?
+A team's prompt-tuning log consists of entries such as "improved prompt" and "v3, better". Explain why this is inadequate, what a useful log entry contains, and what else should be preserved so another person can reconstruct and audit the experiment.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to inspect why it was rejected.
-2. Says perhaps you accidentally added a semantic rule, or perhaps the response's structure does not match the contract.
-3. Says the goal is to distinguish an added check from a mistaken explanation of the existing one, not to force every implementation to share the reference's limits forever.
-4. Says an extended interface with a status field or diagnostic object should be a separate, tested version, documenting benefit and migration cost.
-5. Says you must not modify the reference and then cite its old tests as validating the new behavior.
+1. Explains that vague entries do not say what changed, so effects cannot be attributed.
+2. States that each entry names the specific instruction, example or boundary changed and why it was expected to matter.
+3. Includes what the results on the development cases showed, including failures.
+4. Preserves exact prompts, source material, model identifier, settings, date, and raw responses before any edits.
+5. Keeps the baseline intact, separates constructed test strings from real model outputs, and records any assistance or repair as a transformation.
 
-**Source:** Build It: your validator is the baseline
+**Source:** Ship It: an experiment another person can audit
 
 ## ES-ch02.44
 
-Describe what you hand Claude Code in the Use It exercise and what three things you do with the result.
+A prompt revision does not improve the pass rate on the development set, and some engineers want to leave it out of the report. Argue for or against omitting it, and explain what a well-documented negative result contributes.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says you give it the gate, meaning the contract, the test list, and the fixtures, and not your validator.
-2. Says you run your tests on what it returns yourself.
-3. Says a failing test is often a gap in your gate, because Claude had only what you wrote.
-4. Says to compare its validator with your baseline and name one difference in behavior.
-5. Says to ask Claude for three plausible-but-wrong validators and run your tests against them; a survivor is a hole in your gate, and whether your tests are enough cannot be judged by the system they are testing.
+1. Argues that omitting it creates a biased picture of what was tried and what works.
+2. Explains that a negative result tells others what not to repeat and narrows the hypothesis space.
+3. Notes that failures show remaining risks and failure modes.
+4. Explains that a complete trail supports credibility of the reported successes.
+5. Recommends reporting the change, the hypothesis, the cases, the results and an honest scope for the conclusion.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.45
 
-Describe how you run and review the prompt comparison in Use It, from the questions given to Claude through to the held-out questions.
+A grader marks a free-form summary correct only if it exactly equals a reference summary. Explain why this is a poor grader for summaries, in what cases exact matching is the right choice, and describe two better ways to score summaries along with how you would check them.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to give Claude the baseline prompt and the few-shot revision on the same five development questions.
-2. Says to ask for a short explanation and cited evidence, not hidden chain-of-thought.
-3. Says to save failures as well as successes.
-4. Says to run your validator on every response and then do the support review yourself, claim by claim, against the source text, using the criterion you wrote in the gate.
-5. Says to reveal the held-out questions only when your revision is frozen, and to record that you did.
+1. Explains that many different wordings express the same content, so exact match scores correct paraphrases as errors.
+2. Gives cases where exact match fits: classification labels, numbers, IDs, or any output with a single acceptable string.
+3. Describes rubric-based scoring by humans against fixed criteria.
+4. Describes model-graded scoring against a rubric, or semantic similarity methods, with their limits.
+5. Describes checking graders against human labels and measuring agreement before trusting scores.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.46
 
-After writing your explanation of the results, you ask Claude which claim in it is stronger than the executed check. How should you treat the answer, and what must you preserve from the session?
+Two reviewers independently label 50 answers as supported or contradicted against their sources. Reviewer 1 marks 35 supported and Reviewer 2 marks 34 supported. They both mark 30 supported, and both mark 11 contradicted. Compute the raw agreement and Cohen's kappa (observed agreement minus chance agreement, divided by one minus chance agreement). Interpret the result and explain what the team should do next.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the purpose is to find a claim in your explanation that is stronger than the executed check.
-2. Says you inspect Claude's criticism yourself.
-3. Says an AI reviewer can surface a useful issue.
-4. Says its agreement is not a second source for the sentence in the fixture.
-5. Says to preserve the actual transcript (prompts, plan, diff, commands, outputs, date, displayed model label) and to record a failed or unrun session rather than substituting a fixture.
+1. Computes observed agreement as (30 + 11) / 50 = 0.82.
+2. Computes chance agreement as 0.70 x 0.68 + 0.30 x 0.32 = 0.572.
+3. Computes kappa as (0.82 - 0.572) / (1 - 0.572), about 0.58.
+4. Interprets this as moderate agreement, noting raw agreement overstates reliability because much agreement is expected by chance.
+5. Recommends reviewing the 9 disagreements to find ambiguity in the criterion, sharpening it, or using adjudication, and then relabeling.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.47
 
-Claude's reply arrives wrapped in a code fence and introduced by a sentence, so the strict contract fails. How should this be handled in the experiment record, and whose decision is whether to tolerate such replies?
+A validator must ensure that a field called count is an integer, that a field called answer is a nonblank string, and that the reply is a single JSON object with no duplicate keys. Using Python's json.loads and isinstance, list at least four pitfalls an implementer should anticipate, and say how to handle each.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the text wrapped in a code fence or introduced by a sentence fails json.loads.
-2. Says to preserve each response before editing or repairing it.
-3. Says not to remove the prose and score the repaired string as though it arrived that way.
-4. Says to record the original and the repaired version with their roles separated, and to record Claude's help with the repair as a transformation, not as part of the original run.
-5. Says whether the consumer should tolerate such replies is a contract decision made in the gate, not a convenience to grant after the fact.
+1. Notes that bool is a subclass of int in Python, so true passes isinstance(value, int) unless bool is excluded explicitly.
+2. Notes that json.loads accepts NaN and Infinity by default and that floats such as 3.0 are not integers.
+3. Notes that duplicate keys are silently resolved (the last wins) and need object_pairs_hook to detect.
+4. Notes that a parsed value may not be an object at all (list, string, number), so the shape check must precede indexing, and the validator should return a rejection rather than raise.
+5. Notes whitespace-only strings pass a plain truthiness check unless stripped, and that each pitfall needs its own test.
 
-**Source:** Ship It: an experiment another person can audit
+**Source:** What each line of the validator promises
 
 ## ES-ch02.48
 
-What does the Ship It artifact contain, and what should its change log say?
+On 400 responses, a structural validator accepted 300 and rejected 100. A reviewer then judged content on all 400. Among the 300 accepted, 36 were unsupported by their sources. Among the 100 rejected, 15 would have been supported had the format been acceptable. Compute: the share of accepted responses that were supported, the total number of unsupported responses, the share of unsupported responses that the validator caught, and the share of rejections that were of unsupported content. Say what these numbers imply about the validator's usefulness.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the contents: baseline and revised prompts, development and held-out cases, raw responses, validation results, and a change log.
-2. Says its purpose is to let another reader reconstruct both the mechanics and your decisions.
-3. Says to keep the baseline intact and name the change in the next version.
-4. Says "Improved prompt" is not a change log; state which instruction, example, or boundary changed, why you expected it to matter, and what the development results showed.
-5. Says a revision that did not help is still an informative result when the trail is intact.
+1. Computes 264 of 300 accepted responses supported, or 88%.
+2. Computes 36 + 85 = 121 unsupported responses in total.
+3. Computes that the validator rejected 85 of the 121 unsupported responses, about 70%.
+4. Computes that 85 of the 100 rejections (85%) were of unsupported content, and 36 of 121 unsupported responses (about 30%) passed.
+5. Concludes the validator provides real but incomplete protection: it filters most bad content incidentally, yet cannot be treated as a content check, and it also rejects some good content.
 
-**Source:** Ship It: an experiment another person can audit
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.49
 
-Describe the integrated evidence review and the kind of limited conclusion the chapter suggests you write.
+A team cannot afford to review every accepted answer by hand, so it will review a random sample. It expects roughly 10% of accepted answers to be unsupported and wants to estimate the true rate to within plus or minus 3 percentage points at about 95% confidence. Using n = z^2 p(1-p) / e^2 with z = 1.96, compute the sample size, explain what each term means, and discuss how the plan changes if the team samples only the answers that look doubtful.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to take one accepted answer and compare each meaningful claim with the supplied source material.
-2. Says to mark unsupported content separately from formatting status.
-3. Notes that in a real task a passage may support only part of an answer.
-4. Says one correct citation must not stand in for a claim-by-claim explanation.
-5. Gives an example conclusion: a revision changed format acceptance on the recorded cases while leaving a particular source-support failure unresolved, which tells the next person what to reuse and what remains risky.
+1. Computes n = 1.96^2 x 0.1 x 0.9 / 0.03^2, about 385.
+2. Explains p as the expected proportion, e as the margin of error, and z as the confidence multiplier.
+3. Notes that with p near 0.5 the required sample is larger (about 1,068 for +-3 points) and that the formula assumes random sampling.
+4. Explains that sampling only doubtful answers gives a biased estimate of the overall rate, though it may be useful for finding failure modes.
+5. Notes that a smaller sample gives a wider interval, so results must be reported with their uncertainty and the sampling method.
 
-**Source:** Ship It: an experiment another person can audit
+**Source:** What a pass rate leaves out
 
 ## ES-ch02.50
 
-Describe the sign-off template: its fields, what the Not checked and Not claiming lines might contain, and why it should be written from your record rather than from Claude's draft.
+A team optimizes its prompt for two weeks until a format validator accepts all 30 of its test cases, and then reports that output quality is excellent. Explain what is wrong with the inference, using the ideas of overfitting and of a metric becoming a target. Propose how to obtain a trustworthy estimate.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the fields: Checked, How, Not checked, Not claiming, and Signed or withheld.
-2. Gives example Not checked items such as held-out cases you tuned against or claims in answers you did not review.
-3. Gives example Not claiming items such as that the format pass rate measures accuracy or that the revision is better in general.
-4. Says Claude can draft the words quickly and the draft will be fluent, so you write from your record.
-5. Says this is a template, not a signature.
+1. Explains that cases used for iteration will look good by construction, so 100% on them is not evidence for new inputs.
+2. Explains that optimizing against a fixed validator can satisfy the validator without satisfying the underlying goal.
+3. States the principle that a measure that becomes a target ceases to be a good measure.
+4. Notes that the validator says nothing about content support or relevance.
+5. Proposes evaluating on untouched cases, adding content-level checks, and reporting the estimate with its scope and uncertainty.
 
-**Source:** Ship It: an experiment another person can audit
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.51
 
-Explain how to choose the verbs in a sign-off and what to do if the support review is unfinished.
+A vendor announces that a newer model version is "better" than the previous one for your document question-answering task. Describe how you would test this claim for your own use, including what you hold fixed, which evidence criterion you use, and how you present the result.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the rate was computed and the decisions were recorded.
-2. Says support was reviewed for the claims you reviewed.
-3. Says nothing was established beyond that.
-4. Says an unfinished support review should be written as pending.
-5. Says a missing review silently replaced by an automated pass is the failure the chapter is about, and withholding your name is an honest result.
+1. Runs both versions on the same cases, prompts, source materials and settings.
+2. Fixes the evidence criterion and the split between development and held-out cases before looking at outputs.
+3. Measures format compliance and source support separately, plus abstention behavior on unanswerable questions.
+4. Repeats runs or uses enough cases to distinguish a difference from sampling variation.
+5. Records model identifiers and dates, reports failures by category, and limits the conclusion to the task and conditions tested.
 
-**Source:** Ship It: an experiment another person can audit
+**Source:** A prompt revision is a hypothesis
 
 ## ES-ch02.52
 
-Name at least three judgments in this chapter that no schema field can hold, and explain why the validator and Claude cannot settle them.
+A prompt passes all 30 of 30 test cases. A manager concludes that the failure rate is zero. Explain why zero failures in 30 trials does not mean a failure rate of zero, compute an approximate 95% upper bound on the failure rate using the rule of three (3 divided by n), and discuss what else the manager needs before accepting reliability.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names at least three of: whether the consumer tolerates extra keys; whether "the sources do not say" is acceptable; whether one correct citation plus one unsupported claim passes; whether equal weighting is right; what "the same meaning" requires.
-2. Says the validator can enforce a decision once made but has no way to make it.
-3. Says Claude can lay out the options and the consequences of each quickly.
-4. Says Claude lacks the consumer, the stakes, and a person who bears the cost of a wrongly accepted answer.
-5. Says none of that is in the files Claude reads unless you put it there.
+1. Explains that a finite sample can show no failures even if a nonzero failure rate exists.
+2. Computes the rule-of-three upper bound as 3/30 = 10%.
+3. States that the exact one-sided 95% bound is about 9.5%, so a true failure rate near 10% is still consistent with the data.
+4. Notes that the cases must also be representative, and that passing a structural check says nothing about content.
+5. Recommends more cases, content-level review, and reporting the bound rather than "zero".
 
-**Source:** The driver's seat: what counts as acceptable
+**Source:** What a pass rate leaves out
 
 ## ES-ch02.53
 
-Take two rows of the chapter's division-of-labor table, "Judge whether an answer is supported" and "Draft prompts and tabulate pass rates." For each, say what Claude does, what you do, and why the row stays with you.
+A workflow chains ten model steps, each of which succeeds independently with probability 0.98. Compute the probability that all ten succeed, and compare it with a per-step probability of 0.95. Explain why per-step pass rates can mislead about end-to-end reliability, and name the assumption behind your calculation and how it could fail.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Support row: Claude lays the claim beside the source and proposes a verdict.
-2. Support row: you make the call, claim by claim, against the source itself.
-3. Support row: it stays with you because a check run by the generator is the first opinion run twice, and "supported" is your definition.
-4. Drafting row: Claude drafts variants, runs the validator, and tabulates, while you choose the one feature that changes and fix the development and held-out lists before looking.
-5. Drafting row: it stays with you because the split is a promise about what you will not look at, and only you can keep it.
+1. Computes 0.98 to the tenth power, about 0.82.
+2. Computes 0.95 to the tenth power, about 0.60.
+3. Explains that failure probabilities compound across steps, so apparently high step reliability yields modest end-to-end reliability.
+4. States the independence assumption and how correlated failures or dependent steps would change the result.
+5. Recommends measuring end-to-end success directly, and adding checkpoints, validation between steps or retries to improve it.
 
-**Source:** The driver's seat: what counts as acceptable
+**Source:** What a pass rate leaves out
 
 ## ES-ch02.54
 
-The chapter asks you to record one task you delegated and one judgment you retained. What is the test for whether that record is adequate, and who is accountable for the pass-rate claim?
+A contract asks the model to return a self-reported confidence between 0 and 1 with each answer. Explain what a validator can and cannot check about this field, how you would test whether the numbers are meaningful, and how you would decide whether to use them in a downstream decision.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to record one delegated task in the experiment.
-2. Says to record one retained judgment.
-3. Says you should be able to point to the transcript line or the edit that shows each.
-4. Says that if you cannot, the split happened in your head and not in the record.
-5. Says that for what the pass rate supports, Claude flags an overclaim but you choose the verb and sign or withhold, because your name is on the claim.
+1. States the validator can check type and range (a number between 0 and 1) but not whether the number is meaningful.
+2. Defines calibration: among answers stated with confidence near c, a fraction near c should be correct.
+3. Describes a test: bin the answers by stated confidence and compare each bin's stated confidence with its observed accuracy using labeled data.
+4. Notes that language models' self-reports can be overconfident and may not generalize across tasks.
+5. Says the field should not be used as a substitute for independent verification unless calibration has been demonstrated on held-out data.
 
-**Source:** The driver's seat: what counts as acceptable
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.55
 
-Describe the provenance questions the chapter asks you to answer in Verify and reflect, and the reflection question it calls most useful.
+Two teams build checks for model answers that will be shown to customers. One answers questions about movie trivia and the other about drug interactions. Explain how the stakes should shape the acceptance rule, the checks, and the amount of human review in each case, and who should decide.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to rerun the three-response experiment and explain why its one-third result is a format rate.
-2. Says to label your own execution as your run, with its own environment record.
-3. Asks which strings you constructed and which came from an actual Claude interaction.
-4. Asks which questions guided revision and which were still held out when you inspected the result.
-5. Names the most useful reflection as local: which distinction did you collapse (source membership and source support, format rate and accuracy, development case and held-out case), and which counterexample separated them again.
+1. Explains that the cost of a wrongly accepted answer drives how much independent verification is justified.
+2. Describes stricter acceptance (every claim supported, abstention encouraged) and more human review for the drug interaction case.
+3. Describes lighter acceptance and sampling-based review for trivia, accepting some error.
+4. Notes that acceptable risk is a judgment about consequences, not something a validator can compute.
+5. Says the decision belongs to those who bear the consequences, recorded before testing, rather than chosen to make results look good.
 
-**Source:** Verify and reflect
+**Source:** The driver's seat: what counts as acceptable
 
 ## ES-ch02.56
 
-Warm-up exercise: you test malformed JSON, a parsed value of the wrong shape, and an object with the correct keys but a wrong field type. For each, say what the first relevant rule is and explain the difference between a parser failure and a contract failure.
+A team constructs a single response that is well formed, cites a supplied document identifier, and contradicts that document. Explain what this single example demonstrates and what it does not, why it is more informative than a general warning about hallucination, and why it does not show the validator is broken.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Malformed JSON fails at json.loads, the parsing step.
-2. A parsed value of the wrong shape fails at the check that it is a dictionary or has the exact key set.
-3. An object with the correct keys but a wrong field type, such as an integer answer, fails at the field-type check.
-4. Explains that a parser failure means the text never became an object, while a contract failure means a parsed object violates a stated rule.
-5. Says each result should be explained by naming the first relevant rule, not merely called bad formatting.
+1. Explains that one counterexample refutes the claim that passing the validator implies the answer is supported.
+2. States that it says nothing about how often such failures occur.
+3. Explains that it identifies precisely which check is absent, so the pass can be traced to rules rather than speculation about model internals.
+4. Explains that the validator does its stated job and the error lies in reading its pass as more than it covers.
+5. Recommends keeping the structural check, naming its scope and adding a content-level evaluation.
 
-**Source:** Assessments - ungraded practice
+**Source:** A source identifier is an address, not an argument
 
 ## ES-ch02.57
 
-Application exercise: construct a short source with identifier s2 saying "The meeting is on Tuesday." and an answer that says Wednesday while citing s2. What does a validator like the chapter's do, what does the evidence review say, and how should you record and label the example?
+You run an experiment that includes some hand-written test strings and some real responses from a model. Explain how to label and keep them apart in your records, why the distinction matters for the claims you can make, and what must be preserved about the real responses.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the response satisfies the same implemented conditions as the color fixture (if well shaped and s2 is in the allowed set), so the validator accepts it.
-2. Says the evidence review records it as contradicted, since the source says Tuesday.
-3. Explains that the results differ because source membership and source support are different relations.
-4. Says to preserve the executable decision and the evidence judgment separately.
-5. Says to keep the example explicitly labeled as constructed, not presented as something Claude actually said.
+1. Explains that hand-written strings demonstrate validator behavior but are not observations of a model.
+2. Explains that rates over constructed cases reflect how whoever built the set composed it and cannot be quoted as model behavior.
+3. Explains that recorded model outputs support claims limited to their recorded conditions.
+4. Requires preserving the exact prompts, source materials, model identifier, settings, and date for real responses.
+5. Requires keeping both kinds in clearly separate files or columns so a reader cannot confuse them.
 
-**Source:** Assessments - ungraded practice
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.58
 
-Challenge exercise: design an explicit way to represent insufficient source evidence in a separate learner version. What must you address, and what must you not claim?
+A validator is tested on three prepared inputs: (1) the text `not json`; (2) `{"answer": "x", "sources": ["missing"]}` where only "doc1" is a supplied identifier; (3) `{"answer": "Delivery takes 10 days", "sources": ["doc1"]}` where doc1 says "Delivery takes 3 days." The validator checks parsing, exact keys, types, a nonblank answer, a nonempty list and identifier membership. Draw up a table with, for each input, the validator's decision, the obligation that failed or passed, and a content-support review. Then say how the report should present the third row.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the design lives in a separate learner version.
-2. Says to explain who decides whether a refusal counts as an acceptable answer.
-3. Says to explain how the change affects the exact-key and nonempty-source rules.
-4. Says to state what the consumer must now handle and which tests are needed.
-5. Says not to claim the reference already supports the new interface, and to compare the simplicity lost with the ambiguity removed.
+1. Input 1: rejected at parsing, with no later rule applied; the support review is "cannot be reviewed" because there is no claim.
+2. Input 2: rejected at identifier membership after parsing and shape checks succeed; support review is "cannot be reviewed" because the address resolves to nothing.
+3. Input 3: accepted because every implemented rule is satisfied.
+4. Input 3 support review: contradicted by doc1, which states 3 days.
+5. Presents the third row as format accepted and content contradicted, an expected result rather than an inconsistency, and does not collapse the two columns into one score.
 
-**Source:** Assessments - ungraded practice
+**Source:** Work through the three-response experiment
 
 ## ES-ch02.59
 
-Challenge exercise: you prepare three paraphrases of one task. What must you decide before running anything, what do you compare if you run them, and why is different wording in an answer not automatically a failure?
+A contract says a response must be a JSON object with an answer string, a list of source identifiers, and no other keys. List the separate obligations the validator imposes, in the order they should be checked, and for each give an input that violates it and the reason the order matters.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to keep the intended facts and obligations fixed across the three paraphrases.
-2. Says to predict what should remain invariant and what may legitimately vary.
-3. Says to say who decided where that line falls.
-4. Says that if you run the prompts you compare format, claim content, and support separately, and that if you only design the test you label it as such.
-5. Says different wording in an answer is not automatically a failure of the intended task.
+1. Parsing: input such as an unclosed brace is rejected before any field rule applies.
+2. Shape: a parsed list or string is not an object and must be rejected before key access.
+3. Keys: a missing key or extra key fails the exact-key rule.
+4. Field types and content: a non-string answer, a blank answer, or a non-list sources value fails the field rules.
+5. Source rules: an empty list or an identifier not in the supplied set fails, and the order matters because later rules assume earlier ones hold (indexing a non-object would raise).
 
-**Source:** Assessments - ungraded practice
+**Source:** What each line of the validator promises
 
 ## ES-ch02.60
 
-List the separate obligations the chapter says you can now name in the validator and explain the right response to the color fixture.
+You are asked to prepare, before any prompt is written, an acceptance plan for a feature in which a model answers customer questions from a product manual and a program displays the result. Write out the items the plan should contain and say why each is needed before prompting begins.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names at least six of: parsing, object shape, exact keys, answer type, nonblank content, source-list type, nonempty membership, allowed identifiers.
-2. Says you can say which of them the lesson's tests defend and which they leave open.
-3. Says you can explain a rejected response by locating the failed condition and propose a targeted test.
-4. Says the right response to the color fixture is neither blind acceptance nor dismissal of automated checks.
-5. Says to keep the structural check, name its scope, and add the evidence review the task requires.
+1. Names the consuming program and what it needs, with the exact output object it accepts and the inputs it refuses.
+2. Defines the evaluation set, including answerable and unanswerable questions, split into development and held-out portions and dated before results.
+3. Defines the evidence criterion for support, with outcomes supported, contradicted, and cannot be determined, fixed in advance.
+4. Lists wrong implementations or wrong outputs the tests must catch, including a well-formed but unsupported answer that structural tests cannot catch.
+5. States a pass condition for the plan itself and the claims the eventual experiment may and may not make.
 
-**Source:** What you can now inspect
+**Source:** The gate: write the contract for the consumer first
 
 ## ES-ch02.61
 
-The current consumer only accepts or rejects a response object. Explain how the chapter says the stakes change when a later system can read files, write changes, or request a tool call.
+A model is asked to answer from a document. In one test the same question is asked twice, with wording that differs only in tone. In answer A the facts match the document, and in answer B one number is changed. Both are well formed and cite the right document. Explain what an evaluation of robustness to rewording should conclude about each, what dimension changed in each case, and what it should not conclude.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the current consumer does not execute the answer.
-2. Says a correctly shaped answer then sits near an action boundary.
-3. Says passing an output contract does not establish permission to perform the requested action.
-4. Says a mode label is no more an authorization policy than a source identifier is proof of support.
-5. Says the question changes from "Can my program consume this object?" to "What could happen if it does?", with Chapter 3's gate being how much autonomy is sufficient, chosen before the capability is granted.
-
-**Source:** From acceptable text to consequential action
-
-## ES-ch02.62
-
-The chapter points to Anthropic's Prompt evaluations course. How should you use it, what must you not infer, and what is the follow-up task?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Says the course includes separate material on human-, code-, and model-graded evaluations.
-2. Says to use that separation to compare your small executable format check with the source-support judgment it leaves outside its scope.
-3. Says not to infer that the chapter's few lines reproduce the upstream evaluation system.
-4. Says older model identifiers, additional tools, and API-based examples in the upstream material do not become requirements.
-5. Says to choose one upstream evaluation approach, state which question it could help investigate, what evidence would justify adopting it, and what it would still not establish.
-
-**Source:** Anthropics
-
-## ES-ch02.63
-
-Explain the Computational Skepticism note on prompt sensitivity: the diagnostic question, the book's example, and the limit on what carries over between domains.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States the diagnostic question: what should stay the same when expression changes but the intended task does not.
-2. Gives the example pair: "List the key points of this document" and "What are the main takeaways from this document?"
-3. Says stability under that kind of rephrase is the property worth testing.
-4. Says what carries over between domains is the diagnostic question, not one shared attack mechanism, and that the exercise proves no broad theory of model understanding.
-5. Says that paraphrases used to revise the prompt become development evidence, and that skepticism here is a precise question attached to a record, not a general instruction to distrust every answer.
+1. Says robustness testing asks what should stay the same when wording changes but the task does not.
+2. Treats answer A as acceptable variation: tone or organization changed while facts and obligations stayed fixed.
+3. Treats answer B as a failure: an altered fact violates the invariant even though the format passes.
+4. Says the dimensions (format, content, support) should be compared separately, so that a change in B is visible as a content change.
+5. Does not conclude broad claims about model understanding from a few paraphrases, and treats paraphrases used to revise the prompt as development evidence.
 
 **Source:** Computational Skepticism

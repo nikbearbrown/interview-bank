@@ -2,1040 +2,1009 @@
 
 ## ES-ch13.1
 
-A reviewer is shown a proposal to write `report.md`, reads the evidence, and approves. The system files a yes with her name and a timestamp. Later the target becomes `elsewhere`. Explain how the approval can survive after the thing it approved has disappeared, even though a button, a name, and a timestamp were all recorded.
+A reviewer is shown a proposal to write a file named report.md. She reads the supporting evidence and clicks Approve, and the system stores a record containing "approved", her name and a timestamp. Later, before the write happens, the target of the proposal is changed to a different path. Explain how the stored approval can still appear valid even though the thing it approved no longer exists, and describe the technical measure that prevents this.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the system filed a yes with the reviewer's name and a timestamp after she approved a proposal to write `report.md`.
-2. States that the target later became `elsewhere`.
-3. Explains that if the system retained only a generic yes, the old decision can be presented as permission for an action she never saw.
-4. Notes that every step of the recipe (a button, a name, a timestamp) was followed and the authorization still drifted away from its object.
-5. Names the remedy the chapter's fixture demonstrates: bind the decision to a fingerprint of the exact proposal so a changed target no longer matches.
+1. Identifies that the record attests only that someone said yes, at a time, under a name; none of those three facts identifies what was approved.
+2. Explains that after the target changed, the old yes would be presented as permission for an action the reviewer never saw.
+3. Proposes binding the decision to the exact proposal content, for example a hash of a canonical serialization of the whole proposal, stored with the decision.
+4. States that the fingerprint must be recomputed from the proposal about to execute and compared with the stored value at the point of the effect.
+5. Explains that a mismatch must send the changed proposal back to review as a new decision, and notes that content binding does not show who approved or that anyone read it.
 
-**Source:** Opening (before "What you will be able to do")
+**Source:** A gate is not a button
 
 ## ES-ch13.2
 
-State what the chapter's fixture demonstrates and what it does not demonstrate. Why does the chapter insist on listing the second group?
+An agent harness asks a human "Allow the agent to run this command?" and shows only the command name and two buttons. Explain what information a reviewer needs before a yes can be meaningful, and why each item is needed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the fixture turns six proposal fields into a stable serialized representation and computes a SHA-256 fingerprint recorded with a simulated decision.
-2. States that the decision matches the original proposal and no longer matches once the target changes, which is content binding.
-3. Says it does not demonstrate a real person's consent.
-4. Says it does not demonstrate the approver's identity, authority, or comprehension.
-5. Says it does not demonstrate that the proposal is safe, so a passing fixture must not be read as a sign-off.
+1. Names the specific action to be performed, stated precisely enough to show what operation will occur.
+2. Names the resolved target (path, account, environment or recipient) rather than a friendly label that could refer to several objects.
+3. Requires a reason that ties the action to the user's task, because capability or permission alone does not show the action is wanted.
+4. Requires the anticipated effects, including external and irreversible ones, and the evidence supporting the decision to proceed, as references that can be checked.
+5. Requires an honest statement of how the action could be undone, including when recovery is partial or impossible, and explains that this shifts the burden from the reviewer to the request.
 
-**Source:** Opening (before "What you will be able to do")
+**Source:** A gate is not a button
 
 ## ES-ch13.3
 
-The chapter says the question is "what, exactly, a yes is a yes to, and who was in a position to give it." Using the three jobs conduct, check, and drive, explain what each job means and which parts of an approval gate stay with a person even though Claude is fast.
+Explain the difference between an approval request that is structurally complete and one that is substantively adequate. Give a concrete example of a request that is complete but inadequate, and describe which mechanisms can catch each kind of problem.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Defines conduct as deciding what the gate evaluates, covers, and refuses before anything is approved.
-2. Defines check as asking whether an approval can still be true after the thing approved has changed, and what the record leaves out.
-3. Defines drive as Claude assembling the proposal, running the evaluation, and highlighting the diff in seconds.
-4. States that the yes, the no, and the attention behind them are a person's.
-5. States that automated checks can prepare the decision and a fingerprint can prevent unnoticed content drift, but neither performs the human judgment inside the word "approve."
+1. Defines structural completeness as the required fields being present and well formed, which a schema or validator can check mechanically.
+2. Defines substantive adequacy as the content being specific, accurate, and credible for the action, which presence checks cannot judge.
+3. Gives a valid example, such as evidence that reads only "looks good" or effects listed as "none" for a destructive action, that passes a presence check.
+4. Describes mechanisms for substantive problems: reviewer judgment, links to checkable artifacts, domain-expert review, and graders whose scores are treated as evidence rather than decisions.
+5. States that a passing validator should be reported as a structural result and not as an assessment of the proposal's quality or safety.
 
-**Source:** Opening (before "What you will be able to do")
+**Source:** A gate is not a button
 
 ## ES-ch13.4
 
-Before running any code, the chapter asks for four predictions. Give your prediction for each and justify it from the course implementation: (1) does changing dictionary key order change the fingerprint, (2) does changing only the target change it, (3) does an approval containing the right fingerprint but no approver name pass, (4) does a matching fingerprint prove that a particular human approved?
+An agent requests approval to "update the shared config". Explain why a display name or relative path is an inadequate description of the target in an approval request, and describe what the request should contain instead.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Answers no for key order and explains that keys are sorted before serialization.
-2. Answers yes for a changed target and explains that the target is part of the serialized proposal.
-3. Answers no for a missing approver name and explains that the approver must be a nonblank string.
-4. Answers no for the fourth prediction and explains that anyone can compute a digest and no identity appears in the code.
-5. Notes that the chapter asks you to preserve your answers before running anything.
+1. Explains that one name can refer to several objects, such as files in different directories or in different environments.
+2. Gives examples of how the real target can differ from the displayed one, such as symbolic links, relative paths, or ".." segments.
+3. States that the request should show a resolved identity, such as the canonical absolute path, account, environment, or recipient.
+4. Notes that the consequential difference (for example, a file shared with other teams or a production system) is often exactly what the friendly name hides.
+5. Explains that the reviewer cannot be expected to discover this unaided, so the interface and request format must surface it.
 
-**Source:** Opening (before "What you will be able to do")
+**Source:** A gate is not a button
 
 ## ES-ch13.5
 
-The objectives say you should write the gate before Claude implements it. Name the five things that the gate you write must contain or specify, and say what you do after Claude returns its implementation.
+In an automated review pipeline for agent actions, define evaluation and authorization, explain why they should be kept distinct, and say what a test suite, a policy checker, and a model-based grader can and cannot decide.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the approval predicate.
-2. Names scope.
-3. Names expiry.
-4. Names revocation.
-5. Names an evaluation set that can embarrass the proposal, and says you then conduct Claude Code against the gate and run your own tests on what returns.
+1. Defines evaluation as producing evidence about what happened or could happen and how well a proposal meets stated criteria.
+2. Defines authorization as a decision by a responsible person or policy that the action may proceed; it spends the evidence evaluation produced.
+3. Explains that merging the two on one screen makes a passing score look like permission and hides who made the decision.
+4. States that a test suite evaluates selected behaviors but cannot decide whether a destructive change is worth making.
+5. States that a policy checker flags rule violations but cannot judge exceptions, and that a model grader's score is evidence with its own failure modes and not a decision.
 
-**Source:** What you will be able to do
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.6
 
-Explain why a generic "Allow?" prompt is not a gate, then name the six fields the chapter requires and the question each one answers for the reviewer.
+A team watches an agent attempt ten tasks, then writes evaluation cases around what it did and adjusts expected answers until all ten pass. Explain what is wrong with this process and describe the order of work that keeps an evaluation capable of finding problems.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that a generic prompt moves the cognitive burden onto the reviewer at the moment of interruption, often without the context to carry it.
-2. Names action (what operation will occur) and target (the object or destination).
-3. Names reason (ties the action to the task) and effects (anticipated changes, including external and irreversible ones).
-4. Names evidence (checks that support proceeding) and rollback (how recovery would work, admitting when partial or impossible).
-5. Notes that the six fields are a minimum teaching contract, not a universal governance schema.
+1. Identifies that the criteria were chosen after seeing the outputs, so the passing result records accommodation to the observed behavior.
+2. Explains that such an evaluation could not have failed, so a pass tells the reader little about the system.
+3. Recommends deciding in advance what outcomes would count as evidence against the proposal, before looking at evidence in its favor.
+4. Recommends including cases chosen to embarrass the system: boundary conditions, refusal cases, and structurally complete but weak inputs.
+5. Recommends recording expected outcomes before running, and documenting any later change to an expectation with its reason.
 
-**Source:** A gate is not a button
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.7
 
-A draft approval request reads: action "update", target "the config", reason "Claude can edit files", effects "none", evidence "looks fine", rollback "undo". Using the chapter's guidance on individual fields, say what is wrong with each of the first four fields and how you would fix it.
+An agent is asked to close inactive accounts. The database tool logged a single successful UPDATE with "42 rows affected", but the agent's final message says it closed 99 accounts. Distinguish trace evidence, narration, and outcome evidence, and design an independent check that could contradict the agent's claim.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says "update" may be too vague and gives a more reviewable form such as "overwrite one local Markdown file."
-2. Says a display name for the target without a resolved path, account, environment, or recipient may conceal the consequential difference, and replaces it with a resolved identity.
-3. Says reason should tie the action to the task rather than merely describing capability.
-4. Says effects should name anticipated changes, including external and irreversible ones, so "none" needs checking against the world.
-5. Says the reviewer, not Claude, must check whether the description is what will physically happen and whether the effects are complete.
+1. Defines trace evidence as the record of what commands or calls were made and what they returned.
+2. Defines narration as the agent's own statement of what happened, which can be fluent and wrong.
+3. Defines outcome evidence as an observation of the resulting state of the system, separate from the agent's actions and statements.
+4. Designs a post-action check, such as an independent query counting accounts in the closed state before and after, compared with the expected number.
+5. Explains what the check establishes and its scope, noting that it covers only the state it queries and not other side effects.
 
-**Source:** A gate is not a button
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.8
 
-A proposal has six nonempty, fluent fields whose contents are meaningless. Explain why `fingerprint` accepts it, what the word "meaningful" in the error message does and does not guarantee, and what still has to happen.
+A team reports that a file-writing agent "passed 20 of 20 evaluation cases", where every case wrote an ordinary text file into an empty directory. Explain what the result does and does not show, and what the team should record so that readers can interpret it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that Python checks only that each retrieved value is truthy.
-2. Identifies filling every field as structural validity.
-3. Says the word "meaningful" in the error message expresses intended use more strongly than the implementation can enforce.
-4. Concludes that passing the precondition does not show the descriptions are adequate.
-5. Says human and domain evaluation still matter.
+1. Explains that the result shows the agent handled the kinds of situations the cases covered.
+2. Lists situations left untested, such as symbolic links, permission errors, concurrent changes, path traversal, existing files, or private data.
+3. States that a pass count cannot be interpreted without knowing which cases ran and why they represent the intended use.
+4. Recommends recording exclusions beside the result, so that a reader can see where the evidence stops.
+5. Recommends adding cases designed to expose boundary and refusal behavior rather than more cases of the same kind.
 
-**Source:** A gate is not a button
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.9
 
-Distinguish evaluation from authorization, say how they relate, and explain why the chapter says the merge of the two on an approval screen is where gates go soft.
+An evaluation set for an agent that decides whether to carry out file operations has 30 cases whose correct behavior is to proceed and 10 whose correct behavior is to refuse. Calculate the score an always-proceed agent and an always-refuse agent would each receive, and explain what this shows about designing and reporting such evaluations.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Defines evaluation as asking what happened, what could happen, and how well the proposal meets a stated criterion.
-2. Defines authorization as asking whether a responsible person or policy permits the action.
-3. States that the first produces evidence and the second spends it.
-4. Explains that merging the two questions on one screen is where gates go soft.
-5. Adds the design-order point: decide what would count as evidence against the proposal before looking at the evidence for it.
+1. Computes the always-proceed agent's accuracy as 30 of 40, or 75%.
+2. Computes the always-refuse agent's accuracy as 10 of 40, or 25%.
+3. Explains that a single accuracy figure can make a useless policy look respectable, and that the result depends on the mix of cases.
+4. Recommends reporting the rate for each class of case separately (for example, correct proceeds and correct refusals).
+5. Explains that a set with no should-refuse cases cannot distinguish a careful agent from an indiscriminate one.
 
 **Source:** Evaluation comes before authorization
 
 ## ES-ch13.10
 
-A team writes 12 test cases after watching their implementation run, then adjusts the expected answers until all 12 pass. They report "12 of 12." What does the chapter say this evidence records, and what four things should change in how they build and report the set?
+After a redesign of its approval screen, a team celebrates that median time to approval fell sharply. Explain why optimizing one such metric can make an approval process worse, name at least four measurements that can pull against each other, and describe how results should be reported.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the set records accommodation, not evaluation.
-2. Says the cases should be decided before looking at the evidence for the proposal, including what would count as evidence against it.
-3. Says the set should be able to embarrass the proposal.
-4. Says the report should show which cases were run and why they represent intended use, with exclusions recorded beside the result.
-5. Says at least one case should require refusal, otherwise a system that always proceeds can appear perfect.
+1. Explains that time to approval can fall because reviewers click reflexively or because the screen hides detail, not because review became more efficient.
+2. Names task success as one measure that may rise while others worsen.
+3. Names the rate of invalid or later-reversed actions as a measure of whether decisions were well informed.
+4. Names reviewer burden and refusal or deferral rates as further measures that can move in opposing directions.
+5. Recommends reporting a portfolio of measures together, including errors and deferrals, and not a single celebratory number.
 
 **Source:** Evaluation comes before authorization
 
 ## ES-ch13.11
 
-Name three evaluation instruments from the chapter, say what each can and cannot do, and state the single thing none of them returns.
+A team uses a language model to grade free-text rollback plans against a rubric. Describe the failure modes of this approach, how the team should calibrate it, and how it should be combined with other kinds of checks.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that a test suite can evaluate selected behavior but cannot decide whether a destructive change is worth making.
-2. States that a policy checker can flag an unapproved directory but cannot say whether an exception serves the affected people.
-3. States that a model grader's score is evidence with scope and failure modes, not a decision.
-4. States that Claude can run every one of these instruments and should.
-5. States that none of them returns a decision.
+1. Identifies that fluent, detailed prose can score well while omitting an irreversible side effect or being factually wrong.
+2. Identifies that graders sharing a prompt, rubric assumption, or source error can agree and still be wrong together, so agreement is not independent confirmation.
+3. Recommends calibrating the grader against human-labeled examples and analyzing its failures before trusting its scores.
+4. Recommends pairing it with deterministic checks wherever the property can be checked mechanically.
+5. Recommends human review proportional to the stakes, and treating the grader's output as evidence for that review rather than as the decision.
 
 **Source:** Evaluation comes before authorization
 
 ## ES-ch13.12
 
-Chapter 11's false final claim had 42 in the trace and 99 in the sentence. Explain what this teaches about building an evaluation set and about what a tool trace can and cannot show.
+A prototype approval gate passes all 8 of 8 evaluation cases. Assuming the cases were independent random draws from real usage, compute the approximate 95% upper confidence bound on the true failure rate (using 1 - 0.05^(1/8), and the "rule of three" shortcut 3/n), and explain what the team can and cannot responsibly claim.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that a tool trace showing a command ran is not an observation that the intended state exists.
-2. Identifies the example as 42 in the trace and 99 in the sentence.
-3. States that success narration is not an outcome check.
-4. Says trials and transcripts should be kept but distinguished from actual outcomes.
-5. Says evaluation sets should be built around tasks, expected outcomes, refusal cases, and boundary failures.
+1. Computes the exact bound as about 31% (1 - 0.05^(1/8) = 0.312).
+2. Computes the rule-of-three approximation as 3/8, or about 37.5%, and notes it is a rough upper estimate.
+3. Explains that zero failures in a small sample leaves a wide range of plausible true failure rates.
+4. Explains that hand-picked cases are not a random sample and so do not support a population reliability figure at all.
+5. Recommends reporting the cases and what they covered and excluded rather than a reliability percentage.
 
 **Source:** Evaluation comes before authorization
 
 ## ES-ch13.13
 
-A report says "passed 20 cases." Explain why the chapter calls this uninterpretable, what a reviewer needs to see before it means anything, and what kinds of cases an evaluation built from ordinary successful writes would leave out.
+An agent succeeds on a task independently with probability 0.9 on each attempt, and is evaluated with 5 trials per task. Compute the probability of at least one success and the probability that all five trials succeed, and explain which measure matters for a destructive action that must be right every time and which for a task where failures can simply be retried.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the result is uninterpretable until a reviewer can see which cases were run and why they represent the intended use.
-2. Names at least three of the excluded categories: symlinks, permission errors, concurrent changes, private data, or malicious paths.
-3. Says exclusions should be recorded beside the result.
-4. Says at least one case should require refusal, or a system that always proceeds can appear perfect.
-5. Says one case should be structurally complete but substantively weak, to test whether review reads meaning or treats field presence as safety.
+1. Computes the probability of at least one success as 1 - 0.1^5 = 0.99999.
+2. Computes the probability of all five succeeding as 0.9^5, about 0.59.
+3. Explains that the gap between the two shows how much a single headline number can hide about consistency.
+4. States that for an action that causes harm when it fails, the all-trials (consistency) measure is the relevant one.
+5. States that for cheaply retried tasks with verifiable results, the at-least-one measure can be appropriate, and that single trials are not enough for a nondeterministic system.
 
 **Source:** Evaluation comes before authorization
 
 ## ES-ch13.14
 
-A dashboard shows task success rising and time-to-approval falling after a gate redesign. Using the chapter's discussion of metrics, explain why this is not yet evidence that the gate improved and what else should be measured or reported.
+During an evaluation run, one case produces a result different from the expected outcome written down beforehand. Describe how a team should handle the discrepancy and why simply editing the expectation is a problem.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says task success may rise while the invalid action rate also rises.
-2. Says reviewer burden may fall because the gate hides detail, while informed decisions worsen.
-3. Says time-to-approval may improve because reviewers click reflexively.
-4. Says a gate needs a portfolio of evidence, with errors and deferrals included, not one celebratory rate.
-5. Says to evaluate task success, invalid action rate, and reviewer burden separately.
+1. States that the discrepancy may come from the implementation, the test's expectation, or the original requirement.
+2. Recommends investigating each possibility rather than assuming the implementation is at fault.
+3. Explains that silently editing the expectation to match the output turns the evaluation into accommodation.
+4. Recommends recording any change to an expectation or requirement, with the reason and the date.
+5. Notes that a surprising result, harmless or not, should feed into the next version of the evaluation set.
 
 **Source:** Evaluation comes before authorization
 
 ## ES-ch13.15
 
-For each of these inputs to `fingerprint`, say whether it fails or passes the precondition and what happens next: (a) a list instead of a dictionary, (b) all six fields present but `rollback` is an empty string, (c) all six fields plus an extra `"environment": "production"`, (d) `evidence` is an empty list, (e) the `reason` key is missing.
+Explain why an evaluation of an agent should keep full transcripts and tool traces yet grade outcomes, and say what a useful record for each evaluation case contains.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says (a) fails because a non-dictionary fails.
-2. Says (b) fails because an empty string is falsey.
-3. Says (c) passes, and that the extra field becomes part of the serialized proposal and affects the fingerprint.
-4. Says (d) fails because an empty list is falsey.
-5. Says (e) fails because a missing required field fails.
+1. Explains that transcripts and traces show what the agent said and did, which helps diagnose failures.
+2. Explains that outcomes are the resulting state of the world, and an agent can claim success without that state having changed.
+3. States that the record should contain the task input and the expected behavior, written in advance.
+4. States that the record should contain the actual output, the checker used, and the rationale for any discrepancy.
+5. Explains that a single aggregate score discards the trace of what failed, which is what a reviewer most needs to see.
 
-**Source:** Canonical content and its fingerprint
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.16
 
-Explain the roles of `sort_keys=True` and the compact separators in the serialization, and say what problem each solves.
+Two services each build the same approval proposal as a Python dictionary, inserting the keys in different orders, and each hashes the output of json.dumps with SHA-256. The digests differ. Explain why serialization must be canonical before hashing, which choices make Python's output canonical for this purpose, and what additional problems remain if the services are written in different languages.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that JSON objects do not conceptually depend on insertion order but Python dictionaries preserve one.
-2. Explains that without sorting, equivalent proposals built in different orders could produce different byte sequences.
-3. States that `sort_keys=True` canonicalizes key order for this bounded representation.
-4. States that compact separators remove default spaces so formatting choices do not alter the bytes.
-5. Notes that the entire dictionary is serialized (including extra fields) before being encoded and hashed with SHA-256 to a hexadecimal digest.
+1. Explains that a hash operates on bytes, and equivalent data serialized differently produces different bytes and so different digests.
+2. Identifies that dictionary insertion order leaks into the output, although JSON objects have no meaningful key order.
+3. Names sorting the keys as the fix for order, and fixed separators (no optional whitespace) and a fixed encoding such as UTF-8 as fixes for formatting.
+4. Names cross-language problems such as number formatting (1 versus 1.0), Unicode normalization, string escaping, and duplicate keys.
+5. Recommends a written canonicalization specification (such as RFC 8785) shared by both services, and notes that the canonical form decides what counts as the same proposal.
 
 **Source:** Canonical content and its fingerprint
 
 ## ES-ch13.17
 
-The reversed-insertion-order test passes. State exactly what that shows about the course function, and say what two programs in different languages would still have to agree on before their digests could match.
+A system stores a SHA-256 digest of each approval request in a log and treats it as proof of approval. Explain what a digest of a proposal does establish, what it does not establish, and which additional mechanisms would be needed to establish the rest.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the test confirms reversing dictionary item order does not change the fingerprint for the course function.
-2. States that this is an observed property of the course function for its JSON-compatible fixture, not a claim of universal canonical JSON.
-3. Names number handling as an additional specification needed.
-4. Names Unicode normalization as an additional specification needed.
-5. Names unsupported objects, duplicate keys arriving in raw JSON, or cross-language serialization as further needs, and notes the digest is computed over bytes.
+1. States that a digest establishes content identity: a changed proposal produces a different digest, so a stored value detects modification.
+2. States that a digest does not provide secrecy, since anyone who has or can guess the content can compute it and compare.
+3. States that a digest does not establish who produced the record, because no secret is involved in computing it.
+4. States that it does not show that a person read or understood the proposal, or had authority to approve it.
+5. Names mechanisms for the rest: digital signatures or keyed MACs for authenticity, authenticated sessions or credentials for identity, an authority registry, and processes for review quality.
 
 **Source:** Canonical content and its fingerprint
 
 ## ES-ch13.18
 
-Walk through the four conditions that `approved(proposal, decision)` checks, give one input that would fail each, and say what a `True` result does and does not mean.
+Approval gates must decide what counts as "the same proposal". Discuss the difference between comparing exact bytes and comparing meaning, using path spellings and symbolic links as examples, and explain the trade-off between false rejections and false acceptances.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the decision must be a dictionary.
-2. States that `approved` must be the exact Boolean `True`, so the string `"yes"` fails.
-3. States that the approver must be a nonblank string and that the recorded fingerprint must equal a newly computed fingerprint of the proposal now under consideration.
-4. States that `True` means the decision record has the required shape and content binding.
-5. States that it does not mean a real authorized human gave informed consent, because the implementation has no login, signature, role registry, delegation rule, expiry time, revocation list, decision ID, or evidence a person saw the proposal.
+1. Explains that fingerprinting a string treats two spellings of the same file, such as "./report.md" and "report.md", as different proposals.
+2. Explains that an identical string can refer to a different object later, for example when a symbolic link is repointed or a mutable name is reassigned.
+3. Recommends binding resolved identifiers, immutable versions, or content hashes of the object in high-stakes cases.
+4. Explains that false rejections (re-asking over irrelevant differences) cost reviewer attention and breed fatigue.
+5. Explains that false acceptances (reusing approval for a consequentially different action) defeat the approval gate, so the canonical form should erase noise but preserve every consequential difference.
 
-**Source:** The approval predicate
+**Source:** Canonical content and its fingerprint
 
 ## ES-ch13.19
 
-The chapter distinguishes three things an approval can be bound to. Name them, say what each covers, and say which one the chapter's code actually does.
+A Python gate rejects a proposal if `not proposal.get(field)` is true for any of six required fields. Explain which inputs this check rejects and accepts, why that is not a check of meaning, and how the validation could be strengthened and what limits would remain.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names content and says the fingerprint ties a decision to the exact serialized proposal.
-2. Says the code binds content.
-3. Names scope and time and says it covers how long a decision lives, how often it may be used, and in which environment.
-4. Says scope and time is code not yet written, designed in the next section.
-5. Names person (who decided, with what authority, having read what) and says no code can do it alone, so a gate binding only content is "a good seal on an envelope nobody opened."
+1. States that falsey values such as empty strings, empty lists, None, 0 and False are rejected.
+2. States that any non-empty string is accepted, including whitespace only, "0", "n/a", or fluent but meaningless text.
+3. Explains that the check tests presence and form, not whether the content is adequate for the action.
+4. Suggests stricter checks: required types, trimmed non-empty strings, length or format limits, and references to artifacts that can be resolved.
+5. States that even strict validation cannot judge adequacy or credibility, which still need reviewer judgment.
 
-**Source:** The approval predicate
+**Source:** Canonical content and its fingerprint
 
 ## ES-ch13.20
 
-Describe the chapter's worked example from the proposal through the changed target. What does each of the three results (fingerprint, simulated decision, rejection) show, and what must the reader not conclude?
+A review interface and a backend both receive the same JSON text, {"target":"report.md","target":"/etc/passwd"}. The interface parser keeps the first value of a repeated key and the backend parser keeps the last. Explain what goes wrong, why hashing the text does not fix it, and how to prevent the problem.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Describes the proposal with six nonempty values (write, report.md, deliver draft, one local file, source checks passed, restore previous file) and a 64-character SHA-256 fingerprint.
-2. Describes the simulated decision with approved True, a simulated approver, and the proposal's fingerprint, and says `approved` returning true is a fixture result, not a human sign-off.
-3. Says that changing the target to `elsewhere` serializes to different bytes and yields a different fingerprint.
-4. Says `approved(changed, decision)` returns false because the old digest no longer equals the current one.
-5. Says the system does not ask whether `elsewhere` is similar or safer, and the reviewer must see the new decision object and decide again.
+1. Explains that the reviewer sees one target while the executor acts on another although both processed identical bytes.
+2. Names this as a parser differential: different parsers resolve duplicate keys differently, and the standard leaves this behavior unspecified.
+3. Explains that a digest of the raw text only shows the bytes are unchanged, not that the two sides interpret them alike.
+4. Recommends rejecting documents with duplicate keys at ingestion with a strict parser.
+5. Recommends parsing once, then fingerprinting and executing the same parsed canonical object, so the reviewer sees what runs.
 
-**Source:** Worked example: approval that cannot follow a changed target
+**Source:** Canonical content and its fingerprint
 
 ## ES-ch13.21
 
-Reordering a dictionary's keys does not change the fingerprint, but two spellings of a path to the same file do. Explain what this shows about what counts as "the same proposal," and what a high-stakes gate may bind instead of friendly text.
+Describe in prose the conditions under which a stored decision record should authorize a single attempt at an action, and explain why each condition exists.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says reordering is a representation change, not a proposal change, and the fingerprint stays the same.
-2. Says a gate should avoid demanding new approval for irrelevant formatting while reliably detecting consequential change.
-3. Says two path spellings that resolve to the same file hash differently as strings.
-4. Says a target string can stay identical while the filesystem object it names changes.
-5. Says a high-stakes gate may bind resolved identifiers, immutable versions, or object hashes rather than friendly text alone.
+1. States that the decision must be an explicit, strictly typed approval, not merely a truthy value, because loosely typed values such as "no" can evaluate as true.
+2. States that the approver must be identified, ideally by an authenticated identity with authority for this action, not just a nonblank string.
+3. States that the recorded fingerprint must equal a fresh fingerprint of the exact proposal about to execute, computed at the point of the effect.
+4. States that the decision must be unexpired, not revoked, and not already used, and that scope such as environment is checked.
+5. States that absence, silence, timeouts, model confidence or favorable automated scores authorize nothing, and that refusal and deferral are legitimate recorded outcomes.
 
-**Source:** Worked example: approval that cannot follow a changed target
+**Source:** The approval predicate
 
 ## ES-ch13.22
 
-Using the chapter's evidence table, give for each of these observations one conclusion it supports and one it does not: (a) target change with a digest mismatch, (b) a decision that matches the original digest, (c) the predicate returns true.
+A workflow computes the fingerprint when the proposal is shown to the reviewer and, at execution, only checks that a well-formed fingerprint is stored with the decision. Explain the time-of-check to time-of-use problem this creates, how to close it, and what the fix still does not guarantee.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. For (a), says it supports that the serialized proposal changed.
-2. For (a), says it does not support that the changed action is necessarily harmful.
-3. For (b), says it supports that the record binds to the original content.
-4. For (b), says it does not support that a named person was authenticated.
-5. For (c), says it supports that the fixture contract passes and does not support that informed, authorized consent occurred.
+1. Describes the gap: the proposal can change between review and execution, and the stored value then no longer describes what runs.
+2. Explains that the executor's check compares the decision with itself and so passes whatever content is run.
+3. States that the fingerprint should be recomputed from the exact object about to be executed, at the effect boundary.
+4. Recommends freezing or copying the reviewed representation so that it cannot be mutated unnoticed, and failing closed on mismatch.
+5. Notes that the fix does not show that anyone read the proposal, who they were, or that the action will have the intended result.
 
-**Source:** Worked example: approval that cannot follow a changed target
+**Source:** The approval predicate
 
 ## ES-ch13.23
 
-The chapter says the evidence table contains no row that would support "a person reviewed this." Explain why that absence is called the sign-off standard and what a recorded fingerprint is and is not evidence of. Also say what the six passing lesson tests do and do not show.
+A decision record contains approved=true, an approver name, and a fingerprint matching the current proposal. List at least five claims a reader might be tempted to make from this record and classify which are supported and which are not, with the reasoning.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says no row in the table supports the claim that a person reviewed the proposal, and that this absence is the sign-off standard.
-2. Says a recorded fingerprint is evidence that a record was written against these bytes.
-3. Says it is not evidence that anyone read them.
-4. Says that all six tests passing shows the reference meets six statements.
-5. Says it does not show that six statements are enough, and that finding wrong versions that pass all six is the work of the gate.
+1. Classifies as supported that the record was written against this exact proposal content.
+2. Classifies as unsupported that a particular named person approved, since a name in a record is not authenticated.
+3. Classifies as unsupported that the person had authority over the target or data.
+4. Classifies as unsupported that anyone read or understood the proposal, or had time to.
+5. Classifies as unsupported that the proposal is safe, or that the action will succeed or remain authorized, because expiry, revocation, and use limits are not checked by these three fields alone.
 
-**Source:** Worked example: approval that cannot follow a changed target
+**Source:** The approval predicate
 
 ## ES-ch13.24
 
-Explain what a fingerprint answers and what it does not, and list the kinds of scope a reviewer might approve beyond content. Why does the chapter say a gate that leaves scope to defaults has still made decisions?
+Approval can fail through three different person-level gaps: the wrong person acts under someone's name, the person has no authority over the action, or the person does not actually examine the proposal. For each, name a control and the residual risk that remains.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a fingerprint answers "is this still the proposal?"
-2. Says it does not answer "may this be done now, here, once?"
-3. Names at least three scope types: one execution, one environment, one time window, one data set, or one maximum effect.
-4. Says that if the proposal says "write report.md" but the operation can repeat, the fingerprint alone does not limit replay.
-5. Says a gate that leaves these to defaults has made those decisions anyway.
+1. For wrong person: names authenticated identity controls such as strong authentication or signed decisions.
+2. For wrong person: states a residual risk such as stolen credentials, shared accounts, or an insider acting under another's account.
+3. For missing authority: names a registry or policy mapping actions or data to roles that may approve them, with escalation to the right owner.
+4. For missing authority: states a residual risk such as stale role assignments or delegation that is not tracked.
+5. For missing comprehension: names interface design, workload limits and review practice as the controls, and states the residual risk that no technical check can prove a human attended.
 
-**Source:** Scope, expiry, revocation, and replay
+**Source:** The approval predicate
 
 ## ES-ch13.25
 
-Two workers present the same valid decision at the same moment and both execute the action. Explain how the chapter's design prevents this and why a check followed by a separate mark does not.
+A developer writes `if decision["approved"]:` in the check, while another writes `if decision.get("approved") is True:`. Explain the difference in behavior, give an example input that distinguishes them, and state the general design principle for code that makes authorization decisions.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the fingerprint alone does not limit replay.
-2. Says to add a unique decision ID and consumption state for single-use actions.
-3. Says the ID must be checked and consumed atomically at the effect boundary.
-4. Explains that checking unused and marking used in two separate steps lets two workers both pass between them.
-5. Says the authorization service must own that rule where the action occurs.
+1. Explains that the first accepts any truthy value, so the string "no" or "false", a non-empty list, or the number 1 would pass.
+2. Explains that the second accepts only the Boolean True object.
+3. Gives a concrete distinguishing input such as {"approved": "no"}.
+4. States the principle that authorization checks should be strict, explicit and fail closed, with anything unexpected treated as a denial.
+5. States that a test for each rejected form (wrong type, missing key, blank approver) is needed, since a permissive implementation can pass tests that only check valid cases.
 
-**Source:** Scope, expiry, revocation, and replay
+**Source:** The approval predicate
 
 ## ES-ch13.26
 
-A decision carries the deadline "2026-11-01 17:00" with no time zone. Using the chapter's discussion of expiry and revocation, explain what is wrong with that deadline and what an expiry and a revocation record each need.
+A decision authorizes one action, but two workers receive the same valid decision at the same moment. Explain how a naive "check unused, run, mark used" flow can execute the action twice, and design a correct single-use mechanism including how to handle a crash during execution.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a deadline in local time without a zone is ambiguous and expiry needs an explicit time basis and comparison policy.
-2. Says expiry is not just a timer, because new evidence can invalidate approval early.
-3. Says revocation withdraws a still-unexpired decision.
-4. Says a revocation record should say who revoked and under what authority.
-5. Says it should also say which proposal is affected and how already-started work is handled.
+1. Describes the race: both workers can read the flag as unused before either records use.
+2. States that checking and claiming must be one atomic operation at the point of effect, such as compare-and-set, a transaction, or a unique constraint.
+3. Notes that a content fingerprint alone does not limit how many times a decision is presented.
+4. Proposes distinguishing states such as unused, claimed or in progress, and completed.
+5. Explains how to handle a crash: the claimed state shows an attempt may be partially applied, so retry needs a deliberate decision (possibly a new approval) and should not be automatic.
 
 **Source:** Scope, expiry, revocation, and replay
 
 ## ES-ch13.27
 
-A reviewer approves a database query against a test database. The identical query text is later presented against production. Explain why the old approval must not carry over, which identities the chapter lists as candidates to bind, and how to decide which ones to include.
+Design the expiry rules for an approval decision. Cover the time basis, boundary handling, testing, and the circumstances in which a decision should become invalid before its deadline.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says approval for a test database must not authorize production merely because the query text matches.
-2. Says to bind the environment identity that matters.
-3. Names at least three candidates: resolved target, account, repository revision, data classification, or tool version.
-4. Says to add the identities whose change should force reconsideration and no others.
-5. Says which ones those are is a judgment about consequence, not a property of the hash.
+1. Requires an unambiguous time basis, such as UTC instants, since a local time without a zone is ambiguous.
+2. Requires a stated comparison policy for the boundary, such as whether the deadline moment itself is still valid.
+3. Recommends passing the current time into the check as a parameter, so that tests can assert behavior just before and after the deadline without waiting.
+4. Explains that approvals can become invalid before expiry because the evidence, environment, classification, or other premises changed.
+5. Recommends binding the premises that matter or checking for staleness at execution, so that changed premises force a new review.
 
 **Source:** Scope, expiry, revocation, and replay
 
 ## ES-ch13.28
 
-A proposal's rollback field says "restore previous file." List what that claim assumes, give examples of effects that may make rollback impossible, and say what the gate should say when rollback is incomplete.
+Design a revocation mechanism for approvals. State what should be recorded, where revocation must be enforced, and how to handle work that has already started.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the claim assumes a previous copy exists.
-2. Says it assumes the writer can access that copy and no dependent effects have occurred.
-3. Says it assumes restoration is semantically sufficient.
-4. Gives an irreversible example: sending a message, disclosing data, or triggering a payment.
-5. Says the gate should say "no complete rollback" rather than inventing reassurance, since an approved change can still be a bad change.
+1. Requires recording who revoked, under what authority, when, and which decision or proposal is affected.
+2. Requires that the execution-time check consult revocation state at the effect boundary, otherwise revocation is merely advisory.
+3. Requires a rule for in-flight work, such as stopping at the next safe point, rolling back, or flagging it for review.
+4. Recommends preserving the original decision in the audit trail marked as withdrawn, not deleting it.
+5. Recommends limiting who may revoke and defining how a revocation interacts with expiry and single-use state.
 
 **Source:** Scope, expiry, revocation, and replay
 
 ## ES-ch13.29
 
-Describe the Design part of the gate you write before asking Claude for any code. What must it contain, and which of its decisions can Claude not make for you?
+A reviewer approves a database migration against a staging database. Later the identical statement is submitted against production with the old decision attached. Explain why a content-only binding fails here, which attributes should be bound, and what the cost of binding too many attributes is.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says it covers one consequential action from the capstone or the `report.md` write, with its six fields.
-2. Says friendly targets are replaced by resolved identities.
-3. Says it names the identities beyond the six whose change should force a new decision.
-4. Says the decision owner is a role that can be asked, not "the team," and the review budget is labeled an assumption unless measured.
-5. Says these are the writer's choices and no model produced them.
+1. Explains that identical text produces an identical fingerprint, so a gate that hashes only the statement accepts it.
+2. Explains that the environment changes the consequences, since production data and users are affected.
+3. Lists attributes to consider binding: resolved target, account, environment, repository revision, data classification, tool version.
+4. Explains that over-binding (including volatile attributes) causes spurious re-approvals and reviewer fatigue.
+5. States that choosing what to bind is a judgment about which changes should force reconsideration, not something the hash decides.
 
-**Source:** The gate: write the approval predicate before anything is approved
+**Source:** Scope, expiry, revocation, and replay
 
 ## ES-ch13.30
 
-State the contract for the approval predicate: the conditions under which a decision authorizes one bounded attempt.
+An agent's approval request says the rollback for rotating a production credential is "restore the previous credential". Explain how a team should evaluate such a rollback claim and what an honest request says when full rollback is impossible.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that `approved` is exactly True and the approver is a nonblank string.
-2. States that the recorded fingerprint equals a fresh fingerprint of the proposal about to execute.
-3. States that the fresh fingerprint is computed at the effect boundary, not at review time.
-4. States that the deadline has not passed and the decision has not been revoked.
-5. States that the decision has not already been used.
+1. Identifies the assumptions behind the claim: the previous credential exists, is retrievable, and is still valid after the action.
+2. Recommends checking whether dependent effects occur before rollback, such as services failing in the gap.
+3. Recommends rehearsing the restore in a safe environment rather than trusting a written description.
+4. Notes that some actions, such as sending messages, disclosing data or payments, cannot be undone.
+5. States that the request should say "no complete rollback" and describe partial recovery, rather than invent reassurance.
 
-**Source:** The gate: write the approval predicate before anything is approved
+**Source:** Scope, expiry, revocation, and replay
 
 ## ES-ch13.31
 
-List what the contract says authorizes nothing, how refusal and deferral are treated, and why the chapter would pass the current time into the check instead of reading it inside.
+A team writes tests for an approval predicate. All pass on the correct implementation, but three wrong implementations also pass: one hashes only a fixed list of six fields, one tests the approved flag for truthiness, and one checks a decision is unused and marks it used in two separate steps. For each wrong version, describe a test that would catch it, and explain what this shows about judging a test suite.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says absence authorizes nothing.
-2. Says silence and a timeout authorize nothing.
-3. Says a model's confidence and a favorable automated score authorize nothing.
-4. Says refusal and deferral are recorded outcomes, not errors.
-5. Says passing the current time in lets tests say "one second after the deadline" without waiting.
+1. Explains that hashing only a fixed list of fields lets a consequential extra field change without invalidating the approval.
+2. Gives a test for it: add an extra field such as an environment to an approved proposal and expect rejection.
+3. Explains that a truthiness check lets values such as the string "no" approve, and gives a test such as approved="no" expecting rejection.
+4. Explains that the check-then-mark flaw is a race, and describes a test that interleaves two consumers of the same decision.
+5. Explains that passing tests shows only that the tested statements hold; surviving wrong versions reveal gaps in the tests, so a suite must be judged by what it fails to catch.
 
-**Source:** The gate: write the approval predicate before anything is approved
+**Source:** Write the approval predicate before anything is approved
 
 ## ES-ch13.32
 
-The chapter says two plausible wrong predicates pass all six lesson tests and a third has no lesson test at all. Describe all three and explain what that implies about your tests.
+Before asking an AI coding assistant to implement an approval gate, an engineer writes the predicate, the tests, and a one-sentence prediction of what a failure would look like. Explain why this order matters, and which decisions the engineer must make rather than delegate.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Describes the predicate that fingerprints only the six named fields, so adding `"environment": "production"` changes nothing.
-2. Describes the predicate that tests `approved` for truthiness, so the string `"no"` approves.
-3. Describes the predicate that checks a decision is unused and marks it used in two separate steps, so two workers can both pass between them.
-4. Says the third has no lesson test because the lesson has no consumption.
-5. Concludes that if your tests cannot tell these from the right program, the gate is not finished.
+1. Explains that acceptance criteria written by the accountable person before implementation give an independent standard to test the assistant's work against.
+2. Explains that tests written by the same model that wrote the code can share its blind spots.
+3. Explains that a failure prediction written before seeing output is falsifiable, whereas one written afterward tends to describe the output.
+4. Lists decisions that depend on consequences and so stay with the engineer: which identities force a new decision, who the decision owner is, and the review capacity assumed.
+5. Recommends building a baseline implementation by hand, so the engineer can audit the assistant's version and notice what differs.
 
-**Source:** The gate: write the approval predicate before anything is approved
+**Source:** Write the approval predicate before anything is approved
 
 ## ES-ch13.33
 
-Explain the "failure sentence" the chapter asks you to write, when it must be written and why, and what the finished gate may and may not claim.
+An AI assistant returns code adding decision IDs, deadlines, revocation, and single-use consumption to an approval check. Describe how an engineer should review and test it, naming the places where consequential decisions are likely to be hidden, and how to find gaps in the engineer's own tests.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says it is one sentence, dated, saying what you would see if the gate approved something it should not.
-2. Says it must be written before you read any output.
-3. Says written afterwards it describes the output instead of testing you.
-4. Says the gate may claim content binding, expiry, and single use under a fixture clock and a simulated approver.
-5. Says it may not claim that a person reviewed, understood, or was authorized.
+1. Says to run the engineer's own tests on the returned code rather than relying on the assistant's report.
+2. Names where the current time is read, since this affects testability and manipulation.
+3. Names where a used decision is recorded and whether checking and recording are one atomic step.
+4. Says to check that earlier strictness was not weakened, such as the exact Boolean requirement or the blank-approver rejection.
+5. Recommends asking the assistant for a deliberately wrong version that still passes the tests and checking by hand whether it does, to find gaps in the tests.
 
-**Source:** The gate: write the approval predicate before anything is approved
+**Source:** Write the approval predicate before anything is approved
 
 ## ES-ch13.34
 
-The chapter says Claude can attack your gate usefully but cannot write it for you. Explain both halves of that claim.
+Design an evaluation set for a gate that guards an agent's file-writing action. List at least six cases with their expected gate behavior and explain what each is meant to reveal.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says you can ask Claude for a decision record that would still pass your predicate and should not.
-2. Says Claude cannot write the gate for you without defeating its purpose.
-3. Says the owner is a judgment about consequence.
-4. Says the review budget is a judgment about consequence.
-5. Says the identities that force a new decision are also judgments, and they go on the record in your words.
+1. Includes an ordinary success case with the expected outcome of approval, because a gate that always refuses is useless.
+2. Includes a case with reordered but identical content, expecting the same fingerprint, which removes representation noise.
+3. Includes a case with a changed target, expecting the old decision to be rejected.
+4. Includes a malformed proposal, such as a missing rollback, expecting a structural rejection, and a replayed decision, expecting the second use to be rejected.
+5. Includes a structurally complete but substantively weak proposal, such as evidence reading only "looks good", expecting deferral, to test whether review reads meaning rather than field presence; also notes expected outcomes are written before running.
 
-**Source:** The gate: write the approval predicate before anything is approved
+**Source:** Build an evaluation set that can embarrass the proposal
 
 ## ES-ch13.35
 
-For each of these cases in the chapter's compact evaluation set, state the construction's expected gate behavior: reordered keys, changed target, missing rollback, vague evidence, and replayed decision.
+Design the screen on which a human reviews an agent's proposed action. State at least five principles and explain how each supports an informed decision.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says reordered keys expect the same fingerprint.
-2. Says a changed target expects the old decision to be rejected.
-3. Says a missing rollback expects the proposal shape to be rejected.
-4. Says vague evidence expects a structural pass and a human defer.
-5. Says a replayed decision expects the second use to be rejected in the extension.
+1. States that the action and target appear first, as the facts the reviewer needs soonest.
+2. States that differences from any previously reviewed proposal are highlighted, including that a prior approval no longer applies.
+3. States that evidence claims link to their underlying artifacts rather than showing a bare green label.
+4. States that irreversible effects and missing rollback are prominent and cannot be collapsed away.
+5. States that approve, refuse and defer are genuine, equally available choices, with no default selection or visual pressure toward approval.
 
-**Source:** Build an evaluation set that can embarrass the proposal
+**Source:** The approval interface is part of the control
 
 ## ES-ch13.36
 
-A proposal's evidence field says only "looks good." The function fingerprints it. Is that a bug? Explain, and say whose work it is to catch it.
+A review dialog shows a large green "Continue" button next to a small gray refusal link, and a message from the requesting agent reading "Approve within 60 seconds or the job will fail!" Explain what is wrong with this design and what rules should govern it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the function fingerprints it because the string is nonempty.
-2. Says it is not a failing test if the function's contract is structural content binding.
-3. Says it becomes a workflow failure only if documentation claims the function evaluated evidence quality.
-4. Defines plausibility auditing as judging whether a claim is credible and consistent with what you know, independent of how confidently it was stated.
-5. Says that is the reviewer's work and no field name does it.
+1. Identifies the unequal prominence of the buttons as a dark pattern that nudges the reviewer toward approval.
+2. Identifies the urgency message, written by the party seeking approval, as an unvalidated claim serving the proposer.
+3. Explains that pressure shortens deliberation and weakens the independence of the decision.
+4. Recommends symmetrical presentation of approve, refuse and defer, with no pre-selected option.
+5. Recommends that priority and urgency be set by a declared policy or a validated source, not by the requesting agent's label.
 
-**Source:** Build an evaluation set that can embarrass the proposal
+**Source:** The approval interface is part of the control
 
 ## ES-ch13.37
 
-A team uses a model to grade rollback fields and reports 100 percent agreement with a second model grader using the same prompt. Using the chapter, explain why this is weak evidence and how the grading should be set up and reported.
+A proposal lists as evidence the URL of a test report, and the fingerprint covers the proposal text. After approval the report at that URL is replaced. Explain the gap, and describe what the decision should be bound to.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says model graders can assist with qualitative fields but need calibration and failure analysis.
-2. Says a model may reward fluent rollback prose that omits an irreversible effect.
-3. Says two graders that share a prompt assumption or a source error can agree and still be wrong together.
-4. Says that agreement is not a second opinion.
-5. Says to pair qualitative grading with deterministic checks and human review proportional to the stakes, and to keep inputs, expected behavior, actual output, checker, and rationale for discrepancies.
+1. Explains that the fingerprint of the URL string does not change when the document behind the URL changes.
+2. Concludes that the evidence the reviewer relied on can be substituted without invalidating the approval.
+3. Recommends referencing evidence by an immutable identifier such as a content hash or version ID.
+4. States that the decision should bind to the representation the reviewer actually saw, together with the immutable artifacts it references.
+5. Notes related risks in presentation, such as hidden fields covered by the hash that the reviewer never saw, or truncated targets.
 
-**Source:** Build an evaluation set that can embarrass the proposal
+**Source:** The approval interface is part of the control
 
 ## ES-ch13.38
 
-A reviewer sees a friendly summary and a truncated target while the fingerprint covers hidden fields and effects are collapsed behind a disclosure panel. Explain the problem and describe what the interface should do instead.
+At execution time, a system recomputes a proposal's fingerprint and finds it differs from the one in the stored decision. Describe what should happen, and explain why asking an AI model whether the old approval "probably still applies" is the wrong response.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the decision binds to bytes the reviewer did not meaningfully inspect.
-2. Says the record may be mechanically exact and socially uninformed.
-3. Says to present the action and target first and highlight differences from any previously reviewed proposal.
-4. Says to link evidence claims to artifacts and make irreversible effects and absent rollback unavoidable.
-5. Says to provide approve, refuse, and defer as genuine choices and to avoid dark patterns such as a default-selected approval, a green continue button beside a muted refusal link, or agent-generated urgency language.
+1. States that the action must be blocked and the proposal returned to review.
+2. Recommends showing the reviewer which fields changed so they can decide on the new content.
+3. Explains that the old decision is evidence about history, not authority for the new proposal.
+4. Explains that the model is the proposer's tool and has no authority to reinterpret the reviewer's decision.
+5. Warns against shortcuts such as overwriting the stored fingerprint or letting the agent classify the change as minor.
 
 **Source:** The approval interface is part of the control
 
 ## ES-ch13.39
 
-Evidence referenced by an approved proposal lives at a URL whose content can change after approval. Explain the gap this creates, what the decision should bind to, and what should happen at execution if the fingerprint no longer matches.
+A reviewer fully understands a proposal to export a customer dataset but has no authority over that data. Describe the outcomes a well-designed gate should allow, and explain why treating anything other than approval as failure damages the approval gate.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the decision should bind to the representation the person actually saw, together with any referenced immutable artifacts.
-2. Says that if evidence can change at the same URL after approval, binding only the proposal text leaves another substitution path.
-3. Says the interface should say why this person is the decision owner, because someone can understand a proposal and still lack authority over the target, data, or recipient.
-4. Says the person should be able to escalate without impersonating an approver.
-5. Says at execution the fingerprint is recomputed, and on a mismatch the changed fields are shown and the proposal returns to review without asking the model why the old approval probably still applies.
+1. States that the approval gate should allow approve, refuse, defer, and escalate as genuine outcomes.
+2. Explains that escalation lets the reviewer pass the decision to someone with authority without impersonating an approver.
+3. Explains that understanding a proposal does not confer authority over the data or action.
+4. Argues that deferral with documented unresolved gaps is a successful gate outcome because it prevents an unsupported yes.
+5. Explains that treating non-approval as failure pressures people to manufacture certainty, turning the approval gate into a ritual.
 
 **Source:** The approval interface is part of the control
 
 ## ES-ch13.40
 
-Explain the volume trap and why a perfectly bound proposal can still receive superficial review. What does the chapter say about the status of this claim?
+Agents submit 40 proposals per day that need careful human review. Each reviewer can carefully review 12 per day, and two reviewers are available. Calculate the daily backlog growth, the backlog after five days, and the number of reviewers needed, then recommend what the team should do besides speeding up clicking.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the case for generating ten times as much in the same time is real.
-2. Says the ability to verify ten times as much does not come with it, so the extra output is reviewed less or not at all.
-3. Says the chapter presents this as the book's argument, not a measurement of any team.
-4. Says Claude sits on the generating side of the gap.
-5. Says speeding up the button does not restore judgment and turns the gate into a queue or click ritual.
+1. Computes capacity as 24 per day (2 x 12) and backlog growth as 16 per day (40 - 24).
+2. Computes the backlog after five days as 80 proposals.
+3. Computes the reviewers needed as 4 (40 / 12 rounded up).
+4. Recommends options such as pausing intake, narrowing the scope of agent actions, adding qualified reviewers, or deferring work.
+5. Explains that showing less information to reviewers to raise throughput degrades judgment and is not capacity planning.
 
 **Source:** Human attention is a finite gate resource
 
 ## ES-ch13.41
 
-Five proposals arrive while one reviewer can carefully inspect two in the stated period. How large is the shortfall, what status does the capacity number have, and how do a naive and a governed system differ? If six more arrived in the same period with the same capacity, how many would exceed capacity?
+Five proposals are pending and one reviewer can carefully review two this period. A is a reversible local formatting change, B sends material to an external recipient, C changes a production target, D duplicates B's effect, and E depends on C being approved. Propose a queue policy and justify it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Computes the shortfall as three (five minus two).
-2. Says the capacity of two is a labeled assumption, not a measured result.
-3. Says a naive system shows all five as urgent and lets dependent agents wait indefinitely.
-4. Says a governed system classifies consequence, preserves arrival and dependency information, and applies a declared queue policy.
-5. Computes that eleven proposals against a capacity of two leaves nine beyond capacity, and says automatic checks cannot manufacture the missing human attention.
+1. Prioritizes B and C because their effects are external or high-impact.
+2. Detects D as a likely duplicate of B and holds it rather than spending review on it.
+3. Keeps E blocked on the decision about C.
+4. Lets A wait, expire, or proceed only under a separately authorized low-risk policy.
+5. States that the policy must be set by accountable people before agents label their own work, and that proposer-supplied urgency labels must not set priority unvalidated.
 
 **Source:** Human attention is a finite gate resource
 
 ## ES-ch13.42
 
-Proposal A is a reversible local formatting change, B sends material to an external recipient, C changes a production target, D duplicates B's effect, and E depends on C. Apply the chapter's reasoning to the queue and say what the example is and is not meant to establish.
+A team finds that reviewers approve 99.6% of proposals in a median of 8 seconds, and a dashboard ranks reviewers by throughput. Diagnose what may be wrong, and propose changes to the process and measurements.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says B and C may receive priority because their effects are external or high-impact.
-2. Says D should be detected as a potential duplicate and held.
-3. Says E remains blocked on C.
-4. Says A may wait, expire, or proceed under a separately authorized low-risk policy if one genuinely exists.
-5. Says this ordering is not universally correct; someone must choose and document the policy before the proposing model labels its own work urgent, and proposer urgency labels should never set priority unvalidated.
+1. Identifies habituation or rubber-stamping as a possible explanation for the very high approval rate and short review time.
+2. Notes that a high approval rate alone does not show that proposals are good or that decisions were informed.
+3. Recommends checking whether reviewers have real options, sufficient evidence, and support for saying no.
+4. Recommends tracking refusal, deferral and later-reversed approvals as measures of review quality.
+5. Explains that ranking reviewers by throughput rewards speed over care and should be replaced by measures of decision quality.
 
 **Source:** Human attention is a finite gate resource
 
 ## ES-ch13.43
 
-The review queue exceeds capacity. Name the responses the chapter endorses, the responses it rejects, and what happens to pending decisions whose premises go stale.
+Reviewers keep receiving nearly identical low-consequence proposals, such as formatting changes to documentation in a sandbox repository. Discuss whether and how a standing policy could replace individual approvals for this class.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names at least three endorsed responses: pause intake, narrow scope, add qualified reviewers, or defer work.
-2. Says cutting the information shown until reviewers can click faster is not capacity planning.
-3. Says pending decisions should be invalidated when their evidence or environment goes stale.
-4. Says timeout, absence, and queue delay are not approval.
-5. Says more prompts do not mean more oversight, because past the available attention they produce habituation.
+1. Says that it is a governance decision owned by accountable people, not a shortcut the agent can take.
+2. Requires the class to be defined precisely so that membership is unambiguous.
+3. Requires testing the exclusions: cases just outside the class must still be routed to a reviewer.
+4. Requires monitoring of outcomes and a way to revoke the policy.
+5. States that everything outside the class remains gated and that the policy must not drift to adjacent classes without review.
 
 **Source:** Human attention is a finite gate resource
 
 ## ES-ch13.44
 
-Describe the feedback loop that keeps review quality from decaying, including what to track, what not to score, and what an unexpected outcome should change.
+A pipeline lets an action proceed if no reviewer responds within 30 minutes, if the agent reports confidence above 0.95, or if an automated evaluation score is at least 90%. Argue why none of these constitutes authorization and describe what legitimate automation of approvals looks like.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to compare predicted effects with observed outcomes and inspect approvals later reversed.
-2. Says to track refusal and deferral, not just approvals.
-3. Says if every decision is yes, ask whether reviewers have real options, adequate evidence, and support for saying no.
-4. Says not to score reviewers on throughput, which trains the gate to become ceremonial.
-5. Says an unexpected outcome, harmless or not, should change the next evaluation set before another approval is requested.
+1. Argues that a timeout is the absence of a decision, not consent.
+2. Argues that a model's self-reported confidence is neither a calibrated measure nor a decision by someone with authority.
+3. Argues that an evaluation score is evidence about tested cases and not permission.
+4. Notes that destructive or irreversible actions make these shortcuts especially risky.
+5. Describes legitimate automation as a narrowly defined standing policy set in advance by accountable people, with monitoring and revocation.
 
 **Source:** Human attention is a finite gate resource
 
 ## ES-ch13.45
 
-Reviewers keep receiving nearly identical low-consequence proposals. The chapter says capacity moves the automation boundary. Explain what option arises, what conditions it requires, and why it is not an agent shortcut.
+A team adopts agents that generate 10 times as many proposals per day (200 instead of 20), while reviewers can still carefully review 20 per day. Calculate what share can be carefully reviewed and explain the consequences and design responses.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a team can ask whether a narrow standing policy should authorize that class of proposals.
-2. Says it needs monitoring and revocation.
-3. Says it is a governance decision, not an agent shortcut.
-4. Says the class must be defined precisely and its exclusions tested.
-5. Says everything outside the class stays gated.
+1. Computes that 20 of 200 is 10% that can be carefully reviewed.
+2. Explains that generation scales with compute while careful verification does not scale with it.
+3. Explains that proposals that proceed unreviewed are effectively unverified, so more output means less oversight per item.
+4. Rejects the idea that skimming or using the same model to review restores independent judgment.
+5. Recommends treating review capacity as a design constraint: measure or declare it, limit intake or scope to match, and report honestly when safe throughput is below production rate.
 
 **Source:** Human attention is a finite gate resource
 
 ## ES-ch13.46
 
-Describe the sign-off experiment the chapter takes from the companion book, the predicted result, and why the prediction is that the paragraph is "empty" even though it looks complete.
+A marketing manager is asked to approve an agent's proposed database migration. The proposal is fluent and its claims sound reasonable, but it contains a subtle locking problem that would cause an outage. Explain why the review can fail even though the reviewer is diligent, and what the organization should do about it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says you ask an agent for the sign-off statement for the thing you just validated.
-2. Says the predicted result is a fluent, structurally complete paragraph that names a person and asserts a review happened.
-3. Says it is empty because, unless you supplied the record, the system has nothing to say about what was done or skipped.
-4. Says you run the experiment once and save what you actually get.
-5. Says you read it against the four-part standard, noting the shape of a sign-off is easy to produce and its substance is not.
+1. Explains that judging whether a claim is credible relies on the reviewer's own domain knowledge, so errors outside it are not noticed.
+2. Notes that fluent, confident text is not evidence of correctness, and an agent's own explanation of safety is another claim the reviewer cannot verify.
+3. Recommends routing each proposal to a reviewer able to audit it, and sending proposals outside the reviewer's field to a specialist.
+4. Recommends support such as deterministic checks, tests, or an expert's analysis as evidence the non-expert can rely on.
+5. Recommends keeping reviewer workload low enough for judgment and tracking which reviewer each proposal went to and why.
 
-**Source:** Attestation: what the signer states, and the right to withhold
+**Source:** Human attention is a finite gate resource
 
 ## ES-ch13.47
 
-Name and explain the four parts of the companion's attestation standard.
+Describe a feedback loop that uses what happens after approvals to improve a gate. Include what is compared, what is inspected, and how findings change the evaluation process.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names what was tested: specific checks against specific criteria, with the results.
-2. Names what was not tested: the conditions not probed and the failure modes known and not reached.
-3. Names who cleared which gate: a named person or role per decision who can be asked and answers if the gate was cleared wrongly, not "the team."
-4. Names calibrated verbs: "passed" means passed a stated test.
-5. Says a weaker verb such as "believe safe" should say that it is weaker.
+1. Compares the effects predicted in proposals with the outcomes actually observed.
+2. Inspects approvals that were later reversed and asks what evidence or support the reviewer lacked.
+3. Tracks refusals and deferrals as well as approvals, to see whether reviewers have real options.
+4. Updates the next evaluation set after any unexpected outcome, harmless or not, before further approvals are requested.
+5. Avoids scoring reviewers on throughput, which would train the approval gate toward ceremony.
 
-**Source:** Attestation: what the signer states, and the right to withhold
+**Source:** Human attention is a finite gate resource
 
 ## ES-ch13.48
 
-Why does the chapter call "what was not tested" the part that makes a sign-off honest, and why is it the part an AI-written sign-off omits?
+An engineer's sign-off for a newly built approval gate reads in full: "Reviewed by the team. All tests passed. The approval gate is safe for production. Approved." Critique this sign-off and explain what a useful one would contain.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says it is the part an AI-written sign-off omits.
-2. Says it is the part that makes the document honest.
-3. Says a list of only what passed reads as a clean bill of health.
-4. Says the affected person cannot act on that list when the untested region is where harm lives.
-5. Says if you cannot fill the "Not checked" entry with real entries, you have not looked hard enough, not found nothing.
+1. Notes that it does not say which checks were run, against which criteria, or what the results were.
+2. Notes that it does not say what was not tested or which failure modes were not reached, which is what makes a sign-off honest.
+3. Notes that "the team" is not a person or role who can be asked and who answers if the approval gate was cleared wrongly.
+4. Notes that "safe for production" overclaims, and that verbs should match the strength of the evidence (passed a stated test versus believed safe).
+5. Describes a better form: what was tested and how, what was not tested, who cleared which gate, calibrated verbs, and an explicit statement of what is not being claimed.
 
 **Source:** Attestation: what the signer states, and the right to withhold
 
 ## ES-ch13.49
 
-A reviewer writes: "The local tests pass, but remote publication permissions and data licensing are unverified; defer." Evaluate this as a gate outcome, and say what the fingerprint can and cannot contribute to such a record.
+An engineer asks an AI assistant, without providing any test logs or notes, to write the sign-off statement for her validation work. It returns a fluent paragraph naming a reviewer and asserting that a full review took place. Explain why this paragraph is empty and how a truthful sign-off should be produced.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says this is a successful gate outcome.
-2. Says treating anything but approval as failure pressures people to manufacture certainty.
-3. Says a useful decision record lets the reviewer decline or defer and preserves unresolved gaps.
-4. Says the fingerprint binds the record to content.
-5. Says it cannot show that the reviewer opened the test report, understood the target, or had enough time, and a signature can strengthen identity evidence without proving comprehension.
+1. Explains that a language model has no knowledge of what was tested or skipped unless it is given the record.
+2. Explains that the paragraph has the shape of a sign-off without substance, and shape is easy to produce.
+3. Notes that a reviewer's name or confident wording in generated text is not evidence that any review took place.
+4. States that the engineer should write the statement from her own record of tests run, results, and gaps, using the assistant at most for wording.
+5. States that a signer must be able to support every claim and should withhold the signature if the record does not.
 
 **Source:** Attestation: what the signer states, and the right to withhold
 
 ## ES-ch13.50
 
-Explain what an attestation regime optimizes for, what it sacrifices, and why the signer's authority to withhold is essential.
+A release process requires the test lead's signature, and in two years the lead has never declined to sign. Explain what this suggests, why the signer's right to withhold matters, and how the process could be changed so that a signature carries information.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says it optimizes for legible answerability: after a failure you can find the signer, read the claim, and see what they did not warrant.
-2. Says it sacrifices speed and deniability.
-3. Says under schedule pressure "what did we not test?" is experienced as friction arriving late, and that friction is the point.
-4. Says if the only outcome the process permits is "signed," it is a rubber stamp with a person's name on it.
-5. Says governance must name organizational owners and escalation paths, not place every consequence on the person who clicked.
+1. Explains that if signing is the only permitted outcome, the process is a rubber stamp that hides missing review behind a name.
+2. Explains that a signature only carries information if refusing or deferring is a real possibility.
+3. Recommends making withholding and deferral legitimate, recorded outcomes, not process failures.
+4. Recommends giving the signer authority, time, and an escalation path, so declining does not cost them.
+5. Recommends tracking how often sign-offs are withheld or conditioned and what happened afterward.
 
 **Source:** Attestation: what the signer states, and the right to withhold
 
 ## ES-ch13.51
 
-List the eight steps of the sequence in order and say what Chapters 10, 11, and 12 each contribute.
+The engineer who built an evaluation gate must write its sign-off, and finds she wants to write "no known issues." Explain the bias at work and describe practices that counter it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Gives steps 1 and 2 as constructing a proposal from the current plan and state, and validating required fields and policy boundaries.
-2. Gives steps 3 and 4 as running scoped evaluations while recording exclusions, and freezing the exact proposal and computing its fingerprint.
-3. Gives steps 5 and 6 as presenting evidence and effects to an authorized reviewer, and recording approve, refuse, or defer against the fingerprint.
-4. Gives steps 7 and 8 as rechecking fingerprint, expiry, revocation, and use constraints at execution, and observing the actual outcome and preserving it separately.
-5. Says Chapter 10 creates the proposed step, Chapter 11 supplies execution evidence, and Chapter 12 stores versioned state and exposes conflicts.
+1. Identifies ownership bias: builders tend to overrate and under-examine their own work.
+2. Recommends requiring a minimum number of entries (for example, three) in a "not tested" section.
+3. Recommends noting for each untested item whether it was skipped as out of scope or because time ran out.
+4. Recommends asking whether any untested condition is where harm would be most likely.
+5. Recommends independent review of the sign-off, and notes that being unable to list gaps suggests insufficient scrutiny rather than a perfect system.
 
-**Source:** Where the gate sits in the build so far
+**Source:** Attestation: what the signer states, and the right to withhold
 
 ## ES-ch13.52
 
-After the reviewer approves at step 6, the proposal's target changes. What does the chapter say happens to the workflow and to the old approval, and which records should be kept separately?
+A company adopts named sign-offs for high-risk automated actions. Discuss what this regime provides, what it costs, and why accountability should not rest only on the person who signed or clicked.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the workflow returns to step three or earlier.
-2. Says a valid old approval is evidence about history, not authority for the new object.
-3. Says that at execution the fingerprint is rechecked along with expiry, revocation, and use constraints.
-4. Says approval permits a bounded attempt and does not guarantee the intended result.
-5. Says the proposal fingerprint, the effect evidence, and the post-action check should be separate linked records.
+1. States that it provides answerability: after a failure one can find who signed, read what they claimed and what they said they did not warrant.
+2. States that it costs speed, because documenting limits takes effort, and removes deniability for the signer.
+3. Notes that under schedule pressure, questions about what was not tested will be felt as friction, and the process may route around them.
+4. Argues that governance should name organizational owners and escalation paths, not push every consequence onto the individual who clicked.
+5. Notes that a signature strengthens identity evidence but does not prove comprehension or competence.
 
-**Source:** Where the gate sits in the build so far
+**Source:** Attestation: what the signer states, and the right to withhold
 
 ## ES-ch13.53
 
-Describe the Build It procedure and explain why you write `fingerprint` and `approved` yourself before opening the reference solution.
+Describe the sequence of steps that takes an agent's proposed action from construction to observed outcome in a sound approval workflow, and explain what happens when the proposal is changed after approval.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to write the functions yourself before consulting the reference solution.
-2. Says to read the six tests first and write down which input should fail and why.
-3. Says to explain each intermediate quantity (the canonical bytes, the digest, the comparison) and what would count as an impossible value.
-4. Says to trace one success and one failure by hand, changing one input at a time so a difference has an identifiable cause.
-5. Says your version is the baseline, and you cannot audit a predicate you have never written, because a gate that approves the wrong thing does not crash.
+1. Describes constructing the proposal from the plan and current state, then validating required fields and policy boundaries.
+2. Describes running scoped evaluations and recording what they do not cover.
+3. Describes freezing the exact proposal and computing its fingerprint before presenting evidence and consequences to an authorized reviewer.
+4. Describes recording approve, refuse or defer against that fingerprint, and rechecking fingerprint, expiry, revocation and use limits at execution.
+5. Explains that a changed proposal returns to evaluation and review, and that the actual outcome is observed and stored as a separate record afterward.
 
-**Source:** Build It: the baseline that lets you audit
+**Source:** Where the approval step sits in the build so far
 
 ## ES-ch13.54
 
-Describe the three things you do with the result when Claude Code extends your predicate with a decision ID, deadline, revocation, and single-use consumption.
+An approved action runs, its fingerprint check passes, and a later check shows the file contains the wrong content. Explain why the fingerprint, the effect evidence, and the post-action check should be kept as separate linked records, and what each shows.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says you give Claude the contract and the test list but not your implementation, and you run your own tests on what it returns.
-2. Says to note which of your tests failed, since a failing test is often a gap in your gate that Claude could not see.
-3. Says to read the diff for where the current time is read, where a used decision is recorded, and whether checking and recording happen as one step.
-4. Says to name one difference in behavior from your baseline.
-5. Says to ask Claude for a deliberately wrong version that still passes your tests and check by hand whether it does, which would mean your tests were too weak.
+1. States that approval permits a bounded attempt and does not guarantee the intended result.
+2. States that the fingerprint shows the executed proposal was the approved one.
+3. States that effect evidence, such as a trace, shows what the executor actually did.
+4. States that the post-action check shows the resulting state of the world.
+5. Explains that merging them hides which link failed, and that keeping them separate lets a team locate whether the proposal, the execution, or the outcome was wrong.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** Where the approval step sits in the build so far
 
 ## ES-ch13.55
 
-List what the Ship It artifact must contain, how the fingerprint should be handled, and what it must not claim.
+A developer configures an agent to run any command matching the pattern "npm run *" without asking. One repository defines a script named "cleanup" that deletes a user's project directory. Explain what this reveals about approval by pattern, and propose a safer permission policy.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Lists before-and-after gate wording, an evaluated proposal, rejection tests, and a decision record.
-2. Says the decision record carries the fingerprint, the simulated decision labeled as a simulation, and the unresolved gaps.
-3. Says never to fabricate a classmate's or stakeholder's approval.
-4. Says to calculate the fingerprint only after the proposal is ready for review and to freeze or copy the reviewed representation.
-5. Says to enumerate production gaps (naming at least three, such as authentication, authorization registry, single-use consumption, expiry, revocation, audit access, privacy retention, queue behavior, incident response) and not to claim the teaching Boolean is an authorization service.
+1. Explains that the pattern approves a form of command, not the effects of what the script does, which can be arbitrary.
+2. Notes that the script's content is controlled by the repository, which may be untrusted or changed later.
+3. Proposes narrower allow rules, such as specific named scripts, and explicit deny rules for destructive commands.
+4. Proposes isolation controls such as a sandbox, least-privilege credentials, or running in a disposable environment.
+5. States that any pre-approval is a standing authorization that should be scoped, reviewed periodically, and revocable.
 
-**Source:** Ship It: a gate design that survives a skeptical reader
+**Source:** A gate is not a button
 
 ## ES-ch13.56
 
-Distinguish the decision record from the sign-off, say who produces each, and explain what to do when the evidence does not support signing.
+Describe a sound division of labor between an AI assistant and a human in an approval gate. Name tasks for each and explain why the human tasks cannot be delegated.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the decision record is what a reviewer produces: approve, refuse, or defer, with scope, gaps, and authority.
-2. Says the sign-off is what you produce about the gate you built.
-3. Says when the reviewer is a simulation, the decision record is a labeled fixture and not a decision.
-4. Says you may withhold the sign-off, and withholding is an honest result if the evidence does not support signing.
-5. Says if you cannot fill "Not checked" with real entries, you have not looked hard enough, not found nothing.
+1. Assigns the assistant drafting the structured proposal, flagging fields it could not fill, and showing changes from the last proposal.
+2. Assigns the assistant running checkers, grouping traces, and flagging missing rollback or evidence.
+3. Assigns the human choosing the cases that can embarrass the proposal, recording exclusions, and deciding which changes force a new decision.
+4. Assigns the human approving, refusing, deferring or escalating within their authority.
+5. Explains that authority and accountability attach to a person, that attention is finite, and that the assistant should stop at the authorization boundary and keep the action queued.
 
-**Source:** Ship It: a gate design that survives a skeptical reader
+**Source:** The driver's seat
 
 ## ES-ch13.57
 
-Use the driver's seat table to explain, for implementing the predicate and for approving, refusing, deferring, or escalating, what Claude does, what you do, and why it stays with you. What must you record in the artifact?
+A student's prototype gate fingerprints proposals and verifies that the decision has an approved flag and a nonblank approver string. List at least five things that must be added or established before relying on it in production, and state what the student can and cannot honestly claim about it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says for the predicate that Claude implements from your gate, fast.
-2. Says you write the gate and tests first, build your own baseline, and run your tests on its version, because you cannot audit a predicate you have not built.
-3. Says for the decision that Claude keeps the action queued and stops at the boundary.
-4. Says you decide within your authority, because authority and accountability attach to a person and the right to say no is part of the job.
-5. Says to record one task you delegated and one judgment you retained, with a transcript line or edit as proof.
+1. Lists authenticated identity for approvers, since a name string can be typed by anyone.
+2. Lists an authority registry saying who may approve which actions.
+3. Lists expiry, revocation and atomic single-use consumption.
+4. Lists audit logging with access control and retention, queue and capacity behavior, and an incident-response path.
+5. States the honest claims: content binding under a simulated approver; and not that any person reviewed, was authorized, or that the proposal is safe.
 
 **Source:** Ship It: a gate design that survives a skeptical reader
 
 ## ES-ch13.58
 
-Fill in the sign-off template for a gate whose reviewer was simulated: explain what goes on the "Not checked," "Cleared by," "Verbs," and "Not claiming" lines.
+A manager says: "We added an approval step to our agent pipeline, so human oversight is guaranteed." Respond by describing at least five ways such a step can exist and still fail to provide oversight.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says "Not checked" can include authentication, a real reviewer, concurrent use, clock skew, and evidence that changes after approval (naming at least three).
-2. Says "Cleared by" names a role or person per gate, or "SIMULATED, not a person."
-3. Says "Verbs" words each claim at the strength of its evidence, such as recorded, computed, or tested, not established.
-4. Says "Not claiming" states that no person reviewed or was authorized and that the proposal is not claimed safe.
-5. Says the last line records signed or withheld with a name and date.
+1. Notes that the approval may be bound to something other than the executed content, so drift or substitution can occur.
+2. Notes that the reviewer may lack the information, such as target, effects or rollback, needed to decide.
+3. Notes that the reviewer may lack authority or the domain expertise to detect problems.
+4. Notes that review capacity may be exceeded so that decisions become reflexive clicks or are skipped by timeouts.
+5. Notes that interface pressure, a record with no genuine refusal option, or an unverified identity can turn the step into a ritual.
 
-**Source:** Ship It: a gate design that survives a skeptical reader
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.59
 
-A student's artifact says: "The gate approved the write and the reviewer authorized it." Rewrite the sentence at the strength the evidence supports, and explain your choices of verbs.
+Review the following gate code and identify at least four defects, with a fix for each.
+
+```python
+import json, hashlib
+
+FIELDS = ("action", "target", "reason", "effects", "evidence", "rollback")
+
+def fingerprint(p):
+    subset = {k: p[k] for k in FIELDS}
+    return hashlib.sha256(json.dumps(subset).encode()).hexdigest()
+
+def approved(p, d, used):
+    if d.get("approved") and d.get("approver") and d.get("fingerprint") == fingerprint(p):
+        if d["id"] not in used:
+            used.add(d["id"])
+            return True
+    return False
+```
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says "approved" and "authorized" require a person and an authority the fixture never contains.
-2. Uses "recorded," "computed," or "tested" for what was observed, calculated, or checked.
-3. Labels the decision as simulated fixture data.
-4. States what is supported: the record was written against this fingerprint, which establishes content binding.
-5. States what is not claimed: that a person reviewed, was authorized, or that the proposal is safe.
+1. Identifies that only six fields are hashed, so changes to any other field of the proposal do not invalidate the approval; fix by hashing the entire proposal (or an explicit full set).
+2. Identifies that json.dumps is called without sorted keys or fixed separators, so equivalent proposals can hash differently; fix with canonical serialization.
+3. Identifies that the approved and approver checks use truthiness, so "no" or a whitespace-only name passes; fix with approved is True and a stripped, nonblank (ideally authenticated) approver.
+4. Identifies that the used set is checked and then updated in separate steps in process memory, so concurrent workers can both pass; fix with an atomic claim in a shared store.
+5. Identifies missing expiry, revocation and clock handling, and fragile error handling such as KeyError on missing keys; fix by adding these checks and returning a denial on any malformed input.
 
-**Source:** Verify and reflect
+**Source:** Canonical content and its fingerprint
 
 ## ES-ch13.60
 
-The Challenge assessment asks for a threat model. For the threats mutation after display, decision replay, and reviewer overload, name a control from the chapter for each and mark whether it is code or people.
+A team must choose how to check three things in its gate: that a proposal is valid JSON with six required fields, that a rollback plan is plausible and specific, and that releasing a customer dataset is acceptable. Choose a type of grader (deterministic code, model-based, or human) for each and justify the choices.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Pairs mutation after display with recomputing the fingerprint at execution or binding to the representation the person saw, marked as code.
-2. Pairs decision replay with a unique decision ID and atomic consumption, marked as code.
-3. Pairs reviewer overload with a declared queue policy and capacity, marked as people.
-4. States a residual risk, such as that a fingerprint does not show the reviewer read the proposal.
-5. Marks each control explicitly as code or people.
+1. Chooses deterministic code for the JSON and field check, because it is mechanical, cheap and reliable.
+2. Chooses a model-based grader, calibrated against human-labeled examples, for judging plausibility and specificity of free-text rollback plans, or a human, with the reasoning.
+3. Notes that model-based grading has failure modes such as fluent but wrong text and shared biases, so its scores are evidence rather than decisions.
+4. Chooses a human with authority for the dataset release, because it is a judgment about consequence and permission.
+5. Recommends combining graders, keeping deterministic checks where possible and human review proportional to stakes.
 
-**Source:** Assessments - ungraded practice
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.61
 
-Describe how the chapter relates the course gate to Anthropic's own resources, and what it says about the status of the course mechanisms and the links.
+An approval workflow reports four things: the share of tasks the agent completed, whether actions complied with policy, how much effort reviewers spent, and whether an authorized person approved each consequential action. Explain why these are separate questions and why a high value on one does not imply the others.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says Anthropic's "Demystifying evals for AI agents" distinguishes evaluation components.
-2. Says it emphasizes examining what an agent actually did, not merely its final answer.
-3. Says Claude Code permissions documentation records current product behavior to compare with the course gate.
-4. Says the six-field proposal and Python fingerprint are course mechanisms, not representations of Anthropic's authentication system.
-5. Says the links were checked for the approved research packet on 2026-09-06, product behavior can change, and required work stays offline.
+1. States that task success measures whether the work was done, and an agent can complete tasks by violating policy.
+2. States that policy compliance is checked against stated rules and says nothing about whether a responsible person permitted an exception.
+3. States that reviewer burden can fall because information was hidden or reviewers click reflexively, not because decisions were well informed.
+4. States that authorization concerns a person with authority deciding, which no automated score can supply.
+5. Recommends reporting the four separately, with errors and deferrals included, so that tradeoffs between them are visible.
 
-**Source:** Anthropics
+**Source:** Evaluation comes before authorization
 
 ## ES-ch13.62
 
-Explain the ownership-bias diagnostic from the companion book and how the chapter says to apply it to your gate sign-off.
+Build a threat model for an approval gate covering these threats: mutation of the proposal after it is shown, target aliasing, replay of a decision, stolen reviewer identity, reviewer overload, a misleading rollback claim, and revoked approval. For at least five of them, name a control, say whether it is code or a human practice, and state a residual risk.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the diagnostic as ownership bias.
-2. Says the build exercise has you write an attestation for something you made and force at least three entries into the "not tested" part.
-3. Says for each entry you say whether you skipped it because it was out of scope or out of time.
-4. Says the discomfort is the signal: you want to sign a clean bill because you built the thing.
-5. Says to ask whether any untested condition is the region where harm would live.
+1. For mutation after display: recompute the fingerprint at the effect boundary (code); residual risk is that the displayed representation may differ from the hashed one.
+2. For target aliasing: bind resolved identifiers and show canonical paths (code); residual risk is changes to what an identifier points to.
+3. For replay: use decision IDs with atomic single-use consumption and expiry (code); residual risk is crash and retry ambiguity.
+4. For stolen identity and reviewer overload: authenticated, signed decisions (code) and workload limits with escalation (people); residual risk is stolen credentials, habituation, and capacity.
+5. For misleading rollback and revoked approval: test the rollback and state partial recovery honestly (people), and check revocation at execution (code); residual risk is unforeseen dependent effects and in-flight work.
 
-**Source:** Computational Skepticism
-
-## ES-ch13.63
-
-The chapter's Irreducibly Human note names a condition under which plausibility auditing fails. State it, say what status the chapter gives the claim, and explain why it motivates building the predicate by hand before conducting Claude.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States the condition: the error sits outside the reviewer's own domain knowledge, so the check sails through.
-2. Says the chapter offers this as the book's argument and a design prompt, not a measurement of any reviewer.
-3. Says the capacity you hand over is the capacity you need to audit the result.
-4. Says humans should match each proposal to a reviewer who can audit it and send those outside that reviewer's field to a specialist.
-5. Says the backlog simulation should show which reviewer each proposal went to, which were escalated and why, and which transcript lines show what Claude prepared.
-
-**Source:** Irreducibly Human
-
-## ES-ch13.64
-
-State the "AI should" and "Human should" division the chapter gives for this lesson, and say where the line between them falls.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Says AI should prepare the six-field proposal and expose changed fields.
-2. Says AI should assemble scoped evaluation evidence and identify missing information.
-3. Says AI should keep the action queued during review and can state what a reviewer would need to know to notice a wrong evidence claim.
-4. Says AI should stop at the authorization boundary, since silence, timeout, model confidence, and a favorable automated score are not consent.
-5. Says humans should inspect the exact proposal and consequential evidence, decide within their authority (approve, refuse, defer, or escalate), and keep a workload that permits judgment.
-
-**Source:** Irreducibly Human
-
-## ES-ch13.65
-
-The chapter ends by saying a bound decision record still sits inside a team. What does the team still have to do, and where does Chapter 14 go next?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Says a bound decision record still sits inside a team.
-2. Says someone must own the mitigation.
-3. Says someone must hear from affected people and manage retained data.
-4. Says someone must respond when a threshold is crossed, and the right to say no needs an owner and a path, not only a button.
-5. Says Chapter 14 moves from one approval to the governance structure around many consequential actions.
-
-**Source:** Forward bridge
+**Source:** Ship It: a gate design that survives a skeptical reader

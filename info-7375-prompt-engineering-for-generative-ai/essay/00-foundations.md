@@ -1,6 +1,6 @@
 # Foundations (midterm-prep sections 1-12)
 
-Questions on the background material and the first two course ideas, in section order. Each section keeps its own heading below.
+Questions on the background material and the first core ideas of working with generative AI, in section order. Each section keeps its own heading below.
 
 # 1. A brief history of AI
 
@@ -86,23 +86,23 @@ Logits [1, 2, 3] give p(token 3) of about 0.867 at T = 0.5, 0.665 at T = 1.0 and
 
 ## ES-6.1
 
-Describe the steps of scaled dot-product attention, softmax(Q·Kᵀ / √d_k)·V, and explain what the √d_k does. Then explain why the changing vector for "bank" in "river bank" versus "bank account" does not show the model understood either sense.
+Describe the steps of scaled dot-product attention, softmax(Q·Kᵀ / √d_k)·V, and explain what the √d_k does. Then explain what it does and does not show when the vector for "bank" differs between "river bank" and "bank account", and what kind of evidence would be needed to claim the model handles both senses.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
 1. Scores every query against every key with a dot product.
-2. Divides by √d_k to keep scores in a stable range.
-3. Applies softmax so each row of weights sums to 1.
-4. Outputs a weighted sum of the value vectors.
-5. States that context changing a representation is not evidence of understanding.
+2. Divides by √d_k to keep scores in a stable range as the dimension grows.
+3. Applies softmax so each row of weights sums to 1, then outputs a weighted sum of the value vectors.
+4. States that the differing vector shows the representation depends on context.
+5. States that a context-dependent vector is not by itself evidence of understanding either sense, and that behavioral tests (for example word-sense disambiguation on held-out sentences) are needed.
 
 # 7. Programming languages vs language models
 
 ## ES-7.1
 
-Contrast a programming language with a language model on three points: how input is interpreted, whether output is deterministic, and how errors show up. State the key nuance about where an LLM runs.
+Contrast a programming language with a language model on three points: how input is interpreted, whether output is deterministic, and how errors show up. Then state what the two have in common in how they are ultimately executed on a computer.
 
 **Points:** 5
 
@@ -118,37 +118,37 @@ Contrast a programming language with a language model on three points: how input
 
 ## ES-8.1
 
-Explain the course's design rule "let the model generate, and let functions check." Give two properties of functions that make them good checkers and one concrete example from the course.
+A common design principle for LLM systems is to let the model generate and let ordinary functions check. Explain the principle, give two properties of functions that make them good checkers, and give one concrete example of a function checking a model's output.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the rule: the model generates and functions check.
-2. Names one property (e.g. deterministic, testable, exact).
-3. Names a second property (e.g. composable, explicit contracts, inspectable failures).
-4. Gives a course example (probabilities(), sample(), JSON contract validator, path policy).
-5. Explains why a model should not check its own output (language model errors are silent).
+1. States the principle: the model generates (drafts, interprets vague input) and deterministic code verifies what can be specified exactly.
+2. Names one property that makes functions good checkers (for example deterministic, exact, testable).
+3. Names a second property (for example composable, explicit contracts, inspectable failures).
+4. Gives a concrete example (a schema validator, unit tests, recomputing arithmetic, looking up a cited source, a file-path allow-list).
+5. Explains why the model's own judgment of its output is not an independent check: errors are fluent and silent, and the same blind spots can affect both generation and review.
 
-# 9. Chapter 1: Division of Labor and The Gate
+# 9. Division of labor and acceptance gates
 
 ## ES-9.1
 
-Define "the gate" in the course's sense and design one for this case: a model repeatedly gives the same false answer at low temperature. Say what the gate checks, who or what decides, and why repetition and low temperature do not help the answer pass.
+A gate is a check or human decision that an output must pass before it is accepted or acted on. A model repeatedly gives the same false answer to a factual question, even at low temperature. Design a gate for this case: say what it checks, who or what makes the decision, and why repeating the answer and lowering the temperature do not help it pass.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Defines the gate as the checkpoint an output must pass before being accepted or acted on.
-2. States the gate must be able to reject an output.
-3. Specifies a concrete check or human decision (not model confidence).
+1. Defines a gate as a check or human decision an output must pass before it is accepted or acted on.
+2. States a gate must be able to reject outputs, and that it should be tested against known-bad outputs.
+3. Specifies a concrete check or human decision based on independent evidence (comparison with an authoritative source or reference answer, expert review), not the model's confidence.
 4. Explains that repeating the answer shows consistency, not correctness.
-5. Explains that lowering temperature only makes the false answer more likely and does not change whether it passes.
+5. Explains that lowering the temperature only concentrates probability on the model's top choice, so it does not change whether the answer is true or whether it passes the check.
 
 ## ES-9.2
 
-The notes say a model was trained on 300 billion tokens. Using 0.75 words per token and a reading speed of 250 words per minute, estimate how many years of continuous reading that is. Show the steps and say which assumption moves the answer most.
+A model is trained on 300 billion tokens. Assume 0.75 words per token and a reading speed of 250 words per minute, read continuously with no breaks. Estimate how many years it would take one person to read the training data. Show the steps and say which assumption you would most want to check, and why.
 
 **Points:** 5
 
@@ -156,61 +156,61 @@ The notes say a model was trained on 300 billion tokens. Using 0.75 words per to
 
 1. Converts tokens to words: 300B × 0.75 = 225 billion words.
 2. Converts to minutes: 225B ÷ 250 = 900 million minutes.
-3. Converts to years: about 1,700 years (1,711 with continuous reading).
-4. Names the reading rate as an assumption that changes the answer by over a thousand years.
-5. Notes the continuous, no-breaks assumption and that 0.75 words per token is approximate.
+3. Converts to years: about 1,700 years (roughly 1,711 to 1,712 depending on the year length used).
+4. Names an assumption and shows how it scales the answer (for example a reader at half the speed needs twice the years, and a reader who reads 8 hours a day needs about three times as many).
+5. Notes that 0.75 words per token is an approximation that varies by language and tokenizer, or that continuous reading is unrealistic.
 
-# 10. Chapter 2: The three-response experiment and what the green cannot distinguish
+# 10. Format validity versus factual validity
 
 ## ES-10.1
 
-A response passes a JSON validator. Name the three kinds of validity, say which the validator checks and which it cannot, and give an example of a response that is green yet wrong.
+A model must answer from supplied sources and return JSON with an answer and a list of cited source identifiers. A validator checks only that the output parses as JSON, matches the expected schema (required fields and types), and cites identifiers that exist in the supplied list. Name the three kinds of validity at stake, say which the validator checks and which it cannot, and give an example of a response that passes but is wrong.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
 1. Names JSON validity, schema validity and factual validity.
-2. States the validator covers JSON and schema validity.
-3. States it cannot tell a true claim from a false one.
-4. Gives a concrete green-but-wrong example (valid structure and source ID, false claim).
-5. States a format-pass rate is not an accuracy score.
+2. States the validator covers JSON and schema validity (and that the cited identifier exists).
+3. States it cannot tell a true claim from a false one, or a source that supports the claim from one that does not.
+4. Gives a concrete passing-but-wrong example (valid structure and an existing source identifier, but an answer that contradicts the source or is false).
+5. States that a pass rate on this validator is not an accuracy score, and that content-level evaluation (reference answers, entailment checks or human review) is needed.
 
 ## ES-10.2
 
-Describe the three-response experiment: what you do, what you record, and what agreement across the three responses does and does not show.
+An engineer wants to know whether a model answers a factual question reliably, so they send the identical prompt three times and read the three responses. Describe what they should record, how they should judge the three responses, and what agreement among the three does and does not show.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Sends the same evidence-based prompt three times.
-2. Records exact prompt, outputs, model label, date and interface.
-3. Compares factual correctness separately from surface variation.
-4. States agreement shows consistency, not verification.
-5. Notes that three identical answers can all be wrong and temperature is not configurable everywhere.
+1. Records the exact prompt, all three outputs, the model name and version, the date, the interface and the sampling settings.
+2. Judges factual correctness against an independent reference, separately from surface variation in wording.
+3. Notes that differences in wording are not automatically a failure.
+4. States that agreement shows consistency (repeatability), not verification or correctness.
+5. Notes that three identical answers can all be wrong because of systematic error, that three samples is a small sample, and that some interfaces do not let the user set the sampling settings.
 
 # 11. The agentic loop
 
 ## ES-11.1
 
-Describe the agentic loop step by step, separating the policy from the controller. Explain why stopping is not always success and why a bounded loop still needs permissions.
+An agent loop has a policy (the model, which proposes the next action) and a controller (the program around it, which executes actions, returns the results and enforces limits). Describe the loop step by step, explain why the loop stopping is not always success, and explain why a loop with a step limit still needs permissions.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
 1. Lists the loop: state, policy chooses an action, controller executes it, result becomes an observation, state updates, repeat.
-2. Distinguishes the policy (proposes) from the controller (runs the loop, enforces limits).
+2. Assigns proposing actions to the policy and executing actions and enforcing limits to the controller.
 3. Names the stopping conditions: goal met or budget exhausted.
-4. Explains that stopping may mean the budget ran out, not success.
-5. Explains that a bounded loop can still take one unauthorized action, so permissions are needed.
+4. Explains that stopping may mean the budget ran out, not that the task succeeded.
+5. Explains that a bounded loop can still take one unauthorized or harmful action within its limit, so permissions are needed.
 
 # 12. Solve-verify asymmetry, fluency, and falsifiability
 
 ## ES-12.1
 
-Explain solve-verify asymmetry using one example, then explain how the course uses it to design a generate-then-check workflow and where the advantage breaks down.
+Explain solve-verify asymmetry using one example, then explain how a designer can use it to build a generate-then-check workflow with a language model and where the advantage breaks down.
 
 **Points:** 5
 

@@ -2,992 +2,1035 @@
 
 ## ES-ch06.1
 
-The chapter's opening compares three functions against the rule "return the input plus one": `old(x)` returns `x - 1`, `inadequate_patch(x)` returns `3`, and `intended_patch(x)` returns `x + 1`. Compute what each returns for inputs two and five, then say which of them would pass a regression test that contains only `assert candidate(2) == 3`, and what that result shows about the test.
+A function must return its input plus one. A regression test contains only `assert candidate(2) == 3`. Three candidates are proposed: `old(x)` returns `x - 1`, `constant(x)` returns `3`, and `intended(x)` returns `x + 1`. Compute what each candidate returns for inputs 2 and 5, say which candidates pass the single-input test, and explain what a second input adds and what even two inputs still leave unproven.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that `old` returns 1 for input two and 4 for input five.
-2. States that `inadequate_patch` returns 3 and 3, and that `intended_patch` returns 3 and 6 (the expected results are 3 and 6).
-3. Concludes that both `inadequate_patch` and `intended_patch` pass the input-two-only test, while `old` fails it.
-4. Explains that input five separates them, because the constant returns 3 where 6 is expected.
-5. Concludes that the input-two test does not distinguish the intended function from a convenient constant, so one green test does not prove the intended rule has been restored.
+1. States the outputs: old returns 1 and 4, constant returns 3 and 3, intended returns 3 and 6 for inputs 2 and 5.
+2. Concludes that only old fails the single-input test, while constant and intended both pass it.
+3. Explains that input 5 separates the constant from the intended function, because 3 differs from the expected 6.
+4. Notes that two inputs still do not prove correctness for all inputs, types or boundary values; they only reject the demonstrated constant repair.
+5. Says the claim should be narrowed to the cases actually tested instead of "the bug is completely fixed".
 
-**Source:** Opening (Chapter 6 - Claude Code and diff review)
+**Source:** Whose test is it? Reproduce before you repair
 
 ## ES-ch06.2
 
-The opening says of the constant-three patch: "Every step was performed, and the claim still does not hold." List the steps the recipe got right, explain why the claim still fails, and state the question the chapter asks instead of "what are the steps of a code review?"
+A coding agent writes a bug fix and, in the same session, the regression test for that fix. Explain why a green result from this test is weaker evidence than a green result from a test a person wrote earlier from the written requirement, and describe two practices that restore independence between the code and its check.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the steps performed: the defect was reproduced, a test was written, and a patch was proposed.
-2. Names the remaining steps: the test passed and the changed line (the diff) was small.
-3. Explains that the claim still fails because the patch returns the constant three, which works for test input two and fails for five.
-4. Notes that nothing about the patch's size reveals the defect and that one green test does not prove the intended rule has been restored.
-5. States the chapter's question: what did the green test actually test, who decided that, and when?
+1. Identifies the shared-author problem: a misunderstanding of the requirement can sit in both the code and the test.
+2. Explains that expected values in a test written alongside the code tend to be derived from what the code returns, which makes the comparison circular.
+3. Explains that a test written first by a person from the requirement supplies an independent source of expected behavior.
+4. Describes at least two independence-restoring practices, such as committing the test before the plan, human review of agent-proposed tests against the requirement, mutation testing, or a separate reviewer.
+5. Acknowledges that a person's test can still be incomplete, so independence reduces correlated error without guaranteeing coverage.
 
-**Source:** Opening (Chapter 6 - Claude Code and diff review)
+**Source:** Whose test is it? Reproduce before you repair
 
 ## ES-ch06.3
 
-Chapter 1 named three jobs that stay with you when Claude does the fast work. Name them, give the device attached to each, and say what each job means at the scale of this chapter's code-review work.
+A reviewer reads a proposed patch first and then writes the regression test for it. A colleague insists the test be written before anyone looks at the patch. Explain the cognitive and evidential reasons for the colleague's rule, and say what the rule does and does not guarantee.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the three jobs as conduct, check, and drive, with their devices as the gate, the sign-off, and the driver's seat.
-2. Conducting: the reproduction, the regression test, and the scope exist before the patch does.
-3. Checking: you write down what you suspect before you run the check.
-4. Checking: the evidence, not the last sentence of Claude's report, decides between accept, revise, and reject.
-5. Driving: the scope decision and the merge are yours.
+1. Explains anchoring: after reading a patch, the reviewer's sense of the problem is shaped by how the patch solves it.
+2. Explains that a test written after the patch tends to check the cases the patch already handles and to take expected values from its output.
+3. Describes the resulting evidence as confirmation of the patch rather than a test of it.
+4. States that a test fixed first makes the patch the thing on trial against a standard it did not shape.
+5. States that the rule does not guarantee completeness; a first-written test can still miss inputs, so gaps must be sought separately.
 
-**Source:** Opening (Chapter 6 - Claude Code and diff review)
+**Source:** Whose test is it? Reproduce before you repair
 
 ## ES-ch06.4
 
-Explain the sense in which this chapter "moves from the file boundary to the content boundary," what Chapter 5 had established, and why the chapter says not to compete with Claude Code on speed.
+A bug report reads, "The shipping cost is wrong." An engineer must turn it into a task a coding agent can work on safely. List what a good reproduction contains, explain why each element matters when delegating to an agent, and explain why a reproduction is not the same as a diagnosis.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that Chapter 5 established that an authorized path can still receive a bad change.
-2. States that this chapter moves from the file boundary to the content boundary, where the three jobs meet code you did not write.
-3. Notes that Claude Code can read a repository, propose a plan, edit files, and run commands faster than you can read the result.
-4. States that you should not compete with that speed.
-5. Says what you do instead: conducting (reproduction, test, scope before the patch), checking (writing down what you suspect before the run), and driving (owning scope and the merge).
+1. Lists the elements: a concrete input, the expected result, the observed result, and the scope of what may change.
+2. Explains that without a concrete input and expected value the agent must guess the requirement and may fix a different problem.
+3. Explains that a minimal case isolates the discrepancy and makes patches easy to test and review.
+4. Explains that the scope tells the agent and the reviewer which parts of the system are in play and which are not.
+5. Distinguishes reproduction (behavior contradicts the requirement) from diagnosis (finding the cause), and says cause must be established separately, for example by inspecting the code.
 
-**Source:** Opening (Chapter 6 - Claude Code and diff review)
+**Source:** Whose test is it? Reproduce before you repair
 
 ## ES-ch06.5
 
-Before running a check on a patch, the chapter asks you to record four things and keep the record intact. Name the four things and explain why the record must not be rewritten after the run.
+A function `clamp(x, lo, hi)` must return `lo` if `x < lo`, `hi` if `x > hi`, and `x` otherwise. A team wants to validate its regression suite itself before trusting it on agent patches. Describe a set of test inputs and at least three known-wrong implementations, predict which tests each wrong version fails, and explain what a failure to reject a known-wrong version would mean.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the verdict.
-2. Names the target (what the check should hunt for).
-3. Names the suspected mechanism.
-4. Names what would change your view.
-5. Explains that the record must stay intact so the result can be compared with the prediction and any gap remains visible as the learning; rewriting it afterward destroys that comparison.
+1. Proposes tests covering all three regions: below the lower bound, inside the range, and above the upper bound.
+2. Names plausible wrong versions, such as one that ignores the upper bound, one that ignores the lower bound, and one that returns x unchanged.
+3. Predicts correctly that the version ignoring the upper bound fails the above-range test, the version ignoring the lower bound fails the below-range test, and the identity version fails both.
+4. Points out that an inside-range test alone cannot distinguish any of the wrong versions from the correct one.
+5. Explains that if a known-wrong version passes the suite, the suite is too weak and needs a new test that rejects it, and boundary cases (x equal to lo or hi, lo equal to hi) deserve consideration.
 
-**Source:** What you will be able to do
+**Source:** The gate: reproduction, test, and scope, before the patch
 
 ## ES-ch06.6
 
-A teammate files the bug report "the result is wrong." Explain why that is too weak to guide a bounded change, what the first useful artifact is, and why the decision about acceptable evidence has to be made before any patch exists.
+A regression test written for a reported bug passes when run against the original, unfixed code. A teammate says, "Great, the bug is already fixed." Explain why the teammate's conclusion does not follow, list at least three possible explanations for the pass, and say what should be done next.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the report names no input.
-2. Says it names no expected result or observed result.
-3. Says it names no scope.
-4. Identifies the reproduction as the first useful artifact: the smallest legitimate case that shows the gap between intended and current behavior.
-5. Explains that the decision must be made while no patch exists, because a patch shapes how you see the problem the moment you read it.
+1. States that a regression test is meaningful only if it fails on the unfixed code for the reason in the report.
+2. Lists possible explanations: the test uses an input that does not trigger the bug, it asserts too little, the environment or version differs, or the bug is intermittent.
+3. Notes that the bug might genuinely be fixed or non-reproducible, but that this must be shown, not assumed.
+4. States that the test or reproduction should be revised until it fails on the old code.
+5. Explains that after revising, the fail-then-pass transition on the patched code is what supports a claim about the fix, limited to the tested cases.
 
 **Source:** Whose test is it? Reproduce before you repair
 
 ## ES-ch06.7
 
-Using the example `old(2) == 1` against the rule "return input plus one," distinguish behavior evidence from inspection evidence and explain why the packet should keep them apart.
+A function `total(price, qty)` returns `price * qty * 0.85` when `qty >= 10` and `price * qty` otherwise. Design a small set of test inputs, with price 10, that separates the correct function from three wrong versions: one that applies the discount only when `qty > 10`, one that always applies the discount, and one that never applies it. Give the expected output for each input and say what remains untested.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the rule plus one gives an expected result of three for input two.
-2. Identifies the observation `old(2) == 1` as behavior evidence: it contradicts the stated requirement.
-3. Identifies reading the source and finding the `x - 1` expression as inspection evidence of the cause.
-4. States that reproducing a defect is not the same as proving its cause.
-5. States that the two kinds of evidence should be kept apart in the packet.
+1. Chooses a boundary input at qty = 10 where the correct result is 85 and the strict-inequality version returns 100.
+2. Chooses an input below the threshold such as qty = 9, where the correct result is 90 and the always-discount version returns 76.5.
+3. Chooses an input above the threshold such as qty = 11, where the correct result is 93.5 and the never-discount version returns 110.
+4. Explains that boundary values and values on each side of a rule are the most informative for threshold logic.
+5. States what remains untested, such as zero or negative quantity, non-integer quantity, other prices, and large values.
 
-**Source:** Whose test is it? Reproduce before you repair
+**Source:** The gate: reproduction, test, and scope, before the patch
 
 ## ES-ch06.8
 
-A learner's packet records only one command: `assert candidate(2) == 3` passes. What claim does that packet support, what does it not show, and what single change to the test would reject the constant-three repair? Does that change prove the function correct?
+An engineer says a test suite is "75 percent mutation-tested": it was run against 8 deliberately altered versions of a function and failed on 6 of them. Explain how the score is computed, what the two surviving mutants indicate, why equivalent mutants complicate the picture, and what the score does not tell you.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the packet supports only the claim that the candidate returns three for input two.
-2. States that the case did not separate the intended function from every wrong one, because both the constant and `x + 1` pass it.
-3. Says that adding input five (expected six) makes the constant patch fail, because it returns three.
-4. Says that the two-input pair still does not prove correctness for all Python inputs.
-5. Says the pair rejects the demonstrated constant repair, so the evidence supports a narrower claim than "completely fixed."
+1. Computes the score as killed mutants divided by total mutants, 6 of 8, which is 75 percent.
+2. Explains that each surviving mutant is a wrong variant the suite accepts, so it marks behavior no assertion checks.
+3. Explains the response to a survivor: add or strengthen a test that distinguishes it from the original.
+4. Explains that an equivalent mutant behaves identically to the original, so no test can kill it and it should be recognized, not chased.
+5. States that the score depends on the chosen mutants and is not the probability that the real function is correct.
 
-**Source:** Whose test is it? Reproduce before you repair
+**Source:** Build It: the baseline that lets you audit
 
 ## ES-ch06.9
 
-Compare three regression tests for the same patch: one written after you have read the patch, one that Claude writes alongside its own patch, and one that you write first from the rule. For each, say what weakness or strength the chapter identifies.
+A coding agent was told to make a failing test pass. Its diff adds `if amount == 100: return 8.0` ahead of the real logic (the failing test called `tax(100)` and expected 8.0) and also edits the expected value in another failing assertion from 12.5 to 11.0. The suite is now green. Explain what is wrong with each change, what a reviewer should look for in diffs from agents in general, and what controls reduce this risk.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Test written after the patch: it is shaped by the patch, so you check the cases the patch handles.
-2. Test written after the patch: the expected values are taken from what the patch returns, so it is a retrospective blessing.
-3. Test Claude writes alongside its patch: the two share an author, so a misunderstanding of the requirement sits on both sides of the comparison and cancels out.
-4. Test written first by you from the rule: it represents the expected behavior, so the patch is what is on trial.
-5. Adds that the test written first is still your design and can still be incomplete.
+1. Identifies the first change as hardcoding to the test input, which satisfies the check without implementing the rule.
+2. Identifies the second change as moving the specification to match the code, which reverses the direction of evidence.
+3. Explains that a green suite after such edits measures the agent's accommodation of the tests, not correctness.
+4. Names review signals: modified or deleted tests, special cases keyed to literal test values, skipped or weakened assertions, and unexplained expected-value changes.
+5. Names controls: keep the tests fixed and out of the agent's allowed edit scope, add held-out tests the agent cannot see, require justification for any test change, and compare behavior on new inputs.
 
-**Source:** Whose test is it? Reproduce before you repair
+**Source:** Use It: conduct Claude Code against your gate
 
 ## ES-ch06.10
 
-Describe the reviewer's habit of asking which different implementation could pass the current test. Apply it to the two-input test: what does that test still leave open, and how should you word the claim without inventing a specification?
+Read this unified diff.
+
+```text
+--- a/io.py
++++ b/io.py
+@@ -1,6 +1,7 @@
+ def load(path):
+-    f = open(path)
+-    data = f.read()
+-    f.close()
++    with open(path) as f:
++        data = f.read()
++    if not data:
++        return []
+     return parse(data)
+ 
+```
+
+Explain what the hunk header means, count the removed and added lines, describe the behavioral changes in plain language, and state one thing the diff does not establish.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the habit: ask which different implementation could pass the current test.
-2. Notes that one plausible counterexample is enough to show the evidence supports a narrower claim than "the bug is completely fixed."
-3. Names one open question of the two-input test: which input types are supported or what happens at boundary values.
-4. Names the other open question: whether the function belongs to a larger invariant.
-5. States that, because the exercise supplies no complete specification, the claim should say the selected checks cover the declared integer examples and the transformation they illustrate, without inventing more.
+1. Explains that `-1,6 +1,7` means the old hunk starts at line 1 and spans 6 lines, and the new hunk starts at line 1 and spans 7.
+2. Counts three removed lines and four added lines, a net gain of one, and notes the unprefixed lines are unchanged context.
+3. Explains that an empty file now returns an empty list without reaching `parse`, which can change behavior for callers that relied on the old result.
+4. Explains that the `with` block guarantees the file is closed even if reading raises an exception, which is a resource-handling change.
+5. States that the diff does not run the code or show that callers, the parser or the tests are compatible, so behavior must be established separately.
 
-**Source:** Whose test is it? Reproduce before you repair
+**Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.11
 
-In the vocabulary of Conducting AI, the chapter's gate is a phase gate. Define a phase gate, explain why the gate is the part of the work Claude cannot do for you, and say when it is written and what it must record about who decided.
+An agent's diff changes a pricing function so that the subtotal accumulates `item.price * item.qty` instead of `item.price`, and so that tax becomes `round(subtotal * rate, 2)` instead of `subtotal * rate`. Describe the behavioral change in plain language, give two concrete inputs with the old and new totals, and name risks the diff alone cannot resolve.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Defines a phase gate as a specific, testable condition that must hold before the output moves downstream.
-2. Says the gate is where your understanding of the requirement goes on the record.
-3. Concludes from this that Claude cannot do the gate for you.
-4. Says the gate is written before you ask Claude for a plan.
-5. Says the gate names who decided each item (in the exercise, the author's own choices, with no model producing them).
+1. States that quantity now multiplies price, so totals change for any item whose quantity is not 1.
+2. Gives a worked case such as one item of price 10 with quantity 3 and rate 0.08, where the old total is 10.8 and the new total is 32.4.
+3. States that tax is now rounded to cents, and gives a case such as subtotal 10 with rate 0.0733, where the old total is 10.733 and the new total is 10.73.
+4. Names unresolved risks: whether every item has a quantity attribute, whether the old behavior was relied on, floating-point rounding behavior, and the tie-breaking rule of rounding.
+5. Concludes that the diff is two behavioral changes bundled together and that tests should cover each separately.
 
-**Source:** The gate: reproduction, test, and scope, before the patch
+**Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.12
 
-State the gate's stop condition for the plus-one exercise. Give each element and say what artifact would show it was met.
+After an agent session in a git repository, a reviewer runs plain `git diff` and sees changes to two files. Explain what that output omits, give at least three ways the session may have changed things that it does not show, and list the practices that would give a more complete view of what the session did.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The patch does not move downstream until the stop condition is met.
-2. The test was saved before the plan, shown by a file timestamp or a commit.
-3. The plan names only allowed files.
-4. The test and the existing suite have been run against the current diff.
-5. The commands and exit status are recorded.
+1. Explains that plain `git diff` shows unstaged changes to tracked files only, so staged changes and new untracked files are missing.
+2. Names omissions such as untracked files, staged changes, ignored files, deleted ignored directories, and files outside the repository.
+3. Names effects outside file contents, such as installed packages, database migrations, and commands with network or system side effects.
+4. Recommends complementary views such as `git status`, `git diff --staged` or `git diff HEAD` against a recorded base commit, and a listing of untracked files.
+5. Recommends reviewing the log of commands the agent ran and recording which command and scope produced each view.
 
-**Source:** The gate: reproduction, test, and scope, before the patch
+**Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.13
 
-Name the two wrong versions the gate's checks must catch, say which check catches each, and explain what it means if your checks cannot tell them from the right patch. Then explain why the one-sentence "what a failure looks like" must be written before you read the test output.
+A reviewer has two pending changes. Change 1 is 600 lines of regenerated lockfile entries plus a 20-line edit to payment-rounding logic. Change 2 is 400 lines of docstring edits. Explain why line count is a poor guide to review effort, and how the reviewer should allocate attention between the two.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the constant three as the first wrong version.
-2. Names a patch that gets the arithmetic right while editing an unrelated configuration file as the second.
-3. Says the test (input five) catches the constant, and the scope check against the allowed list catches the unrelated file.
-4. Says that if the test and scope check cannot tell these from the right patch, the gate is not finished.
-5. Says that a failure sentence written after reading the output describes the output and does not test your understanding.
+1. Argues that risk depends on behavioral consequence and the reviewer's uncertainty, not on the number of lines.
+2. Identifies the 20-line payment edit as high-consequence and deserving the closest reading.
+3. Notes that regenerated lockfile entries are not exempt: version changes, new transitive dependencies and removed pins can matter and can be checked with targeted tools.
+4. Identifies docstring edits as low risk, but still worth a skim for misleading statements about behavior.
+5. Notes that a one-character operator change can alter every call, so a small diff can be the most dangerous.
 
-**Source:** The gate: reproduction, test, and scope, before the patch
+**Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.14
 
-State what the gate's packet may claim and what it may not claim for the plus-one exercise, and give the rule, the reproduction inputs, and the allowed files that the gate's design fixed.
+A coding agent produces a 3,000-line diff in a few minutes. A reviewer can read about 250 lines carefully per hour. Compute the hours needed, explain why simply reading faster is not a sound response, and propose at least three ways to shrink what must be read or to make the review purposeful.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the rule: return the input plus one, for the declared integer examples.
-2. States the reproduction inputs two and five with expected results three and six.
-3. States the allowed files: `app.py` and its learner test file.
-4. States the packet may claim behavior on the declared integer examples, and scope by filename.
-5. States the packet cannot claim the function is correct for all inputs, or that a person approved it.
+1. Computes 3,000 divided by 250, which is 12 hours of careful reading.
+2. Explains that generation scales with the machine and verification does not, so the unreviewed gap grows if nothing else changes.
+3. Explains that rushing degrades care and creates the appearance of review without the substance.
+4. Proposes shrinking the surface: a tight scope or allowed-file list, smaller incremental changes, and separating mechanical churn from behavioral changes.
+5. Proposes making review purposeful: fixing tests and acceptance criteria before the work, reading against specific targets, and using automated checks for what machines verify well.
 
-**Source:** The gate: reproduction, test, and scope, before the patch
+**Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.15
 
-The gate has a pass condition you can check before any Claude session. Describe the expected result of running your test against `old`, `inadequate_patch`, and `intended_patch`; say what to do if the results differ; and describe Claude's role in sharpening the gate.
+A reviewer views a Python change with whitespace differences hidden to reduce noise. The old and new versions of a function are shown below. Explain, using this example, why hiding whitespace can hide a behavioral change, compute what each version returns for the list `[1, 2, 3]`, and state when a whitespace-insensitive view is appropriate.
+
+Version 1:
+
+```python
+def total(items):
+    t = 0
+    for x in items:
+        t += x
+    return t
+```
+
+Version 2 differs only in indentation: the `return t` line is indented one level further, so it sits inside the loop body.
+
+```python
+def total(items):
+    t = 0
+    for x in items:
+        t += x
+        return t
+```
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. `old` fails on both inputs.
-2. `inadequate_patch` fails on input five only.
-3. `intended_patch` passes on both inputs.
-4. If the results differ, the gate is wrong and must be fixed before anything else.
-5. Claude is good at proposing the input you missed and can sharpen the gate, but what it proposes you adopt or reject.
+1. Explains that in Python indentation is syntax, so re-indenting a line changes which block it belongs to.
+2. Computes that version 1 returns 6 for `[1, 2, 3]`.
+3. Computes that version 2 returns 1 for `[1, 2, 3]`, because it returns during the first loop iteration.
+4. Explains that a whitespace-ignoring diff would show no change for the moved return, hiding the defect.
+5. States that such a view is acceptable for confirming formatting-only edits in languages where whitespace is not significant, with the unfiltered diff still examined for Python, YAML, Makefiles and similar formats.
 
-**Source:** The gate: reproduction, test, and scope, before the patch
+**Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.16
 
-Given the unified diff that removes `return x - 1` and adds `return x + 1`, explain the hunk without treating the markers as arithmetic. State one claim the diff supports and one claim it does not.
+A reviewer is given an agent's own written summary of its change rather than the diff itself. The summary is clear and detailed. Explain why a reviewer should still read the diff, what kinds of discrepancies can exist between a summary and a diff, and describe a cheap consistency check.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that the leading minus and plus lines are change notation, not arithmetic performed by the diff.
-2. States that the diff reports a textual transformation and the reviewer connects it to expected behavior.
-3. Explains the changed expression: replacing subtraction with addition changes the rule from one below x to one above x.
-4. Notes that this explanation transfers across inputs, while "the plus sign looks right" does not.
-5. Gives a claim the diff does not support, such as that it runs the code, proves either string came from the intended repository file, or shows untracked changes omitted from the comparison.
+1. States that the summary is a generated, second-hand account of the work and the diff is the change itself.
+2. Notes that a summary can omit changes, overstate what was tested, or describe intent rather than effect.
+3. Notes that fluency and detail do not indicate that the claims were checked against the actual state of the files.
+4. Describes a consistency check, such as comparing the list of files the summary claims against the files in the diff, or checking each claimed behavior against a specific hunk.
+5. States that a past record of accurate summaries does not remove the need to read the diff, because the unreliable case cannot be identified in advance.
 
 **Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.17
 
-Be exact about what a diff is evidence of. Say what it shows, name three things it does not show, and say what you should record in an actual Claude Code workflow.
+A team implements a scope check for agent patches as the set difference between the files a patch changed and a list of allowed files. Explain what this check catches, give at least three things it cannot catch, and propose improvements that address them.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that it shows what text differs between two supplied strings.
-2. States that it does not prove either string was loaded from the intended repository file.
-3. States that it does not run the code.
-4. States that it does not show untracked changes omitted from the comparison.
-5. States that you should record the command and scope used to inspect changes and connect the displayed diff to the working tree.
+1. Explains that it flags any changed file whose name is not on the allowed list, and passes when the changed set is a subset of the allowed set.
+2. Notes it cannot see line-level changes: unrelated rewrites inside an allowed file still pass.
+3. Notes that renames, deletions, generated files and mode changes need richer status than a list of names.
+4. Notes that it says nothing about correctness, so a perfectly scoped patch can still be wrong.
+5. Proposes improvements such as hunk- or function-level allowances, diff status in the record, size thresholds on churn, and human reading of the diff for allowed files.
 
-**Source:** Read a diff as a behavioral proposal
+**Source:** Scope is a testable property, not a mood
 
 ## ES-ch06.18
 
-Claude can produce a large diff in seconds while your reading speed has not changed. Explain the volume trap from Irreducibly Human, say why reading faster does not solve it, and say how the gate changes what you have to read.
+During a bug fix, an agent working inside an allowed list discovers that its fix needs a change to a configuration file that is not on the list. Describe the correct process for handling this, explain why widening the list to the whole repository is wrong, and say who decides and what must be recorded.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that generation scales with the machine and verification does not.
-2. States that the gap fills with output nobody verified.
-3. States that reading faster does not close the gap.
-4. States that shrinking what must be read and deciding in advance what the reading is for does help.
-5. Explains that a test written first and a short allowed-file list turn "read everything Claude changed" into "read these files, against this test."
+1. Says the work should pause so a person can examine why the file must change and whether a narrower fix exists.
+2. Explains that widening scope to the whole repository defeats the check, since a boundary that admits everything constrains nothing.
+3. States that the owner of the task decides, because they know dependents, parallel branches and release responsibilities the agent cannot see.
+4. States that the decision must be recorded: who widened the scope, when, and why, instead of being done silently.
+5. States that checks must be rerun on the resulting proposal, since earlier evidence described a different change.
 
-**Source:** Read a diff as a behavioral proposal
+**Source:** Scope is a testable property, not a mood
 
 ## ES-ch06.19
 
-Predict `merge_ready` and `reasons` for each call to the lesson's `review(changed, allowed, checks_passed, approved)` function: (a) `review([], ["app.py"], True, True)`; (b) `review(["app.py", "settings.cfg"], ["app.py"], False, False)`; (c) `review(["app.py"], ["app.py"], True, False)`. Say what rule governs when `merge_ready` is true.
+A team using a coding agent such as Claude Code wants it never to edit files under `migrations/`. Compare four mechanisms: a sentence in a project instruction file that the agent reads at startup, a permission rule that denies edits to that path, a continuous-integration check on changed filenames, and human review of the diff. For each, say whether it prevents or detects a violation and where it can fail.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. (a) `merge_ready` is false with the single reason `no changes`.
-2. (b) `merge_ready` is false, and the reasons include `out of scope` because `settings.cfg` is not in the allowed list.
-3. (b) The reasons also include `checks failed or absent` and `human review required`, so all three appear together.
-4. (c) `merge_ready` is false with the single reason `human review required`.
-5. States that `merge_ready` is true only when the reasons list is empty, and that the function accumulates every reason so more than one failed obligation stays visible.
+1. Classifies the instruction-file sentence as guidance that the model usually follows but that does not technically prevent an edit.
+2. Classifies a permission deny rule as prevention applied at the tool layer regardless of what the model intends.
+3. Classifies a CI filename check as detection after the fact, which can block a merge but not the edit itself.
+4. Classifies human diff review as detection that depends on the reviewer's attention and on the diff showing the relevant files.
+5. Recommends layering them, with enforcement for hard constraints and instructions or review for softer preferences.
 
 **Source:** Scope is a testable property, not a mood
 
 ## ES-ch06.20
 
-Explain what the filename comparison in the `review` function catches, what it cannot catch, and what you should do for renamed or generated files in a real packet.
+An agent's patch fixes the reported bug correctly and all tests pass. The same patch also reformats about 300 unrelated lines in the permitted file and adds a new package to the dependency list, which is not on the allowed list. Decide whether to accept, revise or reject, and justify the decision with the evidence you have and the evidence you would still want.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the set difference between changed and allowed files exposes any changed name not in the allowed set.
-2. States that it does not inspect line-level scope inside an allowed file.
-3. Gives the example that a patch can rewrite unrelated functions in `app.py` and still pass if `app.py` is permitted.
-4. States that renamed or generated files may need a richer representation than a simple list.
-5. States that in a real packet you should preserve the real diff status and explain how it maps to the simplified input, and that filename scope is useful and incomplete.
+1. Recognizes that behavioral correctness and scope are separate obligations and that passing tests do not settle scope.
+2. Identifies the dependency addition as out of scope and potentially risky (new code, licensing, supply-chain exposure) and requiring explicit justification.
+3. Identifies the 300-line reformatting as churn that hides real changes and increases review burden.
+4. Reaches a defensible decision, such as reject as presented or revise, with the specific remediation: revert or split the unrelated changes, justify the dependency separately.
+5. Says the checks should be rerun on the resulting proposal and the remaining limitations recorded.
 
-**Source:** Scope is a testable property, not a mood
+**Source:** Accept, revise, or reject
 
 ## ES-ch06.21
 
-During review, a patch reveals a legitimate dependency on a file outside the allowed list, and a teammate proposes setting the allowed list to the whole repository. Respond: what is wrong with that proposal, and what should be done instead?
+A coding agent's patch adds a new third-party package to a project's dependency list as part of fixing a small bug. Explain why this change deserves scrutiny disproportionate to its size, what a reviewer should check, and how it relates to the scope that was set for the task.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that making the allowed list the whole repository erases the boundary the check was meant to enforce.
-2. States that the right response is to pause and revise the scope explicitly.
-3. States that design first does not mean freeze the design: a finding in the patch can reopen an earlier decision.
-4. States that the decision cannot be reopened silently.
-5. States that you record who widened the list, when, and why, and rerun the checks on the resulting proposal instead of pretending the file was always included.
+1. Explains that a dependency introduces third-party code that runs with the application's privileges, so a one-line change has large consequences.
+2. Lists checks: whether the package is needed, whether it is maintained and widely used, its license, and whether the name is legitimate and not a lookalike of a popular package.
+3. Notes that the version pinning and lockfile changes should be inspected, including transitive additions.
+4. Relates it to scope: a dependency file outside the allowed list is a scope decision for the task owner, to be widened deliberately or reverted.
+5. Notes that alternatives, such as using the standard library or an existing dependency, should be considered before accepting.
 
 **Source:** Scope is a testable property, not a mood
 
 ## ES-ch06.22
 
-Claude Code reports that it must touch a configuration file to complete the fix, and the reason sounds good. Who decides whether the task grows to include that file, and why? Name what Claude can and cannot know.
+A merge-gating function takes two booleans, `tests_passed` and `human_approved`, and reports ready when both are True. Explain what these booleans do and do not establish, and design a record that would make the readiness claim checkable by a reviewer who was not present.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that scope is a decision about the task, made before the plan, and that it is the decision on which Claude has the least context.
-2. States that Claude can tell you which files it believes it must touch and why, and the reason may be good.
-3. Names at least two things Claude cannot see: who else depends on that file, what is in flight on another branch, whose name is on the release.
-4. States that whether the task should grow is a decision about what the change is for.
-5. States that the decision stays with the person who owns the task.
+1. States that a boolean is a claim made by the caller and carries no command, output, timestamp, environment or link to a code version.
+2. States that supplying True by hand demonstrates the function's branch logic, not that tests ran.
+3. Proposes recording the exact commands run, their outputs and exit status, with the working directory and target.
+4. Proposes binding the record to an identifier of the exact proposal, such as a commit hash or diff digest, and deriving the boolean from the recorded run.
+5. States that the approval flag does not authenticate a person and that identity and the decision need separate mechanisms.
 
-**Source:** Scope is a testable property, not a mood
+**Source:** Flags are claims about evidence
 
 ## ES-ch06.23
 
-What does `checks_passed=True` mean in the `review` function, and what must the surrounding artifact supply? Explain the difference between deriving the Boolean from a packet and supplying it by hand in a fixture.
+A coding agent ends a session with the message, "I fixed the issue and all tests pass." Explain what kind of statement this is, why it is not sufficient evidence for a merge decision, and what a reviewer should do to turn it into evidence.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that `checks_passed=True` means the caller said so.
-2. States that the function has no command, output, timestamp, or environment.
-3. States that the function has no association between a check and the current diff.
-4. States that the surrounding artifact must supply those, and a packet with exact commands, outputs, and exit status can derive the Boolean.
-5. States that supplying True by hand in a fixture demonstrates the branch, not that a real check passed.
+1. Classifies it as a claim about a run, generated text rather than a recorded observation.
+2. Notes that it carries no command, output, exit status or link to the diff that will be merged.
+3. Notes that the run may predate later edits or may have covered a different target.
+4. Describes reproducing the check on the current working tree and preserving the command, output and exit status.
+5. Notes that a fluent, confident summary is not itself a sign that the claims were checked, so confidence should not weigh in the decision.
 
 **Source:** Flags are claims about evidence
 
 ## ES-ch06.24
 
-Claude Code ends a session with the message "all tests pass." Explain where that statement stands relative to `checks_passed=True`, what it lacks, and what the chapter says about finishing and succeeding.
+A team's log shows: at 14:00 the agent commits patch a1; at 14:10 a test run reports 42 passed; at 14:20 the agent amends the patch, creating commit b2; at 14:25 a reviewer records "approved" and merges. Identify what is wrong with the evidence chain and design a record that would prevent the problem.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the message is a claim about a run.
-2. States that it stands exactly where `checks_passed=True` stands.
-3. States that it carries no command, output, or link to the diff you are about to merge unless you go and get them.
-4. Cites Chapter 4's point about loops: finishing is not succeeding.
-5. States that a tidy summary is the finish, not the evidence.
+1. Observes that the 14:10 test result concerns commit a1, not b2, so it does not support the merged version.
+2. Observes that the approval at 14:25 is not tied to a specific version and so cannot show whether a1 or b2 was reviewed.
+3. Proposes recording an identifier of the exact diff or commit next to every test output and every decision.
+4. Proposes a rule that any change to the proposal invalidates prior test results and approvals and triggers reruns.
+5. Notes that a digest ties a decision to content but does not prove who made the decision or that they read it.
 
 **Source:** Flags are claims about evidence
 
 ## ES-ch06.25
 
-What does the `approved` argument of `review` require, and what does it not establish? Include what Chapter 13 will do and what a required flag does accomplish.
+A reviewer records "approved = true" for a change in a review tool. Explain what the flag does and does not prove, how binding it to a digest of the exact proposal improves it, and what a digest still cannot prove.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the function requires literal True.
-2. States that it does not authenticate a reviewer.
-3. States that it does not prove the reviewer saw this version of the diff.
-4. States that Chapter 13 will bind a simulated decision to a proposal fingerprint while still refusing to treat a digest as identity.
-5. States that a required flag stops the caller from omitting approval, but the meaning of the value depends on the process around it.
+1. States that a required flag stops the approval step from being omitted but is simply a value anyone or any script can set.
+2. States that the flag does not identify who approved or show that they saw this version.
+3. Explains that binding the approval to a hash of the exact diff lets the system detect changes after approval.
+4. Explains that a digest fingerprints content and does not authenticate identity.
+5. Explains that a digest does not show the reviewer read or understood the change; authentication and process controls supply those properties.
 
 **Source:** Flags are claims about evidence
 
 ## ES-ch06.26
 
-The lesson's demo calls `review(["app.py"], ["app.py"], True, False)`. State the result, explain what it does and does not show, and explain what the lesson test that supplies True for approval and sees merge-ready does and does not show.
+A reviewer edits a Python project, runs the test suite after the final edit, and sees all tests pass. Later it is found that the tests imported the package from an older installed copy rather than from the edited working tree. Explain what went wrong, why chronology did not protect the reviewer, and what should be recorded to prevent it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that `merge_ready` is false with the single reason `human review required`.
-2. States that this is an executed control-path result.
-3. States that it is not evidence that a person declined the patch.
-4. States that the lesson test supplying True and seeing merge-ready is a simulated input, not a human act.
-5. States that the function aggregates conditions without generating their evidence, so integration must construct trustworthy inputs; a dashboard is only as honest as the records behind its green indicators.
+1. Explains that the run was truthful but examined a different copy of the code than the one under review.
+2. Explains that running after the final edit establishes order in time, not which artifact the command exercised.
+3. Recommends recording the working directory, the command and the target of each check.
+4. Recommends verifying which file was imported, for example by printing the module's path, or running tests in an environment installed from the working tree.
+5. States that a pasted pass indicator without its command and target tells the reviewer less than it appears to.
 
-**Source:** Flags are claims about evidence
+**Source:** A packet is a chain, not a folder
 
 ## ES-ch06.27
 
-A student says, "I audited the patch by running the tests." Diagnose what is wrong with that sentence by distinguishing the audit from verification.
+A test is flaky. On correct code it passes 80 percent of the time per run, and on a buggy variant it passes 40 percent of the time per run (assume independent runs). Compute how much more likely one pass and three consecutive passes are under the correct code than under the buggy variant, and explain what this means for using the test as evidence and how to improve it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that verification consults a source, such as a test run, a reference, or a recomputation.
-2. States that the audit consults no source and runs on your own model of how the thing should behave.
-3. States that the audit decides whether a source needs consulting at all, and what the verification should look for.
-4. Identifies running the tests as verification, so verification has leaked into the audit.
-5. Explains that once the test has spoken, you cannot tell whether your model fired or the test did the work.
+1. Computes that one pass is 0.8 / 0.4 = 2 times as likely under the correct code, which is weak evidence.
+2. Computes that three consecutive passes have probabilities 0.512 and 0.064, a ratio of 8.
+3. Explains that repeated independent runs multiply the likelihood ratios, so reruns add information.
+4. Explains that a single pass from a noisy test should not be reported as showing the patch is correct.
+5. Recommends removing the nondeterminism (fixed seeds, isolated state, controlled timing) so that one run is informative.
 
-**Source:** Audit before you verify
+**Source:** Flags are claims about evidence
 
 ## ES-ch06.28
 
-The diff shows a function specified as "input plus one" whose body is `return 3`. Write the audit record's four lines for this diff (verdict, target, mechanism, what would change your view), and say what the audit depended on.
+Read this merge-gating function and the three calls below.
+
+```python
+def ready(changed, allowed, checks_ok, approver):
+    reasons = []
+    if not changed:
+        reasons.append("no changes")
+    extra = set(changed) - set(allowed)
+    if extra:
+        reasons.append("out of scope: " + ", ".join(sorted(extra)))
+    if checks_ok is not True:
+        reasons.append("checks failed or absent")
+    if not approver:
+        reasons.append("no approver")
+    return (not reasons, reasons)
+
+ready(["a.py", "b.py"], ["a.py"], True, "kim")
+ready([], ["a.py"], False, "")
+ready(["a.py"], ["a.py"], True, "kim")
+```
+
+State the return value of each call, then explain two limitations of this function as a safeguard.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Gives the verdict as suspect.
-2. Gives the target as behavior at an input other than two.
-3. Gives the mechanism as an anomaly against a held model: a function that adds one must return different values for different inputs, and the body never mentions x.
-4. Gives what would change the view as a second input returning input plus one, or learning that the written rule was not the rule the task needed.
-5. States that the audit used one piece of knowledge, that the output depends on the input, and that learning the rule was wrong would send you back to the reproduction rather than forward to the check.
+1. States the first call returns `(False, ["out of scope: b.py"])`.
+2. States the second call returns `(False, ["no changes", "checks failed or absent", "no approver"])`, with all reasons accumulated.
+3. States the third call returns `(True, [])`.
+4. Explains that `checks_ok` and `approver` are caller-supplied values with no link to a real test run or a real, authenticated person.
+5. Explains that the scope check compares filenames only, so unrelated changes inside an allowed file pass.
 
-**Source:** Audit before you verify
+**Source:** Flags are claims about evidence
 
 ## ES-ch06.29
 
-A diff changes how a library call rounds a value, and you have never used the library. What does the audit chapter say your honest verdict is, where does it route you, and why must the patch's polish not fill the gap?
+A reviewer is asked to record a short note after reading an agent's diff and before running any check on it. Describe what the note should contain, why it must be written before the run, and what the reviewer gains when the check result arrives.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that your held model is silent.
-2. States that the honest verdict is `cannot audit`.
-3. States that you name the missing knowledge.
-4. States that the verdict routes you to a source, a person who knows, or a narrower claim.
-5. Explains that fluency and groundedness come from the same process and correlate only by accident, while instinct trained on people whose fluency tracked competence reads them as one signal, so polish must not stand in for the missing model.
+1. Lists the contents: a verdict on whether the change is suspect, a target for the check, the suspected mechanism, and what observation would change the reviewer's mind.
+2. Explains that a target focuses the check on a specific question, which "check everything" does not.
+3. Explains that writing before the run prevents hindsight from rewriting what the reviewer expected.
+4. Explains that when the result arrives, agreement shows the reviewer's model works in that area, and disagreement shows either that the model or the aim of the check was wrong.
+5. States that the record should be dated and not edited afterward, since its value lies in being a prediction.
 
 **Source:** Audit before you verify
 
 ## ES-ch06.30
 
-After you run the check, what should you do with the audit record, and how do you interpret agreement and disagreement between the result and your prediction? What may you not do afterward, and what is an intuition worth?
+A reviewer says, "I audited the patch by running the test suite." Explain how auditing a change using one's own model differs from verifying it against a source, why mixing them loses information, and what each is for.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that you put the result beside the prediction.
-2. States that agreement means your model is working in this corner.
-3. States that disagreement means the gap is the learning.
-4. States that the gap means either your model was wrong or the check was aimed at the wrong target.
-5. States that you must not rewrite the record afterward, and that an intuition is a reason to investigate, not proof of a bug and not permission to skip required checks.
+1. Defines verification as consulting an external source such as a test run, a reference or a recomputation.
+2. Defines a plausibility audit as judgment from the reviewer's own model of expected behavior, made before any lookup.
+3. Explains that once a check result is seen, the reviewer cannot tell whether their model or the result produced the judgment.
+4. States that the audit decides whether a source needs consulting and what the verification should look for.
+5. States that without the audit the checks lack a question, and without the checks the audit remains unvalidated opinion.
 
 **Source:** Audit before you verify
 
 ## ES-ch06.31
 
-Distinguish the gate from the audit: when is each written, what does each say, and why does each need the other?
+A diff changes how a numerical library call rounds a value, and the reviewer has never used the library. Explain what the reviewer should do, why approving on the strength of clean formatting and a persuasive description would be a mistake, and how the unfamiliarity should be recorded.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the gate is written before the patch exists.
-2. States that the gate says what must hold.
-3. States that the audit is written after you have seen this particular patch.
-4. States that the audit says what you suspect about the patch.
-5. States that without the gate the audit has no standard, and without the audit the gate's checks run without a question.
+1. States that the honest verdict is that the reviewer cannot audit the change and should say so.
+2. Names the missing knowledge, such as the library's rounding rules and their edge cases.
+3. Routes the change to a source: documentation, a person who knows the library, or a targeted test of the rounding behavior.
+4. Explains that formatting, comments and a persuasive description reflect fluency, which can arise whether or not the change is correct.
+5. Explains that the unchecked area should be recorded in the sign-off, or the claim narrowed to what was verified.
 
 **Source:** Audit before you verify
 
 ## ES-ch06.32
 
-A reviewer's note says only "Looks good." Explain why that is inadequate and rewrite it as the kind of accept sentence the chapter recommends, naming what it must contain.
+Language models and human writers can both produce explanations that sound authoritative. Explain why a fluent, well-formatted patch description is poor evidence that a patch is correct, and what a reviewer should look at instead.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that "Looks good" hides the basis of judgment.
-2. States that an accept should name the version reviewed.
-3. States that an accept should name the scope inspected and the checks run.
-4. States that an accept should name the remaining limitations.
-5. Gives a rewrite in the chapter's form, such as accepting the x+1 patch for the declared integer behavior after the two regression inputs and the existing suite passed, with broader type behavior not evaluated.
+1. Explains that fluency and groundedness arise from different processes and correlate imperfectly.
+2. Explains that human instinct trained on writers whose fluency tracked competence reads polish as a signal of correctness, which is unreliable for model output.
+3. Notes that a persuasive description can be wrong, partial or describing intent rather than behavior.
+4. Names evidence to prefer: the diff itself, executed checks tied to the current version, reproduction of the defect, and scope comparison.
+5. Notes that reviewer knowledge of how the system should behave is what detects a mismatch between the description and the code.
 
-**Source:** Accept, revise, or reject
+**Source:** Audit before you verify
 
 ## ES-ch06.33
 
-Classify each of these as accept, revise, or reject and justify it: (1) the constant `return 3` patch; (2) a patch that gets the arithmetic right but also edits an unrelated configuration file and passes the regression. Say what rejection does and does not claim.
+A reviewer predicted that a change would break behavior on empty input. The test suite then ran and passed, including an empty-input case. Describe at least two explanations for the disagreement between prediction and result, what the reviewer should do next, and what should happen to the original prediction record.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Classifies the constant patch as revise.
-2. Justifies it: the goal remains valid and the patch is in file scope, but it demonstrates the expected result for one input and fails a second case representing the same rule.
-3. States that the next action for a revise is to change the implementation or narrow the claim honestly, not to broaden approval.
-4. Says the unrelated-file patch can justify rejection even if the regression passes.
-5. States that rejection is a decision about the proposal as a package under the current task boundary, not a claim that every line is bad.
+1. Names the explanation that the reviewer's model of the code was wrong in this area.
+2. Names the explanation that the check was aimed at the wrong target, for example the empty-input test does not exercise the path the reviewer suspected.
+3. Describes follow-up that distinguishes the explanations, such as reading the test, running a targeted check on the suspected path, or inspecting the code.
+4. States that the disagreement is information that updates the reviewer's model rather than a failure to be hidden.
+5. States that the original prediction record is left as written, with the result placed beside it.
 
-**Source:** Accept, revise, or reject
+**Source:** Audit before you verify
 
 ## ES-ch06.34
 
-Name the verbs on the Computational Skepticism ladder from weakest to strongest, say what observe and conclude each require, and explain the editing remedy the chapter proposes for AI-written prose that reaches for strong verbs.
+A reviewer reading a patch has a strong feeling that it is fine. Another reviewer has a strong feeling that a different patch is broken, but cannot yet say why. Explain how each intuition should be treated, why neither is enough on its own, and how stating a mechanism helps.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Lists the ladder in order: hypothesize, suggest, observe, find, show, demonstrate, conclude, prove.
-2. States that each verb names a posture and the minimum evidence it needs.
-3. States that observe is the most defensible verb for a result from one run under stated conditions.
-4. States that conclude means the motivating question is settled, with alternatives considered and rejected.
-5. States that engineering evidence usually sits between observe and find while prose reaches for conclude, and the remedy is to downgrade the verb until it matches the evidence.
+1. States that a feeling of "fine" does not license skipping the checks the task requires.
+2. States that a feeling of "broken" is a reason to investigate and is not evidence of a defect.
+3. Explains that intuition can reflect real pattern recognition or merely familiarity, and the reviewer cannot tell which without articulating the basis.
+4. Explains that naming the mechanism, such as a violated constraint or a missing pattern, makes the suspicion testable and defensible.
+5. Explains that a verdict that cannot be explained cannot be taught, defended to a skeptic or trusted by the reviewer.
 
-**Source:** Choose the verb the record supports
+**Source:** Audit before you verify
 
 ## ES-ch06.35
 
-For the patch summary sentences "The patch returns three and six for inputs two and five," "The data suggest the patch implements plus one on the declared integers," "The patch completely fixes the bug," and "The patch is safe to merge," assign the verb the chapter gives, say whether the two-input record supplies the needed evidence, and explain why downgrading a verb is not cosmetic.
+Three patches are proposed for a function that must return its input plus one, within a task that allows changes to one source file and its test file. Patch 1 returns the constant 3 and passes the existing test, which only uses input 2. Patch 2 returns `x + 1`, passes all checks, and also modifies an unrelated configuration file. Patch 3 returns `x + 1`, passes all checks and stays in scope, but the requester later says the real requirement was something else. Decide accept, revise or reject for each and justify the decisions.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Gives "returns three and six" as an observe sentence, needing the command, inputs, and output run on the current diff.
-2. Gives "the data suggest" as a suggest sentence that the two-input record supplies, since two inputs point toward the rule and rule out the constant.
-3. Gives "completely fixes" as a conclude sentence that the two-input record does not supply.
-4. Says "safe to merge" is not a finding or evidence verb; it is a decision by a named reviewer with the packet attached.
-5. Explains that a downgrade changes what a reader does next: a reader of conclude may merge, while a reader of suggest may ask for one more test.
+1. Treats Patch 1 as a revise case: the goal is valid, the implementation fails the stated rule on other inputs, and the evidence is too thin.
+2. Treats Patch 2 as rejectable as presented, or revisable after the configuration change is reverted or justified, because scope is an independent obligation.
+3. Explains that passing behavioral tests does not neutralize an unexamined change elsewhere.
+4. Treats Patch 3 as a failure of the requirement, not of the implementation: tests cannot repair an invalid requirement, so the specification must be reopened.
+5. States that the decision belongs to the accountable human reviewer, with the evidence and limits recorded; the agent may recommend but not decide.
 
-**Source:** Choose the verb the record supports
+**Source:** Accept, revise, or reject
 
 ## ES-ch06.36
 
-Claude Code can write the candidates, the test, and the review policy faster than you can. Why does the chapter still have you build them yourself first, and what is your version used for afterward?
+A reviewer's note says only "Looks good, merging." Rewrite it as an accept decision for a patch that returns `x + 1` after two regression inputs and the existing suite passed. Explain what the rewritten version contains that the original lacks and why a reader benefits.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that Claude can write these functions faster than you can.
-2. States that the one thing Claude cannot hand you is the ability to read its patch and hear that something is off.
-3. States that this ability comes from having written the candidates, the test, and the policy yourself.
-4. Quotes or paraphrases the line from Irreducibly Human that you cannot audit what you do not know.
-5. States that your version is the baseline, the record of what you understood before Claude touched anything, against which you compare Claude's version by naming a difference in behavior (not line count or style).
+1. Names the exact version reviewed, such as a commit hash or diff digest.
+2. Names the scope inspected, such as which files were changed and compared against the allowed list.
+3. Names the checks run and on what: the two regression inputs and the existing suite, run on the current diff.
+4. Names the remaining limitations, such as non-integer input types and other boundary values not evaluated.
+5. Explains that a specific, falsifiable record lets a reader disagree, find gaps or reproduce the checks, whereas "looks good" hides the basis of the judgment.
 
-**Source:** Build It: the baseline that lets you audit
+**Source:** Accept, revise, or reject
 
 ## ES-ch06.37
 
-The lesson has six tests. Two wrong versions of `review` are proposed: one returns `merge_ready` false for every call, and one reports `no changes` as the reason whatever the failure. Which lesson tests catch each, and what general lesson about a green suite does the chapter draw?
+A coding agent implements precisely the rule in a ticket ("round prices down to the nearest dollar"), every test derived from the ticket passes, and the diff is clean and in scope. Weeks later finance says prices should have been rounded to the nearest cent. Explain why the review process did not catch this, what review could have done differently, and why more tests from the same ticket would not have helped.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that tests 02 through 05 each assert only that `merge_ready` is false.
-2. States that none of the six tests checks the reasons.
-3. States that the always-false version is caught only by test 01.
-4. States that the always-`no changes` version passes all five review tests.
-5. States that a green suite reports on what the suite asserts, and the part nobody asserted is the part nobody checked.
+1. Explains that tests derived from the ticket check implementation against the specification, not the specification against the real need.
+2. Explains that an exact implementation of a wrong rule is still a failure for the actual task.
+3. States that the requirement's owner decides what the requirement is and the code cannot supply it.
+4. Suggests review could have confirmed the requirement with its owner, checked an example of expected output, or flagged doubt and reopened the specification.
+5. Explains that additional tests from the same source reproduce the same error, so correlated evidence does not add independence.
 
-**Source:** Build It: the baseline that lets you audit
+**Source:** A worked decision from beginning to end
 
 ## ES-ch06.38
 
-Describe, in order, how you conduct Claude Code against your gate: what you hand over and withhold, what you ask for first, what you do with the plan, and what happens between the edit and the first test run.
+A report contains these sentences about a patch whose evidence is one run of three tests on one commit: "The patch completely fixes the bug." "The patch returns the expected values for the three tested inputs." "The patch is safe to merge." Rank the sentences by how well the evidence supports them, rewrite the overclaims to match the record, and explain why rewriting can change what readers do.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that you give Claude the issue, the reproduction, the failing regression test, and the allowed-file list, but not your implementation.
-2. States that you ask for a plan before any edit and check it against the allowed list.
-3. States that a plan naming a file outside the list is a decision for you, not an assumption for Claude.
-4. States that you permit a bounded edit and then read the diff and write the audit record before running anything.
-5. States that only then do you run the targeted regression and existing tests on the current diff, preserving commands, outputs, and exit status.
+1. Identifies the second sentence as supported: it reports exactly what was observed.
+2. Identifies "completely fixes the bug" as unsupported, since three inputs cannot establish behavior over the whole domain.
+3. Identifies "safe to merge" as a decision requiring an accountable person, scope check and risk judgment, not a result of three tests.
+4. Rewrites the overclaims at a strength the record supports, for example that the results suggest the patch implements the rule on the tested inputs.
+5. Explains that a stronger claim invites merging while a weaker one invites further checks, so calibration changes the next action.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** Choose the verb the record supports
 
 ## ES-ch06.39
 
-You ask Claude to propose additional test cases before it writes the patch, and later it writes another test after seeing its own patch. How should you treat each, and what should the packet record?
+A developer wrote a status summary of a code change and is confident that every claim in it is supported. A colleague, asked to critique it, says "this is too strong." Explain why writers have trouble seeing overclaims in their own summaries, and describe what a useful peer critique looks like, with an example.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that each test Claude proposes before the patch is a proposal that you adopt or reject.
-2. States that the packet records which tests came from Claude.
-3. States that an adopted test becomes part of the gate.
-4. States that a test Claude writes after seeing its own patch is evidence of what it understood.
-5. States that such a test is not an independent check.
+1. Explains that the writer's sense of the evidence comes from memory of the work, which fills gaps that the page does not.
+2. Explains that the writer chose each sentence's strongest verb by what felt true, so the mismatches are the ones the writer cannot see.
+3. Says a useful critique names a specific sentence, the verb used, the evidence that verb requires, and the verb the record supports.
+4. Gives an example such as "completely fixed" being unsupported by two inputs on one function, with "suggest" matching the record.
+5. States that the original, the revision and the reason should be preserved.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** Choose the verb the record supports
 
 ## ES-ch06.40
 
-After the targeted tests have run, the chapter asks for three things. Describe them, and explain what it means if Claude's deliberately wrong patch passes your tests.
+An AI review assistant produces the line "decision: accept" for a patch. A manager proposes treating that line as the required human approval to speed up merges. Explain why this is a mistake, what the assistant may legitimately contribute, and what must remain with a person.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that you compare Claude's patch with your baseline and name one difference in behavior.
-2. Gives the two kinds of difference: a boundary it handled that you missed (a revision to your gate) or one it silently ignored (a defect your test failed to catch).
-3. States that you note which of your tests failed, since a failing test is often a gap in your gate that Claude could not see because it had only what you wrote.
-4. States that you ask Claude to propose a deliberately wrong patch that still passes your tests and check by hand whether it does.
-5. States that if it passes, your tests were too weak and you found out cheaply, because whether your tests are enough cannot be judged by the system they are testing.
+1. States that approval is a human act with accountability, which a model's output cannot supply.
+2. States that a recommendation from the assistant can summarize evidence, challenge a rationale and flag overclaims.
+3. States that deciding which verb a result supports, whether scope should widen and whether to merge belongs to the responsible reviewer.
+4. Notes the failure mode: if the same system proposes, checks and approves, errors correlate and no independent check exists.
+5. Notes that treating the field as approval would let the process certify itself, which is exactly what the approval step is meant to prevent.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** Accept, revise, or reject
 
 ## ES-ch06.41
 
-The chapter cites Anthropic's Claude Code best practices, checked on 2026-09-06. State what the chapter says that guidance recommends, how the chapter maps it to artifacts, and what the chapter warns you not to claim about the local review function.
+A manager asks a reviewer to sign a note saying "The patch is safe to merge." Explain why this sentence is not an evidence finding in the same sense as "the patch returns the expected values for these inputs," what it depends on, and how the reviewer can respond honestly if the evidence is thin.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the guidance recommends giving work executable checks.
-2. States that it recommends separating exploration, planning, and implementation where appropriate.
-3. States that the chapter maps these ideas to reproduction, reviewed plan, diff, and test output.
-4. States that the mapping is an adaptation, and that the toy review function is not Anthropic's runtime and does not reproduce Claude Code's safeguards.
-5. States that the learner should identify which human scope decision remains after every command passes.
-
-**Source:** Use It: conduct Claude Code against your gate; Anthropics
-
-## ES-ch06.42
-
-Your Claude Code session is unavailable or fails partway through. What does the chapter tell you to do, what must you not do, and what must you preserve if a session did run?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that you report that the session was unavailable or failed.
-2. States that you complete the offline review exercise.
-3. States that you must not manufacture a plan or transcript, or replace the failed session with invented dialogue.
-4. States that if a session ran, you preserve the actual transcript with the date and displayed model label.
-5. States the principle that a review packet is worth more than a seamless story that conceals what did not run.
-
-**Source:** Use It: conduct Claude Code against your gate
-
-## ES-ch06.43
-
-The chapter says to arrange the review packet "as an argument, not a pile of screenshots." Describe the packet's contents and its order, and how checks should be attached to claims.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Lists the packet's contents: issue, reproduction, plan, before-and-after diff, exact check commands and output, review notes, and merge decision.
-2. States that the packet begins with the dated gate, then the pre-patch reproduction.
-3. States that it then preserves the proposed plan and actual diff, then the audit record.
-4. States that checks are attached to claims by identifying which behavior each command examines.
-5. States that the packet ends with the decision, the sign-off, and the remaining gaps.
-
-**Source:** Ship It: the review packet
-
-## ES-ch06.44
-
-"A packet is a chain, not a folder." Explain what that means, and describe what each link should correspond to.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that putting the right filenames in one directory does not guarantee that the records refer to one another.
-2. States that the issue should identify the behavior the failing test reproduces.
-3. States that the plan should address the issue and respect the allowed scope.
-4. States that the diff should implement the reviewed plan or explain why it changed.
-5. States that the test outputs should come after the current diff and the decision should name that same proposal, and that if one link points to an earlier version the packet can look complete while its argument has broken.
-
-**Source:** A packet is a chain, not a folder
-
-## ES-ch06.45
-
-What identifiers should tie a packet's records to one proposal, why does chronology alone not settle correspondence, and what is "negative space" in a packet?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that a commit hash is used when a real commit exists, otherwise a saved diff digest or a dated working-tree description.
-2. States that chronology does not settle correspondence, since a test run after an edit can still target the wrong module.
-3. States that you record the working directory and target.
-4. States that output should be kept as searchable text, because a pasted green badge without its command tells the reviewer less than it appears to.
-5. Defines negative space: list the relevant checks you did not run and the files you did not inspect.
-
-**Source:** A packet is a chain, not a folder
-
-## ES-ch06.46
-
-A patch's first test run fails with a syntax error in the test harness, and a later revision passes. What should the packet keep, and what can and cannot be concluded from the harness error?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that an unsuccessful run deserves the same provenance discipline as a successful one.
-2. States that the packet records what version failed and which command exposed the defect.
-3. States that it also records whether the failure belongs to the patch or to the test environment.
-4. States that a syntax error in the harness does not show the candidate is wrong; repair the harness, rerun, and keep both records.
-5. States that the earlier evidence must not be deleted once a later revision passes, because the move from failure to correction is often the strongest demonstration that the final test matters.
-
-**Source:** Keep the failure in the record
-
-## ES-ch06.47
-
-Someone calls the constant-three patch foolish and says it proves AI output should not be trusted. Using the chapter, respond to both claims and explain what "evidence-based rather than AI-proof" means.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that the constant patch is not malicious and need not be called foolish.
-2. States that it is a locally adequate response to one inadequate test, and many review failures arise that way.
-3. States that whether Claude or a human proposes it, the diagnosis is about code and evidence, and attribution does not change what `return 3` does (it matters for the contribution record).
-4. States that review should avoid both automatic deference to AI output and automatic suspicion of it.
-5. Explains that "evidence-based rather than AI-proof" means the workflow does not prove AI involvement safe in general; it only exposes the proposal, scope, checks, and accountable decision so that this change can be judged.
-
-**Source:** Keep the failure in the record
-
-## ES-ch06.48
-
-Walk through the chapter's worked decision for the first candidate patch, `return 3`: the scope result, the test results, the decision, and what would be wrong with setting `checks_passed` to True after the first case.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that the diff is in scope.
-2. States that the input-two regression passes.
-3. States that input five fails because three does not equal six.
-4. States that the decision is revise, because the proposal stays within file scope but does not implement the stated transformation.
-5. States that setting `checks_passed` to True on the first case alone would summarize evidence that does not match the declared behavior.
-
-**Source:** A worked decision from beginning to end
-
-## ES-ch06.49
-
-For the second candidate (replace subtraction with addition), both targeted cases pass and, as a labeled fixture, the existing lesson checks pass. Why does the policy function still return `human review required` when approved is false, and why does the worked example end without a signature?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that the diff is in scope and both targeted cases produce the expected values.
-2. States that the assumption that the existing lesson checks passed is only a labeled fixture.
-3. States that the policy function still returns `human review required` when approved is false.
-4. States that this is correct for the simulated call, because evidence is assembled but no actual person has been represented as deciding.
-5. States that the book cannot synthesize the human's acceptance in advance, so the example ends with evidence sufficient for a bounded recommendation, not a fabricated signature.
-
-**Source:** A worked decision from beginning to end
-
-## ES-ch06.50
-
-Change one assumption in the worked decision at a time. (a) The plus-one patch also edits an unrelated configuration file. (b) The diff is in scope and the tests pass, but the requirement was never confirmed. How should each be handled?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. (a) States that the behavior tests can still pass but the review function adds `out of scope`.
-2. (a) States that the file should not be ignored because the arithmetic is right; inspect why it changed.
-3. (a) States that you revert it or revise the scope explicitly, and rerun the checks on the resulting proposal.
-4. (b) States that plus one can be implemented perfectly and still be wrong, and testing cannot repair an invalid requirement.
-5. (b) States that when the requirement is in doubt, the last line of the audit record (what would change my view) tells you to reopen the gate instead of treating an exact implementation of the wrong rule as success.
-
-**Source:** A worked decision from beginning to end
-
-## ES-ch06.51
-
-Describe the sign-off the chapter asks you to end the packet with: who writes its words, which lines the template includes, which line does the most work and why, and what you do if the evidence does not support signing.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that Claude can draft the words in seconds and the draft will be fluent, but you write the sign-off from your own record.
-2. Names at least six of the template's lines (Proposal, Checked, How, Not checked, Not claiming, Strongest verb, Decision, Signed or withheld).
-3. States that the "Not checked" line does the work.
-4. Explains that an AI-written sign-off leaves it out because the system that wrote it has no record of what you did not do.
-5. States that if the evidence does not support signing, withholding is an honest result, and that a decision that is only a recommendation for someone else should be labeled as one.
+1. Distinguishes an observation about tested behavior from a judgment about acceptable risk.
+2. Notes that "safe to merge" depends on scope, unchecked areas, consequences of failure and organizational standards, not on a single result.
+3. Notes that it is a decision belonging to a named person, who accepts accountability for it.
+4. Says the reviewer can sign a narrower statement that lists what was checked, how, and what was not checked.
+5. Says that withholding the signature or labeling the note a recommendation is honest when the record does not support signing.
 
 **Source:** The sign-off
 
-## ES-ch06.52
+## ES-ch06.42
 
-Take the driver's seat rows "Setting scope" and "Running checks and summarizing." For each, say what Claude should do, what you should do, and why the human part stays with you.
+A review packet contains: an issue describing a crash on an empty list; a failing test that checks a negative number; a plan that names three files, two of them outside the allowed list; a diff touching five files; test output dated before the final edit; and a decision that says only "approved." Identify the broken links in this chain and explain why the packet can look complete while its argument fails.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Setting scope, Claude's part: report which files it needs and why.
-2. Setting scope, your part: decide the allowed list and every revision to it, because you know the callers, the branches, and whose release this is.
-3. Running checks, Claude's part: run commands and capture output and exit status.
-4. Running checks, your part: choose which command bears on which claim, and record what was not run.
-5. Running checks, why: a correct output can be about the wrong target.
+1. Notes that the failing test does not reproduce the issue (negative number versus empty list).
+2. Notes that the plan names files outside the allowed scope and the diff touches more files than the plan, so the diff does not follow the reviewed plan.
+3. Notes that the test output predates the final edit and so does not describe the diff under review.
+4. Notes that the decision does not name which version of the proposal it covers.
+5. Explains that files in a folder do not guarantee the records refer to one another; each record must name and match the same proposal.
+
+**Source:** A packet is a chain, not a folder
+
+## ES-ch06.43
+
+A reviewer must identify the exact proposal that was reviewed. Compare three identifiers: a commit hash, a saved digest of the diff, and a dated description of the working tree. Explain the strengths and weaknesses of each and what each cannot prove.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that a commit hash identifies content and history exactly and is the strongest identifier when a real commit exists.
+2. Explains that a diff digest fingerprints the exact change text and works without a commit, but needs a stated base and the saved diff to be useful.
+3. Explains that a dated working-tree description is ambiguous and can drift, so it is the weakest option.
+4. States that none of them proves who reviewed the change or that the reviewer understood it.
+5. States that none of them shows the tests targeted the right code; the working directory and target must be recorded as well.
+
+**Source:** A packet is a chain, not a folder
+
+## ES-ch06.44
+
+A sign-off template ends with a line "Not checked:" followed by a list. Explain why this line carries much of the sign-off's value, why a draft written by the AI system that made the change would tend to omit it, and give three examples of what it might list for a small bug fix.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that listing gaps tells the reader the limits of the claim so they can agree, disagree or fill them.
+2. Explains that a claim without stated limits invites over-reading, and an honest record includes negative space.
+3. Explains that a model drafting the note has no record of which checks the human skipped, so the list must come from the human's own record.
+4. Gives examples such as inputs and types outside the test cases, behavior in files outside the allowed list, and anything that ran before the last edit.
+5. Notes that listing what was not checked does not weaken the packet, and that withholding the signature is acceptable when the record does not support it.
+
+**Source:** The sign-off
+
+## ES-ch06.45
+
+A reviewer's first test run on a candidate patch fails with a syntax error in the reviewer's own test harness. The reviewer fixes the harness, reruns, and sees a pass. Explain what the first run does and does not show, how both runs should be recorded, and why deleting the first is a mistake.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States that a syntax error in the harness is a fault in the measuring instrument and shows nothing about the candidate's correctness.
+2. States that the first run never reached an assertion, so it cannot count as evidence for or against the patch.
+3. Says the harness should be repaired, the check rerun, and both runs recorded with their commands and outputs.
+4. Explains that the path from failure to correction documents what was actually tested and when.
+5. Explains that deleting earlier evidence hides provenance and weakens the record, even if the final run is clean.
+
+**Source:** Keep the failure in the record
+
+## ES-ch06.46
+
+A student's report says, "AI wrote about 70 percent of the code." Explain why this is a poor contribution record for a review packet, describe a better one, and say what evidence should back the claim that a person exercised judgment.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that a percentage hides which tasks were delegated and which judgments were kept.
+2. Explains that line counts weight trivial and critical lines equally and are sensitive to formatting.
+3. Describes a record by named action, for example agent: plan, proposed code, suggested tests, summary; human: reproduction, scope, pre-patch test, audit note, decision.
+4. Says evidence of human judgment should point to a transcript line, timestamp or edit where the person changed or rejected something.
+5. Notes that if no such trace exists, the claimed split may have happened only in the person's head and cannot be audited.
+
+**Source:** Ship It: the review packet
+
+## ES-ch06.47
+
+A student's coding-agent session would not start on the day a review packet was due. The student is tempted to write a plausible transcript of what the session "would have" produced. Explain what the student should do instead and why fabricated records are damaging even when the code in them works.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States the student should report that the session was unavailable and complete the parts that do not depend on it.
+2. Explains that a fabricated transcript misrepresents provenance, so a reader cannot calibrate trust in any of the packet.
+3. Explains that working code in an invented transcript does not make the transcript true.
+4. Notes that hand-supplied values (such as an approval flag set in a test) must be labeled as simulated and not presented as human acts.
+5. States that an honest record of what did not run is worth more than a seamless story that hides it.
+
+**Source:** Use It: conduct Claude Code against your gate
+
+## ES-ch06.48
+
+A team is deciding how to divide the work of fixing and reviewing a bug between a coding agent and a human reviewer. For five tasks (stating the rule, writing the regression test, drafting the patch, setting scope, deciding to merge), say what the agent should do, what the human should do, and why that split makes sense.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Says the human states the rule and defines which inputs count as the defect; the agent may propose edge inputs.
+2. Says the human writes the regression test before the patch, and adopts or rejects agent-proposed cases, because a test written after or with the patch tends to bless it.
+3. Says the agent may plan and implement against the standard quickly, while the human builds or understands a baseline.
+4. Says the human sets and revises the scope because the agent does not know dependents, parallel work or release ownership.
+5. Says the human decides to merge, choosing the claim's strength and signing or withholding, since accountability cannot be delegated.
 
 **Source:** The driver's seat
+
+## ES-ch06.49
+
+A student plans to let a coding agent write all of a module and only review the result. A mentor says the student should first write their own version. Explain the mentor's reasoning, what the student gains from comparing the two versions, and what kind of difference is worth naming.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that judging a patch requires a model of how the code should behave, which comes from having built it.
+2. Explains that a self-built baseline records what the student understood before seeing the agent's work.
+3. Explains that comparing the two exposes gaps in either implementation and in the student's tests.
+4. Says the difference worth naming is a difference in behavior, such as an edge case one version handles and the other does not.
+5. Says differences in line count or style are weak evidence of anything.
+
+**Source:** Build It: the baseline that lets you audit
+
+## ES-ch06.50
+
+A developer asks a coding agent to propose a deliberately wrong implementation that still passes the developer's tests, then checks by hand whether it does. Explain the purpose of the exercise, how to interpret each outcome, and what limits remain.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that the exercise probes test strength by searching for implementations the suite wrongly accepts.
+2. Explains that if a wrong implementation passes, the tests are too weak and a new test that rejects it should be added to the standard.
+3. Explains that if no wrong implementation is found, this does not show the tests are complete, since the agent may simply not have found one.
+4. Notes that the developer should verify the claim by running the tests, not accept the agent's statement that the implementation passes or fails.
+5. Notes that adequacy of the tests relative to the requirement is a human judgment that the system under test cannot make.
+
+**Source:** Use It: conduct Claude Code against your gate
+
+## ES-ch06.51
+
+A function returns a dictionary with a boolean `ready` and a list `reasons`. Its five tests check only that `ready` is False in four failing cases and True in one passing case. Wrong version W1 always returns `ready` False. Wrong version W2 computes `ready` correctly but always returns `reasons` as `["unknown"]`. Determine which tests catch each wrong version, explain what this shows about a green suite, and propose a fix.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States that W1 passes the four failing-case tests and is caught only by the test expecting True.
+2. States that W2 passes all five tests because none inspects `reasons`.
+3. Explains that a suite reports on what it asserts, and what nobody asserted is what nobody checked.
+4. Proposes asserting the expected reasons in each failing case so W2 is caught.
+5. Proposes keeping wrong versions like W1 and W2 as a standing check that the suite can reject known defects.
+
+**Source:** Build It: the baseline that lets you audit
+
+## ES-ch06.52
+
+A developer using a coding agent asks for a plan before allowing any edit. Explain the value of this step, what the developer should check in the plan, and why approving a plan is not the same as approving the resulting change.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that a plan is cheap to correct whereas edits already made must be undone.
+2. Says to check the plan's files against the intended scope; a file outside it is a decision for the task's owner.
+3. Says to check that the plan addresses the stated issue and reproduction and proposes how the change will be tested.
+4. Explains that the implementation may drift from the plan, so the diff must still be reviewed.
+5. Explains that separating exploration, planning and implementation provides checkpoints at which a person can redirect the work.
+
+**Source:** Use It: conduct Claude Code against your gate
 
 ## ES-ch06.53
 
-Take the driver's seat rows "Stating the rule and the reproduction," "Writing the regression test," and "Drafting the patch." For each, say what Claude should do, what you should do, and the reason the work stays with you.
+A coding agent such as Claude Code asks permission before editing files or running shell commands by default, and can be set to pre-approve certain actions. A team is considering approving everything automatically to speed up work. Discuss the tradeoffs, what the review of the final diff must then bear, and which controls should remain.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Rule: Claude proposes minimal reproductions and edge inputs and runs them; you say what the rule is and which inputs count as the defect.
-2. Rule, why: the requirement lives in your task, not in the code, and Claude can implement a wrong rule perfectly.
-3. Test: Claude proposes extra cases and a wrong patch that survives; you write the test before the patch and adopt or reject each proposal.
-4. Test, why: a test written after the patch tends to bless it.
-5. Patch: Claude plans and implements against the gate, fast; you build your own baseline first and compare the two, because you cannot audit what you have not built.
+1. Notes that speed improves, since interruptions and waiting for approval are removed.
+2. Explains that prompts act as checkpoints at which a person can see each command before side effects occur, and automatic approval removes them.
+3. Explains that the after-the-fact diff and check evidence must then carry more weight.
+4. Says some actions, such as deleting data, network access, installing packages or touching production resources, should stay gated or sandboxed.
+5. Says pre-approval is authorization in advance for classes of actions, not a record of a person judging this particular change.
 
-**Source:** The driver's seat
+**Source:** Use It: conduct Claude Code against your gate
 
 ## ES-ch06.54
 
-The chapter says to record one test case you wrote before the patch existed and one place where you changed or rejected something Claude proposed or summarized. Why must each be traceable in the record, and what does it mean if you cannot point to the evidence?
+Published guidance for agentic coding tools such as Claude Code recommends giving them executable ways to verify their work, such as tests and linters. Explain why this helps, and explain the limits of an agent verifying its own work, including how those limits are managed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the packet should contain one test case written before the patch existed.
-2. States that the packet should contain one place where you changed or rejected something Claude proposed or summarized.
-3. States that the evidence is a transcript line, a timestamp, or an edit.
-4. States that if you cannot point to that evidence, the split of work happened in your head and not in the record.
-5. Connects this to recording contributions by named action (for Claude: plan, code proposal, test suggestion, summary; for you: reproduction, scope, the test written before the patch, the audit record, the decision), which says more than percentages.
+1. Explains that execution feedback lets an agent detect and correct mistakes it could not see by reasoning alone.
+2. Explains that tests the agent writes share its assumptions, so a pass is weaker evidence than a pass of independent checks.
+3. Notes the risk that the agent resolves a failing check by weakening or special-casing it rather than fixing the code.
+4. Describes mitigation: person-authored checks written before the patch, test files outside the editable scope, review of any test change.
+5. States that executable checks cover only what they assert, so scope, requirement validity and test quality still need human judgment.
 
-**Source:** The driver's seat
+**Source:** Use It: conduct Claude Code against your gate
 
 ## ES-ch06.55
 
-You ran a test, then made a later edit to the candidate. What does the chapter say about the earlier passing result, what should you inspect, and what happens to the audit record if the check disagreed with your prediction?
+A developer lets a coding agent work in a throwaway git branch or worktree, with the starting commit recorded. Explain the benefits of this setup, what it does not protect against, and how the recorded base commit helps the review.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that review evidence must remain attached to the exact proposal.
-2. States that a passing test from before a later edit is stale evidence for the current proposal.
-3. States that you inspect the current diff after the checks.
-4. States that you put the audit record beside the result.
-5. States that if the check disagreed, you say which side was wrong (your model or the aim of the check) and leave the record as written.
+1. Explains that isolation makes failure cheap, since the branch can be discarded without affecting the main line.
+2. Explains that the recorded base lets the reviewer compute an exact diff of everything the agent changed in tracked files.
+3. Notes that the setup does not cover effects outside the repository, such as installed packages, databases or files elsewhere on the machine.
+4. Notes that isolation says nothing about whether the change is correct, so review is still needed.
+5. Notes that uncommitted work in the same directory can be lost or entangled, so committing or stashing before starting is prudent.
 
-**Source:** Verify and reflect
+**Source:** Use It: conduct Claude Code against your gate
 
 ## ES-ch06.56
 
-Of the gate, the audit, and the verb, suppose you skipped each in turn and the patch was the constant three. What would skipping each have cost you?
+An agent's final diff is small, but during the session it installed a package, ran a database migration against a local development database, and deleted a build-cache directory that is git-ignored. Explain why the diff alone is an incomplete record, what else the reviewer should examine, and what should be recorded.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Notes that the constant three passes input two and fails input five.
-2. Skipping the gate: a test with only input two (written after the patch) would let the constant pass.
-3. Skipping the audit: nothing would prompt you to notice that the body never mentions x, or to set the target as an input other than two.
-4. Skipping the verb: a sentence like "completely fixes" would overstate the evidence, and a reader of conclude may merge.
-5. Explains that the gate says what must hold before the patch, while the audit says what you suspect about this patch.
+1. Explains that the diff covers tracked file text only, not environment, data or ignored files.
+2. Names what to examine: the log of commands run, installed packages and versions, migration scripts and database state, and deleted paths.
+3. Explains that a fresh clone may not reproduce the result if the package was installed only in the agent's environment.
+4. Recommends recording the commands with their outputs, and declaring new dependencies and migrations in version-controlled files.
+5. Notes that a migration against a real database may be irreversible, so it should be reviewed before execution, not after.
 
-**Source:** Verify and reflect
+**Source:** Read a diff as a behavioral proposal
 
 ## ES-ch06.57
 
-The challenge exercise "A different survivor" asks you to find a wrong implementation that passes your current cases, and then to repeat the search on the lesson's `review` function. Describe what you do and give the chapter's own example of a surviving wrong `review`.
+One reviewer approves all AI-written patches that pass tests. Another rejects all AI-written patches on principle. Explain what each policy gets wrong, what a sound policy rests on, and why attribution still matters.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that you design a wrong implementation of the function that passes your current cases.
-2. States that you add one justified test that catches it.
-3. States that you explain what remains untested instead of claiming completeness.
-4. States that you repeat the exercise on the lesson's `review` function by finding a wrong version that passes every lesson test.
-5. Gives the chapter's example: a version of `review` that reports `no changes` as the reason whatever the failure passes all five review tests.
+1. Explains that each policy substitutes a rule about origin for evidence about the change.
+2. Explains that automatic approval trusts the tests blindly and ignores scope, test quality and requirement validity.
+3. Explains that blanket rejection discards good changes and cultivates no skill at telling good from bad.
+4. States that a sound policy rests on the proposal, its scope, executed checks tied to the current version and an accountable decision.
+5. Explains that attribution does not change what the code does but belongs in the contribution record.
 
-**Source:** Assessments - ungraded practice
+**Source:** Keep the failure in the record
 
 ## ES-ch06.58
 
-The challenge exercise "Richer review record" asks you to propose a record that binds commands and outputs to the reviewed diff. Describe what such a record could contain, what it improves, and why it still cannot authenticate human consent by itself.
+A team requires a single human approval click on every AI-generated change. Over time reviewers click through quickly. Explain how a review step becomes ceremonial, the conditions that cause it, and what the team can do instead of either abandoning review or demanding more clicks.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Includes an identifier for the reviewed proposal: a commit hash, a saved diff digest, or a dated working-tree description.
-2. Includes the command, the working directory and target, the output, and the exit status.
-3. Explains that it improves the link between each check and the current diff, avoiding stale or mis-targeted evidence.
-4. Explains that it still cannot authenticate human consent, because an approval value is still an asserted claim.
-5. Notes that a digest or fingerprint is not identity, as Chapter 13 will still refuse to treat it.
+1. Explains that review becomes ceremonial when the reviewer cannot be informed by the evidence or the volume exceeds attention.
+2. Names causes: weak or missing evidence, large diffs, ambiguous standards and pressure for throughput.
+3. Explains that a click records an event, not understanding.
+4. Proposes improving the packet: tests fixed in advance, tight scope, recorded commands and outputs, and clear statements of what was not checked.
+5. Proposes measuring review quality by reasons recorded and defects caught instead of counting approvals.
 
-**Source:** Assessments - ungraded practice
+**Source:** Choose the verb the record supports
 
 ## ES-ch06.59
 
-The review packet tells us what changed and which tests ran. What does it not tell us, why can a patch fail upstream even when it is tidy, and what question does Chapter 7 take up next?
+A coding agent is asked to fix a bug in an authentication module. Its patch is well written and passes the tests it wrote. Later the team finds that behavior in that module is overridden by a configuration file the agent never saw. Explain how this failure arose upstream of the patch, why reading the diff would not necessarily reveal it, and how to reduce the risk.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the packet does not explain which information was selected before the change was proposed.
-2. States that a source-grounded task can fail upstream if the relevant passage never entered context.
-3. States that this can happen even when the resulting patch is syntactically tidy.
-4. States that coherence is visible in a diff, but whether the patch is grounded depends on what Claude was given.
-5. States that Chapter 7 builds a tiny retrieval system (token counts to vectors, cosine similarity, ranking, an omitted synonym case) and then asks whether the selected passage actually supports the claim, which ranking cannot answer.
+1. Explains that the agent can only be grounded in material that reached its context, and the configuration never did.
+2. Explains that a coherent diff does not show that the relevant information was available to the model.
+3. Explains that tests the agent wrote share the same incomplete picture, so passing them does not reveal the gap.
+4. Suggests checking what files the agent read or was given, and comparing against what the task depends on.
+5. Suggests remedies: pointing the agent at the relevant files, project documentation of configuration layers, and tests that exercise the deployed configuration.
 
 **Source:** Which source material reached the system?
 
 ## ES-ch06.60
 
-According to the Computational Skepticism note, why can you not run the verb check on your own summary, and what form of peer critique does the chapter ask for? Give the chapter's example and its caution about the ladder.
+Before asking a coding agent for a patch, a team writes down: the rule in plain language, reproduction inputs with expected outputs, the files that may change, a stop condition for moving the patch forward, and a known wrong implementation their tests must reject. Explain the purpose of each element and how the team can check the standard itself before involving the agent.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that you wrote each sentence with the strongest verb that felt true, and that the feeling came from how the evidence sat in your head, which a re-read no longer has.
-2. States that the mismatches you made are the ones you cannot see.
-3. States that the peer's critique names the sentence, the verb, the evidence that verb requires, and the verb the record supports; "too strong" is not a critique.
-4. Gives the example: "completely fixed" when the record is two inputs on one function, where "suggest" would match.
-5. States that you preserve the original, the revision, and the reason, and that the ladder flattens inferential caution (suggest) and evidential strength (observe, find, show) onto one line, which is why verb ladders wobble.
+1. Explains that the rule and reproduction fix what correct behavior means before any patch can reshape it.
+2. Explains that the allowed-file list turns "keep the change focused" into a testable comparison.
+3. Explains that the stop condition states in advance what evidence must exist (test saved before the plan, checks run on the current diff, commands and exit status recorded) for the patch to proceed.
+4. Explains that a known wrong implementation validates the tests: if it passes, the standard is too weak.
+5. Describes checking the standard by running the tests against the old code, the known wrong version and the intended version, expecting fail, fail and pass respectively on the relevant cases.
 
-**Source:** Computational Skepticism
+**Source:** The gate: reproduction, test, and scope, before the patch
 
 ## ES-ch06.61
 
-According to the Conducting AI note, why does the audit demand the mechanism and not just the catch? Apply the book's follow-up question to the `return 3` case and to a rounding change in an unfamiliar library.
+Under deadline pressure a reviewer can skip one of three things: writing the standard before the patch, writing down predictions before running checks, or calibrating the strength of the final claim. For a patch that replaces the correct logic with a constant, explain what skipping each would cost.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that a verdict you cannot explain is one you cannot teach or defend to a skeptic.
-2. States that you also cannot trust it yourself, because you cannot tell whether you reasoned or merely reacted.
-3. States the follow-up question: what specific knowledge made the finding possible, and would a competent generalist without it have caught the same thing?
-4. For `return 3`: the answer is almost nothing, since anyone who knows the rule depends on x catches it.
-5. For a rounding change in an unfamiliar library: the answer is a great deal, which tells you who must review the patch and what belongs in the sign-off's "Not checked" line.
+1. Explains that skipping the pre-patch standard lets the patch shape the tests, so a one-input test can bless the constant.
+2. Explains that skipping the prediction removes the question the checks should answer, so the reviewer may not notice that the body ignores its input.
+3. Explains that skipping calibration lets "completely fixed" stand on a single passing case.
+4. Explains that each skipped step leaves the others weaker, since the three work together as a chain.
+5. Concludes with a defensible ranking or a rule for which to protect first, with a reason.
 
-**Source:** Conducting AI
-
-## ES-ch06.62
-
-The Conducting AI note closes the chapter by dividing responsibility between Claude and you around the audit. State what Claude can help with, what you remain responsible for, and what the chapter says an intuition and a passing command are each worth.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States that Claude can help propose the mechanism and the test.
-2. States that you remain responsible for deciding whether the evidence addresses the actual change.
-3. States that you remain responsible for deciding whether the proposal stays within scope.
-4. States that an intuition is a reason to investigate, not proof.
-5. States that a passing command is evidence, not permission to merge.
-
-**Source:** Conducting AI
+**Source:** What you can now defend

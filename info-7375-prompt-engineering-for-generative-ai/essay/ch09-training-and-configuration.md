@@ -2,976 +2,976 @@
 
 ## ES-ch09.1
 
-A teammate writes up an improved answer as "we trained Claude on our policies" after uploading documents and revising a system prompt. In a paragraph, say what actually changed, what the verb "trained" claims, and why that claim matters for what you maintain, audit, and pay for.
+A team uploads policy documents to an assistant product's project store and rewrites the project's system prompt. Answers improve, and a teammate writes up the result as "we trained the model on our policies." The product runs no fine-tuning job; it supplies the documents and prompt to the model with each request. Explain what actually changed, what the verb "trained" asserts, and why the distinction matters for what the team maintains, audits, and pays for.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that what changed is the input available during that interaction (the uploaded documents and the revised prompt).
-2. States that training changes parameters through an objective and an update rule.
-3. Says a prompt change lives in a text file you can diff and copy, while a retrieval change lives in a corpus and a selection step and disappears when the corpus does.
-4. States that prompting and retrieval change the information supplied to an already configured model for inference, not its parameters.
-5. Explains that the verb decides what happens next: one word hides three different things to maintain, audit, and pay for.
+1. States that what changed is the input supplied to the model at request time (retrieved documents and prompt text), while the model's parameters are unchanged.
+2. Defines training as updating parameters from data through an objective and an update rule, which yields a new stored set of weights.
+3. Notes that a prompt change lives in a diffable text file that can be copied to another project or reverted at once, and that a document change lives in a corpus and a selection step and disappears if the corpus does.
+4. Explains that the word decides what must be maintained and audited: a weights artifact with its data, objective, and settings for training, versus prompt versions and a corpus with its retrieval pipeline for the other changes.
+5. Addresses cost: training needs a run, evaluation, and redeployment to reproduce, whereas prompt and corpus edits are cheap to change, so mislabeling the work misstates what it costs and what must be kept.
 
-**Source:** Chapter 9 - Training and configuration (opening)
+**Source:** Name the mutable object before you change it
 
 ## ES-ch09.2
 
-A report says: "Average loss fell from 0.6931471806 to 0.0215209850 and the four held-out points were all right, so the model learned and it generalizes." Which half of the conclusion does the evidence support, and which half does it not? Justify both.
+Five kinds of thing can be changed to alter the behavior of an LLM-based system: the model's weights, the prompt, the supplied context, the tools and permissions, and the run-time sampling settings. For each, say where the change lives and what evidence shows that it changed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Accepts that "learned" is supported, because the parameters changed by a rule you can print.
-2. Rejects "generalizes" as unsupported by this evidence.
-3. Explains that the loss is the number the optimizer was told to lower, on the data it was shown.
-4. Notes that the four held-out points were chosen by one person around the same sign boundary as the training data.
-5. Concludes that neither number says what the sentence says it does, and that no line of code is at fault.
+1. Weights: the change lives in the saved parameter values, and the evidence is those values together with the data, objective, learning rate, and budget that produced them.
+2. Prompt: the change lives in instruction text and examples in a file or message, and the evidence is the two texts compared side by side.
+3. Context: the change lives in the corpus or store and the selection step, and the evidence is the passages that actually entered the input.
+4. Tools and permissions: the change lives in server code, configuration, and permission rules, and the evidence is the configuration diff plus the decision that authorized it.
+5. Settings such as temperature: the change lives in run-time configuration, and the evidence is the recorded setting for each run; only the weights involve an optimizer.
 
-**Source:** Chapter 9 - Training and configuration (opening)
+**Source:** Name the mutable object before you change it
 
 ## ES-ch09.3
 
-Name Chapter 1's three jobs and say how each applies to a change request in this chapter. For each, say what you do and what the chapter calls the moment or place where it happens.
+A product team ships four changes in one release: a rewritten system prompt, a new document in the knowledge base, a newly enabled tool, and a lower sampling temperature. Classify each change by the object it modifies and say how you would observe it. Then explain why a different output after the release does not by itself show that the model's weights changed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Conduct: states what should change, and how you will tell, before you change it.
-2. Identifies that Conduct moment as the gate.
-3. Check: claims only what the record supports, and signs or withholds.
-4. Identifies that Check moment as the sign-off.
-5. Drive: decides what kind of question is being answered, because the causal question and its justification are yours (the driver's seat).
+1. The rewritten system prompt modifies the prompt, and is observed by comparing the old and new texts.
+2. The new document modifies the context or corpus, and is observed by checking whether its passages are selected into the input.
+3. The enabled tool modifies the tools and capabilities, and is observed through the configuration diff, the tool-call logs, and the authorizing decision.
+4. The lowered temperature modifies a run-time setting, and is observed through the recorded setting and repeated runs because sampling varies.
+5. A changed output could come from any of these or from a model update or sampling variation, so a claim about weights needs evidence of a parameter update, not just different behavior.
 
-**Source:** Chapter 9 - Training and configuration (opening)
+**Source:** Name the mutable object before you change it
 
 ## ES-ch09.4
 
-Describe the classifier built in this chapter in two or three sentences, then state three things the chapter says the exercise does not do or is not.
+A user says, "The assistant followed my preferences a week later, so it must have learned from me." Give three non-training mechanisms by which behavior can persist across sessions, describe a test that separates persistence from learning, and say what a careful report should claim.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Describes a one-feature binary logistic classifier with two learned parameters, a weight and a bias.
-2. Mentions the four constructed training examples, the sigmoid, the binary logistic loss, and gradient descent.
-3. States that nothing in the exercise modifies Claude's weights.
-4. States that nothing in the exercise exposes Claude's logits, optimizer, or training data.
-5. States that it is not a miniature language model in every relevant sense and not a fine-tune of anything, but a transparent case of one row in a table of five.
+1. Names persistence mechanisms that involve no parameter update, such as a saved system prompt re-supplied with each request, or stored memory records prepended or retrieved into the input.
+2. Adds another persistent non-training change, such as retrieved documents in a workspace or permission rules in configuration.
+3. States that training is identified by its mechanism, parameters updated from data through a loss-derived rule, and not by how long an effect lasts.
+4. Describes the test: change one object with everything else held fixed, such as deleting the saved text and rerunning the same input, repeating runs because of sampling, and see whether the behavior goes with it.
+5. Says a careful report describes the memory or context behavior observed, and avoids "learned the user" in the training sense without evidence of parameter updates.
 
-**Source:** Chapter 9 - Training and configuration (opening)
+**Source:** Persistence is not proof of training
 
 ## ES-ch09.5
 
-The chapter asks you to write and date two predictions before reading the reference. State the two predictions, with the correct answer for this toy, and explain why the timing matters.
+A team wants to compare three ways of improving an assistant on a bounded task such as classifying support tickets: a baseline prompt, a prompt with few-shot examples, and a prompt plus retrieved context. Design the comparison. Explain how you ensure only one object changes between conditions, how you handle sampling variation, what you record, and what you can and cannot conclude.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The initial probability for every point when both parameters are zero is one-half.
-2. The weight should move in the positive direction on the first update, reasoned from the labels and the signs of the features.
-3. Adds that you also write what a wrong answer would look like.
-4. Explains that a prediction written after you have seen the output describes the output.
-5. Says a model that returns plausible decimals is no substitute for knowing which direction should reduce the loss.
+1. Changes only one object between conditions and holds the model, settings, and task items fixed.
+2. Specifies the labeled evaluation set and writes predictions for each condition before running.
+3. Handles sampling variation by repeating runs per condition and reporting the spread, rather than relying on one run.
+4. Records the exact prompts, retrieved passages, model identifier, date, settings, and raw responses.
+5. Limits the conclusion to how outputs respond to input changes under the recorded conditions, not to retraining of the model or to performance beyond the evaluated task.
 
-**Source:** Chapter 9 - Training and configuration (opening)
+**Source:** Persistence is not proof of training
 
 ## ES-ch09.6
 
-Name the five objects a system change can modify. For each, say what you edit and where the change lives.
+A hosted assistant's answers to a fixed set of test questions change after a weekend. Explain why the output difference alone does not identify the cause, list the candidate causes, and describe the record a team should keep so that such changes can be attributed later.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Weights: parameters edited through an objective and an update rule, living in the saved parameter values.
-2. Prompt: instruction text and examples, living in a file or message you can diff.
-3. Context: which documents, passages, or records are supplied this turn, living in the corpus or store and the selection step.
-4. Tools: which actions and information sources the host exposes and which are permitted, living in server code, configuration, and permission rules.
-5. Settings: how outputs are drawn at run time (temperature is the example), living in run-time configuration.
+1. Lists several candidate causes: changed prompt text, different retrieved context, different tool output, a model version update, and sampling variation.
+2. Explains that a before-and-after pair of outputs cannot by itself separate those causes.
+3. Describes what to record for each object: both prompt texts, the corpus and the passages actually selected, the configuration diff and authorization, the settings for each run, and the model identifier.
+4. Says not to invent a before state that cannot be seen, and to state which internal details remain unknown.
+5. Proposes restoring each candidate one at a time and rerunning to attribute the change.
 
-**Source:** Name the mutable object before you change it
+**Source:** What a production record can and cannot show
 
 ## ES-ch09.7
 
-Which of the five rows involves an optimizer, and what can someone outside the people who train Claude observe about it? Given that limit, why does the chapter build a toy classifier?
+Three people each say their result is "reproducible": one supplies a training script with fixed data, hyperparameters, and seed; one supplies a recorded prompt and settings to replay against a hosted model; one supplies a configuration diff. Explain what reproducibility means in each case, what each depends on, and what counts as a successful repeat.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that only the weights row involves an optimizer.
-2. States that for Claude nobody outside the people who train it can watch that row change.
-3. Notes that the course does not claim otherwise.
-4. Explains that the toy lets you watch the weights row change once, completely.
-5. Explains that this lets you recognize the other four rows by contrast, without leaning on metaphor.
+1. For the training script, a rerun should give the same parameter values given the same code, data, seed, numeric libraries, and hardware.
+2. For the hosted-model replay, the result depends on the service's model version, sampling, and infrastructure, so outputs may legitimately differ and the date, model, and settings must be recorded.
+3. For the configuration diff, a reader can inspect exactly what changed, but the diff does not reproduce a behavior by itself.
+4. Identical output is not the only acceptable repeat; a team can define success as a metric within tolerance or a similar pass rate over repeated runs.
+5. A report should name which kind of reproducibility it offers and its dependencies.
 
-**Source:** Name the mutable object before you change it
+**Source:** What a production record can and cannot show
 
 ## ES-ch09.8
 
-A colleague rewrites a system prompt and Claude's behavior changes dramatically. Another colleague changes one few-shot example and the answer changes. For each, say what the evidence supports and what it does not.
+A one-feature classifier has weight w = 1.2 and bias b = -0.6, with probability sigma(w*x + b) for label 1 (sigma(1.8) is about 0.858). Compute the score and probability for x = 0.5, x = 2, and x = -1; state the decisions at threshold 0.5; locate the decision boundary; and explain why these probabilities do not say that x causes the label.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Identifies the system prompt as text in the input of an interaction.
-2. States that behavior can change dramatically while the stored parameters stay untouched.
-3. Identifies few-shot examples as input that demonstrates a pattern inside the current context.
-4. Says the few-shot result supports prompt-context sensitivity under the recorded interaction.
-5. Says neither result supports a claim that Claude was retrained.
+1. Computes the scores 0, 1.8, and -1.8 for x = 0.5, 2, and -1.
+2. Gives the probabilities 0.5, about 0.858, and about 0.142, noting sigma(-a) = 1 - sigma(a).
+3. States the decisions: label 1 for x = 2, label 0 for x = -1, and x = 0.5 sits exactly on the boundary where the tie rule decides.
+4. Locates the boundary at w*x + b = 0, that is x = 0.5, because sigma(0) = 0.5.
+5. Explains that the weight captures an association in the supplied data and the probability is the model's output under its objective, not evidence of causation.
 
-**Source:** Name the mutable object before you change it
+**Source:** The model: two numbers and a squashing function
 
 ## ES-ch09.9
 
-Explain what retrieval, an MCP server, and a permission rule each change, and say why calling a permission change "learning" is a problem.
+A logistic classifier starts with all parameters at zero. Explain what it predicts for every input, what its average binary cross-entropy is on any binary dataset (give the number), why that value does not depend on label balance, and how this gives a baseline against which to judge training.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Retrieval decides which source passages enter the context; adding a document changes what inference can see and nothing about the model.
-2. An MCP server changes the actions and information the host exposes.
-3. A permission rule changes which proposed operations the runtime allows.
-4. Both change capability and governance: a system can become more capable through tooling while the model stays exactly as it was.
-5. Calling a permission change "learning" turns a human governance decision into something that sounds like a property of the machine.
+1. States that the score is 0 for every input, so the probability is sigma(0) = 0.5.
+2. Notes that every example gets the same prediction whatever its feature value, so no relationship has been encoded yet.
+3. Gives the per-example loss -ln(0.5) = ln 2, about 0.693, for either label, so the average is 0.693 whatever the label balance.
+4. Treats 0.693 as the baseline of an uninformed model, so training should drive the loss below it.
+5. Notes that predicting this value before running gives a check on the code: a different initial loss signals a bug.
 
-**Source:** Name the mutable object before you change it
+**Source:** Loss makes the objective explicit
 
 ## ES-ch09.10
 
-Does the chapter rank the five objects? If not, say what ordering it calls useful, and give two statements it makes about when training is or is not the right tool.
+A naive sigmoid implementation, 1 / (1 + exp(-x)), can fail in floating point for very negative x. Explain why, how a two-branch implementation fixes the problem, and what a unit test of the fix does and does not establish.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the chapter does not rank the rows.
-2. States that prompting and retrieval are often the right tool for task-specific behavior.
-3. States that training can be expensive, unnecessary, or out of reach.
-4. Names the useful ordering as reversibility and inspectability.
-5. Places text you can diff and revert in a second at one end and parameters you can only refit at the other.
+1. Explains that for very negative x, exp(-x) is a huge number that overflows double precision (about exp(710) and above).
+2. Describes the two-branch fix: use 1/(1+e^(-x)) for x >= 0 and e^x/(1+e^x) for x < 0, which are mathematically identical but only exponentiate non-positive numbers.
+3. Notes that the true value for very negative x is tiny but positive, and underflowing to 0.0 is acceptable.
+4. States that a test such as sigmoid(-1000) being approximately 0 shows no overflow at that input.
+5. Notes that such a test does not prove correctness for NaN, infinities, other numeric types, or all edge cases, so the claim should stay limited to the demonstrated behavior.
 
-**Source:** Name the mutable object before you change it
+**Source:** The model: two numbers and a squashing function
 
 ## ES-ch09.11
 
-A single configuration file contains a temperature value and a permission rule for a tool. What does "trace the object, not the filename" mean here, and where should details about Claude's interface and configuration come from?
+Define binary cross-entropy for one example. Evaluate it for a true label of 1 when the model's probability for label 1 is 0.9, 0.5, and 0.01, and use those numbers to explain how the loss treats confident right and confident wrong predictions and why it suits a probabilistic classifier.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that a configuration file can hold several kinds of setting at once.
-2. Classifies the temperature value as a setting (run-time configuration of how outputs are drawn).
-3. Classifies the permission rule as belonging to the tools row (what is permitted).
-4. Concludes that the filename does not tell you which object changed, so you trace the object.
-5. Says Claude interface and configuration details come from current official documentation, and that you claim no access to proprietary weights or private training procedures.
+1. Gives the formula -y ln(p) - (1-y) ln(1-p), which reduces to -ln(p) for label 1.
+2. Computes about 0.105 for p = 0.9, about 0.693 for p = 0.5, and about 4.61 for p = 0.01.
+3. Explains that a confident wrong prediction is penalized heavily and without bound, while a confident right one costs little.
+4. Explains that minimizing it is maximum likelihood for Bernoulli labels, which rewards honest probabilities.
+5. Contrasts it with accuracy, which only counts errors, and notes that the optimizer lowers whatever objective it is given, so the loss is a choice about the task.
 
-**Source:** Name the mutable object before you change it
+**Source:** Loss makes the objective explicit
 
 ## ES-ch09.12
 
-A saved system prompt, a retrieved document, a permission rule, and a memory record all persist after the interaction that made them. Why can't "it stuck" be the test for learning, and what does identify training?
+A model outputs probabilities of label 1 of 0.8, 0.3, and 0.6 for three examples whose true labels are 1, 0, and 0. Compute each example's binary cross-entropy and the average. Say which example contributes most and why, and what the average does and does not tell you.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names at least three of the four persistent non-training changes.
-2. Says "it stuck" cannot be the test, because several non-training changes persist.
-3. States that training is identified by its mechanism, not by later influence.
-4. Gives the toy as direct implementation evidence: train returns w and b after using labels and a loss-derived gradient.
-5. Explains that a saved prompt influences later requests by being included again as input, so both have durable effects through different routes in the software.
+1. Computes the three losses: -ln(0.8) is about 0.223, -ln(0.7) is about 0.357, and -ln(0.4) is about 0.916.
+2. Computes the average as about 0.499.
+3. Identifies the third example as the largest contributor because the model leaned toward the wrong label with p = 0.6 on a label-0 example.
+4. Notes that the average is the number the optimizer lowers on this data, and that at threshold 0.5 two of the three are classified correctly.
+5. Notes that the average says nothing about unseen data or about the relative costs of different errors.
 
-**Source:** Persistence is not proof of training
+**Source:** Loss makes the objective explicit
 
 ## ES-ch09.13
 
-A product remembers a user's preferences from one session to the next. How should you describe this behavior, and what would you need before saying the model "learned the user"?
+A score-based form of the binary logistic loss, max(a, 0) - y*a + ln(1 + e^(-|a|)), is used instead of computing the probability first. Show that it matches the usual loss for y = 1 and a > 0, say what numerical problem it avoids, and evaluate it for a = 40 with y = 0.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the system may retrieve stored preferences or prepend them to the context.
-2. Says that without evidence of parameter updates you describe the memory or context behavior you observed.
-3. Says "learned the user" in the technical sense used here requires evidence of parameter updates.
-4. Identifies personalization as the same case as saved prompts and retrieved documents: persistence is not proof of training.
-5. Proposes a test: remove the stored preferences, hold the rest fixed, rerun the same input, and see whether the behavior goes with them.
+1. Shows that for y = 1 and a > 0 the form reduces to ln(1 + e^(-a)), which equals -ln(sigma(a)).
+2. States that the form is algebraically equivalent to the usual loss for all scores and labels.
+3. Explains that it avoids forming a probability that rounds to exactly 0 or 1 for large |a|, where the log would be undefined or lose precision.
+4. Evaluates a = 40, y = 0 as 40 + ln(1 + e^-40), about 40.
+5. Contrasts the naive route, where p rounds to 1.0 and ln(1 - p) fails, and notes that clipping the probability gives a capped value that is no longer the true loss.
 
-**Source:** Persistence is not proof of training
+**Source:** Loss makes the objective explicit
 
 ## ES-ch09.14
 
-Design the test that shows whether a saved piece of text, rather than anything else, is responsible for a Claude behavior. Say what you change, what you hold fixed, how many runs you use and why, and how this differs from asking what correlates with the improvement.
+For a one-feature logistic classifier with p = sigma(w*x + b) and binary cross-entropy loss, derive the derivative of the loss for one example with respect to w and b. Then evaluate both for x = 3, y = 0, w = 0.2, b = 0.1 (so the score is 0.7 and p is about 0.668), and say which way gradient descent moves each parameter.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Changes one object (removes the saved text) and holds the rest fixed.
-2. Runs the same input again.
-3. States that if the behavior goes with the text, the text was holding it.
-4. Explains that with sampling in play one run per condition shows little, so repeated runs (Chapter 1) apply.
-5. Explains this is an intervention (doing something to the system and watching what follows), not a question about what correlates with the improvement.
+1. Shows that the derivative of the loss with respect to the score is p - y, because the sigmoid derivative p(1-p) cancels in the chain rule.
+2. Uses d(score)/dw = x and d(score)/db = 1 to get (p - y)*x and (p - y).
+3. Evaluates numerically: dL/dw is about 2.00 and dL/db is about 0.67.
+4. States that both gradients are positive, so descent decreases w and b.
+5. Notes that over a dataset with an average loss the gradient is the average of per-example gradients.
 
-**Source:** Persistence is not proof of training
+**Source:** Derive the first update
 
 ## ES-ch09.15
 
-For each change you make, you keep a before and an after. Say what to keep for training, a prompt, retrieval, and tools, and explain why an observed output difference alone does not identify the mechanism.
+Training pairs (x, y) are (-1, 0), (0, 1), (2, 1). A logistic classifier starts at w = 0, b = 0 and takes one full-batch gradient descent step with learning rate 0.4 on the average binary cross-entropy. Compute the per-example errors, the averaged gradients, the updated parameters, and the loss before and after.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Training: the parameter values and the data, objective, rate, and budget that produced them.
-2. Prompt: both texts.
-3. Retrieval: the corpus and the selected passages; tools: the configuration diff and the authorized decision.
-4. Says an output difference usually does not uniquely identify the mechanism, since it could come from prompt text, retrieved context, tool output, model version, or sampling conditions.
-5. Says the surrounding record is what lets you attribute the change cautiously.
+1. States that every prediction is 0.5, so the errors p - y are 0.5, -0.5, and -0.5.
+2. Computes the averaged weight gradient mean((p-y)*x) = -0.5 and the averaged bias gradient -0.167.
+3. Computes the updated parameters w = 0.2 and b of about 0.067.
+4. Reports the loss falling from about 0.693 to about 0.592.
+5. Explains the directions: w rises because the label-1 examples have larger x, and b rises because positives outnumber negatives.
 
-**Source:** What a production record can and cannot show
+**Source:** Derive the first update
 
 ## ES-ch09.16
 
-A teammate reruns a task after adding a few-shot example and also after the service quietly moves to a newer model version. The answers improve and the teammate writes that the new example fixed the problem. Using the chapter, explain what the record cannot show and how to repair the comparison.
+A developer's training code sums the per-example gradients instead of averaging them. On three training pairs (-1, 0), (0, 1), (2, 1), starting from w = 0, b = 0 with learning rate 0.4, the summed version moves to w = 0.6 and b = 0.2 after one step instead of w = 0.2 and b of about 0.067, and its loss after that step is about 0.444 versus 0.592 for the averaged version. Explain why this bug can go unnoticed by a test that only checks that the loss decreased, why it matters at scale, and what test would catch it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Notes that model version is one of the things that could produce a different answer, alongside prompt text, retrieved context, tool output, and sampling conditions.
-2. States that an output difference usually does not uniquely identify the mechanism.
-3. Says the comparison should change one object and hold the rest fixed.
-4. Says repeated runs per condition are needed because sampling is in play.
-5. Says the supportable claim concerns inputs under the recorded interaction, not a change to Claude's weights, and that the surrounding record lets you attribute cautiously.
+1. Explains that a summed gradient is N times the mean, so it acts like a learning rate N times larger.
+2. Notes that the direction is unchanged, so the loss still falls, here even faster after one step.
+3. Concludes that a lower number after an update does not show the code is correct.
+4. Explains that at scale the step grows with the dataset size, so the code can overshoot or diverge and its behavior depends on N.
+5. Proposes a test that asserts the exact first-step parameters derived by hand, or compares against a finite-difference check of the average loss.
 
-**Source:** What a production record can and cannot show
+**Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.17
 
-A hosted service shows you only a current model label and a response. What may you say about its before state, and what kinds of reproducibility could you offer for a result?
+Describe how to check a hand-derived gradient with a central finite difference. State what the check establishes, what it cannot catch, and why shrinking the step size indefinitely is not the answer.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that you do not invent a before state you cannot see.
-2. Says which internal details remain unknown.
-3. Notes that the toy is useful because its state is completely visible, and that this should teach restraint where it is not.
-4. Names kinds of reproducibility: rerun the Python training from supplied data, replay a prompt under recorded but aging service conditions, or inspect a configuration diff.
-5. Says each kind has different dependencies and that identical output is not the only acceptable repeat.
+1. Describes the check: evaluate (L(w+h) - L(w-h)) / (2h) for each parameter at the same point and compare it with the analytic gradient within a tolerance.
+2. Notes that it does not use the derivative formula, so it can catch algebra, sign, or missing-factor errors.
+3. States that it cannot catch a wrong objective or an error in the loss function itself, because both routes describe the same coded loss.
+4. Explains the trade-off in h: truncation error shrinks roughly as h squared, but round-off error grows as h gets very small, so a moderate h is used.
+5. Recommends pairing it with a hand-computed expected value, so the code is checked against more than one independent route.
 
-**Source:** What a production record can and cannot show
+**Source:** Derive the first update
 
 ## ES-ch09.18
 
-For the one-feature classifier, write the score and the sigmoid. Compute the score, the probability, and the loss for the training points when w = 0 and b = 0, and say what the result shows about what the model has encoded.
+Gradient descent minimizes L(w) = 2w^2, whose gradient is 4w, from w = 1, so each step gives w <- (1 - 4r)w. Work out the first few iterates for r = 0.1, 0.25, 0.5, and 0.6, state the condition on r for convergence, and say what this suggests about choosing a learning rate for a real model.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Writes the score as a = wx + b and the sigmoid as 1 / (1 + e^(-a)).
-2. Shows that at w = 0 and b = 0 every score is zero regardless of x.
-3. Shows that since e^0 = 1 the sigmoid is one-half, so the initial prediction is one-half for all four training points.
-4. States that the loss for either label is negative log one-half, about 0.6931471806, so the average is the same value.
-5. Concludes that the model has not yet encoded any relationship between feature sign and label.
+1. Identifies the step multiplier as (1 - 4r).
+2. Shows r = 0.1 giving 0.6, 0.36, 0.216, and so on, and r = 0.25 reaching 0 in one step.
+3. Shows r = 0.5 alternating between 1 and -1 forever and r = 0.6 diverging with multiplier -1.4.
+4. States that it converges exactly when 0 < r < 0.5, and that the limit depends on the curvature of the loss.
+5. Concludes that a real model has unknown curvature and feature scales, so there is no universal safe rate; test candidate rates on declared data and report all runs, including divergent ones.
 
-**Source:** The model: two numbers and a squashing function
+**Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.19
 
-The reference sigmoid uses two branches, one for x >= 0 and one for x < 0. Explain what the negative branch does and why, and say exactly what the lesson test of sigmoid(-1000) does and does not show.
+A training run has a fixed budget of 200 updates and no convergence test. Discuss what a low final training loss does and does not tell you about that budget, how to choose a stopping rule responsibly, and what happens on linearly separable data without regularization.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the negative branch computes e / (1 + e) with e = exp(x).
-2. States that it rewrites the same mathematical quantity.
-3. Explains that it avoids evaluating an unnecessarily large positive exponential when x is very negative.
-4. States that the test checks that sigmoid of negative one thousand is approximately zero without overflow.
-5. Says this is evidence for the demonstrated numeric behavior, not a promise about arbitrary types or all floating-point edge cases.
+1. States that a low final loss shows what the configured loop achieved, not that 200 updates was the right budget.
+2. Names alternatives to a fixed count: a tolerance on loss change, early stopping on validation loss, or choosing the best checkpoint.
+3. Says the rule should be fixed before looking at held-out results, since changing it after seeing them tunes to that set.
+4. Explains that on separable data without regularization the loss keeps falling as the weights grow, so a lower loss is not convergence, and regularization or early stopping is needed.
+5. Recommends recording the loss at each step, with validation loss, so the shape of the run can be seen.
 
-**Source:** The model: two numbers and a squashing function
+**Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.20
 
-After training, the learned weight is positive. Say what a positive weight does to positive and to negative inputs, and what it does not mean. Then say which parts of the chapter's evidence come from a cited source and which from local execution.
+A student compares four learning rates by training with each and reporting the best result. Describe how to run and report such a comparison without turning it into a search for an attractive number.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A positive weight makes positive x values produce positive scores and probabilities above one-half.
-2. Negative x values produce probabilities below one-half when the bias stays near zero.
-3. This geometry matches the constructed labels.
-4. The parameter does not learn a word meaning or a causal relationship; it fits the relationship represented in the supplied pairs.
-5. The cited logistic-regression chapter draft supports the weighted-input and sigmoid mechanism, while the numerical results come from the local implementation and an independent calculation.
+1. Holds the data, initial parameters, and step budget fixed and varies only the rate.
+2. Fixes the evaluation criterion in advance and applies it to development data rather than training loss alone.
+3. Keeps and reports every run, including those that diverge.
+4. Reports the selection process: how many settings were tried, the criterion, and that the selected score is optimistic until confirmed on fresh test data.
+5. Explains the risk otherwise: a final number is presented without the selection that produced it, so the comparison becomes a search.
 
-**Source:** The model: two numbers and a squashing function
+**Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.21
 
-Write the Change and Objective lines of the gate for the toy, and explain why the chapter says the objective is a choice.
+An engineer sets aside four evaluation points before training and never passes them to the training function. The engineer chose them near the same decision boundary as the training points, and the trained model classifies all four correctly. Write the claim this evidence supports, the claims it does not support, and what a broader claim would require.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Change: weights only, the two numbers w and b, starting from zero.
-2. States that the prompt, context, tools, settings, and Claude's own weights are not in play.
-3. Objective: the average binary logistic loss on the four training pairs, and nothing else.
-4. States that "better" means lower on this objective on these pairs, which is the only thing the run may be called.
-5. Explains that the optimizer lowers whatever you give it, so the objective is a choice made in the gate.
+1. Explains that "held out" describes how the points were handled, that is, not used for fitting.
+2. States the supported claim: these four constructed points are classified correctly at the stated threshold.
+3. Lists claims not supported, such as generalization to a real population, calibration, or robustness.
+4. States that a broader claim needs a justified sampling process, a task definition, and a larger evaluation with its uncertainty.
+5. Notes that if the points later guide a choice, they become development data and are no longer an independent test.
 
-**Source:** The gate: say what should change before you change it
+**Source:** Held-out means separately specified, not magically representative
 
 ## ES-ch09.22
 
-Write the Held-out and Stop rule lines of the gate. What one claim can the held-out set support, and what do you do if the budget must change?
+A team finds that 50 of its 200 evaluation examples were also in the training data. Before the leak, accuracy was 82% (164 of 200). After retraining with the leak, suppose all 50 copied examples are right and the other 150 stay at 82% (123 correct). Explain the reported number, how to detect and fix such leakage, and how to report the result honestly.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Fixes four held-out pairs now, never passed to train, and lists them or says they are fixed in advance.
-2. Says they share the training data's sign pattern, so they can support one claim: these four fixtures are classified correctly at threshold one-half.
-3. Stop rule: exactly 200 updates at rate 0.2, from a zero start.
-4. No stopping early because the loss looks flat, and no extra steps because the held-out result looks bad.
-5. If the budget must change, reopen the gate and write down why, treating any evaluation points already seen as development data.
+1. Computes the reported accuracy as (123 + 50) / 200 = 86.5% and attributes the 4.5-point rise to memorization rather than better generalization.
+2. Explains that the leaked items measure recall of training data, not performance on unseen data.
+3. Notes that the 150 untouched examples still estimate unseen-data accuracy at 82%.
+4. Describes detection and repair: check for exact and near duplicates across splits, split before preprocessing, rebuild the split, and retrain.
+5. Says the report should disclose the leak and give the clean estimate rather than presenting 86.5%.
 
-**Source:** The gate: say what should change before you change it
+**Source:** Held-out means separately specified, not magically representative
 
 ## ES-ch09.23
 
-After 200 steps, a teammate sees that the held-out result looks bad, adds 100 more steps, and reports the new held-out result as the result. Evaluate this against the gate in the chapter.
+Explain why tuning a model or prompt needs three data roles rather than two, what each role is used for, and what goes wrong when a single evaluation set is used to choose among 12 configurations.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the gate forbids extra steps because the held-out result looks bad.
-2. Says that if the budget must change, the gate is reopened and the reason written down; reopening is a logged act.
-3. Says the held-out points have now guided a choice, so they have become development data.
-4. Says the new held-out result is no longer an independent use of those points.
-5. Says an independent evaluation should be built if the claim requires one, and the change of role recorded.
+1. Assigns the roles: training data fit the parameters, a development set is tuned against (settings, prompts, stopping), and a test set is used once for the final estimate.
+2. Explains that choosing among configurations by their score on a set turns that set into development data.
+3. Explains that the winning score is optimistic because the winner was selected partly for favorable noise.
+4. Notes that a development set loses independence with every reuse, so it may need to be refreshed.
+5. Says to record the change of role when it happens and to build an independent evaluation if the claim requires one.
 
-**Source:** The gate: say what should change before you change it
+**Source:** Held-out means separately specified, not magically representative
 
 ## ES-ch09.24
 
-The gate promises tests that catch three wrong versions of the program. Name them, say what each does, and say what it means if your tests cannot tell them from the right program.
+A team scores 30 prompt variants on the same 100 questions. Suppose every variant truly has 70% accuracy; by the binomial distribution the expected best observed score is about 79%, and the best is at or above 75% in over 99% of repeated experiments. Explain what this means for a team that reports the top variant's score and how to report honestly.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Summing the gradient instead of averaging makes the first step four times too large (0.6 instead of 0.15) while the loss still falls.
-2. Copying the x factor into the bias update makes b move on the first step although the symmetric data say it should not.
-3. Letting a held-out point into the training list makes the "held-out" result stop meaning anything.
-4. States that if the tests cannot tell these from the right program, the gate is not finished.
-5. Notes that because the summed version's loss still falls, watching the loss alone would not catch it.
+1. Explains that the maximum of many noisy estimates is biased upward (the winner's curse).
+2. States the magnitude: about 9 points of apparent improvement arise even though no variant is better.
+3. Notes that trying more variants raises the expected maximum, so the number of variants tried must be reported.
+4. Recommends confirming the winner on fresh questions that played no role in selection.
+5. Recommends reporting intervals and sample size, and not claiming improvements from small differences between variants.
 
-**Source:** The gate: say what should change before you change it
+**Source:** Held-out means separately specified, not magically representative
 
 ## ES-ch09.25
 
-Write a dated failure sentence for the first update and say why it must be written before the run. Then state what this experiment may claim, what it may not, and the pass condition.
+A classifier gets 4 of 4 right on a small hand-built test set, and another gets 40 of 40 right. Using the fact that a classifier with true accuracy p gets a perfect score on n independent points with probability p^n (0.6^4 is about 0.13, 0.9^4 about 0.66, 0.95^4 about 0.81; 0.9^40 about 0.015, 0.95^40 about 0.13), evaluate whether true accuracies of 60%, 90%, and 95% are compatible with each result, and say what each result supports.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Failure sentence: if the first update is right, w moves positive and b stays at zero; if w moves negative, or b moves, a sign or an x factor is wrong.
-2. Says it is written and dated before the run, because written after reading the output it only describes the output.
-3. May claim: the parameters were updated by this rule, training loss on four pairs fell, and four constructed points were classified correctly.
-4. May not claim: generalization, calibration, a change to Claude, or any cause.
-5. Pass condition: every test written from the gate passes on the code, and every sentence in the report fits inside the "may claim" line.
+1. Concludes that after 4 of 4, accuracies of 60%, 90%, and 95% are all plausible, with perfect-score probabilities of 0.13, 0.66, and 0.81.
+2. Concludes that after 40 of 40, 60% is essentially ruled out and 90% is unlikely (about 0.015), while 95% remains plausible (about 0.13).
+3. Notes that a perfect run bounds the error rate only loosely, roughly 3/n at 95% confidence.
+4. Notes that more points narrow the plausible range, and that hand-built points do not sample any population anyway.
+5. Says to report results with their uncertainty and never to equate a perfect small-sample score with 100% accuracy.
 
-**Source:** The gate: say what should change before you change it
+**Source:** Held-out means separately specified, not magically representative
 
 ## ES-ch09.26
 
-Claude can write the loop in seconds. Explain which parts of the gate it cannot choose for you, why, and what it can do for the gate instead.
+A classifier decides whether to escalate a message to a human. A missed escalation costs 20 units and an unnecessary escalation costs 1 unit. On 1,000 messages at threshold 0.5, Model A makes 10 missed escalations and 40 unnecessary ones and has average log loss 0.30; Model B makes 25 missed and 10 unnecessary and has average log loss 0.28. Which model is better for the business, and what does this show about training loss as a measure of "better"? What should the objective or evaluation include?
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Identifies the objective, the held-out set, and the stop rule as human decisions.
-2. Explains that none can be derived from the data, because the data have no opinion about what "better" should mean.
-3. Says that for the toy these are the author's choices (no model produced them) and for a real change request they are yours.
-4. Says Claude can sharpen the gate by proposing the wrong version and the test that catches it.
-5. Explains that if Claude chose the objective, your report would be a statement about someone else's objective.
+1. Computes the total costs: Model A is 10*20 + 40*1 = 240 and Model B is 25*20 + 10*1 = 510.
+2. Observes that Model B has the lower log loss and fewer total errors (35 versus 50) yet the higher cost.
+3. Explains that log loss weights errors by the confidence of the prediction, not by what each error costs, so it does not encode the business objective.
+4. Proposes making the cost part of the objective or evaluation, for example weighted loss, a cost-based threshold, or an expected-cost metric.
+5. Concludes that "better" is a task-level judgment, and that a falling training loss supports only the claim that training loss decreased.
 
-**Source:** The gate: say what should change before you change it
+**Source:** What a lower loss claims
 
 ## ES-ch09.27
 
-Give the ordinary binary cross-entropy for predicted probability p and the stable expression the reference evaluates from the score a. Say how the reference uses it and why the stable form is used.
+For a classifier with calibrated probabilities, a missed positive costs 20 units and a false alarm costs 1 unit. Derive the probability threshold that minimizes expected cost, and discuss what changes if the probabilities are not calibrated.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Gives -y log(p) - (1 - y) log(1 - p).
-2. Gives max(a, 0) - y*a + log(1 + e^(-|a|)).
-3. States that the reference averages this value across the data.
-4. Explains that the stable form avoids computing logarithms of probabilities rounded too close to zero or one for large scores.
-5. States that it is a numerically safer route to the same logistic objective for the accepted finite inputs.
+1. Writes the expected cost of predicting positive as (1-p)*1 and of predicting negative as p*20.
+2. Derives that predicting positive is better when 20p > 1-p, so p > 1/21, about 0.048.
+3. Notes that with equal costs the threshold is 0.5 and that it moves with the cost ratio.
+4. States that this requires calibrated probabilities; if the model is over- or under-confident, the threshold must be chosen empirically on development data.
+5. Notes that the threshold is a decision rule applied after scoring, so moving it changes decisions without changing the model's parameters.
 
-**Source:** Loss makes the objective explicit
+**Source:** Score, probability, and decision are three layers
 
 ## ES-ch09.28
 
-A student describes the training function's history as the learning curve and says the loss function is safe on any input. Correct both statements using the chapter.
+A model assigns probability 0.9 to each of 1,000 test items and 600 turn out positive. In a second evaluation, items are grouped by predicted probability: a group with mean prediction 0.2 (400 items, observed positive rate 0.10), a group at 0.5 (300 items, observed rate 0.45), and a group at 0.9 (300 items, observed rate 0.60). Explain what calibration is, say what the first case shows, compute the weighted average gap between predicted and observed rates for the second, and explain why a few correct extreme-probability predictions do not show calibration.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that history appends only the initial and the final loss.
-2. States that two values are not a learning curve.
-3. Says that if you add full history, you must state that your version changed the implementation.
-4. States that the loss function assumes nonempty data because training validates that before calling it.
-5. States that invoked directly on an empty list it would divide by zero, so describe guarantees at the call boundary that actually exists.
+1. Defines calibration: among items given probability p, about a fraction p should be positive.
+2. Identifies the first case as overconfidence, with an observed rate of 0.6 against a stated 0.9.
+3. Computes the weighted gap as (400*0.10 + 300*0.05 + 300*0.30) / 1000 = 0.145.
+4. Explains that checking calibration needs enough labeled data in each probability group, for example a reliability diagram.
+5. Notes that accuracy at a threshold can be high while calibration is poor, and that extreme probabilities on a few cases say nothing about frequencies.
 
-**Source:** Loss makes the objective explicit
+**Source:** Score, probability, and decision are three layers
 
 ## ES-ch09.29
 
-Using the training data [(-2, 0), (-1, 0), (1, 1), (2, 1)] at w = 0, b = 0 and rate 0.2, compute by hand the four errors, the four weight-gradient contributions, the average weight and bias gradients, and the new w and b.
+Distinguish the score, the probability, and the decision in a logistic classifier. Say what produces each, which of them training changes, and what happens when the threshold moves. Use w = 2, b = -3 with thresholds 0.5 and 0.8 (the score threshold for probability 0.8 is ln 4, about 1.386).
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Errors (prediction minus label) are 0.5, 0.5, -0.5, -0.5.
-2. Weight contributions (p - y)x are -1.0, -0.5, -0.5, -1.0.
-3. They sum to -3, so the average weight gradient is -0.75.
-4. The errors sum to zero, so the average bias gradient is zero.
-5. New w = 0 - 0.2(-0.75) = 0.15, and b stays at zero.
+1. States that the score is w*x + b from the parameters, the probability is the sigmoid of the score, and the decision applies a threshold to the probability.
+2. States that training adjusts the parameters, while the threshold is chosen outside training.
+3. Computes the boundary at x = 1.5 for threshold 0.5 and x = (1.386 + 3)/2, about 2.19, for threshold 0.8, with identical parameters.
+4. Notes that the sigmoid is monotonic, so thresholding the probability is equivalent to thresholding the score.
+5. Says to record all three layers and know which one a claim is about.
 
-**Source:** Derive the first update
+**Source:** Score, probability, and decision are three layers
 
 ## ES-ch09.30
 
-State the derivative of the logistic loss with respect to the score for one example, show how it gives the weight and bias gradient contributions, and explain in words why the first weight update should be positive.
+Explain the role of the bias term in a one-feature logistic classifier. Why might a learned bias come out near zero on a symmetric dataset, and why would it be a mistake to conclude that the bias can be dropped?
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The derivative with respect to the score is prediction minus label, the error e.
-2. Because the score is wx + b, the weight contribution is e times x and the bias contribution is e.
-3. Gradient descent subtracts the learning rate times the gradient.
-4. Since the average weight gradient at the start is negative, subtracting it moves w up.
-5. Increasing a positive weight pushes positive examples toward label one and negative examples toward label zero.
+1. States that the decision boundary is at x = -b/w, so the bias shifts it.
+2. Notes that without a bias the boundary is fixed at x = 0.
+3. Explains that on mirror-image symmetric data the errors cancel in the bias gradient, so the learned bias stays near zero.
+4. Notes that removing a point or flipping a label breaks the symmetry and moves the bias, and that data not centered at zero need one.
+5. Warns against generalizing from one symmetric toy dataset to the claim that biases are unnecessary.
 
-**Source:** Derive the first update
+**Source:** Score, probability, and decision are three layers
 
 ## ES-ch09.31
 
-Describe the central finite-difference check of the weight gradient at zero, give the value it should approximate, and say what agreement does and does not establish.
+A one-feature classifier trained from zero on symmetric data in which larger x goes with label 1 learns a positive weight and a bias near zero. Predict, with reasons, what happens to the learned weight, bias, boundary, and final training loss if every label is flipped, and say how you would verify the prediction.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Evaluates the loss at a small positive and a small negative perturbation and divides the difference by twice the perturbation.
-2. Gives approximately -0.74999999999, agreeing with the analytic -0.75.
-3. Says agreement within the tolerance checks the analytic expression at this point and fails differently from the derivation, because it never uses the derivative formula.
-4. Says it is an independent calculation, not an independent dataset, reviewer, or causal source.
-5. Says that if logistic loss is the wrong objective the derivative and finite difference still agree, because whether it is the objective you meant is the gate's question.
+1. Predicts that the learned weight becomes negative, since larger x now goes with label 0.
+2. Predicts that, because the data remain symmetric about zero, the bias stays near zero and the boundary near x = 0.
+3. Uses the identity sigma(-a) = 1 - sigma(a): flipping labels is equivalent to negating the weight, so the final training loss matches the original run.
+4. Notes that the initial predictions (0.5) and initial loss (ln 2) are the same in both runs.
+5. Says to verify by running both and comparing, with the prediction written down before the run.
 
-**Source:** Derive the first update
+**Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.32
 
-Describe what the training function validates and what each step does, name three things it does not do, and state what the existing tests do and do not show about the result after 200 steps.
+Explain how feature scale affects gradient-descent training of logistic regression, using the gradient formulas, and say what to do about it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Validates that labels are zero or one, features are finite, steps is a positive integer, and the rate is positive and finite.
-2. Initializes both parameters to zero and records the initial loss; each step builds errors from the current parameters, averages the gradient contributions, and updates weight and bias.
-3. Does not shuffle, use minibatches, or adapt the rate: it is batch gradient descent on the complete declared dataset.
-4. After 200 steps the weight is about 3.1669517461, the bias is effectively zero, and the training loss is 0.0215209850.
-5. The existing tests check that the loss fell and the weight is positive; passing them does not show the optimizer behaves under every dataset or rate.
+1. Notes that the weight gradient mean((p-y)*x) scales with the feature, while the bias gradient mean(p-y) has no x factor.
+2. Explains that large features produce large weight steps and can destabilize a fixed rate, while small features make progress slow.
+3. Recommends standardizing features to zero mean and unit variance so one rate works across features.
+4. Notes that changing units rescales the optimal weight inversely, leaving predictions unchanged if training converges.
+5. Says to compute standardization statistics on the training data and apply the same transform to held-out data, to avoid leakage.
 
 **Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.33
 
-A classmate says the 0.15 first step is what the data demand. Respond using the chapter. Then compute the first step at rate 0.1 and at rate 0.4, and say what the chapter does and does not establish about choosing a rate.
+Compare full-batch gradient descent, minibatch stochastic gradient descent, and single-example stochastic gradient descent: how each estimates the gradient, the cost per update, and the noise. Then explain what is lost when a teaching implementation uses only full batches.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that 0.15 is the average gradient -0.75 scaled by the rate 0.2 you chose, so it does not arise from the data alone.
-2. Computes the first step as 0.075 at rate 0.1 and 0.3 at rate 0.4.
-3. States that the rate is supplied to train and never updated: it is a setting of the experiment, not a learned parameter.
-4. States that a very large rate can overshoot or become unstable on some data, and a very small one makes limited-step progress slow.
-5. States that the research establishes no safe universal range, so you test chosen values on declared fixtures and do not write an optimization theorem from one decreasing-loss run.
+1. Describes full-batch descent as using the exact average gradient, which is deterministic but costly per update on large data.
+2. Describes minibatch descent as an unbiased noisy estimate with cheaper updates and more updates per pass (for example 1,000 examples in batches of 100 give 10 updates).
+3. Describes single-example descent as the noisiest, often needing a smaller rate or averaging.
+4. Notes that gradient noise and shuffling affect optimization paths and can influence generalization.
+5. Says a full-batch teaching loop is easy to trace but omits shuffling, minibatches, and adaptive rates, so analogies to large-scale training are limited.
 
 **Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.34
 
-The demo runs exactly 200 steps. What does that number mean, what does the function lack, and how should you run a fair comparison of rates or step counts?
+A training routine returns only two numbers as its loss "history": the loss before the first update and the loss after the last. Say what you cannot conclude from them, what should be recorded instead, and what patterns you would look for.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that 200 is the demo setting, not a discovered natural stopping point.
-2. States that the function runs exactly that many updates, with no convergence test, validation-based early stopping, or best-checkpoint selection.
-3. States that a lower final training loss shows what happened after the configured loop, not that the budget was right.
-4. Says to hold the data and initial parameters fixed and keep every result, including runs that behave badly.
-5. Says to choose evaluation criteria before looking for the most attractive run, otherwise the comparison becomes a search whose selection is hidden.
+1. States that two values are not a learning curve.
+2. Notes that they cannot show whether the loss fell steadily, oscillated, or spiked and recovered.
+3. Recommends recording training loss at each step or every few steps, plus validation loss.
+4. Names diagnostic patterns: divergence or NaN suggesting too high a rate, a plateau suggesting convergence or too low a rate, and training loss falling while validation loss rises suggesting overfitting.
+5. Says to name outputs honestly, and not to call two endpoints a history or a curve.
 
-**Source:** The loop, its rate, and its stop rule
+**Source:** What a production record can and cannot show
 
 ## ES-ch09.35
 
-Reverse all four training labels and keep the features. Compute the first-step average weight gradient and the new weight at rate 0.2, and say what the chapter predicts about the preferred weight direction. Then explain what happens to the separation between fit and evaluation if the held-out points are duplicated into the training data.
+For a sigmoid output p and label y = 1, the derivative of cross-entropy with respect to the score is p - 1, while the derivative of the half-squared error (p - y)^2 / 2 is (p - y)*p*(1 - p). At p = 0.001 these are about -0.999 and -0.001. Explain what this means for training when a model is confidently wrong, and what it implies about choosing an objective.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Computes the weight contributions with reversed labels as +1.0, +0.5, +0.5, +1.0, which average to +0.75.
-2. Computes the new weight as 0 - 0.2(0.75) = -0.15.
-3. States that the preferred weight direction should reverse (negative rather than positive).
-4. States that duplicating the evaluation points into the training data contaminates the separation between fit and held-out assessment.
-5. States that apparent improvement on those points becomes hard to interpret, because the optimizer has already used them.
+1. States that the cross-entropy gradient with respect to the score is p - y, about -0.999 here, a strong corrective signal.
+2. States that the squared-error gradient carries the factor p(1-p), about -0.001 here, nearly vanishing.
+3. Explains that a saturated sigmoid therefore makes squared-error training stall exactly when the model is most wrong.
+4. Notes that cross-entropy pairs naturally with sigmoid outputs because it corresponds to the Bernoulli likelihood.
+5. Concludes that the choice of objective affects training dynamics, not only the number reported.
 
-**Source:** The loop, its rate, and its stop rule
+**Source:** Loss makes the objective explicit
 
 ## ES-ch09.36
 
-With the trained parameters, the held-out predicted probabilities for x = -3, -0.5, 0.5, and 3 are about 0.00007478, 0.17030378, 0.82969622, and 0.99992522. Apply the threshold, state the result, state the strongest claim the chapter allows from it, and say what a broader claim would need.
+A support team wants an assistant to follow a new refund policy. Compare fine-tuning, prompt editing, retrieval over a policy document, and tool or permission changes by what each changes, how quickly it can be changed and reverted, how it can be audited, and when each is the right choice.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Applies the threshold at one-half and predicts labels 0, 0, 1, 1.
-2. States that all four held-out labels are correct.
-3. Says "held out" means only that the points were not passed into the training function, a statement about how they were handled.
-4. States the allowed claim: the trained parameters classified four separately specified sign-pattern fixtures correctly; "the model generalized" is too broad because the points were designed around the same sign boundary and are not representative of a natural population.
-5. Says a broader performance claim needs a justified sampling process, a task definition, and a larger evaluation.
+1. Fine-tuning changes the weights, needs data, a training run, evaluation, and a new artifact to version and deploy.
+2. Prompt editing changes text that is diffable and revertible at once, within the limits of the context window.
+3. Retrieval lets a corpus update take effect without training, depends on the quality of the selection step, and suits knowledge that changes.
+4. Tool and permission changes alter capability and governance, and are audited through a configuration diff and an authorization record.
+5. Says there is no universal ranking; choose by reversibility, inspectability, cost, and the behavior needed (for example changing facts suit retrieval, and a consistent style might justify fine-tuning).
 
-**Source:** Held-out means separately specified, not magically representative
+**Source:** Name the mutable object before you change it
 
 ## ES-ch09.37
 
-You use the held-out result to decide whether to change the number of steps. What has happened to the held-out set, what should you record, and how many roles for data do you now need?
+A vendor says its assistant "learns each user." What would you ask to decide whether this is parameter learning or stored context, and what would you tell users about it?
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says that once the held-out set guides a choice (a rate, a step count, or a decision to keep going) it has become development data.
-2. Says its next use is no longer independent.
-3. Says to record the change of role when it happens.
-4. Says to build an independent evaluation if the claim requires one.
-5. Says that once you tune anything you need three roles: training, a development set to tune against, and a held-out set you touch once.
+1. Asks how preferences are stored and used, whether prepended or retrieved into the input or used to update parameters.
+2. Proposes a test: delete the stored records, rerun the same input, and see whether the behavior disappears.
+3. Notes that per-user parameter learning would imply per-user weights or adapters, a training job, and data-handling obligations.
+4. Notes that context supply implies visible and deletable records and possible selection failures.
+5. Says the claim should describe the observed memory behavior and avoid "learned" in the training sense without evidence of parameter updates.
 
-**Source:** Held-out means separately specified, not magically representative
+**Source:** Persistence is not proof of training
 
 ## ES-ch09.38
 
-Suppose label one means "escalate this message to a person," and a missed escalation is far worse than a false alarm. Training loss falls. What does that establish, what does it not, and what should the gate have named?
+Explain why enabling a tool or changing a permission rule is a different kind of change from changing the model, and why describing such a change as "the model learned" is a problem.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that lower training loss shows the update rule reduced the objective on the pairs it was shown.
-2. States that it does not establish fit to pairs it was not shown, which is what the held-out set is for.
-3. States that it does not establish that the objective was the right one, which no dataset can establish.
-4. Explains that logistic loss penalizes errors by how confident the model was in the wrong direction, not by what each error costs, so a lower loss can sit beside the wrong behavior.
-5. Says the gate should have named the costs of the two errors, and the report should say "training loss decreased" rather than "better."
+1. States that tools change capability: which actions and information sources the system can use.
+2. States that permission rules change which proposed operations the runtime allows.
+3. Notes that the model itself is unchanged by either.
+4. Explains that calling it learning relabels a human governance decision as a machine property, hiding who decided and what should be audited.
+5. Names the evidence: the configuration diff and the authorizing decision, and notes that tool outputs enter the context and can change answers.
 
-**Source:** What a lower loss claims
+**Source:** Name the mutable object before you change it
 
 ## ES-ch09.39
 
-Distinguish score, probability, and decision in the toy classifier. Say what produces each, and what happens when you move the threshold.
+Explain what temperature does when sampling from a language model. For logits [3, 1, 0] the softmax probabilities are about (0.844, 0.114, 0.042) at T = 1, (0.980, 0.018, 0.002) at T = 0.5, and (0.629, 0.231, 0.140) at T = 2. Use them to describe the effect, say why a single run is insufficient for comparing two settings, and say why temperature is not a training change.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The score wx + b comes from the parameters.
-2. The probability comes from the sigmoid.
-3. The decision comes from a threshold, here one-half.
-4. The threshold is a choice you made and training never saw; moving it moves the decisions with identical parameters.
-5. You record all three layers and know which one a claim is about.
+1. States that logits are divided by T before the softmax.
+2. Describes lower T as sharpening (0.844 rising to 0.980) and higher T as flattening.
+3. Notes that T approaching 0 becomes greedy choice of the top token and large T approaches uniform sampling.
+4. States that the parameters are unchanged and that temperature is a run-time setting to be recorded for each run.
+5. Explains that sampling is random, so comparing settings requires repeated runs per setting.
 
-**Source:** Score, probability, and decision are three layers
+**Source:** Name the mutable object before you change it
 
 ## ES-ch09.40
 
-The learned bias is extremely close to zero. Explain why, why it would be a mistake to conclude that bias is unnecessary, and where the decision boundary sits.
+A logistic model fit to historical records of an online class has a positive weight on x, the number of reminder emails a student opened in the first month, for the label "passed." A dean proposes requiring every student to open the emails and expects pass rates to rise. Explain why the fitted model cannot tell whether the policy will work, give several explanations for the positive weight, and say what evidence would be needed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Notes that the data are symmetric: each negative feature with label zero has a positive partner with label one.
-2. Notes that at the origin the errors sum to zero, so the first bias update is zero.
-3. States that across training the symmetry keeps the learned bias extremely close to zero in the recorded run.
-4. Says bias shifts the decision boundary whenever the relationship is not centered at zero, and that removing one point or changing one label can break the symmetry.
-5. States that the boundary sits where wx + b = 0, because sigmoid zero is one-half, so with positive w and nearly zero b it lies near x zero.
+1. Separates the two questions: what label the model will assign at a given x is a prediction question, while what happens if students are required to open emails is an intervention question.
+2. Explains that evaluating the function at a larger x gives the model's response to a changed input, not the class's response to a changed behavior.
+3. Offers competing explanations for the positive weight: the emails help, students who are already on track open more emails (reverse causation), a common cause such as motivation or free time, or selection of students who stayed enrolled.
+4. Names the evidence needed: a randomized trial or pilot, or a study design with explicitly defended causal assumptions and domain evidence.
+5. Recommends stating the claim with its provisos, in the form "if we change x by doing D, the outcome changes by about this much, provided P, Q, and R."
 
-**Source:** Score, probability, and decision are three layers
+**Source:** Decide what kind of question you are asking
 
 ## ES-ch09.41
 
-The held-out probabilities are more extreme farther from zero (0.99992522 at x = 3 versus 0.82969622 at x = 0.5). A teammate says this shows the model's confidence is well calibrated. Respond using the chapter.
+Describe the three rungs of Pearl's ladder of causation with a medical example of each, and say which rung a standard supervised classifier answers and what limits movement up the ladder.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that more extreme probabilities farther from zero are an observed property of this fitted curve under the learned positive weight, on selected points.
-2. States that this is not evidence that the confidence is calibrated.
-3. Notes that a model's probability is tied to its mechanism and objective.
-4. Explains that calibration means matching observed frequencies, which takes a calibration study on suitable labeled data.
-5. States that four sign fixtures cannot support a calibration claim.
+1. Describes association as what goes with what, for example comparing recovery rates between patients who did and did not take a drug.
+2. Describes intervention as what happens if we do something, for example giving the drug to everyone in a clinic.
+3. Describes the counterfactual as what would have happened to this particular patient had they not taken the drug.
+4. Places a supervised classifier at the association (prediction) rung.
+5. Explains that interventional and counterfactual answers generally cannot be recovered from observational data alone without causal assumptions, and that more data does not supply those assumptions.
 
-**Source:** Score, probability, and decision are three layers
+**Source:** Decide what kind of question you are asking
 
 ## ES-ch09.42
 
-x counts the reminder emails a student opened in the first month, y records whether they passed, and the fitted weight is positive. Contrast "what label will the model assign to a student who opened four emails?" with "if we require every student to open the emails, will more of them pass?" and say what evaluating the function at a larger x does and does not tell you.
+Two treatments were assigned by clinicians. In mild cases, X succeeded in 8 of 10 and Y in 70 of 90. In severe cases, X succeeded in 30 of 90 and Y in 2 of 10. Pooled, X succeeded in 38 of 100 and Y in 72 of 100. Explain how the pooled comparison can reverse the within-group comparison, what additional information you would need to decide which treatment is better, and why the right comparison depends on causal structure.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the first question is about the model, and evaluating the fitted function answers it.
-2. Says the second question is about the world, and the function answers a different question.
-3. Says evaluating at a larger x gives the model's response to a changed input, not the course's response to a changed behavior.
-4. Names at least three other sources of the association: opening helps, students already on track open more (reverse arrow), a third factor such as motivation or free time, or a sample of only students who stayed enrolled.
-5. Says a positive weight cannot tell you which source you have, because each is consistent with it.
+1. Computes the within-group rates: mild 80% versus about 78%, severe about 33% versus 20%, so X is better in both groups.
+2. Notes the pooled reversal: 38% for X versus 72% for Y.
+3. Explains the cause: X was given mostly to severe cases (90 of its 100), severity strongly affects outcome, so severity confounds the pooled comparison.
+4. Explains that stratifying is right if severity is a confounder, but pooling can be right if the grouping variable is a consequence of the treatment, so the choice needs causal assumptions that the table cannot supply.
+5. Notes that randomized assignment of treatment would break the link between severity and assignment.
 
 **Source:** Decide what kind of question you are asking
 
 ## ES-ch09.43
 
-Explain how acting on a prediction can undermine it, and why a causal sentence about the chapter's four training pairs would be a story rather than a finding.
+A model that flags at-risk students was fit on a year in which nobody acted on its flags. Next year advisors contact every flagged student. Explain why the model's predictions may not describe the new year and how the team could evaluate the effect of the contact.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that acting on a prediction can change the process that generated the data.
-2. States that a model fit to a period in which nobody acted on its flags can say little about what happens once people do.
-3. States that the four constructed pairs were chosen to make the gradient visible.
-4. States that they contain no information about any process in the world.
-5. Concludes that a causal sentence about them is a story attached to a fixture.
+1. Explains that acting on predictions changes the process that generates the data, so a model fit before anyone acted may not describe the world afterwards.
+2. Notes that flagged students who pass after contact may reflect a successful intervention, not model error.
+3. Warns that refitting on post-intervention outcomes without recording who was contacted conflates prediction with the intervention's effect.
+4. Proposes a design to evaluate the contact: randomize or hold out a comparison group of flagged students who are not contacted, and record who is contacted.
+5. Notes that high accuracy on historical data gives no protection against feedback from the model's own use.
 
 **Source:** Decide what kind of question you are asking
 
 ## ES-ch09.44
 
-Name the three rungs of Pearl's ladder as the chapter gives them, state the one-line version of what the ladder implies for prediction, and say what the limit does and does not claim.
+A researcher has a large observational dataset on job-training participation and later wages. Explain under what conditions a causal claim about the program could be defended, which threats must be addressed, and how a randomized experiment differs.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names association (what goes with what), intervention (what happens if I do this), and counterfactual (what would have happened to this case had we done otherwise).
-2. States that prediction is not identification: interventional and counterfactual answers generally cannot be recovered from purely observational data without structural assumptions that did not come from the data.
-3. Says the limit is about information, about what observational data can yield, and is not a proof that no machine architecture could ever reason causally.
-4. Says someone must supply and defend the causal assumptions, and that more data, confident intuition, or a fluent explanation does not supply them.
-5. Says observational data can support a causal claim under assumptions you state and defend.
+1. Names confounding and self-selection, such as motivation affecting both participation and wages, as the central threats.
+2. Explains that random assignment breaks the link between assignment and pre-existing differences in expectation.
+3. Explains that an observational causal claim needs explicit assumptions, such as no unmeasured confounding given covariates, or a natural experiment, instrument, or difference-in-differences design, argued with domain evidence.
+4. Notes that more data reduces variance but does not remove bias from confounding.
+5. Recommends stating the claim with its provisos and testing sensitivity to violations of the assumptions.
 
 **Source:** Decide what kind of question you are asking
 
 ## ES-ch09.45
 
-In the causal part of the chapter, what can Claude do, what does it lack, and what judgment stays with you?
+An analyst asks a language model for help with a causal question about an observational dataset. Say what the model can and cannot reliably contribute, and explain who should own the identification judgment and why.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Claude can write causal diagram notation, list the confounders it can think of, work out what follows from a stated structure, and run the code.
-2. Its fluent paragraphs about confounding exist because such text is abundant in what such systems learn from, and fluency about causation is not identification of it.
-3. It lacks your study design, how the data were collected, and the domain facts about your students.
-4. It has nothing riding on the decision.
-5. The identification judgment (choosing the variables and asserting the structure you are prepared to defend) stays with the person who will act.
+1. Lists what the model can do: propose candidate confounders, write notation for a causal diagram, compute consequences under a structure the analyst states, and run code.
+2. States that fluent text about causation is not identification of a causal effect in this dataset.
+3. Notes that the model does not know the study design, data collection, or domain facts unless they are supplied and verified.
+4. Explains that the person who will act on the result owns the identification judgment, choosing the variables and defending the assumed structure, since the model bears no consequences.
+5. Says the model's assumptions should be labeled as assumptions rather than presented as established causation.
 
 **Source:** What is Claude's here, and what is yours
 
 ## ES-ch09.46
 
-State the working rule the chapter gives for deciding, before you hand Claude the algebra, what kind of question a stakeholder is asking, and say how the chapter's report is meant to show you drew that line.
+A report on a small experiment states: average training loss fell from 0.69 to 0.11; six separately specified held-out points of the same pattern as the training data were all classified correctly. State the strongest claims this evidence supports, and list three claims it does not support with reasons.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Write one sentence saying whether the question is "what will the model say" or "what happens if we act."
-2. Also write who decided.
-3. Notes the book's observation that deciding whether the question is causal is itself a causal judgment.
-4. States that the report ends with one predictive claim the fixture supports and one intervention claim it does not establish.
-5. States that the pair is the evidence that you drew the line.
+1. States the supported claims: the parameters were updated by the stated procedure, the training loss decreased from 0.69 to 0.11, and the six held-out points were classified correctly.
+2. Rejects "the model generalizes," because six constructed points of the same pattern do not sample a real population.
+3. Rejects "the probabilities are calibrated," because calibration needs a labeled sample large enough to compare probabilities with frequencies.
+4. Rejects any causal claim that changing the feature changes a real-world outcome, because a fitted association does not identify an intervention effect.
+5. Chooses verbs to match the evidence, such as "lowered the objective on the training pairs" instead of "generalizes."
 
-**Source:** What is Claude's here, and what is yours
+**Source:** What a lower loss claims
 
 ## ES-ch09.47
 
-Describe the order of work in Build It, and say what you do if your first-step weight does not equal 0.15.
+A team is changing a classifier used to escalate messages to a human, and an AI coding assistant is available. Divide the work between the assistant and the responsible engineer, and explain which parts must stay with the engineer and why.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Implements sigmoid and tests zero, a large negative input, and a symmetry you can justify; implements the stable loss and calculates the origin by hand.
-2. Implements one gradient step before writing the full loop.
-3. Reads the six lesson tests before the reference and predicts the direction and rejection cases.
-4. If the value differs from 0.15, inspects averaging, signs, and use of the current parameters.
-5. Does not adjust the expected result until the discrepancy is explained, because it came from the hand derivation, the independent route.
+1. Keeps the objective with the engineer: what "better" means, including the relative costs of missed and unnecessary escalations.
+2. Keeps the evaluation set and the stopping rule with the engineer, decided before running.
+3. Keeps with the engineer the decision of whether the stakeholder's question is a prediction or an intervention question, and the defense of any causal assumptions.
+4. Delegates to the assistant derivations, code, runs, and tabulation, and has it challenge the plan and propose wrong versions, with the engineer verifying through independent routes.
+5. Explains that the engineer signs or withholds the final claim because the engineer is accountable for it and the data hold no opinion about the objective.
 
-**Source:** Build It: the baseline that lets you audit
+**Source:** What is Claude's here, and what is yours
 
 ## ES-ch09.48
 
-In Build It you change the update to sum the gradient instead of averaging. Compute the first step at rate 0.2 for the toy data, say what three predictions you write before running it, and explain why a lower final loss would not show the code is right.
+Before changing a model or prompt, a team writes down a plan. List what the plan should contain, and explain how it should be handled if results disappoint.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Computes the summed first-step gradient as -3, so the step is 0.2 x 3 = 0.6, four times the reference 0.15.
-2. Names the three predictions: which of the six lesson tests will fail, how far the first step lands from 0.15, and whether the final loss after 200 steps is higher or lower than 0.0215209850.
-3. Notes that tests 03 and 04 check only that the loss fell and that the weight is positive, so they cannot tell the summed version from the averaged one.
-4. Notes that the loss still falls in the summed version.
-5. Says that whatever number appears at step 200, a lower number does not show the update rule is right.
+1. Includes the objective: what "better" means and the metric that will be reported.
+2. Includes the evaluation set, specified separately from the data used for tuning and fixed before results are seen.
+3. Includes the stopping rule or budget.
+4. Includes a description of what failure looks like, written before the run, and the wrong versions of the implementation that the tests must catch.
+5. States that revising the plan is allowed but must be logged, that evaluation points already seen become development data, and that the claims must stay within what the plan supports.
 
-**Source:** Build It: the baseline that lets you audit
+**Source:** The gate: say what should change before you change it
 
 ## ES-ch09.49
 
-You hand Claude Code your gate. Say what you give it, what you do with what it returns, and how the three follow-up checks work.
+Design three tests for a logistic-regression trainer that would catch these bugs: (a) the gradient is summed instead of averaged, (b) the feature value is multiplied into the bias update, and (c) evaluation points are included in the training list. For each, state the input and the assertion, and explain why a test that only checks that the loss decreased misses them.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Gives it the gate (change, objective, held-out list, stop rule, and test list) but not your implementation.
-2. Runs your own tests on what it returns, yourself.
-3. Notes which tests failed, since a failure is often a gap in the gate (for example, early stopping you never asked for means your stop rule had a hole).
-4. Compares its implementation with your baseline and names one difference in behavior, such as keeping held-out points out of training, how the average is computed, or recording more than two losses.
-5. Asks Claude to propose a deliberately wrong version that still passes your tests and checks by hand whether it does; if it does, the test list was too weak.
+1. For (a), uses a small hand-solvable dataset and asserts the exact first-step parameters, which would be N times too large with a summed gradient.
+2. For (b), uses data symmetric about zero and asserts that the bias stays at 0 after the first step, since the errors cancel.
+3. For (c), asserts that the evaluation set and training set are disjoint, by identity or by duplicate check.
+4. Explains that a "loss decreased" test passes for all three, because each can still reduce training loss.
+5. Adds a mutation check: write each wrong version deliberately and confirm that the tests fail on it.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** The gate: say what should change before you change it
 
 ## ES-ch09.50
 
-What must you preserve from a Claude Code session, what do you do if the session failed or did not run, and why can't Claude judge whether your tests are enough?
+An AI assistant has produced a logistic-regression trainer and a set of tests for it. Describe how you would verify the work independently, and why tests written by the same assistant are not enough.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Preserves the prompt, the plan, the diff, the commands, and the outputs.
-2. Records the date and displayed model label.
-3. If a session failed or did not run, records that.
-4. Does not substitute a fixture for the missing session.
-5. States that whether your tests are enough cannot be judged by the system they are testing.
+1. Writes a dated prediction before running, such as the direction of the first update, with a statement of what a wrong result would look like.
+2. Hand-derives the first-step numbers and compares them with the code's output.
+3. Runs a finite-difference gradient check against the analytic gradient.
+4. Explains that tests written by the same author from the same understanding may share a misreading, so add tests from your own specification and ask for a deliberately wrong version to see whether the tests reject it.
+5. States that when the hand value and the code disagree, the disagreement must be explained, not resolved by changing the expected value to match the code.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** Build It: the baseline that lets you audit
 
 ## ES-ch09.51
 
-Design the chapter's second task, which touches Claude's behavior: what conditions do you prepare, what rule governs them, what do you write first, what do you record, and what do you say about what is being changed?
+Draft the closing section of a report on a small training experiment. State what such a section should list under what was checked, how it was checked, what was not checked, and what is not being claimed, and give an example of each. Explain why the "not checked" part matters.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Prepares a baseline prompt, a few-shot prompt, and a retrieved-context condition on the same bounded task.
-2. Changes only one object between conditions.
-3. Writes a prediction for each condition first.
-4. If run, records the actual responses, interface, date, and displayed model label; if not run, labels the design proposed.
-5. States that these conditions change inputs, not Claude's weights.
+1. Lists the claims checked and the checks used, such as a hand-computed first update, a finite-difference check, and a held-out evaluation.
+2. States how each check was done: by hand, by a test written before reading the code, by recomputation, or with an AI assistant's help, naming which parts.
+3. Lists what was not checked, such as other datasets, rates, and step counts, calibration, or any real-world effect.
+4. Lists claims not being made, such as that the model generalizes, that lower training loss means better, or that any input causes an outcome.
+5. Explains that the not-checked part matters because only the person who did the work knows what was not done, and that withholding sign-off is an honest result when the evidence is insufficient.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** Ship It: the comparison report and its sign-off
 
 ## ES-ch09.52
 
-List what the Ship It report must contain, including how it separates mathematical success from decision authority.
+Explain why a dated prediction should be written before running AI-generated training code. Then write a falsifiable prediction for the first gradient descent update of a one-feature logistic classifier from zero parameters on the pairs (-1, 1), (1, 0), (2, 0), giving the direction of the weight and bias changes with reasons.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Includes loss history, before and after parameters, held-out results, and a comparison of parameter learning, prompt changes, and context changes.
-2. Preserves the training data and evaluation points, and records the interpreter, step count, rate, initial values, final values, and threshold.
-3. Says which results came from the lesson and which from your extension.
-4. Includes a table with mutable object, mechanism, persistence, evidence, and remaining limits, keeping permissions and tools separate from model parameters.
-5. Ends with one predictive claim supported by the actual toy evaluation and one intervention claim it does not establish.
+1. Explains that a prediction written after seeing the output only describes the output.
+2. Says a useful prediction states what a wrong result would look like, so it can be falsified.
+3. Notes that all initial probabilities are 0.5, so the errors p - y are -0.5, 0.5, and 0.5.
+4. Predicts that the averaged weight gradient is positive (about +0.67), so the weight moves negative, since larger x goes with label 0.
+5. Predicts that the averaged bias gradient is positive (about +0.17), so the bias moves negative, and that a different sign points to a sign error or a missing feature factor.
 
-**Source:** Ship It: the comparison report and its sign-off
+**Source:** Derive the first update
 
 ## ES-ch09.53
 
-Fill in the "Not checked" and "Not claiming" lines of the sign-off for this chapter's work, and explain why the "Not checked" line matters when Claude drafts the sign-off.
+Distinguish four claims about a trained classifier: "the model learned," "the model fits its training data," "the model generalizes," and "the model is useful." For each, say what evidence supports it and why a stronger claim cannot be inferred from a weaker one.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Not checked includes data beyond the four training and four held-out fixtures, and other rates, step counts, or starts.
-2. Not checked also includes calibration of the probabilities, any change to Claude itself, and any real-world effect of changing x.
-3. Not claiming includes that the model generalizes, that lower training loss means better, and that any input causes any outcome.
-4. Says the "Not checked" line is the one an AI-written sign-off omits, because the system that wrote it has no record of what you did not do.
-5. Says you write the sign-off from your own record, and that withholding is an honest result if the evidence does not support signing.
+1. For "learned," cites a change in parameter values produced by the update rule, which can be inspected directly.
+2. For "fits the training data," cites a low training loss on the pairs the optimizer saw.
+3. For "generalizes," requires evaluation on independent data drawn from the target distribution, reported with uncertainty.
+4. For "is useful," requires task-level metrics tied to the real costs of errors, calibration where probabilities are used, and evidence from deployment conditions.
+5. Explains that each stronger claim needs its own evidence, and that lower training loss alone cannot establish generalization or usefulness.
 
-**Source:** Ship It: the comparison report and its sign-off
+**Source:** What a lower loss claims
 
 ## ES-ch09.54
 
-Choose the right verb for each claim and justify it: "lowered the objective on four pairs," "learned," "generalizes," and "causes." What is the rule for choosing?
+An engineer says: "After adding the policy PDF, accuracy on our 100-question set rose from 61% to 74%, so the model has learned the policy." Critique the claim and say what the engineer can legitimately claim and how to strengthen the evidence.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. "Lowered the objective on four pairs" describes what the optimizer did.
-2. "Learned" describes a parameter change, which is accurate here.
-3. "Generalizes" needs a criterion you have not run.
-4. "Causes" needs assumptions the fixture cannot supply.
-5. The rule: choose verbs to match the evidence, since a pass names the obligation it passed and no more.
+1. Explains that adding a document supplies information in the input and does not train the model, and that removing the document should remove the gain.
+2. Proposes checking which passages were retrieved and running an ablation with the document removed.
+3. Warns that if the prompt or retrieval was tuned on the same 100 questions, those questions are development data, so a separate untouched test set is needed.
+4. Notes that sampling and the sample size give uncertainty of several points on 100 questions, so repeated runs and an interval are needed.
+5. States a defensible claim: with the document supplied, accuracy on this set was 74% versus 61% without it, under recorded conditions.
 
-**Source:** Ship It: the comparison report and its sign-off
+**Source:** Persistence is not proof of training
 
 ## ES-ch09.55
 
-Using the driver's seat table, say for (a) deciding whether the question is prediction or intervention and (b) deciding what the result supports: what Claude should do, what you should do, and why it stays with you. Then say what the report must record about the split.
+A team spends two weeks revising a prompt against the same 50 test questions and then reports the final score as the prompt's accuracy. Explain why the score is optimistic and how to restructure the process.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. (a) Claude can draft a diagram, list confounders, and compute under a stated model.
-2. (a) You decide which kind of question it is, justify the assumptions, and get domain evidence, because the assumptions are not in the data and you are the one who acts.
-3. (b) Claude can flag an overclaim.
-4. (b) You choose the verb and sign, because your name is on the claim.
-5. The report records one task delegated and one judgment retained, with a transcript line or edit showing each; otherwise the split happened in your head and not in the record.
+1. Explains that revisions were chosen by their effect on those questions, so the set became development data.
+2. Notes the risk of overfitting to the particular questions, for example by adding rules aimed at specific failures.
+3. Recommends separating a development set for iteration from a test set that is locked and used once.
+4. Recommends reporting all attempts and the run-to-run variation, not just the best result.
+5. Notes that when a test set has been exposed it should be refreshed or replaced if an independent estimate is required.
 
-**Source:** The driver's seat
+**Source:** Held-out means separately specified, not magically representative
 
 ## ES-ch09.56
 
-Classify these four proposed changes by the object each modifies and say how you would observe each: a rewritten system prompt, a new document in a workspace, a newly enabled tool, and a lowered temperature. What may you not conclude if the only evidence is a different output?
+Describe the steps of full-batch gradient descent for training a one-feature logistic classifier, including input validation, initialization, the update, and what is recorded, and identify which choices are design decisions rather than learned quantities.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Rewritten system prompt: the prompt, observed by comparing both texts.
-2. New document in a workspace: the context, observed through the passages that actually entered the input.
-3. Newly enabled tool: the tools, observed through the configuration diff and the decision that authorized it.
-4. Lowered temperature: a setting, observed through the recorded setting for each run.
-5. States that if the only evidence is a different output, you should not jump to a claim about changed weights.
+1. Describes validating the inputs: labels in {0, 1}, finite features, a positive integer number of steps, and a positive finite rate.
+2. Describes initializing the parameters, for example at zero, and recording the initial loss.
+3. Describes each step: compute predictions, form the errors p - y, average the gradient contributions, and update w and b by subtracting rate times gradient.
+4. Describes recording the final loss after the budget and returning the parameters.
+5. Identifies the learning rate, step budget, initialization, objective, and data split as design decisions, not quantities the loop learns.
 
-**Source:** Verify and reflect
+**Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.57
 
-List the checks the chapter asks you to run when you verify your work, including what to do with the words "history" and "generalization" and with your strongest causal verb.
+Explain precisely what the statement "training loss decreased from 0.69 to 0.02" establishes and what it leaves open, addressing unseen data, the choice of objective, and the correctness of the code.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Runs the demo, the lesson tests, your gradient check, and the held-out calculation.
-2. Recomputes the first update independently and preserves exact outputs rather than reconstructing them after reading the expected values.
-3. Checks every use of "history": two loss values are initial and final, not a full curve.
-4. Checks every use of "generalization": four designed points are separate fixtures, not evidence of population performance.
-5. Inspects the strongest causal verb (association or intervention?) and narrows the claim if the data and design cannot support it.
+1. States that it establishes that the update rule reduced the objective on the pairs it was shown.
+2. States that it does not establish fit to unseen data, which requires held-out evaluation.
+3. States that it does not establish that the objective was the right one for the task, which no dataset can settle.
+4. Notes that it does not show the code is correct, since a bug such as an oversized step can lower the loss as well or faster.
+5. Concludes that the report should say "training loss decreased" when that is what was measured.
 
-**Source:** Verify and reflect
+**Source:** What a lower loss claims
 
 ## ES-ch09.58
 
-The chapter says the most useful reflection is local. Name the four distinctions it suggests you may have collapsed, say what you do about them, and state what it says about mechanism labels.
+A stakeholder asks, "If we raise the price by 10%, how many customers will we lose?" and offers a churn model fit on historical data. Decide whether this is a prediction or an intervention question, and explain what the model can and cannot tell you and what evidence would answer the question.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names the four distinctions: training and context; lower loss and better; held-out and representative; prediction and intervention.
-2. Says to name the calculation or the one-object test that separated them again.
-3. Says mechanism labels should make evidence easier to inspect, and that when they hide the mutable object they have become branding.
-4. Says to ask of any change which component changed, who changed it, and what evidence records the transformation.
-5. Says that if those questions stay unanswered, you use a narrower description until the mechanism is known.
+1. Identifies the question as interventional: it asks what happens if the company changes the price.
+2. Explains that the churn model describes the association between historical features, including past prices, and churn.
+3. Notes that past price changes may have been confounded, for example applied to certain segments or during special events, and that reverse causation is possible.
+4. Proposes evidence: a randomized price test, a defended quasi-experimental design, or an estimate of price sensitivity under stated assumptions.
+5. Says the model can help design or simulate scenarios under explicit assumptions, and the answer should be stated with its provisos.
 
-**Source:** Verify and reflect
+**Source:** Decide what kind of question you are asking
 
 ## ES-ch09.59
 
-Describe what Conduct, Check, and Drive looked like at this chapter's scale, in terms of what you did.
+Explain why a report on AI-assisted work should show which task was delegated to the assistant and which judgment the human retained, and what evidence of that split should exist.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Conducted: wrote the change, the objective, the held-out list, and the stop rule before the loop ran.
-2. Conducted: tested Claude's version against those items.
-3. Checked: wrote "training loss decreased" when that was all that was measured.
-4. Checked: let neither persistence nor a good-looking prompt stand in for training.
-5. Drove: handed Claude the algebra and the loop, kept the question of whether this was prediction or intervention, and signed or withheld.
+1. Explains that the person whose name is on the claim is accountable for it.
+2. Gives examples of delegated work (derivations, code, tabulation) versus retained judgment (objective, evaluation set, kind of question, assumptions).
+3. Names evidence of the split, such as transcript lines, diffs, and commits showing who wrote what.
+4. Notes that if the split is not in the record, it happened only in someone's head and cannot be audited.
+5. Notes that an AI-drafted sign-off tends to omit what was not checked, because the system has no record of what the human did not do.
 
-**Source:** What you can now explain
+**Source:** The driver's seat
 
 ## ES-ch09.60
 
-State the "AI should" and "Human should" responsibilities the chapter gives for the prediction-versus-intervention question, and say what the chapter does and does not take from the companion passage.
+A logistic regression has a weight of 0.7 on a feature x. Interpret the weight in terms of log-odds, odds, and probability, show with a numerical example why the probability change per unit of x varies, and say why the weight alone does not show that x causes the outcome.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. AI should inspect calculations, run bounded experiments, tabulate predictions, and challenge assumptions.
-2. AI can compute consequences under an explicitly stated model and propose candidate confounders, and should label assumptions as assumptions instead of presenting a plausible story as established causation.
-3. Human should decide whether the task asks for prediction or intervention, and justify the outcome and causal assumptions.
-4. Human should obtain relevant domain evidence and own the decision to act; human intuition is not sufficient causal proof either.
-5. The chapter uses the passage's information boundary, not a claim that a particular machine architecture can never represent causal reasoning.
+1. States that each one-unit increase in x adds 0.7 to the log-odds.
+2. States that each one-unit increase multiplies the odds by e^0.7, about 2.01.
+3. Notes that probability responds nonlinearly through the sigmoid, so the same step changes probability most near 0.5 and least near 0 or 1.
+4. Gives an example: from probability 0.5 (odds 1) the odds become about 2.01, giving a probability of about 0.67.
+5. Explains that the weight is an association in the training data and does not identify the effect of intervening on x.
 
-**Source:** Irreducibly Human
+**Source:** The model: two numbers and a squashing function
 
 ## ES-ch09.61
 
-Write the form the chapter gives for an intervention claim, and explain what it means if you can or cannot fill in its provisos. Then explain why changing x in the fitted Python function does not measure a real-world effect, and what in the record shows who wrote the assumptions.
+Explain why classifiers are trained with a smooth loss such as cross-entropy rather than directly maximizing accuracy, and say how accuracy and other decision metrics should still be used.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Gives the form: "if I change x by doing D, the outcome changes by about this much, provided P, Q, and R."
-2. If you can fill in P, Q, and R, you have found the assumptions to defend and the evidence to go and get.
-3. If you cannot, you have a prediction.
-4. Changing x in the fitted function measures the model's response, not necessarily the effect of changing a real-world variable.
-5. Points to the transcript line or the edit showing that you, not Claude, wrote the sentence that names the assumptions.
+1. Explains that accuracy at a threshold is piecewise constant in the parameters, so its gradient is zero almost everywhere and gives no update signal.
+2. Explains that cross-entropy is smooth and graded, rewarding small improvements in confidence in the right label.
+3. Notes that cross-entropy corresponds to maximum likelihood for Bernoulli labels.
+4. States that the optimizer lowers whatever objective it is given, so the objective is a choice that should reflect the task.
+5. Says accuracy, cost-based metrics, and calibration are reported as separate evaluation measures on independent data, and that a decreasing training loss does not guarantee they improve.
 
-**Source:** Irreducibly Human
+**Source:** Loss makes the objective explicit

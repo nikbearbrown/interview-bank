@@ -1,11 +1,15 @@
-"""Compose the cleaned case-generation prompts (2 styles x 5 types) into case-interviews/prompts/.
+"""Compose the cleaned case-generation prompts (2 styles x 5 types) into two files:
+case-interviews/prompts.md (one readable document) and case-interviews/prompts.json (the same prompts as data).
 
-Each output file is one ready-to-paste prompt with two placeholders: {difficulty} and {user_text}.
+Each prompt is ready to paste, with two placeholders: {difficulty} and {user_text}.
+The verbatim originals stay in case-interviews/generation-prompts.md.
 Run: python3 -I scripts/build_case_prompts.py
 """
+import json
 import pathlib
+import re
 
-OUT = pathlib.Path(__file__).resolve().parent.parent / "case-interviews" / "prompts"
+OUT = pathlib.Path(__file__).resolve().parent.parent / "case-interviews"
 
 COMMON = """\
 Write a {style_name} case interview for a fictitious company. Difficulty: {{difficulty}}. Industry or field: {{user_text}}.
@@ -127,23 +131,118 @@ CL = {
     ),
 }
 
+TYPE_NAMES = {
+    "management": "Management",
+    "product-management": "Product management",
+    "healthcare": "Healthcare",
+    "financial": "Financial",
+    "marketing": "Marketing",
+}
+
 STYLES = [
-    ("mckinsey-interviewer-led", "McKinsey-style, interviewer-led", "interviewer-led"),
-    ("bcg-candidate-led", "BCG-style, candidate-led", "candidate-led"),
+    dict(
+        id="mckinsey-interviewer-led",
+        name="McKinsey-style, interviewer-led",
+        mode="interviewer-led",
+        about="The interviewer drives. The case comes with three to five numbered questions, answered in order from data in the case, and interviewer notes that hold the worked arithmetic.",
+        types=IL,
+        head=IL_HEAD,
+    ),
+    dict(
+        id="bcg-candidate-led",
+        name="BCG-style, candidate-led",
+        mode="candidate-led",
+        about="The candidate drives. The case is one open problem statement; the candidate chooses the approach and asks for data, which the interviewer releases from a data pack.",
+        types=CL,
+        head=CL_HEAD,
+    ),
 ]
+
+PLACEHOLDERS = [
+    dict(name="difficulty", values=["easy", "medium", "hard"],
+         description="Complexity level. The prompt defines easy, medium and hard."),
+    dict(name="user_text", values=None,
+         description="The industry or field the case is set in, in the user's words."),
+]
+
+
+def compose():
+    """Return the ten prompts as dicts, in style order then type order."""
+    prompts = []
+    for style in STYLES:
+        for t, d in style["types"].items():
+            head = style["head"].format(**d)
+            text = COMMON.format(style_name=style["name"]) + head
+            questions = None
+            if style["mode"] == "interviewer-led":
+                questions = [re.sub(r"^\d+\. ", "", q) for q in d["questions"].splitlines()]
+            prompts.append(dict(
+                id=f"{style['id']}-{t}",
+                style=style["id"],
+                style_name=style["name"],
+                mode=style["mode"],
+                type=t,
+                type_name=TYPE_NAMES[t],
+                placeholders=["difficulty", "user_text"],
+                output_headings=re.findall(r"(?m)^\*\*(.+?)\*\*", head),
+                questions=questions,
+                text=text,
+            ))
+    return prompts
+
+
+def markdown(prompts):
+    lines = [
+        "# Case-generation prompts",
+        "",
+        "Ten ready-to-paste prompts for generating practice case interviews: 2 styles (McKinsey-style interviewer-led, "
+        "BCG-style candidate-led) x 5 types (management, product management, healthcare, financial, marketing). "
+        "These are cleaned versions of the originals in [generation-prompts.md](generation-prompts.md), which keeps the "
+        "verbatim text and a list of the defects fixed. The same prompts are in [prompts.json](prompts.json). "
+        "Rebuild both with `python3 -I scripts/build_case_prompts.py`.",
+        "",
+        "## How to use",
+        "",
+        "Copy one block, replace the two placeholders, and paste it to a model.",
+        "",
+        "- `{difficulty}`: `easy`, `medium` or `hard`. The prompt defines each.",
+        "- `{user_text}`: the industry or field, in your own words.",
+        "",
+        "Every prompt requires an invented company and competitors, numbers that are internally consistent and recomputed, "
+        "a title that does not reveal the answer, and no candidate recommendation. Answer material appears only under the "
+        "last heading, which is for the interviewer.",
+        "",
+        "| Id | Style | Type |",
+        "|---|---|---|",
+    ]
+    for p in prompts:
+        lines.append(f"| `{p['id']}` | {p['style_name']} | {p['type_name']} |")
+    for style in STYLES:
+        lines += ["", f"# {style['name']}", "", style["about"]]
+        for p in prompts:
+            if p["style"] != style["id"]:
+                continue
+            lines += ["", f"## {p['type_name']}", "", f"Id: `{p['id']}`", "", "```text", p["text"].rstrip("\n"), "```"]
+    return "\n".join(lines) + "\n"
 
 
 def build():
     OUT.mkdir(parents=True, exist_ok=True)
-    made = []
-    for slug, style_name, kind in STYLES:
-        for t, d in (IL if kind == "interviewer-led" else CL).items():
-            body = COMMON.format(style_name=style_name)
-            body += (IL_HEAD.format(**d) if kind == "interviewer-led" else CL_HEAD.format(**d))
-            path = OUT / f"{slug}-{t}.md"
-            path.write_text(body)
-            made.append(path.name)
-    return made
+    prompts = compose()
+    (OUT / "prompts.md").write_text(markdown(prompts))
+    doc = dict(
+        description="Case-generation prompts: 2 styles x 5 types. Each text is a complete prompt; "
+                    "replace the placeholders {difficulty} and {user_text} before use.",
+        provenance="Cleaned versions of the ten templates verbatim in generation-prompts.md. "
+                   "The source and licence of those originals are not recorded.",
+        placeholders=PLACEHOLDERS,
+        styles=[dict(id=s["id"], name=s["name"], mode=s["mode"], description=s["about"]) for s in STYLES],
+        types=[dict(id=k, name=v) for k, v in TYPE_NAMES.items()],
+        count=len(prompts),
+        prompts=prompts,
+    )
+    (OUT / "prompts.json").write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
+    return [p["id"] for p in prompts]
 
 
 if __name__ == "__main__":

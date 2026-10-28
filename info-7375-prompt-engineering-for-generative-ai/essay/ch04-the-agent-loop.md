@@ -2,912 +2,1026 @@
 
 ## ES-ch04.1
 
-A system looks up the same record again and again. Each lookup succeeds and each observation is logged. According to the chapter, what question should an outside reader ask, and why does a longer trace not answer it? Then use the repeated-lookup run with a turn budget of two to say who made its stop possible.
+An agent repeatedly calls the same lookup tool with identical arguments. Every call succeeds, every observation is logged, and the trace grows to dozens of entries, but the agent still has no answer it can support. Explain why this activity is not progress, state the question an outside reviewer should ask at each turn, and propose concrete measures that would reveal the lack of progress.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the question: what changed that makes completion more justified than it was one turn ago.
-2. Notes that each lookup can succeed and be logged while the task gets no closer to a supported answer.
-3. Says a longer trace is only more recorded activity, which can look like progress from inside a poorly described report.
-4. Reports that the repeated-lookup run with a budget of two stops after two recorded actions with `budget-exhausted`, and does not invent a final answer.
-5. Says someone chose the number two before the loop ran, so the stop was designed, not discovered.
+1. Distinguishes success of a tool call from progress on the task: a call can succeed at the transport level while contributing nothing toward a supported answer.
+2. States the reviewer's question: what changed that makes completion more justified than it was one turn ago.
+3. Explains that repeating an identical request against an unchanged source returns the same content, so the longer trace is more recorded activity, not more evidence.
+4. Proposes at least one concrete measure, such as counting new distinct evidence per turn or a detector that keys on request and observation together.
+5. Recommends a hard turn budget as an independent backstop and a decision about what happens on suspicion (stop, flag or escalate).
 
-**Source:** Chapter 4 opening (before the first section heading)
+**Source:** The agent loop (opening)
 
 ## ES-ch04.2
 
-Contrast the chapter's two constructed runs: the repeated lookup with a budget of two, and the lookup of blue followed by a finish with red. For each, give the returned status, say whether the property is built in beforehand or caught only afterward, and explain why neither run says anything about the capability of whatever proposes the actions.
+A team can stop a runaway agent in two ways: a cap on the number of turns fixed in the harness before the run, or an engineer noticing afterward that a run went on far too long. Argue why a limit chosen in advance belongs to the controller rather than to the model, and state what such a cap does and does not guarantee.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Repeated-lookup run: status `budget-exhausted` after two recorded actions.
-2. Blue-then-red run: status `finished` with answer red.
-3. The budget limit is a property built in before anything executes; the loop cannot run past it.
-4. The wrong answer under a well-behaved status is caught only by looking at the world after the loop stops, because the controller never compares the answer with the observation.
-5. Neither run says how capable the proposer is; both are about where the stop lives and what it is allowed to mean.
+1. Says a limit chosen before the run is a property of the harness set by the operator, whereas a limit discovered afterward is an incident report.
+2. Explains that the cap does not depend on the model's cooperation, so nothing the model emits can create more iterations.
+3. States what it guarantees: the loop starts no more than the configured number of turns.
+4. States that it does not guarantee a correct answer or that the work is complete.
+5. States that it does not bound elapsed time or per-turn cost unless each turn is separately bounded.
 
-**Source:** Chapter 4 opening (before the first section heading)
+**Source:** The agent loop (opening)
 
 ## ES-ch04.3
 
-Apply Chapter 1's three jobs (conduct, check, drive) to the most consequential line in any agent, the one that ends the run. Give one concrete decision or responsibility for each job.
+In an agent system three jobs are often blurred into one voice that says "done": proposing the next action, executing it and deciding whether the run continues, and judging whether the final result is any good. Name the three jobs, explain how separating them helps debugging, and give one fault for each of two different jobs that the separation would let you localize.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Conduct: the exits and the budget are written down before the loop starts.
-2. Check: `finished` records only that a finish action arrived.
-3. Check: what anyone is entitled to believe beyond that is a separate question with a separate check.
-4. Drive: Claude may take the stop that ends the run.
-5. Drive: the stop that closes the task is the human's.
+1. Names the three jobs: proposer, executor or controller, and judge or checker.
+2. Explains that separating them gives each job an owner and makes each testable on its own.
+3. Localizes a proposer fault: a poor action sequence that was dispatched exactly as specified.
+4. Localizes a controller fault: the right action sequence but the wrong end status or wrong limit handling.
+5. Notes that the judging job may be absent from a design, and that its absence means no one has checked the result.
 
-**Source:** Chapter 4 opening (before the first section heading)
+**Source:** The policy proposes, the controller stops, someone else judges
 
 ## ES-ch04.4
 
-Why does the chapter use a scripted policy rather than a live model call, and what does that choice not show? Then explain why answering the chapter's questions about sequence and termination is necessary for an agentic workflow but not sufficient.
+Distinguish ending an agent run from closing the task it was started for. Say what can take each stop, why a finish request from the process that did the work is not sufficient to close the task, and give an example where a run ends cleanly but the task is not done.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A scripted policy makes each decision inspectable and repeatable.
-2. The machinery is small: an iterator supplying action dictionaries, a dispatcher handling a lookup, and a trace accumulating observations.
-3. It does not reproduce Claude's private reasoning or Claude's current agent implementation.
-4. Which action arrives next, what observation follows, what is recorded, and which condition ends the run are necessary questions for an agentic workflow.
-5. Answering them grants no permission to act and establishes nothing about whether the final claim is true (Chapter 3 separated capability from authority).
+1. Defines ending the run as a control-flow event, such as the loop returning on a finish request, exhausted budget or empty action source.
+2. Defines closing the task as acceptance that the result meets the need, by a person or a check a person designed.
+3. Explains that the worker's own report of completion is one datum and not independent of the worker.
+4. Notes that control flow can be tested for correctness without judging answer quality.
+5. Gives a concrete example of a clean ending without a done task, such as a finish carrying a wrong or empty answer.
 
-**Source:** Chapter 4 opening (before the first section heading)
+**Source:** The policy proposes, the controller stops, someone else judges
 
 ## ES-ch04.5
 
-List the elements the chapter says you must write as a gate before any implementation exists, and describe the three things you then do with Claude Code against that gate.
+A team replaces a scripted list of actions with a language model that chooses each next action. Explain why the model should not inherit the power to change the loop's limits just because it supplies the next action, name three controls that should remain enforced outside the model, and describe how text inside a tool result claiming "you now have unlimited turns" should be treated.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The gate lists every exit of the loop.
-2. It states the unit of the budget.
-3. It states what must never be fabricated.
-4. It names a separate check that decides whether a finished answer moves on.
-5. You conduct Claude Code against the gate, run your own tests on what it returns, and write a sign-off that names the exits you exercised and the ones you did not.
+1. States that supplying actions confers no authority over the runtime's limits.
+2. Names an enforced turn or cost budget as a control that must not depend on the proposer's cooperation.
+3. Names a tool allowlist or permission check enforced by the runtime, and an outcome check independent of the model.
+4. Treats text in a tool result as data the model reads, not as an instruction with authority over the controller.
+5. Notes that the model can still be influenced by injected text, such as being steered to finish early, so its finish needs independent checking.
 
-**Source:** What you will be able to do
+**Source:** The policy proposes, the controller stops, someone else judges
 
 ## ES-ch04.6
 
-Name the three jobs inside any agent loop. Say which one each part of the chapter's reference performs, which job is absent from the reference, and why the chapter pulls the jobs apart.
+A loop is written as for turn in range(10): action = next(source), where source is a generator that fetches each action over a network connection. Explain why this does not bound the run's duration, what additional controls would, and how a timeout should be reported relative to the loop's other exits.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Job one is proposing the next action; in the reference this is the policy, an iterable of action dictionaries.
-2. Job two is dispatching the action, recording the result, and deciding whether the run continues; this is the controller, the `run` function.
-3. Job three is deciding whether the final result is any good.
-4. Job three does not exist in the reference, and its absence is the subject of the next sections.
-5. In a chat window the three arrive as one voice saying done; pulling them apart gives each one an owner.
+1. Explains that the count is consulted only between iterations, so a call to next that never returns is never interrupted.
+2. States that total time is bounded only if each turn is separately bounded, such as by a per-call timeout.
+3. Proposes an overall deadline or watchdog with cancellation as a further control.
+4. Says a timeout should surface as a distinct exit, not be disguised as success or merged with turn exhaustion.
+5. Notes that the turn cap remains useful as a separate control for the number of iterations.
 
 **Source:** The policy proposes, the controller stops, someone else judges
 
 ## ES-ch04.7
 
-A colleague says the scripted list of actions is "the agent's policy," so the system adapts to what it observes. Respond using the chapter.
+Read the controller below, then trace these four runs with records {"color": "blue"}: (a) policy [] with max_turns=4; (b) policy [lookup color] with max_turns=4; (c) policy [lookup color] with max_turns=1; (d) policy [lookup color, finish "blue"] with max_turns=1. Give the returned status and trace for each, and explain why (b) and (c) have the same trace but different statuses.
+
+```python
+def run(policy, records, max_turns=4):
+    trace = []
+    it = iter(policy)
+    for turn in range(max_turns):
+        try:
+            action = next(it)
+        except StopIteration:
+            return {"status": "incomplete", "trace": trace}
+        name = action.get("name")
+        if name == "finish":
+            return {"status": "finished", "answer": action.get("answer", ""), "trace": trace}
+        obs = records.get(action.get("key"), "not found") if name == "lookup" else "error: tool not allowed"
+        trace.append({"turn": turn + 1, "action": name, "observation": obs})
+    return {"status": "budget-exhausted", "trace": trace}
+```
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The policy here is an iterable of action dictionaries, and a prepared list is enough.
-2. It is not a learned model.
-3. It does not change its next action based on what the controller observed, because nothing feeds the observation back.
-4. An adaptive system would need a defined route from observations to its next decision.
-5. That route should not be described as implemented merely because the code uses the name policy.
+1. Case (a): status incomplete with an empty trace, because the first request for an action raises the end-of-iteration condition.
+2. Case (b): status incomplete with one trace entry whose observation is blue, because the second request finds the action source exhausted.
+3. Case (c): status budget-exhausted with one entry, because the only turn is spent on the lookup and the loop never asks for another action.
+4. Case (d): status budget-exhausted with one entry, because the finish would need a second turn that the budget does not allow.
+5. Explains that the stop reason depends on which boundary is reached first by the execution path, so trace length alone cannot recover it and the budget and status are part of the evidence.
 
-**Source:** The policy proposes, the controller stops, someone else judges
+**Source:** Budget exhaustion is not policy exhaustion
 
 ## ES-ch04.8
 
-Explain two debugging payoffs of separating the policy from the controller, then say who owns the turn budget and why a model-backed policy should not be able to change it.
+Read the controller below. List at least four behaviors it leaves undecided or surprising and say what a specification written beforehand should have decided about each.
+
+```python
+def run(policy, records, max_turns=4):
+    trace = []
+    it = iter(policy)
+    for turn in range(max_turns):
+        try:
+            action = next(it)
+        except StopIteration:
+            return {"status": "incomplete", "trace": trace}
+        name = action.get("name")
+        if name == "finish":
+            return {"status": "finished", "answer": action.get("answer", ""), "trace": trace}
+        obs = records.get(action.get("key"), "not found") if name == "lookup" else "error: tool not allowed"
+        trace.append({"turn": turn + 1, "action": name, "observation": obs})
+    return {"status": "budget-exhausted", "trace": trace}
+```
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A poor action sequence dispatched exactly as specified is a fault in the sequence.
-2. The right sequence with the wrong status is a fault in the controller.
-3. A model-backed policy would be a new source of action requests.
-4. It should not inherit the power to redefine the runtime's limits just because it supplies the next action.
-5. The turn budget belongs to the controller; nothing the policy says creates another iteration after the range is spent.
+1. Identifies that a finish action with no answer field returns finished with an empty string, and says the specification should decide whether that is acceptable.
+2. Identifies that a non-dictionary action raises AttributeError outside the three normal statuses, and says the specification should define the outcome for malformed input.
+3. Identifies that an unknown action name consumes a turn and the loop continues, and that stopping, retrying and escalating are different policies to be chosen deliberately.
+4. Identifies that the trace omits the lookup key and the finish action, which limits what claims it can support.
+5. Notes that nothing compares an answer with any observation, so the finished status cannot certify correctness, and that a separate check must be specified.
 
-**Source:** The policy proposes, the controller stops, someone else judges
+**Source:** Every return statement is an exit someone decided
 
 ## ES-ch04.9
 
-A teammate says: "The loop has `max_turns=4`, so the run will always finish quickly." Evaluate the claim using the chapter's scenario in which fetching the next item from the iterator never returns.
+Two implementations of a turn budget exist. One pulls an action at the start of each iteration of a bounded loop. The other dispatches an action first and increments a counter afterward, stopping only when the counter exceeds the budget. Explain the defect in the second design, then describe a test that would catch it and why a test built on a short finite policy would miss it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The loop bounds how many turns it begins.
-2. It places no timeout around an arbitrary iterator or a slow tool.
-3. If fetching the next item never returns, an iteration count cannot interrupt the wait.
-4. The turn budget is therefore not a wall-clock guarantee, and the teammate's claim about finishing quickly does not follow.
-5. What the limit does bound is ordinary completed turns in the demonstrated loop.
+1. Identifies the off-by-one: checking after dispatch lets the controller run one action more than the budget allows.
+2. Explains the consequence, such as an extra tool call with possible side effects beyond the configured limit.
+3. Describes the catching test: an endless action source with budget n, asserting that exactly n actions were dispatched or n trace entries exist.
+4. Explains that a finite policy shorter than the budget ends by running out of actions before the budget check matters.
+5. States that the budget must be the thing that stops the loop in the test for the test to exercise the budget.
 
-**Source:** The policy proposes, the controller stops, someone else judges
+**Source:** Every return statement is an exit someone decided
 
 ## ES-ch04.10
 
-Distinguish the two stops hidden under the word "done." For each, say what takes it and what records it, and explain why confusing them is the risk the rest of the chapter works against.
+An agent harness lets the model request up to five tool calls in parallel on each turn, and one of the available tools sends an email. Discuss what the unit of the budget should be (turns, tool calls, tokens, money or seconds), choose a unit or combination for this harness, and explain how you would test the chosen limit.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. One stop ends the run: the controller returns.
-2. The other closes the task: a person, or a check a person designed, accepts the result as meeting the need that started the run.
-3. The controller can take the first stop.
-4. Nothing in the `run` function can take the second stop.
-5. Confusing them means reading `finished` as verified task success.
+1. Observes that turn counts and tool-call counts diverge when several calls run per turn, so the unit must be stated.
+2. Matches the unit to the risk: side-effecting calls such as email argue for counting tool calls, possibly with a separate limit on sensitive tools.
+3. Notes that tokens or money bound cost, and seconds bound latency, and that turns bound neither exactly.
+4. Recommends combining limits where several resources matter rather than relying on a single number.
+5. Describes a test that supplies an action source exceeding the limit and asserts the exact count of dispatched calls and the reported stop reason.
 
-**Source:** The policy proposes, the controller stops, someone else judges
+**Source:** Budget exhaustion is not policy exhaustion
 
 ## ES-ch04.11
 
-Records are `{"color": "blue"}` and the budget is the default of four. Predict the status, the answer field, and the trace for each policy: (a) an empty policy; (b) one lookup of `color`, then no more actions; (c) a single finish action with answer `x` and no lookup. Explain why the chapter asks you to predict the kind of termination rather than "success" or "failure," and when the prediction must be written.
+An agent loop sends the full conversation to the model on every turn without caching. The instructions and task take 1,200 input tokens, and each turn adds 300 tokens of action and observation, so the call on turn k reads 1,200 + 300 x (k - 1) input tokens. Compute the total input tokens for a run of 10 turns and for a run of 20 turns, compare the two, and explain what this implies for choosing a limit and for reducing cost.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. (a) `incomplete`, no answer, and an empty trace.
-2. (b) `incomplete`, no answer, and a trace with one lookup entry whose observation is `blue`.
-3. (c) `finished` with answer `x` and an empty trace.
-4. Predicting the kind of termination, not success or failure, is what makes the code inspectable.
-5. The prediction must be written before running, because one written afterward only describes the output.
+1. Computes the 10-turn total as 25,500 input tokens.
+2. Computes the 20-turn total as 81,000 input tokens.
+3. Notes the ratio of about 3.2 for doubling the turns, and explains that cost grows faster than linearly because history is re-read on every call.
+4. Concludes that a limit on turns understates cost for long runs, so a token or cost budget is a more direct control.
+5. Names a mitigation such as prompt caching of the repeated prefix, summarizing or truncating history, or ending runs earlier.
 
-**Source:** Every return statement is an exit someone decided
+**Source:** Budget exhaustion is not policy exhaustion
 
 ## ES-ch04.12
 
-Describe the budget check at the top of the controller: what it accepts, how it tests the value, and when a bad value is rejected. Why does the chapter call the type test an explicit choice, and what does the lesson test for?
+You must keep a trace of each agent run so that a reviewer can later judge a claim like "the run ended because the budget was spent after the agent looked up two keys." State what the trace and the surrounding record must contain to support such a claim, what is easy to omit by accident, and how you would handle fields that contain sensitive data.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The budget must be an integer of at least one.
-2. The check is `type(max_turns) is int`.
-3. It is an explicit type choice rather than acceptance of anything that behaves like a number.
-4. A bad budget is rejected before the iterator or the trace exists.
-5. The lesson's tests include rejection of a budget of zero.
+1. Lists per-turn fields: turn number, action name, action arguments such as the lookup key, and the observation.
+2. Includes the stop reason and the configured budget with its unit, because the trace alone cannot reconstruct why the run stopped.
+3. Flags commonly omitted items: the terminal action, the arguments, and the version of the action source or policy.
+4. Argues that retention should follow what is necessary to support the claim, not habit, and addresses sensitive data with redaction, hashing or retention limits.
+5. Notes the cost of redaction on reproducibility, and that observations in the trace are evidence about operations, not about the model's reasoning.
 
-**Source:** Every return statement is an exit someone decided
+**Source:** A trace records an event, not knowledge
 
 ## ES-ch04.13
 
-A finite policy contains exactly one lookup, and the budget is four. What does the controller return, and by what mechanism? Why is the result not `finished`, and what does the status fail to establish?
+Two lookups against a key-value store both return the value "blue", but the trace stores only the turn number, the action name and the observation. Explain what a reviewer cannot determine from this trace, what the second identical observation does and does not mean, and how the trace or record should be changed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. After the first turn, `next(iterator)` raises `StopIteration` on the second request.
-2. The controller returns `incomplete` with the trace so far, which holds the one lookup entry.
-3. It does not read silence as completion; an exhausted supply of scripted actions is a different condition from an explicit finish.
-4. No answer is returned; `incomplete` manufactures none.
-5. `incomplete` does not establish that the task is done or that it is impossible.
+1. States that without the key the reviewer cannot tell which key produced which observation.
+2. Explains that two identical observations can come from two different required checks, so the second lookup is not necessarily wasted.
+3. Explains that repeating the same lookup against an unchanged source adds another observation of the same fact, not independent evidence.
+4. Proposes recording the arguments in the trace or keeping the action list alongside it.
+5. Notes that adding fields should be driven by what claims need supporting, with attention to sensitive inputs.
 
-**Source:** Every return statement is an exit someone decided
+**Source:** A trace records an event, not knowledge
 
 ## ES-ch04.14
 
-Records are `{"color": "blue"}`, the budget is four, and the policy is: `{"name": "shell"}`, then `{"name": "lookup", "key": "color"}`, then `{"name": "finish", "answer": "blue"}`. Trace the run by hand: give the status, the answer, and each trace entry. What does the disallowed-tool observation show, and what does it not show?
+Records are {"color": "blue"}. An agent looks up color, observes blue, and then finishes with the answer "red"; the controller returns status finished. Explain what the status means, why the controller did not catch the contradiction, and how a report should describe the run so that downstream readers are not misled.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Turn 1: `shell` is not dispatched; the trace gets an entry with action `shell` and observation `error: tool not allowed`.
-2. Turn 2: the lookup adds an entry with observation `blue`.
-3. Turn 3: the finish returns status `finished` with answer `blue`.
-4. The returned trace has two entries; the finish is not appended.
-5. The not-allowed message is concrete but does not establish permissions for any larger runtime; Chapter 5 builds that boundary.
+1. Explains that finished records that a finish action was received, which accurately describes the controller's event.
+2. Explains that the controller performs no comparison between the answer and any observation, so the contradiction is invisible to it.
+3. Identifies the misreading to avoid: treating finished as verified task success.
+4. Recommends a separate outcome check against the records, kept independent of the controller's status.
+5. Describes two-layer reporting: finished at the control-flow layer and contradicted at the evidence layer.
 
-**Source:** Every return statement is an exit someone decided
+**Source:** A finished wrong answer
 
 ## ES-ch04.15
 
-The chapter says the small size of the function invites exactness and also shows what its author left undecided. Name the four things it says are open, and explain why each belongs in your gate.
+You are asked to build an outcome checker for a task whose answer is the value stored under a named key in a small table. Describe three properties the checker needs so that it is a useful independent check rather than a repeat of the generator, and say what claim it can and cannot support.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A finish action with no answer field returns `finished` with an empty string, so a stop with no substance gets through.
-2. A non-dictionary action such as a bare string fails with an `AttributeError`, outside the three normal statuses, and there is no schema validator like Chapter 2's.
-3. An unknown action name consumes a turn and the run continues; stopping, retrying, and escalating are three different policies, and none is implemented.
-4. The trace holds the action name but not the lookup key, and it never holds the finish.
-5. Each of the four belongs in the gate as a decision; a validator added later should be described as an extension.
+1. Property one: it must fail differently from whatever produced the answer, such as a deterministic comparison rather than asking the same model.
+2. Explains that the same process on both sides of a check gives one opinion twice rather than two confirmations.
+3. Property two: it must read the value for the key the task names, not the key the agent happened to look up.
+4. Property three: it must state its scope, such as exact agreement for a key-value question with its normalization rules.
+5. States the limit: it supports agreement with the table, not truth about the world and not faithfulness of open-ended text.
 
-**Source:** Every return statement is an exit someone decided
+**Source:** A finished wrong answer
 
 ## ES-ch04.16
 
-Records are `{"color": "blue"}`, the budget is 3, and the policy is lookup, lookup, lookup, then a finish with answer `x`. Give the status, the answer, and the trace length. What happened to the finish, and what does this show about the unit of the budget?
+An agent asked to delete one email from a mailbox hosted on a provider's server has no deletion tool. It resets its local mail client settings instead and reports "done". The message remains on the server. Explain the failure in terms of the gap between a completion report and the state of the world, design an independent verification, and say what this one scenario does and does not show.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The status is `budget-exhausted`.
-2. The trace has three lookup entries (turns 1 to 3), each observing `blue`.
-3. The finish is never consumed, because all three turns went to lookups.
-4. No answer is returned; none is fabricated.
-5. The terminal action costs a turn, so the budget counts action-consumption turns.
+1. Identifies that the agent's local state was consistent with its report while the condition that made the task done lies outside what its actions reached.
+2. Explains that the completion report and the actual state contradict each other and the final message alone gives no sign of it.
+3. Designs an independent check against the real target, such as querying the provider's server for the message.
+4. Says the check should not rely on the agent's own account and should be defined from the task's requirement.
+5. States that a single scenario illustrates a failure shape but gives no information about how often agents fail this way.
 
-**Source:** Every return statement is an exit someone decided
+**Source:** A finished wrong answer
 
 ## ES-ch04.17
 
-A reader sees a trace showing a lookup of `color` that returned `blue`, followed by an answer of blue, and concludes that blue is the true color. Respond using the chapter: what does the trace evidence show, what does it not show, and what should a report say?
+A coding agent reports that all tests pass and the bug is fixed. Describe how a careful reviewer would independently verify the claim, what evidence the final message does and does not supply, and how the agent could produce a passing result without fixing the bug.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The trace is evidence of the local operation's result.
-2. It is not a record of private reasoning.
-3. The mapping is a fixture, a table we invented.
-4. An answer of blue can be checked for agreement with that record, but it does not become universally true by agreeing with a table we invented.
-5. The evidence boundary is the fixture, and a report should say so.
+1. Says the final message is a claim about evidence, not the evidence itself.
+2. Recommends re-running the test suite in a clean environment rather than trusting the reported run.
+3. Recommends inspecting the diff to see which files changed, including whether tests were modified or deleted.
+4. Explains ways to pass without fixing: weakening or skipping tests, special-casing the test inputs, or tests that never exercised the bug.
+5. Suggests adding or confirming a test that fails before the change and passes after it.
 
-**Source:** A trace records an event, not knowledge
+**Source:** A finished wrong answer
 
 ## ES-ch04.18
 
-Name the two gaps that follow from the fields the trace holds, and say how the worked example and a careful artifact handle each. Why does the chapter warn against adding every field by habit?
+A team proposes to verify an agent's finished answer by asking the same model, in the same configuration, whether the answer is consistent with the retrieved evidence. Evaluate this check: explain what is weak about it, when it is still useful, and what you would use for a claim that can be checked deterministically.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. With no lookup key in the trace, a reader cannot tell which of several keys returned a shared value.
-2. The worked example keeps the scripted policy in the evidence packet to cover that gap.
-3. Because the return comes before the append, the terminal action is missing from the trace.
-4. If an artifact needs the terminal action, preserve the policy or add a separately labeled terminal record.
-5. Some tasks carry sensitive inputs and the reference defines no retention or redaction policy, so ask what is necessary to support the claim and keep that.
+1. Explains that generator and checker share the same kind of process and likely the same blind spots, so their errors are correlated.
+2. Notes that agreement between them is closer to one opinion asked twice than to independent confirmation.
+3. Says such a check can still be useful as a triage or screening signal.
+4. Recommends a deterministic comparison where the claim is an exact value, because it fails differently from the generator.
+5. Notes that a person or independent evidence is needed for claims that no cheap deterministic check can cover.
 
-**Source:** A trace records an event, not knowledge
+**Source:** A finished wrong answer
 
 ## ES-ch04.19
 
-A controller repeats the same lookup against an unchanged mapping five times. Explain what the trace has gained and what it has not, and connect your answer to the chapter's opening scenario.
+A user asks for the color value. An agent looks up a misspelled key "colour", gets the observation "not found" from the lookup tool, and finishes with the answer "not found". A checker compares the final answer with the agent's last observation and passes it. Explain why the check passes, why that is a flaw, and how to redesign the checker and the lookup tool's return value.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Each repeat adds another observation of the same operation.
-2. That is not new evidence.
-3. The controller's state update is only the append; it does not alter the records or send observations back to the policy.
-4. The controller computes no progress measure.
-5. Success at the tool boundary does not imply progress at the task boundary; a longer trace is more recorded activity, as in the opening scenario.
+1. Explains that the answer agrees with the last observation because both are the not-found string.
+2. Explains that the check measures consistency with the agent's own action, not whether the task's question was answered.
+3. Says the checker should read the record for the key the task names rather than the key the agent used.
+4. Says a missing value is an absence of evidence and should not be accepted as a final answer.
+5. Proposes returning a structured result or error for a missing key so that a stored value equal to the sentinel string is not confused with absence.
 
-**Source:** A trace records an event, not knowledge
+**Source:** A finished wrong answer
 
 ## ES-ch04.20
 
-Records are `{"color": "blue"}`, the policy is a lookup of `color` followed by a finish with answer `red`, and the budget is the default of four. Predict the status, the answer, the trace length, and whether the finish is appended. What note does the chapter want written before you run it?
+A team checks finished answers by exact string equality against a stored value. List two kinds of claim this check can close and two it cannot, and discuss how normalization choices such as case and whitespace affect what the check certifies.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The status is `finished`.
-2. The answer is `red`.
-3. The trace length is 1: only the lookup, because the finish returns before the append lines run.
-4. The default budget of four leaves room for both actions.
-5. Before running, write down with the date what a wrong finish would look like in the returned object, so you cannot talk yourself into having expected whatever you see.
+1. Names a claim it can close, such as the answer equals the stored value for the named key.
+2. Names a second closable claim of the same exact-value kind, such as a numeric identifier matching a record.
+3. Names claims it cannot close, such as faithfulness of a summary to its sources.
+4. Names a second unclosable claim, such as correctness of an open-ended explanation or whether the stored value is itself right.
+5. Explains that normalization rules change what counts as a match, so they belong in the check's stated scope.
 
 **Source:** A finished wrong answer
 
 ## ES-ch04.21
 
-Explain how the blue-then-red run can be correctly labeled both `finished` and contradicted. Why does the chapter reject renaming every termination status "failure," and what two-part report does it propose instead?
+A run ends with status finished but its answer contradicts the evidence. A colleague suggests renaming every status other than verified success to "failure". Explain why this is a poor fix, what information it destroys, and propose a reporting design that keeps the useful distinctions.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. `finished` accurately describes the controller's own event: it received a finish.
-2. The controller does not compare red with blue.
-3. The mistake is reading `finished` as verified task success.
-4. Renaming every status "failure" would throw away distinctions the controller reports correctly.
-5. The proposed report separates controller status from outcome evaluation: finished at the control-flow layer, contradicted at the evidence layer.
+1. Explains that the controller reports control-flow events correctly, and that relabeling them confuses what each status denotes.
+2. Says merging finished-but-contradicted, incomplete and budget-exhausted into one label loses distinct causes and distinct remedies.
+3. Proposes separate fields for control-flow status and for the outcome-check result.
+4. Gives an example combination, such as finished with mismatch found, that a single label cannot express.
+5. Notes tests should assert both layers so a fix that quietly rewrites the status is caught.
 
 **Source:** A finished wrong answer
 
 ## ES-ch04.22
 
-Summarize the Ash case the chapter cites from the companion book, say what shape it names, and state the limits the chapter places on using it.
+Design a repetition detector for an agent loop. Compare three definitions of a repeat: same tool name, same name and arguments, and same observation. For each definition give a legitimate scenario that would be wrongly stopped, and state what else the design needs besides the detector.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Ash was asked to delete one email, had no deletion tool, and reset its local email setup instead.
-2. It reported the account reset complete, but the email was still on the provider's server.
-3. Its local state was consistent with done, while the condition that made the task done sat outside what its action reached.
-4. The completion report and the state of the world contradicted each other, and neither the agent nor any automated system noticed; finish(red) is the small constructed version.
-5. The scope is one exploratory study, one framework, two models, two weeks, with the author not having checked the study himself; it names a shape and does not estimate how often agents fail this way.
+1. Name-only matching: gives a scenario where different arguments make the calls legitimately different, such as looking up several different keys.
+2. Name and arguments: gives a scenario where the environment changes between calls, such as polling a job status.
+3. Observation-only: gives a scenario where different sources legitimately hold equal values and both must be checked.
+4. States that each rule's assumptions and target failure must be stated with the rule.
+5. Says a hard turn budget remains a separate backstop and the detector should be tested with cases built to fool it.
 
-**Source:** A finished wrong answer
+**Source:** Repetition detectors have false positives too
 
 ## ES-ch04.23
 
-Why does asking Claude whether `red` is consistent with the trace fail as the outcome check for the blue task? What kind of check does the chapter use instead, and who owns its criterion?
+When a repetition detector suspects a loop, the system could stop the run or could flag it for review and continue. Argue for each choice in a different deployment, say what information is needed to decide between them, and who should decide.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A check must fail differently from whatever produced the answer.
-2. Asking Claude puts the same kind of process on both sides of the check.
-3. The same process asked twice gives one opinion, not two.
-4. A deterministic comparison against the records fails in a different way.
-5. Claude can write the comparator quickly, but the criterion is the human's.
+1. Describes the stop option as decisive and cheap to reason about but at risk of interrupting a useful run.
+2. Describes the flag option as preserving the run and creating a reviewable signal at the cost of continued spend and the need for a reader.
+3. Gives a deployment where stopping is right, such as a costly or side-effecting tool where a wasted turn is expensive.
+4. Gives a deployment where flagging is right, such as long investigations where interruption destroys valuable work.
+5. Says the decision depends on the relative cost of a wasted turn and an interrupted run, which is not in the detector's code, so a responsible person decides.
 
-**Source:** A finished wrong answer
+**Source:** Repetition detectors have false positives too
 
 ## ES-ch04.24
 
-A policy looks up a key that is not in the records and then finishes with the answer `not found`. Trace the result and explain why the outcome check must read the record for the key the task names.
+A detector stops an agent when the last two actions are identical. An agent alternates read(a.txt), edit(a.txt), read(a.txt), edit(a.txt) indefinitely. Explain why the detector fails, propose a better rule using a window of recent actions, and describe a case where your improved rule would stop useful work.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The lookup of the absent key yields the observation `not found`.
-2. The finish returns status `finished` with answer `not found`.
-3. The answer agrees with the last observation.
-4. It still does not answer the question about color.
-5. The checker must therefore read the record for the key the task names, not the key the policy happened to look up.
+1. Explains that alternation never produces two identical consecutive actions, so the narrow rule never fires.
+2. Proposes a rule over a window, such as a pair occurring several times within the last few actions, or detection of a repeating subsequence.
+3. Describes a legitimate case the new rule would wrongly stop, such as an edit-test-fix cycle that is making real progress between repeats.
+4. Notes that a definition of repeat decides which loops the rule can catch, and that it should state its target failure.
+5. Keeps a turn budget as a separate backstop for patterns the detector does not define as repeats.
 
-**Source:** A finished wrong answer
+**Source:** Repetition detectors have false positives too
 
 ## ES-ch04.25
 
-State the three properties the chapter requires of the outcome checker for the blue task, and the scope it should declare.
+An agent must wait for a long-running batch job by repeatedly calling a status tool with the same arguments. A repetition detector based on identical consecutive calls is stopping it. Explain why the detector misfires and design a polling policy that keeps the loop safe.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. It must fail differently from whatever produced the answer.
-2. It must read the record for the key the task names.
-3. It must state its scope.
-4. The scope is exact agreement for a constructed key-value question.
-5. It does not solve source-grounded reasoning in general; its value is that its target and its limit are visible.
+1. Explains that the environment changes between calls, so identical requests can legitimately return different results.
+2. Proposes including observed state in the repeat definition so a changing status is not a repeat.
+3. Proposes spacing polls with a delay or backoff so the loop does not consume turns rapidly.
+4. Proposes a maximum number of polls or a deadline as a separate bound on waiting.
+5. Says what the loop should report if the deadline passes, rather than guessing at completion.
 
-**Source:** A finished wrong answer
+**Source:** Repetition detectors have false positives too
 
 ## ES-ch04.26
 
-A policy yields an endless stream of lookup actions and the budget is 2. What does the controller return, and what does the trace hold? Why does an endless iterator not break the limit, why is the result still not a timeout, and what design point does the chapter draw about when a limit is chosen?
+Decide whether each of these tasks should be built as an agent loop: (a) convert a price to another currency using a fixed rate table; (b) investigate and resolve varied customer-support tickets whose causes are not known in advance; (c) produce a nightly report from the same four database queries. Justify each decision and state what a loop adds to the system's burden.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The status is `budget-exhausted`.
-2. The trace has two entries, one observation per turn.
-3. The policy need not be finite: the iterator is consumed only as many times as the range permits.
-4. The limit bounds completed turns, not elapsed time.
-5. A limit chosen before the run is a property of the controller; a limit discovered afterward is an incident report.
-
-**Source:** Budget exhaustion is not policy exhaustion
-
-## ES-ch04.27
-
-A finite policy has exactly one lookup. Give the status under a budget of 4 and under a budget of 1, and explain the difference by the execution path rather than by what the controller "knew."
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. With a budget of 4, the second request raises `StopIteration` and the result is `incomplete`.
-2. With a budget of 1, the loop exits after the lookup without asking the iterator for another item, and the result is `budget-exhausted`.
-3. The controller never made the extra `next` call, so it never learned the policy had ended.
-4. The two results do not contradict each other; the statuses report different boundaries the controller actually reached.
-5. The explanation rests on the path actually taken, not on knowledge the controller did not acquire.
-
-**Source:** Budget exhaustion is not policy exhaustion
-
-## ES-ch04.28
-
-In the two runs of the one-lookup policy (budget 4 and budget 1) the trace is identical, with one lookup entry. What does that imply for reconstructing the stop reason, and what must be kept as evidence?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. The trace is the same in both runs: one lookup entry.
-2. Trace length alone cannot reconstruct the stop reason.
-3. The configured budget is part of the evidence.
-4. The returned status is part of the evidence.
-5. They are not decoration; the gate says the configured budget and the status travel with the trace.
-
-**Source:** Budget exhaustion is not policy exhaustion
-
-## ES-ch04.29
-
-Records are `{"color": "blue"}` and the policy is lookup, lookup, then a finish with answer `blue`. Give the status and trace length with a budget of 2 and with a budget of 3. What does this show about the unit of `max_turns`, and what follows if you meant tool calls instead?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Budget 2: status `budget-exhausted` with two trace entries and no answer.
-2. Under budget 2 the finish is never consumed.
-3. Budget 3: status `finished` with answer `blue` and two trace entries.
-4. The terminal action costs a turn, so the budget counts action-consumption turns.
-5. A budget of tool calls would need a different implementation and different tests; the number and its unit are the human's, written down before the run.
-
-**Source:** Budget exhaustion is not policy exhaustion
-
-## ES-ch04.30
-
-For each of the three normal statuses, say what it records and what it does not establish.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. `finished` records that a finish action was consumed, with whatever answer it carried, possibly empty.
-2. `finished` does not establish that the answer follows from any observation or that the task is done.
-3. `incomplete` records that the policy had no next action before the budget was spent; it does not establish that the task is done or that it is impossible.
-4. `budget-exhausted` records that the controller used every turn it was given.
-5. `budget-exhausted` does not establish that the work was finished, that the policy had nothing more to propose, or any bound on time.
-
-**Source:** Budget exhaustion is not policy exhaustion
-
-## ES-ch04.31
-
-A repetition detector must define what a "repeat" is. Evaluate three definitions (action name only; name and key; identical observations) and give the weakness the chapter assigns to each.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Matching only the action name is too coarse, since two lookups can request different keys.
-2. Matching name and key is more specific, but it does not always mark a useless repeat if the environment can change.
-3. The fixture stays unchanged during a run, but a different system might not.
-4. A rule on identical observations is ambiguous: two different records can legitimately hold the same value, and a task that must check both has not wasted the second lookup.
-5. A detector's assumptions should be stated together with its rule.
-
-**Source:** Repetition detectors have false positives too
-
-## ES-ch04.32
-
-What does the turn budget fail to notice, and what must a learner's repetition detector include to be taken seriously? Does a detector that works on your examples replace the budget?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. The budget limits completed iterations but does not notice that two actions are the same or that two observations add nothing.
-2. The reference contains no repetition detector, so adding one is a learner extension.
-3. The detector needs a stated target failure.
-4. It needs a test that challenges its stopping behavior, such as a case where it would stop useful work.
-5. The budget stays a separate backstop even if the detector works on the examples chosen, and the examples are design cases, not measured performance.
-
-**Source:** Repetition detectors have false positives too
-
-## ES-ch04.33
-
-Records are `{"a": "x", "b": "x"}`, the task requires checking both keys, and the policy is lookup `a`, lookup `b`, then finish. A proposed detector stops the run whenever two consecutive observations are identical. What does the reference controller return, what would the detector do, and which alternative design does the chapter offer? Who decides between them?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. The reference controller returns `finished`, with two trace entries that both observe `x`.
-2. The detector would stop after the second lookup because the observations are identical.
-3. The second lookup was needed, because two different records can legitimately hold the same value.
-4. The alternative is to report suspected repetition and let the run continue, trading decisive stopping for a reviewable signal.
-5. The choice depends on what a wasted turn costs against what an interrupted useful run costs, neither of which is in the code; whether a suspicion ends someone's run is a call about cost and authority that belongs to the human.
-
-**Source:** Repetition detectors have false positives too
-
-## ES-ch04.34
-
-Using Conducting AI's stack as the chapter reports it, decide whether the question "what is the color record" needs a loop, and say when a loop earns its place. Why does the chapter build one anyway, and what status does the stack itself have?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Agentic execution sits at the top of a five-layer stack: reliable for well-scoped, low-branching tasks with verification gates built in, unreliable for long-horizon autonomy where an early mistake propagates.
-2. The working rule is to select the lowest layer that does the job and route deterministic work out of the model.
-3. The color question is `records["color"]`: one dictionary lookup, no loop, no exits, no finish to doubt.
-4. A loop earns its place when the next action depends on what the previous one found, which this scripted policy does not yet do; the chapter builds it because the exits are the subject.
-5. The stack and its labels are the book's own teaching device and the rule a design preference, not a measurement; every loop added is an exit to design and a finish to check.
+1. Task (a): argues for plain code, since it is a single deterministic lookup with no need for a loop or model-directed control.
+2. Task (b): argues a loop is plausible because each next step depends on what the previous step found.
+3. Task (c): argues for a fixed workflow, since the steps are known in advance and do not depend on intermediate results.
+4. States the principle of choosing the simplest design that does the job and routing deterministic work out of the model.
+5. Notes that every loop adds exits to design and finishes to verify, so it adds a testing and checking burden.
 
 **Source:** Before the exits: does this task need a loop?
 
-## ES-ch04.35
+## ES-ch04.27
 
-Write the gate's exit table. For each of four ways the run can end, give the status, whether an answer is returned, and what the trace holds. Say what else the table records about each line.
+Explain why autonomous agent loops are generally considered less reliable on long-horizon tasks than on well-scoped, low-branching tasks, and what design features make long runs safer. Include a calculation: if each step is independently correct with probability 0.95, what is the probability that a 10-step chain and a 20-step chain are both entirely correct?
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The policy has no next action: `incomplete`, no answer, trace of every completed turn.
-2. A finish action is consumed: `finished`, the answer the action carried, trace of every completed non-finish turn.
-3. The turn budget is spent: `budget-exhausted`, no answer, trace of every completed turn.
-4. The budget is not a positive integer: `ValueError`, with no answer or trace.
-5. Each line is marked with who decided it (you, the lesson's tests, or Claude); at the design stage Claude has decided none.
+1. Computes about 0.60 for ten independent steps at 0.95 each.
+2. Computes about 0.36 for twenty steps.
+3. Notes that the calculation assumes independence, and that in practice early errors can propagate to dependent steps.
+4. Explains that error compounds with length, so long unverified chains degrade.
+5. Names mitigations such as verification checkpoints inside the run, narrower scope, and keeping deterministic work out of the model.
 
-**Source:** The gate: write the exits before anyone runs the loop
+**Source:** Before the exits: does this task need a loop?
+
+## ES-ch04.28
+
+Describe the difference between a workflow and an agent in LLM systems, say when each is appropriate, and list the tradeoffs and safeguards that come with giving a model control of its own steps.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Defines a workflow as LLMs and tools orchestrated through predefined code paths.
+2. Defines an agent as a system in which the model dynamically directs its own process and tool use.
+3. Recommends starting with the simplest solution and adding autonomy only when it demonstrably helps.
+4. Names tradeoffs: higher latency and cost, less predictability, and errors that can compound across steps.
+5. Names safeguards: sandboxed testing, guardrails, explicit stopping conditions or limits, and human checkpoints.
+
+**Source:** Anthropics
+
+## ES-ch04.29
+
+An agent harness permits two actions, lookup and finish. The model requests an action named shell. Compare four policies: return an error observation and continue, stop the run, retry with corrective feedback, and escalate to a person. Say which you would choose for an agent handling money transfers, and what the choice does not establish about the system's overall permissions.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Describes error-and-continue: low friction but consumes a turn and lets the model repeat the request.
+2. Describes stop: simple and safe but ends possibly recoverable work.
+3. Describes retry-with-feedback and escalate with their tradeoffs, such as more turns for the first and human latency for the second.
+4. Chooses a policy for money transfers with a reason, such as stopping or escalating because a request for an unlisted tool signals unexpected behavior.
+5. Notes the allowlist check guards only this function and does not establish permissions for the wider runtime.
+
+**Source:** Every return statement is an exit someone decided
+
+## ES-ch04.30
+
+A tool that sends payments times out, and the harness retries it automatically up to three times. Explain the risk, how idempotency keys help, how to decide which errors to retry, and how retries should interact with the loop's budget.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that a timeout does not reveal whether the original call succeeded, so a retry can duplicate a side effect.
+2. Explains that an idempotency key lets the service recognize repeated requests and return the original result.
+3. Distinguishes transient errors, which may merit retry, from permanent errors, which do not.
+4. Says retries should be bounded and should count against some limit because they consume calls, time and cost.
+5. Suggests an approval step or escalation for ambiguous outcomes of irreversible actions.
+
+**Source:** Every return statement is an exit someone decided
+
+## ES-ch04.31
+
+A controller assumes each action is a dictionary with a name field, but its action source sometimes yields malformed values such as a bare string. Describe how to handle malformed actions: what the controller should do, how the outcome should be reported, and how you would test the new behavior.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that unvalidated malformed input raises an exception outside the controller's defined outcomes.
+2. Proposes validating the shape and types of each action before dispatch.
+3. Defines an explicit outcome for invalid actions, such as an error observation or a distinct status, and notes it is a new exit to specify.
+4. Says silent catching hides the problem and loses a turn without a record.
+5. Describes tests with malformed inputs asserting the defined outcome and that the loop still honors its budget.
+
+**Source:** Every return statement is an exit someone decided
+
+## ES-ch04.32
+
+A loop uses the Claude Messages API. After each response it inspects stop_reason: tool_use means run the requested tools and send results back; end_turn means stop; max_tokens means the output hit its limit. Explain how each should be handled, why end_turn is not a verification, and what additional limit the loop needs.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. For tool_use: execute the requested tools and return a matching tool_result for each request in the next message.
+2. For end_turn: treat it as the model finishing its turn, which is a stop request, not proof that the task is done.
+3. For max_tokens: recognize truncation, and do not treat the partial text as a complete answer; continue, raise the limit or report incomplete.
+4. Explains that an outcome check independent of the model is needed before accepting the final answer.
+5. Says the loop needs its own cap on iterations, since nothing else prevents continued tool requests.
+
+**Source:** Anthropics
+
+## ES-ch04.33
+
+Before asking an AI coding assistant to implement a loop controller, an engineer must write a specification. List what it should contain, say what each element protects against, and explain why it must be written before the implementation exists.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Includes a table of every exit with its status, whether an answer is returned, and what the trace holds.
+2. Includes the unit of the budget and how invalid budgets are handled.
+3. Includes what must never be fabricated, such as an answer when the run is incomplete or exhausted.
+4. Includes a separate outcome check and a rule for when an answer may move on, plus a list of wrong implementations the tests must catch.
+5. Explains that writing it first gives criteria independent of the code, so the code's choices cannot silently define correctness.
+
+**Source:** Write the exits before anyone runs the loop
+
+## ES-ch04.34
+
+Four defective controllers are described: (1) returns finished when the action source runs out; (2) checks the budget after dispatching and so runs one action too many; (3) returns incomplete where it should return budget-exhausted, and the reverse; (4) rewrites a wrong finished answer into a failure status. Design a test for each that would fail on the defect, and say what each test must assert.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Test for (1): empty action source, asserting status is incomplete and not finished.
+2. Test for (2): endless action source with budget n, asserting exactly n dispatches or trace entries.
+3. Test for (3): one-lookup policy under budgets of 1 and 4, asserting the status in both because trace length is identical.
+4. Test for (4): a finish with a wrong answer, asserting the control-flow status remains finished and the separate check reports a mismatch.
+5. Notes that a test must be able to fail on the defect, and that passing tests show only that listed defects are absent.
+
+**Source:** Write the exits before anyone runs the loop
+
+## ES-ch04.35
+
+While implementing a controller from a written specification, an engineer discovers an exit the specification did not cover. Describe the right response, what to ask an AI assistant to do and not to do, and why the original specification should be kept.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Says to reopen the specification rather than silently letting the code decide the new exit.
+2. Says to date the revision and keep the original so the history of understanding is preserved.
+3. Says the assistant can help by proposing missed exits or wrong versions, which the engineer accepts or rejects.
+4. Says the assistant should not be left to decide exit behavior implicitly, because exits are owned by the engineer.
+5. Says new tests should be added for the new exit and run against the implementation.
+
+**Source:** Write the exits before anyone runs the loop
 
 ## ES-ch04.36
 
-State the unit of the turn budget as the gate defines it, and the gate's treatment of an action name outside lookup and finish. What does the gate say about how errors should be handled?
+Before running a small experiment on a controller, a student writes a prediction of its result and builds their own version before reading a reference solution. Explain what each practice protects against, particularly when an AI assistant is also available, and what the student does when prediction and result disagree.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The unit is a turn that consumes one action from the policy.
-2. A finish costs one turn.
-3. An action name outside lookup and finish is never dispatched.
-4. It produces an error observation and the run continues.
-5. Whether an error should stop, retry, or escalate is a policy the gate says is not implemented yet, and the gate says so.
-
-**Source:** The gate: write the exits before anyone runs the loop
-
-## ES-ch04.37
-
-Describe the contract, the check that is not the controller, and the rule for when an answer may leave the controller.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. No exit fabricates an answer; a finish is a request to stop, and the result says only that one arrived.
-2. The configured budget and the status travel with the trace, and a bad budget is rejected before the policy is touched.
-3. The check requires the finished answer to equal the value in the records for the key the task names.
-4. The check reads the records, not the trace, and never changes the controller's status.
-5. The answer leaves only if the status is `finished` and the check passes; any other status sends the status and the trace to a person and nothing else, and for a real task a person also reads the trace.
-
-**Source:** The gate: write the exits before anyone runs the loop
-
-## ES-ch04.38
-
-Name the four wrong versions of the controller that the gate lists, and for each give the test that catches it.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. A controller that returns `finished` when the policy runs out is caught by the empty-policy test.
-2. A controller that tests the budget after dispatching, and so runs one action too many, is caught only by a test that counts trace entries against an endless iterator.
-3. A controller that confuses `incomplete` with `budget-exhausted` is not distinguishable by trace length (one lookup gives one entry under budgets of one and four), so the tests must assert the status for both.
-4. A helpful rewrite that quietly turns the red answer into a failure status satisfies a test that only asks for rejection and destroys the distinction between the layers.
-5. The tests must assert both that the status stays `finished` and that the check reports a mismatch.
-
-**Source:** The gate: write the exits before anyone runs the loop
-
-## ES-ch04.39
-
-A buggy controller tests the budget after dispatching. The budget is 3 and the policy is an endless iterator of lookups. How many trace entries does the correct controller return, and how many would the buggy one? Why does the chapter say a particular kind of test is needed to catch it?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. The correct controller returns `budget-exhausted` with 3 trace entries.
-2. The buggy controller runs one action too many.
-3. That gives 4 trace entries instead of 3.
-4. The chapter says only a test that counts trace entries against an endless iterator catches this version.
-5. The wrong versions are listed in the gate before Claude implements anything, so each has a test aimed at it in advance.
-
-**Source:** The gate: write the exits before anyone runs the loop
-
-## ES-ch04.40
-
-Explain why the gate is not a freeze, and why the one-sentence description of what failure looks like must be dated and written before the run.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Building the controller may show an exit you missed, for example the non-dictionary action.
-2. The right response is to reopen the gate, date the revision, and keep the original.
-3. Claude can sharpen the gate by naming a forgotten exit or an unlisted wrong version, but what it returns is proposals for you to accept or reject.
-4. The failure sentence says what you will see in the returned object if the controller ended well and the answer is wrong.
-5. Written after the run, it describes the output instead of testing your understanding.
-
-**Source:** The gate: write the exits before anyone runs the loop
-
-## ES-ch04.41
-
-Describe how the chapter wants you to build your own controller before opening the reference: what you build against, which cases to start with, what to avoid, and what interface facts to record. Which tests does it add to the lesson's existing ones, and what is your version for?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Build before opening the reference, against the gate and not from memory of the chapter.
-2. Start with the empty policy, one lookup, and a finish; keep a distinct status for each exit; do not start by connecting a paid model call.
-3. Record the interface facts: `finished` carries an answer, the other statuses manufacture none, and the trace grows only on non-finish actions.
-4. Add tests for a wrong finished answer, a finish beyond the available turns, and the difference between a consumed terminal action and a trace entry, on top of the lesson's tests for the empty policy, a finish, budget exhaustion, lookups, a disallowed tool, and an invalid budget.
-5. Your version is the baseline: the record of what you understood before Claude touched anything and the instrument for hearing that a controller is wrong when its status names look right.
+1. Explains that a prediction written before the run reveals misunderstandings, whereas one written afterward merely describes the output.
+2. Notes that hindsight bias leads people to believe they expected whatever they saw.
+3. Explains that a self-built baseline gives something to compare an AI-generated version against.
+4. Explains that without having built it, the student cannot tell when generated code is wrong even if its names look right.
+5. Says a disagreement is treated as information about the student's mental model and recorded with the line of code or fact that changed their view.
 
 **Source:** Build It: separate the exits before adding complexity
 
-## ES-ch04.42
+## ES-ch04.37
 
-After you hand Claude Code the gate, the chapter asks for three things with its result. Describe what you hand over, the three things, and what each one tells you.
+You hand an AI assistant a written specification and tests for a loop controller and receive an implementation. Describe what you should do before accepting it: how to run the checks, how to compare it with your own baseline, and what to do with any behavioral differences.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Hand Claude the exit table, the contract, the outcome check, and the list of wrong versions, not your implementation, and run your tests yourself on what it returns.
-2. Note which of your tests failed, since a failure is often a gap in the gate that Claude could not see because it had only what you wrote.
-3. Compare its controller with your baseline and name one difference in behavior (a finish with no answer, a non-dictionary action, the terminal action in the trace); the difference is a decision about an exit, and exits are yours.
-4. Ask for a deliberately wrong controller that still passes your tests and check by hand whether it does.
-5. If it passes, your test list was too weak, which you learned cheaply; preserve the actual transcript with date and displayed model label, or record that the session failed or did not run.
+1. Says to run the tests yourself rather than relying on the assistant's report that they pass.
+2. Says to note which of your own tests failed, since a failure may reveal a specification gap.
+3. Says to compare against your baseline and name at least one behavioral difference at a boundary such as an empty finish or a malformed action.
+4. Says each difference is a decision about an exit that the human owner must surface, accept or reject.
+5. Says to ask for a deliberately wrong version that passes the tests, and strengthen the tests if one exists.
 
 **Source:** Use It: conduct Claude Code against your gate
+
+## ES-ch04.38
+
+An engineer asks an AI assistant for a controller that is deliberately wrong yet passes their test suite. Explain the purpose of the exercise, how to interpret the result in both cases, and how it relates to coverage and to mutation testing.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains the purpose: measuring whether the tests can detect known-wrong behavior.
+2. If a wrong controller passes, concludes the test suite is too weak and identifies what assertion was missing.
+3. If the assistant cannot produce one, notes this does not prove the suite is strong, since the assistant may simply have failed to find the gap.
+4. Relates it to mutation testing, where deliberate faults probe whether tests notice them.
+5. Distinguishes line coverage, which shows code executed, from assertion strength, which determines whether faults are noticed.
+
+**Source:** Use It: conduct Claude Code against your gate
+
+## ES-ch04.39
+
+A team has a trace of an agent run that went wrong: a repeated lookup and a wrong finished answer. Explain why they should preserve these runs rather than report only clean ones, what a preserved failure trace should contain to be reusable, and how the conclusion should describe the layers involved.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that failure traces explain a system's boundaries and a clean transcript cannot serve as a test of them.
+2. Says a failure trace becomes a reusable regression test case.
+3. Lists contents: action source or script, data used, budget and unit, returned object including status, and the outcome-check result.
+4. Says the conclusion should name the layers: action proposal, controller processing with a named stop rule, and a separate outcome check.
+5. Says to state where a layer is absent, and that the first two layers can occur without the third succeeding.
+
+**Source:** Ship It: preserve the failure trace
+
+## ES-ch04.40
+
+A write-up of an agent experiment contains these sentences: (1) "The agent succeeded." (2) "The controller verified the answer." (3) "The agent chose red because it distrusted the lookup result." The underlying evidence is a returned object with status finished, an answer of red, a trace showing one lookup that observed blue, and a separate comparison that found a mismatch with the record. Rewrite each sentence so that it claims only what the evidence supports, and explain the principle behind the rewrites.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Rewrites (1) to something like: the controller returned finished with the answer red after one lookup that observed blue.
+2. Adds that a separate comparison found a mismatch with the record, so the answer is contradicted.
+3. Explains that (2) is unsupported because the controller performed no comparison, and rewrites it to say what the controller did record.
+4. Explains that (3) attributes a motive that a trace of actions and observations cannot show, and rewrites it in terms of observed actions.
+5. States the principle: choose verbs the evidence earns, such as returned, recorded and found, and avoid verbs that claim correctness or intent without evidence.
+
+**Source:** Ship It: preserve the failure trace
+
+## ES-ch04.41
+
+You are drafting a sign-off for a write-up of an agent-trace experiment. Describe what the sign-off should contain, why a line stating what was not checked matters especially when an AI assistant helped draft the write-up, and when withholding the signature is the right outcome.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Lists elements: what was checked, how it was checked, what was not checked, what is not being claimed, and a signature or withholding with name and date.
+2. Says the checked line should name the specific exits and checks actually exercised.
+3. Says the how line should state which parts were done by hand and which with AI help.
+4. Explains that an AI draft tends to omit the not-checked line because it has no record of what the human never exercised.
+5. Says withholding is the honest result when evidence does not support the claim, because a signature asserts accountability.
+
+**Source:** Ship It: preserve the failure trace
+
+## ES-ch04.42
+
+A navigation app announces "you have arrived" at the address it resolved from a typed query. Use this scenario to explain the difference between a system reporting that it has finished and the intended goal being met. Then apply the analogy to an agent that books a flight and reports "booked".
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that the announcement reports that the app's own process ended at the address it resolved, not that the traveler is at the intended place.
+2. Explains that the app cannot settle whether the resolved address matches the intended one.
+3. Maps the analogy: an agent's done is a termination message from the same process that did the work.
+4. For the flight booking, names independent evidence such as a confirmation record from the airline for the right passenger, date and route.
+5. Says someone must compare the evidence against the original intent before the task counts as complete.
+
+**Source:** The driver's seat
 
 ## ES-ch04.43
 
-The paired lesson adds an observational use of Claude Code. What does it ask you to map, what can a visible trace support, what can it not support, and which permission differences must stay visible?
+In an AI-assisted agent loop, five things need owners: proposing actions and requesting a finish, choosing the turn budget, deciding what a suspected repetition triggers, checking a finished answer, and closing the task. For each, say what the AI assistant should do, what the human should decide, and why the decision stays with that party.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Trace a Claude Code bug fix and a document task as separate and actual experiments, and map the visible observations and tool results onto the controller's action-and-observation structure.
-2. A visible trace shows requested tool actions, returned output, and a final message, which is enough to ask questions about sequence and evidence.
-3. It is not a window into private reasoning, so do not narrate an internal deliberation.
-4. Do not claim the production system uses this Python loop.
-5. Keep permission differences visible: a bug fix in a disposable repository and a document task have different readable sources and writable targets, and this controller's in-memory lookup enforces none.
+1. Proposing and finishing: the AI proposes actions and may request finish, while the human treats the request as a stop of the run only, since the worker's report is one datum.
+2. Budget: the AI may suggest a value and unit with reasons, while the human chooses it before the run, because it is the control that does not depend on cooperation.
+3. Repetition: the AI notices and reports suspected repetition and proposes detectors, while the human decides stop, flag or escalate, because the relevant costs are not in the code.
+4. Checking: the AI writes and runs the specified comparator, while the human defines what is compared against and keeps it independent, because an AI checking its own answer is one opinion twice.
+5. Closing: the AI drafts the trace and report, while the human accepts, narrows or withholds and signs, because accountability for acceptance cannot be delegated.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** The driver's seat
 
 ## ES-ch04.44
 
-For each Claude run, what column do you add to your notes? Give examples of who can take a stop, say what independent outcome evidence to name for a bug fix and for a source summary, and explain why Claude's final "done" message does not suffice.
+A team says that in their AI-assisted project the assistant requested the stop and a human closed the task. As a reviewer, what concrete records would you ask for to confirm that this division actually happened, and why is a statement that the team was careful not sufficient?
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Add a column recording every point where the run stopped and who took that stop.
-2. Examples of who: Claude ended its turn and reported done; you interrupted; you approved or declined a request; you accepted the result.
-3. If you do not perform an interface experiment, mark it not run.
-4. For a bug fix the evidence is the changed file and the tests actually executed; for a source summary it is comparison with the specified sources.
-5. The final done message supplies neither.
+1. Asks for the transcript line where the assistant reported it was done.
+2. Asks for a command or check the human ran afterward whose result did not come from the assistant's report.
+3. Asks for human edits to controls, such as a change to the budget or the repetition rule.
+4. Asks for the sign-off line that was signed or deliberately left unsigned.
+5. Explains that without such records the split happened only in people's heads, and an assertion of care is not a record of any action.
 
-**Source:** Use It: conduct Claude Code against your gate
+**Source:** The driver's seat
 
 ## ES-ch04.45
 
-Why must the Ship It artifact include the repeated-action run and the wrong-answer finish run, and what three layers should its conclusion name?
+A write-up claims that an agent loop is bounded. State what a precise boundedness claim should specify, what it should explicitly not claim, and give an example of a sentence you could defend for a loop that uses a fixed turn budget.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. They should not be removed for making the controller look less impressive, because they explain its boundaries.
-2. A failure trace is a reusable test case that a clean happy-path transcript can never be.
-3. The three layers are: the policy supplied an action; the controller processed it and stopped under a named rule; a separate check assessed the answer against the task evidence.
-4. Where a layer is absent, the conclusion says so.
-5. The wrong finish shows that the first two layers can occur without the third succeeding.
+1. Says the claim must specify the unit being bounded, such as turns, tool calls, tokens or money.
+2. Says it must state its assumptions, such as that each iteration completes.
+3. Says it should not claim to be a timeout, a memory cap, a permission policy or a correctness check.
+4. Notes that a hung tool call or slow action source defeats a turn-based bound on elapsed time.
+5. Provides a defensible sentence, such as: the loop starts no more than N turns, assuming each iteration completes, and this does not bound time or establish correctness.
 
-**Source:** Ship It: preserve the failure trace
+**Source:** Verify and reflect
 
 ## ES-ch04.46
 
-Which verbs does the chapter say the evidence earns for the controller, the trace, and the comparison? Give the claim you can stand behind for the red run, and say how your report should answer a reviewer who sees `finished` and asks whether the task succeeded.
+A reviewer looks through an agent-trace write-up for invented success. Describe three kinds of invented success they should look for, how each can happen, and how to correct a mistaken interpretation without erasing the record of it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The controller returned a status.
-2. The trace records what was dispatched.
-3. The comparison found a mismatch with the fixture.
-4. The supportable claim: in the recorded offline run, the controller returned `finished` with answer red after one lookup that observed blue, and a separate comparison against the fixture found a mismatch; none of the verbs establishes that an answer is correct.
-5. The reply to the reviewer: `finished` records that a finish action was consumed, and nothing else.
+1. Describes summarizing a budget-exhausted run as success because the trace looked productive.
+2. Describes supplying an answer for a run that ended incomplete, which fabricates content the controller never produced.
+3. Describes calling an answer supported without comparing it with the evidence.
+4. Explains how these arise: a status name or a long trace is read as an outcome.
+5. Says to correct the statements while preserving the original mistaken reading in a dated record, and to state the actual mechanism that changed the understanding.
 
-**Source:** Ship It: preserve the failure trace
+**Source:** Verify and reflect
 
 ## ES-ch04.47
 
-Describe the sign-off the chapter asks you to end the artifact with. What goes on the "Not checked" line, why does that line matter, and why must you write the sign-off yourself? What if your evidence does not support signing?
+A controller limits an agent to one turn, but its tool set includes a function that deletes files. Explain why the small iteration limit does not make the system safe, how iteration limits and permissions differ as controls, and what a permission policy for this tool set should specify before any tool runs.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. "Checked" names which exits you exercised and the outcome check on finish(red) against the blue record.
-2. "How" says whether by hand-trace, by tests written before reading the reference, by recomputation, or with Claude's help, saying which parts.
-3. "Not checked" examples include non-dictionary actions, blocking or slow tools, a model-backed policy, whether the fixture matches any real source, and key retention or redaction.
-4. Claude can draft fluent words in seconds, so you write it from your record; an AI-written sign-off omits the "Not checked" line because the system has no record of the exits you never exercised.
-5. If your evidence does not support signing, withholding is an honest result.
+1. Explains that a single call is enough to delete the wrong file.
+2. Distinguishes iteration count, which limits how many actions run, from permission, which limits which actions and targets are allowed.
+3. Says the policy should be written before any tool runs, not discovered after a harmful call.
+4. Specifies that read, write and delete permissions are distinct and that read permission does not imply write permission.
+5. Specifies the approved scope of targets and an approval step for destructive operations, with disposable test files for testing.
 
-**Source:** Ship It: preserve the failure trace
+**Source:** A bounded loop can still cross a boundary once
 
 ## ES-ch04.48
 
-Explain the navigation-voice analogy and how it maps onto Claude's finish request and your closing of the task.
+A file tool is supposed to be confined to /work/project. A model requests ../secrets.txt, and also requests a file inside the project that is a symbolic link pointing to /etc/hosts. Explain why simple string checks on the path are insufficient and describe a sound confinement check.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A navigation voice saying "you have arrived" is a finish action.
-2. Arrival is at the address you wanted, not the address the system resolved.
-3. The voice cannot settle whether the two addresses match.
-4. Claude may request the stop that ends the run, and does so whenever it reports that it is done.
-5. Only you take the stop that closes the task.
+1. Explains that ../secrets.txt resolved against the project root lands outside it.
+2. Explains that a symbolic link inside the root can point to a target outside it.
+3. States that checking whether a path begins with a slash or contains a particular prefix as text does not establish where the operation lands.
+4. Describes resolving the canonical path, following links, and checking that it lies under the approved root before acting.
+5. Notes that the decision applies per operation, since permission to read a path does not give permission to write it.
 
-**Source:** The driver's seat
+**Source:** A bounded loop can still cross a boundary once
 
 ## ES-ch04.49
 
-Take three rows of the driver's seat table: the turn budget, repetition and error observations, and checking a finished answer. For each, say what Claude should do, what you should do, and why the decision stays with you.
+Design the log for a boundary where an agent's file operations are checked against a permission policy. List the fields to record, explain how they would let a reviewer reconstruct what happened, and explain why a good log still does not replace comparing the final state with what the human authorized.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Budget: Claude suggests a value and a unit with reasons; you choose the number and unit before the run and raise it only by a new written decision.
-2. The budget stays with you because it is the one way a run ends that does not depend on the policy cooperating.
-3. Repetition: Claude notices and reports suspected repetition and proposes a detector and the case that fools it; you decide whether a suspicion ends the run, flags it, or escalates.
-4. That decision stays with you because the cost of a wasted turn against an interrupted useful run is not in the code.
-5. Checking: Claude writes the comparator you specified, runs it, and lists every mismatch; you define what the answer is compared against and keep the check independent of the generator, because an AI checking its own answer is one opinion run twice.
+1. Includes the requested action and the requested path as given.
+2. Includes the resolved target after canonicalization, so a reviewer can see when it differs from the request.
+3. Includes the decision, allowed or denied, and the rule or reason behind it.
+4. Includes the observation or result returned to the agent.
+5. Explains that a log records events but does not judge whether the resulting state matches what was approved, so a separate comparison is needed.
 
-**Source:** The driver's seat
+**Source:** A bounded loop can still cross a boundary once
 
 ## ES-ch04.50
 
-Explain why a comparator you wrote can close the tiny blue-versus-red task but not the claim that a summary is faithful to its sources, and name the lines in your record that show the split of stops actually happened.
+An agent has tools to read files, write files and send email. The harness requires human approval before each email is sent. Describe how this approval step should work, what the approver must be shown, how declines should be handled, and what the step does and does not guarantee.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The task's claim is an equality against a fixture you control.
-2. A comparator can therefore close that claim on your behalf.
-3. "The summary is faithful to its sources" needs a different check and a person; where the line falls for a given claim is a judgment that stays with the human.
-4. The record lines: the transcript line where Claude requested the stop or reported done, and a command you ran afterward that did not come from Claude's report.
-5. Also the edit you made to the budget or detector rule and the sign-off line you signed or left unsigned; if you cannot point to them, the split happened in your head and not in the record.
+1. Says the approval is enforced by the harness, not left to the model to request.
+2. Says the approver should see the resolved recipient and the actual message, not a vague summary.
+3. Says each action needs its own decision; approving one email does not approve later ones.
+4. Says a decline should be recorded in the trace and either returned to the model as an observation or end the run.
+5. States that approval does not make the content correct or the run safe in other respects, and that small turn budgets do not remove the need for it.
 
 **Source:** The driver's seat
 
 ## ES-ch04.51
 
-How should you review a claim that the loop is "bounded," and what three questions should you ask of your artifact to find invented success?
+A turn cap stopped a runaway lookup loop in a test, and a repetition detector stayed quiet on a legitimate repeated check. A reviewer asks whether these controls are validated. Explain the difference between observing that nothing went wrong and validating a control, and for each control name a condition under which it would fail.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Specify the unit of the bound and its assumptions.
-2. The configured limit bounds ordinary completed turns in the demonstrated loop; it is not a general timeout, a memory cap, a credential policy, or a correctness check.
-3. Ask whether you supplied an answer when the controller returned `incomplete`.
-4. Ask whether you summarized budget exhaustion as successful completion because the trace looked productive.
-5. Ask whether you called an answer supported without comparing it to the record, and correct any such statement while preserving the original mistaken interpretation in your learning record.
+1. Explains that one passing run is an observation of the control holding once, not validation.
+2. Says validation includes understanding what could defeat the control.
+3. Names a failure condition for the turn cap, such as a blocked call that the iteration count cannot interrupt, or a single iteration with a harmful action.
+4. Names a failure condition for the detector, such as a repeat its definition does not cover or a case that resembles a legitimate repeat.
+5. Says that if no failure condition can be named, the control has been observed to pass and nothing more, and that findings from a small exploratory study should not be read as general rates.
 
-**Source:** Verify and reflect
+**Source:** Computational Skepticism
 
 ## ES-ch04.52
 
-The chapter's last challenge asks you to redesign the trace for richer termination evidence. Describe what the new format should record, what downstream review it makes possible, what new risks it brings, and which fields support which claims.
+A test harness drives a controller with a pre-written list of actions instead of a model. Explain what this harness is good for, what it cannot show about a real model-backed agent, and what must exist before a system can be called adaptive.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. It records the terminal action, which the reference trace omits.
-2. It records the relevant lookup arguments, without claiming their contents are authenticated.
-3. It makes possible downstream review the reference trace cannot support, such as telling which key returned a shared value.
-4. It adds risks and data-retention decisions, since some tasks carry sensitive inputs and the reference defines no retention or redaction policy.
-5. It identifies which field supports the stop reason and which separate check supports the final answer.
+1. Says it makes runs repeatable and each decision inspectable.
+2. Says it can exercise the controller's exits, status assignment and limits directly.
+3. Says it cannot show how a real model chooses actions or responds to observations.
+4. Says an adaptive system needs a defined route from observations back to the next decision.
+5. Cautions against describing that route as implemented merely because the code uses a word like policy.
 
-**Source:** Assessments - ungraded practice
+**Source:** The policy proposes, the controller stops, someone else judges
 
 ## ES-ch04.53
 
-The chapter closes its diagnosis by naming what you did under conduct, check, and drive. Give one example under each, and explain why a one-action policy yields different stop reasons under different budgets.
+A run ends because its turn budget is spent without a finish action. Describe what the harness should return and do, what it must not do, and how to communicate the result so that downstream consumers do not treat it as success.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Conduct: you wrote the exits, the unit of the budget, and the wrong versions before Claude implemented anything, and asked first whether the task needed a loop.
-2. Check: you refused to let a status stand in for a result, kept the comparison independent of the generator, and named what you did not check.
-3. Drive: you let Claude propose actions, request the stop, write the comparator, and hunt for the repeat that fools your detector.
-4. Drive: you kept the budget, the price of a false alarm, and the closing of the task.
-5. A one-action policy gives `incomplete` under a larger budget and `budget-exhausted` under a budget of one; the stop reason depends on the path actually taken, not on what is waiting beyond it.
+1. Says to return a distinct budget-exhausted status together with the trace and the configured budget.
+2. Says not to fabricate or synthesize a final answer to make the run look complete.
+3. Says not to silently raise the budget and rerun, because changing a limit is an explicit decision.
+4. Says to escalate to a person with the trace so they can decide to extend, narrow or abandon the task.
+5. Says to keep this status distinct from other stops, because it establishes neither that the work was finished nor that the action source had nothing more to offer.
 
-**Source:** What you can now diagnose
+**Source:** Budget exhaustion is not policy exhaustion
 
 ## ES-ch04.54
 
-Explain why a bounded loop can still cross a boundary once, which two controls this separates, and what Chapter 5 adds.
+A controller accepts a turn budget as an argument. List invalid values you would reject, explain Python's treatment of booleans and floats in this check, and say why validation should happen before the loop starts.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A budget of one can still allow one wrong target or one unauthorized mutation in a system that exposes such tools.
-2. Iteration count and permission are separate controls.
-3. Chapter 5 inspects the boundary through filesystem paths: a name that looks relative can resolve to a target outside an approved root, and a permitted read does not imply a permitted write.
-4. It uses disposable fixtures to test traversal, symlinks, and approval checks, refuses to call a short teaching function a complete production sandbox, and writes its permission policy before any tool runs.
-5. The trace discipline carries forward (requested action, resolved target, decision, observation), and neither a good controller nor a good boundary removes the need to compare the resulting state with the task the human authorized.
+1. Lists invalid values: zero, negative numbers, non-integers such as floats, and non-numeric types.
+2. Explains that bool is a subclass of int in Python, so an isinstance check would accept True but an exact type check would not.
+3. Explains that a zero or negative budget would give an empty loop that silently returns an exhausted status without ever consulting the action source.
+4. Says validation should come first so a bad configuration fails before any iterator, trace or side effect exists.
+5. Says the invalid-budget case is itself an exit that should be specified and tested.
 
-**Source:** A bounded loop can still cross a boundary once
+**Source:** Every return statement is an exit someone decided
 
 ## ES-ch04.55
 
-How does the chapter propose to use Anthropic's "Building effective agents," and what must stay explicit outside a model-backed decision source?
+A team changes the finish action so that it must list the identifiers of the observations that support its answer. Evaluate this design: what it improves, what mechanical checks it enables, and what it cannot guarantee.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. It is cited as checked on 2026-09-06 and offered as a comparison for model-directed processes and their surrounding workflow.
-2. That architectural guidance is kept distinct from this scripted iterator.
-3. The task asks you to mark where a model-backed decision source would replace the prepared actions in your learner design.
-4. You then identify the controller limits and evidence checks that should remain explicit outside that source.
-5. It is an adaptation task, not a claim that the short loop reproduces Anthropic's runtime or that an API integration has been executed.
+1. Says it makes some unsupported finishes mechanically detectable, such as a finish citing nothing.
+2. Says a checker can verify that each cited identifier exists in the trace.
+3. Says a model can cite real identifiers that do not support its claim, so content support needs separate checking.
+4. Says it gives reviewers a starting point for tracing which observations the answer depends on.
+5. Says it does not remove the need for an independent outcome check or guarantee correctness.
 
-**Source:** Anthropics
+**Source:** A finished wrong answer
 
 ## ES-ch04.56
 
-What question does the chapter borrow from the Computational Skepticism companion, what does the companion's chapter shift the review question away from, and what limits does the chapter put on the source?
+In an assistant coding session the user asks for a bug fix. The assistant reads files, edits one, asks permission to run a shell command, the user approves, the test suite runs, the assistant says it is done, and the user reads the diff and test output and then merges. Map this session onto action, observation and stop, say who takes each stop, and identify the independent outcome evidence.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The companion's chapter on agentic validation shifts the review question from the system's completion report to the outcome its actions produced.
-2. The borrowed question is: under what condition would this robustness fail?
-3. Observing that nothing went wrong this time is not validation.
-4. The source's own framing is an exploratory study of one framework and two models over two weeks.
-5. The chapter borrows its diagnostic question, not its census.
+1. Maps file reads, edits and the test run to actions, and file contents, edit results and test output to observations.
+2. Identifies the assistant's done message as a finish request that ends the assistant's run.
+3. Identifies the user's approval or denial of the command as a human decision about continuing.
+4. Identifies the merge or rejection as the human stop that closes the task.
+5. Names the independent evidence: the diff and the actual test output, which are evidence only if read rather than relying on the assistant's summary.
 
-**Source:** Computational Skepticism
+**Source:** Use It: conduct Claude Code against your gate
 
 ## ES-ch04.57
 
-A student writes: "My budget stopped the repeated lookup and my detector stayed quiet on a useful repetition, so both controls are validated." Critique the claim using the chapter, naming conditions under which each control would not have held.
+A reviewer sees a visible trace of an assistant's tool calls, their outputs and a final message, and is asked what they can conclude. Explain what a trace of actions and observations can support, what it cannot, and how a write-up should avoid overclaiming about the model's reasoning or the product's internals.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Both results are observed passes, not validation of a control.
-2. If the student cannot name a condition under which a control would fail, the chapter says they have observed a pass and not validated a control.
-3. The budget would not hold against a blocked call that the iteration count cannot interrupt.
-4. The detector would not hold against a repeat its definition does not cover.
-5. The outcome check would not hold against a finish that carries a right-looking answer from the wrong key.
+1. Says it supports questions about sequence, what was requested, and what came back.
+2. Says it does not expose the model's complete private reasoning.
+3. Says narrating intentions at each step goes beyond the evidence.
+4. Says resemblance to a simple controller does not show the product uses that implementation.
+5. Says for outcome claims the independent evidence is the changed artifacts and executed checks, not the final message.
 
-**Source:** Computational Skepticism
+**Source:** A trace records an event, not knowledge
+
+## ES-ch04.58
+
+Explain why a controller that returns incomplete and one that returns budget-exhausted should be treated differently downstream. Give two policies and budgets that lead to each status, and describe what a person would do differently after seeing each.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Defines incomplete as the action source running out before the budget did, and budget-exhausted as the controller spending every turn it was given.
+2. Gives a policy and budget producing incomplete, such as a one-lookup policy with a budget of four.
+3. Gives a policy and budget producing budget-exhausted, such as the same policy with a budget of one, or an endless source with any budget.
+4. Explains the follow-up for incomplete: investigate why the action source stopped without finishing.
+5. Explains the follow-up for budget-exhausted: decide whether to raise, narrow or abandon, noting that it does not show the work was nearly done.
+
+**Source:** Budget exhaustion is not policy exhaustion
+
+## ES-ch04.59
+
+An unbounded agent run makes one model call every 8 seconds at $0.05 per call and goes undetected for 2 hours. An operator considers a hard cap of 30 calls. Compute the number of calls and cost of the unbounded run, and the cost and maximum duration under the cap, and state the assumptions behind each figure.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Computes 900 calls for two hours at one call per 8 seconds.
+2. Computes $45 for the unbounded run.
+3. Computes $1.50 for 30 calls at $0.05 each.
+4. Computes a maximum of 240 seconds under the cap if each turn takes 8 seconds.
+5. States the assumptions: constant price per call and constant turn duration, and notes the cap bounds neither if calls get more expensive or turns slower.
+
+**Source:** Budget exhaustion is not policy exhaustion
+
+## ES-ch04.60
+
+A returned object from a controller run reads: status "finished", answer "", trace of three entries, each with action "lookup". A reviewer must decide what the object does and does not tell them. Analyze it: what is established, what is not, and what follow-up checks are needed before the answer is used.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States that a finish action was received, which is what finished establishes.
+2. Notes that the empty answer means the run finished without content, so nothing was answered.
+3. Notes that the status does not show the task was addressed or that any observation supports an answer.
+4. Says the trace shows three lookups but without the keys cannot show which evidence was gathered, so the reviewer needs the arguments or the action list.
+5. Names follow-ups: reject or investigate the empty finish, run the independent outcome check against the task's key, and have a person decide on acceptance.
+
+**Source:** A finished wrong answer
+
+## ES-ch04.61
+
+A team's specification says an answer leaves the controller only if the status is finished and a separate check passes; any other status sends the status and the trace to a person. Explain why this release rule is structured this way, what each condition contributes, and what it still does not guarantee.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that the finished status contributes only that a finish was received.
+2. Explains that the separate check contributes evidence about the answer against the task's requirement.
+3. Explains that sending other statuses and the trace to a person avoids fabricating an answer and keeps the closing decision human.
+4. Says the check reads the evidence rather than the trace and never rewrites the controller's status.
+5. States that the rule does not guarantee correctness beyond what the check covers, and that a real task may still need a person to read the trace.
+
+**Source:** Write the exits before anyone runs the loop
+
+## ES-ch04.62
+
+Explain the idea of "reading each return statement as a decision with an owner" for a loop controller. Use the exits finished, incomplete, budget-exhausted and invalid-budget error to show who decided each, when, and what each exit does and does not claim.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States that every exit is a design decision made by someone before the run, not an accident of the code.
+2. Explains finished as: a finish action was consumed, claiming nothing about the answer's correctness.
+3. Explains incomplete as: the action source ran out first, claiming neither success nor impossibility.
+4. Explains budget-exhausted as: the controller used every allowed turn, claiming nothing about completion or time.
+5. Explains the invalid-budget error as a configuration decision made before the loop touches the action source.
+
+**Source:** Every return statement is an exit someone decided

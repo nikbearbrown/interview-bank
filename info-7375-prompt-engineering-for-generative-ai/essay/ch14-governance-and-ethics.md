@@ -2,1008 +2,976 @@
 
 ## ES-ch14.1
 
-The chapter opens: "Every field is filled. Nobody is responsible." Explain how that can be true of a register that Python reports as ready-for-human-review, using the chapter's example field values. Then state the question the chapter asks instead of "is the register complete?"
+A team's AI-use register has every required field filled. The owner field reads "project team", the incident contact reads "project owner" and the evaluation field reads "citation audit". A script that checks only that fields are non-empty reports the record as ready for human review. Explain how a register can be complete and the workflow still have no one responsible, and say what question a reviewer should ask instead of "is the register complete?"
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that a governance record can be structurally complete and operationally hollow.
-2. Gives example field values from the chapter, such as owner "project team", incident contact "project owner", or evaluation "citation audit".
-3. Explains that Python can truthfully report ready-for-human-review because it checks structure only.
-4. Notes that despite the green status no named person may have accepted responsibility, no affected person may have been consulted, and no threshold may trigger a response.
-5. States the replacement question: what "complete" is standing in for, meaning what has been decided, who decided it, and who will answer when the system causes harm.
+1. A record can be structurally complete yet operationally hollow: presence of text in a field is not the same as a decision having been made.
+2. Group or role labels such as "project team" do not identify a person who has accepted responsibility, and a vague evaluation line does not say what was tested.
+3. A completeness script checks structure only, so it can truthfully report a green status while no one is accountable, no affected person was consulted and no threshold triggers any response.
+4. The status "ready for review" is not approval, consent, compliance or an ethical judgment.
+5. The better question is what "complete" stands in for: what has been decided, who decided it, and who will answer when the system causes harm.
 
-**Source:** Chapter 14 - Governance and ethics (opening)
+**Source:** Opening: a complete register is not a responsible team
 
 ## ES-ch14.2
 
-A teammate says, "Claude can fill the whole register in seconds, so the governance work is done." Respond using the chapter: say what Claude can and cannot do, and how the chapter divides the work into conduct, check, and drive.
+A teammate says: "An LLM can fill the whole governance register in seconds, so the governance work is done." Respond. Say what a language model can and cannot contribute, and describe how responsibilities divide between the model and the humans in the team.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says Claude can quickly propose an owner, a threshold, a retention period, and a risk paragraph that read as fluent and plausible.
-2. Says Claude cannot make anyone the owner it names, was not in the room with the people the workflow touches, and is not made answerable by its draft.
-3. Conduct: owners, thresholds, retention, consultation, and recourse are designed into the system before it ships, with the register and its validator as the gate.
-4. Check: a register can be complete and reviewable and still weak.
-5. Drive: relationships, consent, and recourse are people's work.
+1. The model can draft fluent, plausible proposals quickly, such as an owner, a threshold, a retention period and a risk paragraph.
+2. It cannot make anyone the owner it names: accountability exists only when a person accepts it.
+3. It has no first-hand contact with the people affected and is not answerable for the workflow after the conversation ends.
+4. Humans decide and record the key choices (owners, thresholds, retention, consultation, recourse) before the form is filled, and check that a complete-looking register is not weak.
+5. Relationships, consent, recourse and the decision to ship, narrow or stop remain with people, who also sign or withhold the final sign-off.
 
-**Source:** Chapter 14 - Governance and ethics (opening)
+**Source:** Opening: what Claude can and cannot do in a governance register
 
 ## ES-ch14.3
 
-Define governance as this chapter does, say when applied ethics begins, and state what the course fixture contributes and what it explicitly does not grant.
+A validator reports one of three statuses for a governance record: "incomplete", "review-required" and "ready-for-human-review". Write precise one-sentence descriptions of what "ready-for-human-review" and "review-required" each claim, and explain what stronger claims would need as evidence.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says governance is not prose wrapped around a technical system.
-2. Describes governance as the assignment of decisions, evidence, authority, relationships, monitoring, recourse, and response (names at least four).
-3. Says applied ethics begins when those abstractions are attached to people who can be affected and people who must act.
-4. Says the fixture makes missing governance information visible.
-5. Says the fixture does not grant ethical clearance.
+1. "Ready for human review" means the record cleared the validator's structural checks and nothing was flagged; it describes the record's shape.
+2. "Review required" means the validator found a condition it cannot resolve (for example an unknown data class) and is routing the decision to a person.
+3. Neither status states that a human has reviewed, approved or accepted anything.
+4. Claims of approval would need an identifiable authorized person who approved a specific proposal on a specific date.
+5. Claims of consent or legal compliance would need evidence from the affected individuals or from legal review respectively, which a script cannot supply.
 
-**Source:** Chapter 14 - Governance and ethics (opening)
+**Source:** Teardown of the validator: what a status means
 
 ## ES-ch14.4
 
-The chapter asks for four predictions before you read the implementation. State the four questions and give the answer the chapter's validator produces for each.
+Five decisions underlie any governance record for an AI workflow: owner, threshold, retention, consultation and recourse. Define each in one sentence as an assignment of authority or responsibility, and explain why a team should make these decisions before it fills in a governance form.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. An empty record reports all seven required field names.
-2. retention_days=True does not pass as one day: the exact-type check rejects it with ValueError even though Python treats True as an integer.
-3. data_classes given as the string "public" rather than a list is rejected with ValueError.
-4. ready-for-human-review does not mean a human has reviewed the record; it means the structural checks cleared.
-5. Says the answers to the predictions should be preserved so they can be compared with what is observed.
+1. Owner: the person who accepts responsibility for the workflow as an ongoing system and has authority to stop it.
+2. Threshold: the observable signal that triggers a response, together with what the response is.
+3. Retention: which copies of data exist, for how long, and how deletion is performed and checked.
+4. Consultation: who was asked, what their answers could have changed, and what remains pending; recourse: how an affected person reaches a human who can change the outcome.
+5. Each is an assignment of authority that exists only when someone accepts it; filling the form first yields the shape of a decision and anchors reviewers to a draft instead of a decision.
 
-**Source:** What you will be able to do
+**Source:** Who decided? Five choices that exist before the form does
 
 ## ES-ch14.5
 
-Name the five decisions that the chapter says exist before the form does, and for each give the question it asks.
+A team cannot find anyone willing to accept ownership of a planned LLM workflow that will send e-mails to customers. Describe how the team should record this gap, what constraints they should place on the workflow until the gap is closed, and why they should not simply put a placeholder name in the owner field.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Owner: who accepts responsibility for the workflow as a continuing system, and what they are allowed to stop.
-2. Threshold: which observable signal triggers a response, and what the response is.
-3. Retention: which copies exist, for how long, and how deletion is checked.
-4. Consultation: who was asked, what their answer could have changed, and what is still pending.
-5. Recourse: how an affected person reaches a human who can change the outcome.
+1. The gap should be recorded explicitly as unresolved, not filled with a plausible name.
+2. A placeholder name creates the appearance of accountability without anyone having accepted it.
+3. Until someone accepts ownership, the workflow should be constrained, for example to private drafts, synthetic data, or no external writes.
+4. The constraints should be tied to a condition for lifting them, such as a named person accepting the role with authority to pause.
+5. Assigning every role to one person or to the AI agent merely to complete the form does not solve the gap, because the owner must be someone who can accept and exercise responsibility.
 
 **Source:** Who decided? Five choices that exist before the form does
 
 ## ES-ch14.6
 
-A team fills in the register first and asks Claude to supply the decisions afterward. Explain what the team has and has not produced, describe the chapter's two gates, and say what the validator is evidence for.
+Before asking an LLM assistant to implement a validator for a governance record, a developer writes a specification (what must pass, what must raise errors, what must be flagged) and a set of tests. Explain what the developer gains by doing this first and what the developer should do with the assistant's implementation afterward.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that an assignment of authority exists only when someone accepts it, and that Claude can draft all five decisions but cannot accept any.
-2. States that filling the form first produces the shape of a decision, not a decision; people decide first and the form records.
-3. Describes the validator as a machine gate whose pass condition is a list of tests you can run.
-4. Describes the register's content as a human gate: a named person accepted each role and the routes work when someone uses them.
-5. States that the validator is evidence for the first gate only, and that treating it as evidence for the second is the failure the opening sentence describes.
+1. Writing the contract first forces decisions about edge cases (such as zero retention and wrong input types) to be made by the person, not inherited from the model.
+2. Tests written before seeing the implementation capture the person's intent independently of the code.
+3. Running the tests on the assistant's implementation, personally, shows whether it satisfies the specification; failures can expose gaps in the specification itself.
+4. The developer can ask for a deliberately wrong implementation that still passes the tests; if one exists, the test suite is too weak.
+5. Building a baseline first gives the developer a concrete reference to name differences in behavior between versions, which is what auditing requires.
 
-**Source:** Who decided? Five choices that exist before the form does
+**Source:** Build It, Use It, Ship It
 
 ## ES-ch14.7
 
-Your capstone team has a draft register, but nobody has yet accepted the retention decision or the incident-contact role. Using the chapter's gate, say what you write in the design step for these decisions, what the workflow is constrained to, and when this step happens relative to asking Claude.
+A Python function validates a retention-day count with `isinstance(days, int) and days >= 0`. Explain what happens for the inputs True, 0, 30.0 and -1, why exact type checking such as `type(days) is int` changes one of these results, and what a test suite needs to include to detect the isinstance version.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the design step is one sentence for each of the five decisions with the name of the person who made it.
-2. Says to write "unresolved" for a decision no person has accepted, rather than naming someone.
-3. Says to state what the workflow is constrained to until someone accepts, such as a private draft, synthetic data, or no external write.
-4. Says this is done in plain sentences before asking Claude for anything.
-5. Says these are your choices and no model can know which of them are real.
+1. True is accepted by the isinstance version because bool is a subclass of int in Python, so True behaves as 1.
+2. 0 is accepted, which is correct if zero retention is a legitimate design intent.
+3. 30.0 is rejected because a float is not an int instance, and -1 is rejected by the range test.
+4. `type(days) is int` rejects True because type(True) is bool, not int.
+5. The suite needs a test that expects True to be rejected, and ideally the zero and negative boundary cases, so that an isinstance implementation fails.
 
-**Source:** The gate: write the governance before the form is filled
+**Source:** Tear down the validator
 
 ## ES-ch14.8
 
-State the validator contract from the gate: what assess should return or raise for (a) an empty record, (b) the demo record, (c) a negative retention count or a string where the data-class list belongs, (d) a data class outside public, synthetic, and internal, and (e) a truthy external_write.
+A validator treats a field as missing if `not record.get(field)` is true. Describe two kinds of wrong behavior this causes for a record with `retention_days: 0` and for a record with `owner: "   "` (spaces only), and propose a better missing-field test and how to treat blank text.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. (a) Reports all seven field names with the status incomplete.
-2. (b) Returns ready-for-human-review with no issues.
-3. (c) Both raise ValueError when every field is present.
-4. (d) Returns review-required.
-5. (e) Adds the issue "external action approval".
+1. Zero is falsy, so a deliberate zero-day retention value is wrongly reported as missing.
+2. A whitespace-only string is truthy and so is accepted as present although it names no one.
+3. The better presence test distinguishes absence (key not present or value is None) from other values, so zero is retained as a legitimate value.
+4. For text fields, normalize with strip() and then reject empty strings.
+5. These are narrow structural fixes; they still cannot tell whether a non-empty owner is a real accountable person.
 
-**Source:** The gate: write the governance before the form is filled
+**Source:** Tear down the validator
 
 ## ES-ch14.9
 
-Describe the two wrong versions of the validator that your tests must catch, what each does wrongly, and what this implies about your test list.
+A validator for data labels uses an allowlist (public, synthetic, internal) and sends anything else to human review. Explain why an allowlist routing unknown values to review is a conservative design, what costs it imposes, and what it cannot establish about the data.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The isinstance(days, int) variant replaces the exact-type test, so retention_days=True passes as one day because Python treats True as an integer.
-2. States that the lesson's six tests still pass against the isinstance variant.
-3. The falsiness variant replaces the omission check, so a retention of zero, a legitimate design intent, is reported as missing.
-4. States that one of the lesson's six tests catches the falsiness variant.
-5. States that if your test list cannot tell the right program from both wrong ones, the gate is not finished.
+1. When the machine cannot classify a label, sending the decision to a person is the safe default.
+2. An allowlist catches categories nobody listed in advance, unlike a denylist.
+3. Costs include reviewer workload and false alarms, such as a case-sensitive comparison sending "Public" to review.
+4. The check cannot determine whether an unknown label is actually sensitive, nor whether an allowed label such as "internal" is appropriate for the specific use.
+5. It also does not verify that the data was assigned its label correctly in the first place.
 
-**Source:** The gate: write the governance before the form is filled
+**Source:** Tear down the validator
 
 ## ES-ch14.10
 
-The gate asks for one dated sentence describing what you would see if the register were hollow although the validator is green. Give an example from the chapter, and explain why the sentence has to be written before you read any output.
+Explain why a governance validator should refuse only what it can refuse exactly, and what kinds of judgment it should leave to people. Give two examples of checks that belong in code and two judgments that belong to humans.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the sentence is dated.
-2. Says it describes an observable event that would show the register is hollow while the validator is still green.
-3. Gives the chapter's example: you send the named incident contact a labeled test report and nobody acknowledges it within the stated time.
-4. Explains that written after reading output, the sentence describes the output instead of testing your understanding.
-5. Connects the point to the validator being evidence for the machine gate only.
+1. Code is reliable on exact, mechanical conditions, such as required fields present, correct types and ranges, and membership in a list.
+2. Judgments about adequacy, such as whether an owner line names an accountable person or an evaluation line is a real test, depend on context that string checks cannot encode.
+3. A deny-list of "bad phrases" would be evaded by rewording, so it gives false assurance.
+4. Examples in code: type and range checks on retention; flagging unknown data classes. Examples for humans: whether an owner has accepted the role; whether an evaluation tests the relevant harm.
+5. A validator that claims only what it checks is more honest than one that implies quality assessment.
 
-**Source:** The gate: write the governance before the form is filled
+**Source:** Tear down the validator
 
 ## ES-ch14.11
 
-State what the register may claim once the validator is green and named people have accepted roles, what it may not claim, and what Claude can and cannot do in writing the gate.
+A validator adds the issue "external action approval" whenever a record's `external_write` value is truthy. Describe what this check does and does not accomplish, and name two Python pitfalls in relying on truthiness for such a flag.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The register may claim that the record has a minimum shape.
-2. The register may claim that named people accepted named roles on named dates.
-3. The register may not say the workflow is ethical, consented to, or compliant.
-4. Claude can sharpen the gate by hunting for the case you missed.
-5. Claude cannot write the gate without defeating its purpose, because the gate is where your decisions go on the record and what you test Claude's validator against.
+1. It marks that an external action is involved and routes the record to an approval control.
+2. It does not verify that approval was obtained, who approved, or what the external target is.
+3. Non-empty strings such as "no" and "false" are truthy, so a mistyped flag can trigger or fail to trigger the check.
+4. Values like 0, None or an empty string are falsy and will silently skip the check, so required Boolean type enforcement is needed.
+5. The flag is a routing signal; a separate control must bind approval to the exact proposed action.
 
-**Source:** The gate: write the governance before the form is filled
+**Source:** Tear down the validator
 
 ## ES-ch14.12
 
-List the seven required fields, state the question that owner, purpose, data classes, and retention days each open, and explain why the fields are "necessary prompts, not sufficient answers."
+Construct a record that passes a structural validator (all fields present and well formed) but is weak as governance, and for each of three vague lines write the question a named person would need to answer and the act that would answer it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Lists all seven: owner, purpose, data_classes, retention_days, approver, evaluation, incident_contact.
-2. Owner is accountable for the workflow as a continuing system, not merely its initial code; purpose bounds why the system exists and reveals later use beyond that scope.
-3. Data classes describe what information crosses the boundary; retention days make storage lifetime discussable.
-4. Gives a weak value that still fills a field, such as owner "someone", purpose "use AI", or evaluation "test", and says why it fails to assign work, bound use, or say which outcomes were tested.
-5. States that a register can force omissions into view but Python cannot infer substantive adequacy from truthy strings.
+1. The example includes vague entries such as owner "everyone", evaluation "looks fine" and incident contact "team".
+2. Owner: "Who personally accepts responsibility and can pause the workflow?" answered by a named person confirming acceptance.
+3. Evaluation: "What outcomes were tested, by whom, on what data, and what happens on failure?" answered by a documented test with criteria and sampling.
+4. Incident contact: "Can an affected person reach a human who can act?" answered by sending a labeled test report and observing acknowledgment within the stated time.
+5. The structural validator is not defective for passing such a record; its contract is narrow, which is why human review must interrogate meaning.
 
-**Source:** A register makes questions inspectable
+**Source:** Complete, reviewable, and still weak
 
 ## ES-ch14.13
 
-Explain what the missing-field check counts as missing, give at least three kinds of weak value that still pass it, and say what a register should not do as a result.
+A reviewer is writing up what a governance validation run and a test of an incident-reporting route established. Explain how to word each claim so it is no stronger than the evidence behind it. Illustrate with claims about the incident route at three or more levels of evidence, from weakest to strongest, naming the evidence each level needs.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a field is missing if its key is absent or its value is None, the empty string, or the empty list.
-2. Says an empty record therefore reports all seven field names.
-3. Names at least three weak values that pass: whitespace, zero in most fields, an empty dictionary, or a vague string.
-4. Notes that later specialized checks catch some shapes but the boundary remains structural.
-5. States that a register should not advertise more intelligence than its validator contains.
+1. The principle: the wording of a claim should match what was actually done, so a script that checked structure "reported" presence and did not "confirm" anyone's acceptance.
+2. Weakest level: a name or role appears in a document, which supports only "is listed".
+3. Next level: the named person has said they accept the role, which supports "has agreed".
+4. Stronger level: the route was run and observed to work, for example a clearly labeled test report was acknowledged within the stated time.
+5. Strongest level: the reviewer inspected the system or store directly, and claims about systems that were not inspected must stay at the weaker levels.
 
-**Source:** A register makes questions inspectable
+**Source:** Complete, reviewable, and still weak
 
 ## ES-ch14.14
 
-The validator "refuses only what it can refuse exactly." Explain this design choice using the chapter's example of the owner "project team," and name its cost.
+A summarizer was approved for public course notes. Months later it is pointed at student-submitted essays. Explain how a well-written purpose statement helps detect this change, why the change needs fresh review even if the model and prompt are unchanged, and what a purpose line like "use AI" fails to do.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the principle that the validator refuses only what it can refuse exactly.
-2. Explains that judging "project team" would need a list of bad owner names.
-3. Explains that lazy entries step around such lists.
-4. Says the exactness is honest about what the validator can do.
-5. Names the cost: the hard part, deciding whether a line is true, is left to people.
+1. A precise purpose bounds what the system is for, so a new use can be recognized as out of scope.
+2. Student essays involve different people, different data classes and different consequences, so risk changes even with identical model and prompt.
+3. The change should trigger review of data classes, consent, retention, evaluation and who is affected.
+4. "Use AI" excludes nothing, so no later use can be flagged as beyond scope.
+5. Scope creep tends to go unnoticed unless the purpose is stated precisely and reviewed when use changes.
 
-**Source:** Tear down the validator
+**Source:** A register makes questions inspectable
 
 ## ES-ch14.15
 
-Explain what the retention check does with True, -1, 0, and 30, and what a passing retention value still does not tell you.
+Rewrite the vague promise "monitor quality and intervene if needed" as an operational control for an LLM tool that publishes summaries. Your rewrite should specify the signal, threshold, owner, response, scope and recovery condition, and you should explain what makes a threshold testable by a stranger.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says exact int typing rejects True even though bool subclasses int.
-2. Says -1 fails the nonnegative range check with ValueError.
-3. Says 0 is allowed and can represent a design intent such as no post-processing retention.
-4. Says 30 has exact type int and is nonnegative, so it passes.
-5. States that passing does not enforce immediate deletion or define transient copies, and that a number in a record is not evidence that the lifecycle follows it.
+1. Signal: an observable measure, such as published summaries containing a claim without a supporting source.
+2. Threshold and owner: a numeric or event trigger (for example any single such claim) and a named person responsible for acting.
+3. Response and scope: publication pauses, affected drafts are examined, and the scope of what pauses is defined.
+4. Recovery condition: work resumes only after correction and a repeated check passes.
+5. A stranger can tell from the record whether it fired because the signal, trigger and response are observable and unambiguous.
 
-**Source:** Tear down the validator
+**Source:** Owners, thresholds, and bounded responses
 
 ## ES-ch14.16
 
-Say what the validator does with each value of data_classes, assuming all other fields are valid: the string "public", ["public"], ["personal"], ["Public"], and [].
+An LLM service processed 20,000 requests last month and an automated check passed 99.5% of them. A manual review of the failures found that 2 of them exposed customers' personal data. Calculate how many failures there were, explain why the pass rate alone is an inadequate governance signal, and propose a better trigger design.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. The string "public" raises ValueError because the value must be a list of strings.
-2. ["public"] passes the shape check and the allowlist.
-3. ["personal"] yields review-required with a sensitive-or-unknown issue.
-4. ["Public"] also goes to review because the allowlist is case-sensitive.
-5. [] is rejected by the missing-field check.
+1. 0.5% of 20,000 is 100 failures.
+2. The aggregate rate weights all failures equally, so rare severe events are hidden inside the average.
+3. Two disclosures among 100 failures are a severity category the pass rate does not display.
+4. Severe harms warrant a stop-on-first-occurrence trigger and separate monitoring by harm category.
+5. Less severe failures can use a trend or rate threshold, and the trigger design should specify who can pause and what the response is.
 
-**Source:** Tear down the validator
+**Source:** Owners, thresholds, and bounded responses
 
 ## ES-ch14.17
 
-Why does the validator route an unknown data class to review instead of deciding for itself? Explain the principle and the trade-off.
+An organization names an incident owner for an AI pipeline but rewards on-time delivery and penalizes delays. Explain why the owner cannot effectively govern in that environment and what must change for the role to work.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the code cannot decide whether an unknown class is legally sensitive.
-2. Says the code cannot decide whether all "internal" information is safe for the proposed workflow.
-3. States the conservative routing action: when the machine cannot tell, send the decision to a person.
-4. Names the trade-off as noise.
-5. Illustrates the noise with case sensitivity: a capitalized "Public" also goes to review.
+1. Authority to pause must be explicit; a nominal owner who has to ask permission cannot respond quickly.
+2. If delay is penalized, people will avoid using pause authority, so it exists only on paper.
+3. The cost of pausing should be assigned in advance to the organization, not to the individual who triggers it.
+4. Escalation must be defined for cases when the owner is unavailable, implicated or lacks expertise.
+5. Incentives and metrics should be aligned so that exercising the control is not punished, and the team should test that the pause actually works.
 
-**Source:** Tear down the validator
+**Source:** Owners, thresholds, and bounded responses
 
 ## ES-ch14.18
 
-Explain what a truthy external_write does in the validator, three things the check does not do, and what the status ready-for-human-review means.
+The incident contact for an AI service is unreachable during a possible data exposure and nobody acknowledges an alert within the declared window. Describe what a well-designed response structure does, what it means if no backup exists, and why the AI system should not name itself as the responsible party.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. A truthy external_write adds "external action approval" to the issues.
-2. The check does not identify the external target.
-3. The check does not authenticate approval and does not execute Chapter 13's fingerprint gate.
-4. "Ready" means the teaching record cleared the structural checks with no flagged class or external-write condition.
-5. It does not mean "approved"; both statuses lead to people.
+1. A named backup with delegated pause authority is alerted after the acknowledgment window, pauses the service and records why.
+2. If there is no backup, the exercise has found an unresolved dependency that people must fix.
+3. The AI system cannot accept accountability, so naming itself responsible leaves no accountable person.
+4. The system may safely stop its own work as a default, while responsibility remains with an authorized person or organization.
+5. The rehearsal result should be fed back into the governance record as a change (add a backup, shorten the window) instead of left as an observation.
 
-**Source:** Tear down the validator
+**Source:** Worked incident rehearsal
 
 ## ES-ch14.19
 
-The demo record returns {"status": "ready-for-human-review", "issues": []}. Explain why that result is accurate about the function but weak as governance evidence. Name the question the validator cannot ask and at least three of the weak lines.
+An AI system publishes a summary stating a wrong assignment deadline. Its evaluation was an audit confirming that each cited source identifier exists. Explain why the audit failed to protect against this harm and describe three changes that would address it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains the result is accurate: thirty is an exact nonnegative int, data_classes is a list holding one allowlisted string, and no external-write flag is truthy.
-2. Names the question the validator cannot ask: who confirmed each of these lines, and how?
-3. Notes that "Project team" may name no accountable individual and "Instructor" may describe a role without proving a particular instructor accepted it.
-4. Notes that "Citation audit" leaves sampling, checker, criteria, and failure response unstated, and "Project owner" may be unreachable to affected people.
-5. Notes that thirty days says nothing about caches, backups, exported artifacts, or deletion verification.
+1. The audit checked that a citation exists, not that the cited material supports the claim.
+2. The harm mechanism is reliance on a false date, and the audit did not address that mechanism.
+3. Change one: add a check for support of consequential claims, by a person or an entailment-style method.
+4. Change two: pause publication and correct existing copies, with a record of copies that cannot be reached.
+5. Change three: assign a named owner with pause authority and define the acknowledgment, triage and escalation steps for the reporting route.
 
-**Source:** Complete, reviewable, and still weak
+**Source:** Worked incident rehearsal
 
 ## ES-ch14.20
 
-You run assess({}), assess with data_classes ["personal"], and assess with external_write=True on a public-data record. Say what each returns and what these runs do not demonstrate.
+A team writes a governance plan before building an AI feature. After an incident they discover one of the plan's decisions was wrong. Explain why designing governance before implementation does not mean it is frozen, and describe how the record should show what changed.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. assess({}) returns incomplete with all seven field names.
-2. data_classes ["personal"] gives review-required with the sensitive-or-unknown issue.
-3. external_write=True adds the external-action issue.
-4. States that these runs demonstrate routing.
-5. States that they do not demonstrate agreement by named people, stakeholder consent, lawful processing, effective mitigation, or outcome fairness (names at least three).
+1. Design before implementation sets the starting decisions; evidence from operation can show that one was inadequate.
+2. An incident can reopen an earlier choice, such as an evaluation that did not test the harm that occurred.
+3. The record should state what the incident revealed, which earlier decision it reopened, and what changed.
+4. Changes should name who made them and when, so the revised decision has an owner.
+5. A record that is never revised after an incident suggests that the feedback loop from operation to design is not working.
 
-**Source:** Complete, reviewable, and still weak
+**Source:** Worked incident rehearsal
 
 ## ES-ch14.21
 
-A team submits owner "everyone", purpose "help", retention_days 99999, approver "manager", evaluation "looks fine", incident_contact "team", and data_classes ["public"]. What can the validator return, is that a defect, and what must the human review do?
+A register states "retention: 30 days" for user prompts sent to an LLM application. List the copies of the data that may exist beyond the primary store, explain why the stated number does not show that deletion follows it, and describe how to verify deletion for the copies the team controls.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the current function can return ready-for-human-review.
-2. States that this is not a defect relative to the function's narrow contract.
-3. States that it is a counterexample to broad claims about what the status means.
-4. States that the human review must interrogate meaning.
-5. States that Claude can list the vague lines but you must confirm each against the world.
+1. Copies include application logs, caches, backups, exported reports, repository or ticket history, incident records, and the model provider's handling under its own terms.
+2. The number states a policy for one store; other copies follow their own lifecycles and may outlast it.
+3. Define for each class when the retention clock starts, who deletes, and how deletion is checked.
+4. Test by inserting a labeled record, running the lifecycle, and inspecting the stores the team controls.
+5. State what remains unverified, such as the provider and backups, instead of claiming erasure everywhere.
 
-**Source:** Complete, reviewable, and still weak
+**Source:** Retention is a lifecycle
 
 ## ES-ch14.22
 
-Complete the chapter's evidence table: for each of "seven fields present", "retention is a nonnegative integer", "classes are known labels", "external-write issue", and "ready for human review", say what it supports and give one thing that remains open.
+A design document sets retention to zero days for a workflow that handles customer messages. Explain what zero could mean, what it does not guarantee, and why a validator should not report zero as a missing value.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Seven fields present supports a minimum record shape; adequacy and acceptance remain open.
-2. Retention is a nonnegative integer supports valid shape of the declared day count; the actual deletion lifecycle remains open.
-3. Classes are known labels supports no unknown label under the course allowlist; classification accuracy remains open.
-4. The external-write issue supports that a routing trigger was detected; target, authority, and outcome remain open.
-5. Ready for human review supports that a structural preflight was completed; consent, ethics, and compliance remain open.
+1. Zero could mean delete immediately after the task, do not persist application data, or retain only de-identified evidence.
+2. Data still exists transiently in memory and in any third-party processing, subject to the provider's terms.
+3. A stated value is a design intent and does not show that no copies exist.
+4. A validator that treats falsy values as missing wrongly reports zero as absent; it should test for absence directly.
+5. The design document should define what zero means so that reviewers can check it.
 
-**Source:** Complete, reviewable, and still weak
+**Source:** Retention is a lifecycle
 
 ## ES-ch14.23
 
-Using the chapter's verb ladder, choose the weakest verb the evidence supports for each: (a) the register shows a named owner; (b) the owner told you she accepts the role; (c) you sent a labeled test report to the incident contact and watched it be acknowledged; (d) you inspected the log store yourself and checked the fixture was gone. Then say what verb the validator itself earned.
+A team deletes a customer's row from its application database after a deletion request. The same customer's data also fed a vector index, a weekly summary and a log of hashed e-mail addresses. Explain why the deletion may be incomplete and how the team should handle derived data.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. (a) listed.
-2. (b) confirmed.
-3. (c) exercised.
-4. (d) verified.
-5. Says the function only reported that fields were present and well shaped, without confirming, accepting, or verifying anything, and that the ladder is a teaching device and not an industry standard.
+1. Derived artifacts such as embeddings and summaries can retain or reveal source information.
+2. Hashes of guessable identifiers can be matched against a small known set, so they can still identify the person.
+3. The team needs lineage records showing which artifacts derive from which sources.
+4. Deletion should be tested end to end with labeled data, and each store marked verified or unverified.
+5. Copies the team cannot alter, such as immutable backups, should be listed and disclosed as a limitation.
 
-**Source:** Complete, reviewable, and still weak
+**Source:** Retention is a lifecycle
 
 ## ES-ch14.24
 
-A register says "There may be bias or privacy concerns." Rewrite this for a public-course-note summarizer by naming affected groups and concrete harms, and say who pays and who could have prevented each harm. Why is the original line weak?
+Compare three approaches to logging an AI agent's actions: keep everything forever, keep nothing, and keep a minimal audit record. Describe the trade-offs and propose what the minimal record should contain.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the original line can be pasted into almost any register and tells no one what to do.
-2. Names at least two affected groups, such as students whose work is quoted, instructors whose policies are paraphrased, maintainers, or readers.
-3. Names at least two concrete harms, such as misrepresenting a deadline, exposing a student's attributed work, omitting an accommodation route, or publishing an unsupported instruction.
-4. Says each harm has a person who pays and, usually, a different person who could have prevented it.
-5. States that applied ethics asks who can be affected, through which mechanism, with what consequence, and whether they can contest it.
+1. Keeping everything improves investigation and replay but increases privacy exposure and breach impact.
+2. Keeping nothing minimizes retained risk but makes incident investigation and accountability difficult.
+3. A minimal audit record can include operation identity, the policy decision taken, references to evidence stored elsewhere, an error category and responsible roles.
+4. Sensitive payloads should be kept only when justified and should be protected and separated.
+5. The audit record itself needs a retention decision and access controls.
 
-**Source:** Who bears the error
+**Source:** Retention is a lifecycle
 
 ## ES-ch14.25
 
-State at least five of the distribution questions the chapter asks about a workflow, and apply two of them to the note summarizer.
+A team claims two LLM agents are equally risky because both score 92% on the same 500-item evaluation. Agent A reads public notes, drafts locally and needs a person to publish. Agent B reads internal HR records, publishes externally and keeps year-long traces. Argue which needs stronger governance, calculating each agent's error count, and say why accuracy does not settle the question.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Asks who receives the benefit.
-2. Asks who bears false positives and false negatives, and who has to spend time correcting the system.
-3. Asks who is absent from the development examples and who can opt out.
-4. Asks who is exposed when data is retained and who can reach a human when the output is wrong.
-5. Applies at least two of these questions to the note summarizer with a concrete answer, such as students whose work is quoted or maintainers who field questions.
+1. Each agent made 40 errors, since 8% of 500 is 40.
+2. Agent B has a broader action surface, since it writes externally, and a longer exposure window.
+3. B handles more sensitive context, so each error can do more damage.
+4. Accuracy describes selected outputs under selected trials; it does not describe the consequences, reversibility or who is affected.
+5. Architecture choices such as data minimization, human publication and short retention shape harm before any score is computed, so ethics should not be added after model selection.
 
 **Source:** Who bears the error
 
 ## ES-ch14.26
 
-Agent A reads public notes, creates a local draft, retains inputs for one day, and requires human publication. Agent B reads internal records, publishes externally, and retains complete traces for a year. Both have the same measured accuracy on the same bounded evaluation set. Which needs stronger governance, and why can ethics not be added after model selection?
+Two summarizers make the same number of deadline errors on the same test set. One states unsupported deadlines. The other omits the deadline when sources conflict. Explain who bears each kind of error, why identical accuracy does not tell which to prefer, and who should make the choice.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that equal accuracy does not produce equal risk.
-2. Says Agent B has a broader action surface than Agent A, since it reads internal records and publishes externally.
-3. Says Agent B has more sensitive context and a longer privacy exposure, a year of traces versus one day.
-4. Says Agent B's rollback and incident needs differ because of its external effects.
-5. Explains that accuracy describes selected outputs under selected trials while governance describes surrounding power and consequences, and that architecture choices such as data minimization, authority, retention, reversibility, and review routing shape the harm surface before the first score.
+1. Users who plan around a wrong date bear the unsupported-deadline error.
+2. Users who must ask for clarification, and those who handle their questions, bear the omission.
+3. The accuracy figure hides the type of error and so cannot choose between them.
+4. Preferring one error is a value judgment about whose costs count.
+5. The choice should belong to the party accountable for the policy the tool serves, made and recorded deliberately.
 
 **Source:** Who bears the error
 
 ## ES-ch14.27
 
-Two summarizers make the same number of deadline errors on the same bounded set. One states a deadline its sources do not support; the other omits the deadline when sources conflict. Say who pays for each error, what the accuracy number fails to say, and who should choose.
+A classifier is applied to two groups with base rates of 50% and 20%. For both groups the true positive rate is 0.8 and the false positive rate is 0.2. Calculate the positive predictive value for each group, explain what this shows about fairness criteria, and say what follows for decision-making.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says students who plan around a wrong date bear the first error.
-2. Says students who must ask, and the maintainers who field their questions, bear the second error.
-3. Notes that the accuracy figure is identical for both summarizers.
-4. Says nothing in the accuracy number shows which error the team should prefer; that is a choice about whose cost counts.
-5. Says someone makes that choice whether or not they notice, so it should be made on the record by the party accountable for the policy the tool serves.
+1. For the first group, 40 true positives and 10 false positives per 100 people give precision 0.80.
+2. For the second group, 16 true positives and 16 false positives per 100 give precision 0.50.
+3. Equal error rates across groups coexist with unequal precision when base rates differ.
+4. Several reasonable fairness criteria cannot all hold together at once unless prediction is perfect or base rates match.
+5. Selecting a criterion is a values decision with an owner, who must record whose errors count and what evidence would change the choice.
 
 **Source:** Who bears the error
 
 ## ES-ch14.28
 
-The companion book on computational skepticism says three reasonable fairness definitions cannot all hold. Name them, state the condition, and state what the book concludes about choosing one, using its sentencing example.
+A hiring tool ranks applicants. The team reports 90% overall agreement with past hiring decisions, measured on a set built from people who were hired. Identify who bears false positives and false negatives, critique the evaluation set, and list questions about distribution of burden the team should ask.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Names equal rates of favorable prediction across groups.
-2. Names equal error rates across groups and scores that mean the same thing for every group.
-3. States they cannot all hold when the groups' base rates differ, short of perfect prediction.
-4. States that each definition is a values claim about which error or equality matters, so choosing one is a decision with an owner, not an optimization.
-5. Describes the criminal-sentencing risk score case: two parties reported accurate numbers and disagreed about which numbers should count, a disagreement about values and not data.
+1. Applicants wrongly rejected bear false negatives; recruiters and others bear the cost of reviewing false positives.
+2. An evaluation set built only from hired people hides how the model treats those never hired.
+3. Overall agreement says nothing about how errors fall across subgroups.
+4. Questions include who benefits, who corrects errors, who is absent from development examples, who can opt out, and who can reach a human.
+5. Whether a rejected applicant can reach a human with power to change the outcome is a governance property the accuracy figure does not capture.
 
 **Source:** Who bears the error
 
 ## ES-ch14.29
 
-A classmate building the note summarizer proposes adding demographic columns "to look rigorous." Respond using the chapter: when does the fairness analysis apply, what should the summarizer team do instead, and what defended choice is the deliverable?
+Explain the difference between a generic risk statement and a concrete harm description in an AI risk register. Write an example of each for an AI summarizer of course notes and say what the concrete one lets a team do.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the analysis applies where the task supports it, for example when the workflow ranks people or allocates opportunity among them.
-2. Says that for a summarizer one should not invent demographic columns to look rigorous.
-3. Says to name the harm mechanism the workflow actually has and ask which error the team will risk and who pays.
-4. Says the deliverable is a defended choice: the deployment and who bears the cost of error, which option was chosen where options conflict, why, and what evidence would change your mind.
-5. Says the decider should be the party accountable for the policy the tool serves, not whoever's loss function encoded a default, and that the register is where this is done on the record.
+1. A generic statement such as "there may be bias or privacy concerns" is not tied to a person, mechanism or consequence and can fit any system.
+2. A concrete statement names who is affected, how the harm arises and what the consequence is.
+3. Example: a student relies on an AI summary giving a wrong deadline and misses the real one.
+4. It lets the team design a test, set a threshold, assign an owner and choose a mitigation that targets that mechanism.
+5. It also enables questions about who pays for the error and who could have prevented it.
 
 **Source:** Who bears the error
 
 ## ES-ch14.30
 
-Rewrite the vague line "monitor quality and intervene if needed" as an operational record for the note summarizer, and name each element your rewrite includes.
+A team plans to consult people affected by a new AI workflow. Describe how to design consultation so it is real, including who to include, what can change as a result, how to ask questions, and what to promise.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Includes an observable signal, such as an unsupported-source flag.
-2. Includes a threshold, such as any public draft with a deadline claim lacking an approved source identifier.
-3. Includes an accountable owner, such as the content owner.
-4. Includes a bounded response and scope, such as pausing publication and having the incident contact examine affected drafts.
-5. Includes a recovery condition, such as resuming only after correction and a repeated citation audit.
+1. Identify directly affected people, maintainers of the surrounding work, domain experts and groups usually missing from design decisions; one convenient person cannot stand in for all.
+2. Consultation counts only if the answers could change purpose, boundaries, retention or the decision to automate.
+3. Participation should be voluntary where appropriate, with explanation of what is recorded, how it is used and whether declining has consequences.
+4. Questions should invite disagreement: what would be unacceptable, what must never enter the workflow, what would make you withdraw support.
+5. Do not promise every request will be adopted; explain how decisions and conflicts will be recorded.
 
-**Source:** Owners, thresholds, and bounded responses
+**Source:** Consultation and recourse are people's work
 
 ## ES-ch14.31
 
-A dashboard shows a 99 percent pass rate. Explain why that does not settle whether the threshold is adequate, and what the chapter says about pause authority, escalation, and role assignment.
+A team uses an LLM to role-play affected stakeholders, and the model answers agreeably. Explain what this can and cannot show, and how the team's records should treat simulated responses.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a 99 percent pass rate can conceal one severe disclosure, so thresholds should connect to harm and not only aggregate performance.
-2. Says some events require an immediate stop on a single occurrence while others justify trend monitoring.
-3. Says the owner needs explicit authority to pause, because if incentives punish delay and only reward shipping a nominal incident contact cannot govern.
-4. Says escalation must be defined for when the owner is unavailable, implicated, or lacks expertise.
-5. Says to avoid assigning every role to one person merely to complete the form.
+1. Role-play can reveal unclear explanations and missing questions.
+2. It cannot show what real people think; the model produces plausible text, not testimony.
+3. Invented agreement is not consent, which only an informed person can give.
+4. Simulated responses should be labeled as simulation in the record.
+5. The record should state which real consultation remains pending and which actions are prohibited until it occurs.
 
-**Source:** Owners, thresholds, and bounded responses
+**Source:** Consultation and recourse are people's work
 
 ## ES-ch14.32
 
-Explain why "retention_days: 30" is "a policy input, not a deletion mechanism," and describe how you would trace the copies of one data class.
+After a stakeholder interview, a team uses an LLM to summarize what participants said. Later one participant withdraws permission for their contribution. Describe how the team should keep actual statements distinct from summaries, and what the withdrawal requires of the team's data practices.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that retention_days is a policy input, not a deletion mechanism.
-2. Names at least five copies to trace, such as the incoming prompt, local fixture, application log, provider handling, cache, exported report, repository history, backup, or incident record.
-3. Says to include only systems actually in scope and to mark unknowns.
-4. Lists at least four things to state for each data class: why it is collected, the minimum needed, who can access it, when the clock begins, how deletion is performed, how deletion is checked.
-5. Says not to turn a desired policy into a claim about systems you have not inspected.
+1. Keep the participant's actual words or notes separate from AI-generated summaries.
+2. Return a summary to the participant for confirmation where appropriate.
+3. Record concrete design changes and unresolved concerns that came from the conversation.
+4. To honor a withdrawal, the team must know which artifacts derive from the participant's contribution, such as quotes, embeddings and evaluation examples.
+5. Where removal is impossible, for example from an immutable backup, the limitation should be disclosed to the participant.
 
-**Source:** Retention is a lifecycle
+**Source:** Consultation and recourse are people's work
 
 ## ES-ch14.33
 
-A team writes "retention: 0 days" and says that, with no audit trail at all, privacy is perfect. Evaluate this using the chapter's discussion of zero-day retention and incident replay.
+An LLM drafts a plain-language explanation of an AI workflow for affected people. Describe what the explanation should include, why a person must check it against the real system before sharing, and what a careful check looks for.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says zero-day needs clarification, since it may mean delete immediately after the task, do not persist application data, or retain only de-identified evidence.
-2. Says temporary memory and provider-side processing still exist.
-3. Says keeping everything forever makes privacy risk worse, while keeping nothing may prevent accountability.
-4. Proposes a minimal, separated audit record with items such as operation identity, policy decision, safe evidence references, error category, and responsible roles.
-5. Says sensitive payloads should be stored only when justified and protected.
+1. It should cover what the workflow receives, what it produces, where a person decides, what is retained and how to report a problem.
+2. Fluent simplification can omit exactly the external write or retention detail that matters to the reader.
+3. The checker compares each claim in the draft with the actual system configuration.
+4. The check looks for omitted data flows, overstated human review and understated retention.
+5. Being readable is not evidence of accuracy, so the checker should be someone who knows the system.
 
-**Source:** Retention is a lifecycle
+**Source:** Consultation and recourse are people's work
 
 ## ES-ch14.34
 
-You insert a labeled fixture, run the deletion lifecycle, and the fixture no longer appears in the dictionary your code uses. State what you may claim, what you may not claim, and how the verb ladder applies to the stores involved.
+Describe the components of a recourse path for people affected by an AI-assisted decision, and explain why a contact e-mail address is not enough.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to test deletion like any other behavior: insert a labeled fixture, run the lifecycle, and inspect the stores you control.
-2. Says "removed from this dictionary" is not "erased everywhere."
-3. Says the stores you inspected are verified.
-4. Says the provider's and the backups' are, at best, listed.
-5. Says to state what remains unverified.
+1. A discoverable channel with guidance on what information helps without forcing the person to reveal more private data.
+2. An acknowledgment rule, a triage owner and an urgent-stop trigger.
+3. Investigation access to the contested output, inputs and policy, and power to correct the outcome.
+4. Escalation when the first contact cannot resolve the issue, including a second route when the original owner is conflicted.
+5. An email address alone has no staffing, authority, timing or escalation behind it, so it can be an inbox nobody owns.
 
-**Source:** Retention is a lifecycle
+**Source:** Consultation and recourse are people's work
 
 ## ES-ch14.35
 
-A teammate asks Claude to write the reaction of an affected student and records it as consultation. Explain why this fails, using the chapter's operational argument, and what a real consultation still requires.
+Explain why different harms from an AI error need different remedies, using three examples, and state the five questions a team can ask to test whether a recourse route works.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says a reply Claude generates in the voice of an affected student is not a statement by that student.
-2. Says consent is something a person gives.
-3. Says the operational argument needs no position on machine minds, and the philosophical argument need not be accepted to follow the chapter.
-4. Says someone still has to ask the actual person, hear the answer, and stay reachable afterward.
-5. Says invented agreement is not consent, and the register should say which real consultation remains pending.
+1. Correcting a displayed summary does not repair a decision already made from it.
+2. Removing personal data from an active store does not recall a public copy.
+3. Explaining a model's reasoning does not restore an opportunity that was denied.
+4. Test questions: can the person challenge the result, obtain an appropriate explanation, reach a human who can correct the record, see downstream copies updated, and appeal beyond the original owner?
+5. The affected person should be asked what meaningful correction would look like, within institutional limits.
 
 **Source:** Consultation and recourse are people's work
 
 ## ES-ch14.36
 
-Describe how to design a consultation that can change the project: who to include, what to tell participants, and the test for whether the consultation is real or theater.
+Describe how a team should make contesting an AI-assisted decision practical: what it must preserve, who reviews, what the reviewer can do, how it handles conflicts of interest, and how it closes the loop with engineering.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to decide who is affected directly, who maintains the surrounding work, who has relevant domain knowledge, and who is routinely missing from design decisions.
-2. Says not to ask one convenient person to stand in for every stakeholder.
-3. Says participation should be voluntary where appropriate, and the team should explain what will be recorded, how it will be used, and whether declining has consequences.
-4. Says consultation counts only if the answer could have changed the purpose, boundaries, retention, or the decision to automate.
-5. Says that asking only how to make a predetermined deployment more acceptable turns participation into theater.
+1. Preserve the contested output, input provenance where lawful, the applicable policy and the human decision record.
+2. Reviewers must have the power to change the result.
+3. Provide a second route when the original owner is conflicted.
+4. State response times only when the team can meet them.
+5. If the same class of report keeps recurring while only the reply changes, the process is absorbing complaints; fix the system.
 
-**Source:** Design consultation that can change the project
+**Source:** Consultation and recourse are people's work
 
 ## ES-ch14.37
 
-Critique the question "Does this helpful tool sound good?" and write better ones. Say what Claude may do to help prepare the consultation and what a human must do before the explanation is shared.
+A student reports that a published AI summary contradicts the official schedule. Investigation shows the student compared it with an outdated schedule and the published date is correct. Explain how a well-designed contest route should respond and what this shows about contestability.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the question solicits reassurance.
-2. Offers a better question about what outcome would be unacceptable or what information should never enter the workflow.
-3. Offers better questions about what correction process would be usable or what would make the person withdraw support.
-4. Says Claude can help prepare a plain-language explanation of what the workflow receives, produces, where a person decides, what is retained, and how to report a problem.
-5. Says a human must check the explanation against the real system, because fluent simplification can omit the external write or retention detail a person needs.
+1. Acknowledge and investigate the report rather than dismiss it.
+2. Explain the evidence supporting the published date to the reporter.
+3. Preserve the challenge in the record.
+4. Check whether the wording of the summary created reasonable ambiguity.
+5. Contestability means a person can trigger genuine reconsideration; it does not mean every challenge succeeds.
 
-**Source:** Design consultation that can change the project
+**Source:** Worked incident rehearsal
 
 ## ES-ch14.38
 
-During a consultation a student says she cares less about summary accuracy than about being quoted without context. Explain what the team should do during and after the conversation, and how a classroom role-play must be handled differently from real consultation.
+An AI service produces 150 deadline claims a day. Policy requires every claim to be reviewed by a person before publication. Reviewers have two hours per day at four minutes per claim. Calculate the daily gap, explain what this means for the control, and propose how to respond.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to listen beyond the prepared categories, since situated distinctions can change data classes, access, purpose, or the decision to proceed.
-2. Says afterward to separate actual statements from AI summaries and return a summary for confirmation when appropriate.
-3. Says to record concrete design changes and unresolved concerns.
-4. Says that if someone withdraws permission, the retention and deletion process must know which artifacts derived from their contribution.
-5. Says role-play is useful rehearsal but every response is labeled simulated because invented agreement is not consent, and the register states which real consultation remains pending.
+1. Reviewers can examine 30 claims a day (120 minutes divided by 4).
+2. The backlog grows by 120 claims a day (150 minus 30).
+3. A control that cannot be performed is not functioning as a control, even if it reads well in the register.
+4. Options include narrowing the feature, such as extracting dates with visible source passages, or adding review capacity.
+5. Publishing unreviewed claims while describing all as reviewed would misstate the control; throughput should be limited to review capacity.
 
-**Source:** Design consultation that can change the project
+**Source:** Worked incident rehearsal
 
 ## ES-ch14.39
 
-The incident contact field says "project owner." Explain why that is not recourse, and list the parts of a recourse path the team must build.
+After an AI-generated summary is found to be wrong, describe a sound correction sequence: what to do first, how to find and fix copies, how to communicate, and what to keep open.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says an incident contact field often becomes an inbox nobody owns.
-2. Says a reporter needs a discoverable channel and a description of what information is helpful without being forced to expose more private data.
-3. Says the team needs an acknowledgment rule and a triage owner.
-4. Says the team needs an urgent-stop trigger, investigation access, and correction authority.
-5. Says the team needs escalation for when the first contact cannot resolve the issue.
+1. Pause publication of affected items and preserve evidence, including source identifiers, the output, approvals and publication records.
+2. Identify cause, such as an evaluation that checked citation existence but not support.
+3. Locate and correct copies in systems the team controls; acknowledge copies outside its control as a limitation.
+4. Issue the correction through the same channel that carried the error, and have the approver review the changed process.
+5. Keep the reporting route open in case the correction missed an effect, and record the governance changes made.
 
-**Source:** Recourse is a system path, not an email address
+**Source:** Worked incident rehearsal
 
 ## ES-ch14.40
 
-Give three examples from the chapter showing that different harms need different remedies, and say how to decide what counts as meaningful correction.
+A company wants to use an LLM to rank employees for promotion. The evaluation cannot observe real career outcomes, employees have not been consulted, the data boundary is unclear and no manager has agreed to own the decisions. Argue for what the team should do, including options other than full deployment, and what to record.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says correcting a displayed summary does not repair a decision already made from it.
-2. Says removing personal data from the active store does not recall a public copy.
-3. Says explaining a model's reasoning does not restore an opportunity denied to someone.
-4. Says to ask the affected person what meaningful correction looks like.
-5. Says to recognize that institutional constraints may require additional decision makers.
-
-**Source:** Recourse is a system path, not an email address
-
-## ES-ch14.41
-
-A tool lets people appeal a result by emailing an address answered by a chatbot, and the person who made the original decision owns the inbox. Evaluate this route with the chapter's five questions.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Asks whether a person can challenge a result.
-2. Asks whether a person can obtain an explanation appropriate to the decision.
-3. Asks whether a person can reach a human who can correct the record, and notes the affected person should not have to debate a model.
-4. Asks whether a person can see downstream copies updated.
-5. Asks whether a person can appeal beyond the original owner, noting that a second route is needed when the original owner is conflicted.
-
-**Source:** Recourse is a system path, not an email address
-
-## ES-ch14.42
-
-Describe what the chapter says makes contestability practical, and what it means when a process is absorbing complaints instead of controlling the system.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Says to preserve the contested output, input provenance where lawful, applicable policy, and the human decision record.
-2. Says to give the reviewer power to change the result.
-3. Says to provide a second route when the original owner is conflicted.
-4. Says to state response times only when the team can meet them, and that Claude can assemble the passages in dispute but a reachable human must own the response.
-5. Says that if the same class of report recurs while only the explanation template changes, the process is absorbing complaints rather than controlling the system.
-
-**Source:** Recourse is a system path, not an email address
-
-## ES-ch14.43
-
-In the chapter's worked rehearsal a course-note agent publishes the wrong assignment deadline. Trace detection, the immediate response, and the investigation finding, and state the harm mechanism.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. States the harm mechanism: reliance on a wrong deadline, so students may allocate work incorrectly.
-2. States detection: a student reports a mismatch with the official schedule, and the observable trigger is a published deadline claim whose cited source does not support it.
-3. States that the content owner pauses publication of affected summaries and captures source identifiers, generated output, the approved proposal, and publication evidence.
-4. States the finding: the citation audit checked whether a citation string existed, not whether the cited passage entailed the deadline.
-5. States that the mitigation did not address the harm, even though the register was structurally ready for review.
-
-**Source:** Worked incident rehearsal
-
-## ES-ch14.44
-
-The register was written before the system shipped, yet the incident changes it. What does this show about "design before implementation," which register decision was reopened, and how was it changed?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Says design before implementation is not a freeze.
-2. Says a later finding can send you back to an earlier choice, and the governance record should say that it did.
-3. Identifies the reopened decision as the evaluation line.
-4. Says the team adds an entailment-oriented human check for deadline claims.
-5. Says the team also creates a refusal case with conflicting schedules and prevents external publication until the claim is reviewed.
-
-**Source:** Worked incident rehearsal
-
-## ES-ch14.45
-
-List the five before-to-after revisions in the chapter's incident table and the incident evidence behind each.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. "Citation audit" becomes a support check for consequential claims, because the citation existed but did not support the claim.
-2. A generic project owner becomes a named content owner and backup, because pause authority was uncertain.
-3. An implicit external write becomes an explicit publication approval, because the public effect was under-described.
-4. "Correction means edit" becomes a bounded copy inventory and limitation, because downstream copies were unknown.
-5. "Contact receives report" becomes acknowledgment, triage, escalation, and recovery, because the response sequence was absent.
-
-**Source:** Worked incident rehearsal
-
-## ES-ch14.46
-
-Explain the chapter's three variants of the deadline incident (a wrong report, an unavailable incident contact, and the labor of the remedy) and what each teaches.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Wrong report: the route still acknowledges and investigates, explains the evidence, preserves the challenge, and checks whether the public wording created reasonable ambiguity.
-2. States that contestability means a person can trigger genuine reconsideration, not that every challenge decides the outcome.
-3. Unavailable contact: the backup receives the alert after the declared acknowledgment threshold, pauses publication under delegated authority, and records why.
-4. If no backup exists, that is an unresolved dependency; the agent must not nominate itself, and responsibility remains with an authorized person or organization.
-5. Labor: if the team cannot sustain review of every deadline claim, narrow the feature to extracting dates with visible source passages, since a mitigation that cannot be maintained is not a control.
-
-**Source:** Worked incident rehearsal
-
-## ES-ch14.47
-
-When is deferral the responsible output? Give at least four conditions, three ways to narrow scope, and say what the register should record.
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Names at least four conditions, such as a contested purpose, unconsulted affected people, an unknown data boundary, evaluation that cannot observe the consequential outcome, no incident capacity, or no authorized owner.
-2. Names at least three ways to narrow scope, such as a draft for review instead of an external write, synthetic data, organizing documents instead of ranking people, shorter retention, or removing a high-impact action.
-3. Says stopping is also a design result when the benefit is marginal and the cost falls on people who cannot contest it.
-4. Says to record why the team deferred and what evidence or capacity would justify reconsideration, because a register that can only say "go" is a rubber stamp.
-5. Says "human in the loop" must name the human task, evidence, authority, time budget, and stop rule, and that governance must limit agent throughput to review and response capacity.
+1. Defer: the preconditions for responsible use are missing (consultation, ownership, a measurable consequential outcome, a known data boundary).
+2. Technical feasibility or a good proxy score is not a reason to proceed.
+3. Narrowing is an option, such as limiting the tool to organizing documents rather than ranking people, or using synthetic data.
+4. Record why the team deferred and what evidence or capacity would justify reconsideration.
+5. A record that can only say "go" is a rubber stamp; stopping or narrowing is a legitimate result.
 
 **Source:** When deferral is the responsible output
 
-## ES-ch14.48
+## ES-ch14.41
 
-Name the failure pattern shown by each situation, then name and define the two patterns not shown: (a) every field holds a role such as "team" and nobody has accepted ownership; (b) a citation audit is offered for a privacy-retention harm; (c) the threshold reads "when quality falls"; (d) Claude-written student reactions are presented as feedback.
+An agent with access to a CRM can send e-mails to customers on its own, and leadership is worried about errors. List four ways to narrow the workflow and explain what each reduces.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. (a) Complete form, absent responsibility.
-2. (b) Mitigation mismatch.
-3. (c) Unobservable threshold.
-4. (d) Consent by simulation.
-5. Names compliance theater (the register treated as legal clearance despite its classroom scope) and permanent pilot (a temporary deployment accumulating data and effects without an end condition or review date).
+1. Draft for human sending instead of autonomous sending: adds review and reversibility before external effects.
+2. Synthetic or test customer data in pilots: removes exposure of real people.
+3. Shorter retention of traces: reduces privacy exposure over time.
+4. Removing high-impact actions such as refunds until outcome checks exist: limits severe harm.
+5. A disclaimer alone is not a narrowing, because it shifts burden to recipients without reducing risk.
+
+**Source:** When deferral is the responsible output
+
+## ES-ch14.42
+
+A vendor says "a human is in the loop" for a system that produces 500 decisions an hour reviewed by one person clicking Approve. Explain what is missing from the claim and how to specify a meaningful human review step.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. "Human in the loop" names a person but not a control: the task, evidence, authority, time budget and stop rule must be defined.
+2. At 500 items an hour (about 7 seconds each) the reviewer cannot meaningfully assess content.
+3. The reviewer needs authority to reject and information needed to judge.
+4. Throughput should be limited to review and response capacity.
+5. Review quality should be measured, for example by seeded errors or sampling, to detect rubber-stamping.
+
+**Source:** When deferral is the responsible output
+
+## ES-ch14.43
+
+Describe four distinct ways a governance record for an AI system can look complete while the system remains ungoverned. Consider the roles the record names, the mitigations it offers, the triggers it sets, and the people it claims to have consulted. Give a one-line concrete example of each.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Roles filled with generic labels (such as "the team") so that no identifiable person has accepted responsibility or holds authority to act.
+2. A mitigation that does not address the stated harm mechanism, for example an answer-accuracy test offered for a risk of stored data being exposed.
+3. A trigger with no observable signal or measurement procedure, such as "act when quality falls", so nobody can tell whether it fired.
+4. Consultation that is simulated or token, such as model-generated stakeholder reactions presented as feedback from people, or a completed form treated as legal clearance.
+5. Gives a concrete example for each and explains why the record looks fine while the system is not governed.
+
+**Source:** Governance failure patterns
+
+## ES-ch14.44
+
+A chatbot logs users' health questions for a year. The register lists the harm as exposure of sensitive health information from the retained logs, and the mitigation as a weekly accuracy test of the chatbot's answers. Analyze the mismatch and propose controls that fit the harm.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. The accuracy test addresses answer correctness, not exposure of stored data.
+2. A mitigation must match the mechanism of the stated harm.
+3. The accuracy test may be valuable for another risk, but does not reduce this one.
+4. Fitting controls include shortening or eliminating retention, redacting health details before logging, and restricting access to logs.
+5. The register should name an owner and an observable signal, such as audit of access to the logs, for the harm that was actually listed.
+
+**Source:** Governance failure patterns
+
+## ES-ch14.45
+
+Explain what it means for a governance register to be a control plane rather than documentation. Give three examples of effects a register entry could have on a running AI system.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. A control plane's contents determine what the system is allowed to do; documentation only describes it.
+2. Example: changing an entry pauses execution or removes a tool permission.
+3. Example: revoking an approval stops an action bound to it, or shortening retention triggers deletion.
+4. Example: changing the evaluation requirement blocks release until the new check passes.
+5. If updating the register changes nothing in the system, it is only documentation.
+
+**Source:** Build It, Use It, Ship It
+
+## ES-ch14.46
+
+Draft the structure of an honest sign-off for a governance record, explaining what each part contains and why the "not checked" part matters. Also say when withholding a signature is the right result.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Checked: which register lines the signer confirmed against the running system and which owners confirmed their roles.
+2. How: the method, such as own tests, exercising the route, inspecting stores, conversation with an owner, or help from an AI assistant and which parts.
+3. Not checked: unverified systems like providers and backups, behavior under real load, consultation not done.
+4. Not claiming: that the workflow is ethical, consented to or compliant, or that "ready for review" means someone reviewed.
+5. Withholding is right when the evidence does not support signing, and the correct action is to narrow or defer the workflow rather than reword the sign-off.
+
+**Source:** Build It, Use It, Ship It
+
+## ES-ch14.47
+
+An AI-assisted workflow publishes a wrong figure. The user who reported it, the content owner, the vendor of the drafting tool, the provider of the underlying model and the institution that supplied the data all made choices that mattered. Explain how responsibility distributes and what a team should record.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. In socio-technical systems each party's choice may be necessary while none is sufficient alone.
+2. Naming one owner does not remove dependencies on the others.
+3. The record should show for each dependency whether it was checked or only assumed.
+4. A useful question is what change made before the incident would have prevented it.
+5. The answer should be an action someone takes, not a sentence someone writes.
+
+**Source:** Governance failure patterns
+
+## ES-ch14.48
+
+An organization's policy forbids pasting customer data into public chatbots, yet employees are rewarded for speed and those who raise concerns are called obstructive. Explain why the policy is likely to fail and what changes would make it work.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. People do what an organization rewards, not what its documents say.
+2. If speed is rewarded and listening is not, the stated policy and actual behavior diverge.
+3. Authority to pause or object is nominal if exercising it is penalized.
+4. Time and resources for review and consultation must be allocated.
+5. Measures include aligning incentives, protecting those who raise concerns, giving approved tools that fit the work, and monitoring actual practice.
 
 **Source:** Governance failure patterns
 
 ## ES-ch14.49
 
-Describe the Build It step for this chapter: what you do before opening the reference solution and how you compare afterward.
+A team deploys a coding agent that can read files, run shell commands and call external services in developers' environments. Describe how to reduce its risk through permissions and handling of untrusted input, and how to connect those measures to a governance record.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to write your own assess from the contract in the gate before opening the reference solution.
-2. Says to trace one successful case by hand, marking the input boundary, the transformation, and the returned result.
-3. Says to trace one failure from the tests, changing one input at a time so a difference has an identifiable cause.
-4. Says to write down, for each of the lesson's six tests, which wrong program it exists to catch.
-5. Says to compare with the reference and name a difference in behavior, not in line count or style.
+1. Apply least privilege: grant only the permissions the task needs and keep the agent out of broader credentials.
+2. Require approval for actions with side effects, and avoid blanket permanent approvals.
+3. Treat text from web pages, documents or tool output as data, because it may contain instructions meant to hijack the agent.
+4. Prefer sandboxing and restricted environments to limit damage.
+5. In the register tie each measure to a named owner, a monitoring signal and an incident response, instead of copying generic security prose.
 
-**Source:** Build It, Use It, Ship It
+**Source:** Anthropics
 
 ## ES-ch14.50
 
-Describe the first pass of Use It, the validator: what you give Claude, what you do with what it returns, and how you test whether your test list is strong enough.
+A developer records a decision note for an AI-assisted policy change. Describe what the note should contain, why it separates the model's proposal from human input, and how a reader can tell whether a person actually reviewed it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to give Claude the gate (the contract and your test list including your two added tests), not your implementation.
-2. Says to run your tests on what Claude returns, yourself.
-3. Says a failing test is often a gap in your gate, which Claude cannot see because it has only what you wrote.
-4. Says to compare its implementation with your baseline and name one difference in behavior.
-5. Says to ask Claude for a deliberately wrong version that still passes your tests and check by hand; if it does, your list was too weak.
+1. It records what the model proposed, what a person added or corrected, the evidence supporting the recommendation, and whose interests are served or disadvantaged.
+2. It ends with a named human recommendation.
+3. Separation shows where a person changed substance and where they merely accepted the draft.
+4. Sentences that simply repeat the model are flagged, since repetition is not review.
+5. Evidence cited should be independent of the model's fluency, and the note should show the person's reasoning.
 
 **Source:** Build It, Use It, Ship It
 
 ## ES-ch14.51
 
-Describe the second pass of Use It, the register: how you read Claude's draft, what the challenger prompt asks for, and why you tell Claude not to rewrite the entry.
+A team announces "We are compliant" after completing an internal AI-use register. Explain why that statement is unsupported, and distinguish the roles of structural checks, legal review and ethical judgment.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says to read the draft as the author of the gate: which of the five decisions each line answers, whether there is a person's name, and where it sits on the verb ladder.
-2. Says the challenger prompt asks for fields whose value names a group or role rather than a person, and thresholds with no observable signal.
-3. Says it also asks for mitigations that do not address the named harm and one decision not written down.
-4. Says withholding the rewrite is deliberate: you want weak lines found, not smoothed.
-5. Says to verify each finding against the entry yourself, since a finding you cannot locate in the text is a fluent guess.
+1. A completed internal form is not regulatory approval.
+2. Lawful basis for processing personal data is a legal determination that depends on law, jurisdiction and facts.
+3. Some regulations require specific processes, such as impact assessments, that must actually be carried out.
+4. Legal compliance is not the same as ethical acceptability; lawful practices can still harm people.
+5. Structural checks catch missing information, legal review addresses obligations, and ethical judgment involves affected people and consequences, with each leaving open questions the others cannot answer.
 
-**Source:** Build It, Use It, Ship It
+**Source:** Governance failure patterns
 
 ## ES-ch14.52
 
-List what the Ship It register entry must contain for your capstone and what to do about unresolved authority or pending consultation.
+A policy says records are deleted "30 days after the case is created". A case was created on 10 January 2027 and last used on 20 February 2027 (not a leap year). Compute the deletion date under creation-based and last-use-based readings, state the difference, and list what a retention policy should specify.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Starts with the actual capstone workflow, not a generic AI policy paragraph, and names the bounded purpose and non-purpose.
-2. Lists input sources, data classes, tools, and action targets, linking the Week 11 evidence matrix and Week 13 approval gate.
-3. Adds one concrete harm scenario saying who bears it and how it occurs.
-4. Assigns a mitigation owner with pause authority, an observable threshold and response, the retention lifecycle with deletion evidence, and an incident route and appeal path.
-5. Records unresolved authority rather than assigning it fictionally, and if consultation is pending says so and constrains the workflow.
+1. Creation-based: 30 days after 10 January is 9 February 2027.
+2. Last-use-based: 30 days after 20 February is 22 March 2027.
+3. The two interpretations differ by 41 days.
+4. The policy should state when the clock starts, who performs deletion, and how deletion is checked.
+5. It should also cover all copies, including backups, derived data and provider-held data.
 
-**Source:** Build It, Use It, Ship It
+**Source:** Retention is a lifecycle
 
 ## ES-ch14.53
 
-What five things does the decision note record, and what should you do with a sentence that only repeats Claude?
+A company sends customer messages to an external LLM provider's API and records "retention: 0 days" because its own systems store nothing. Critique that entry and say what the company should record instead.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Records what Claude proposed.
-2. Records what context a person added or corrected.
-3. Records what evidence supports the recommendation.
-4. Records whose interests the recommendation serves or disadvantages.
-5. Records the named human recommendation, and highlights any sentence that merely repeats Claude because repetition is not review.
+1. Data sent to the provider is a copy handled under the provider's terms.
+2. The company should read the terms for its service tier and record unknowns instead of assuming zero.
+3. Zero retention in the company's own systems does not establish zero retention elsewhere.
+4. The register should distinguish stores the company inspected from those it relies on others' statements about.
+5. Using a provider does not remove the company's responsibility to its customers for the data it chose to send.
 
-**Source:** Build It, Use It, Ship It
+**Source:** Retention is a lifecycle
 
 ## ES-ch14.54
 
-Describe the five lines of the sign-off template and what belongs in each.
+A team compares three agent actions: saving a draft in a private workspace, sending an e-mail to external customers, and publishing to an indexed public website. Explain how reversibility and action surface should influence governance, and why model accuracy alone is not enough.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Checked: which register lines you confirmed against the running workflow, and which named owners confirmed they accept the role.
-2. How: by what means, such as your own tests on the validator, exercising the incident route, inspecting stores you control, conversation with the named owner, or with Claude's help.
-3. Not checked: deletion in systems you do not control, whether the threshold fires under real load, consultation with affected people (done or pending), and any legal or institutional compliance.
-4. Not claiming: that the workflow is ethical, consented to, or compliant, and that ready-for-human-review means anyone has reviewed it.
-5. Signed or withheld: a name and date.
+1. Private drafts can be deleted without others having seen them, so they are the easiest to reverse.
+2. E-mails and public posts escape the team's control once sent; recipients and crawlers keep copies.
+3. Less reversible actions justify stronger review, narrower scope and tighter approval.
+4. A rollback plan limits damage when errors occur, whatever the accuracy.
+5. Equal accuracy across actions does not mean equal consequences, so oversight should scale with the consequences.
 
-**Source:** Build It, Use It, Ship It
+**Source:** Who bears the error
 
 ## ES-ch14.55
 
-Why does the chapter say the "Not checked" line does the work, how does the sign-off differ from the approver field, and what should you do if your evidence does not support signing?
+A developer asks an LLM to critique a register entry, with instructions not to rewrite it and to list group-named owners, thresholds without signals, mitigations that do not address the named harm, and one undocumented decision. Explain why this prompt is better than asking the model to improve the entry, and how to treat the model's findings.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says "Not checked" is the line an AI-written sign-off never includes, because the system that wrote it has no record of what you did not do.
-2. Says the approver field names who may approve the workflow.
-3. Says the sign-off states what the register itself has earned.
-4. Says a sign-off means something only if withholding is a real option.
-5. Says that when evidence does not support signing, withholding is an honest result and the right action is to narrow or defer the workflow, not to find words that make the form pass.
+1. A rewrite tends to smooth over weak lines, hiding vagueness instead of exposing it.
+2. The critique keeps authorship and decisions with the person.
+3. The prompt targets specific known failure patterns, which makes the output checkable.
+4. Each finding should be verified against the entry, since a finding that cannot be located may be a plausible guess.
+5. The absence of findings does not prove the entry is sound.
 
 **Source:** Build It, Use It, Ship It
 
 ## ES-ch14.56
 
-For three tasks in the driver's seat table (choosing thresholds, consultation, and recourse and appeal), say what Claude should do, what you should do, and why the task stays with you.
+During stakeholder conversations, a student says they care more about being quoted without context than about accuracy, and a maintainer says an appeals channel would create unpaid support work. Explain how such concerns should influence the design and why prepared questionnaires may miss them.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Thresholds: Claude computes rates, proposes signals, and simulates a breach; you choose the threshold, who may pause, and who absorbs the cost of pausing.
-2. Thresholds stay with you because which error to risk, and who pays, is a values claim with an owner.
-3. Consultation: Claude drafts questions and organizes authorized, sanitized feedback; you hold the conversation, obtain or withhold permission, and stay reachable.
-4. Recourse: Claude assembles the contested output and the passages in dispute; you hear the person, decide, correct, and provide a second route if conflicted.
-5. These stay with you because consent and relationship are acts between people, and the affected person needs an answerable human, not a better explanation.
+1. Open-ended listening can reveal concerns outside the categories the designers anticipated.
+2. The student's concern may change data classes, quoting rules or purpose.
+3. The maintainer's workload concern shows a recourse route must be staffed to function.
+4. Concerns should be recorded, with design changes made or the reasons for declining them.
+5. Unresolved concerns should be tracked and, where serious, should constrain the workflow until addressed.
 
-**Source:** The driver's seat
+**Source:** Consultation and recourse are people's work
 
 ## ES-ch14.57
 
-How does the chapter say to verify the validator and the register, and what does a passing test suite establish?
+A register's roles include owner, approver and incident contact. Explain what each is for, why they should be distinct where possible, and what goes wrong if all three are assigned to one person to complete the form.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says verification begins with claims small enough to test.
-2. Says to run the demo and the lesson's six tests, then your two, and keep commands, observed outputs, and your interpretation.
-3. Says that for the register you name the verb each line earned.
-4. Says a passing test suite establishes only the tested behavior, not universal reliability or permission to act.
-5. Says to explain one passing case without reading Claude's explanation and one raised error, and that "approved" requires a person who did the approving.
+1. The owner is accountable for the workflow as a continuing system.
+2. The approver decides whether a proposal or change goes ahead.
+3. The incident contact is where people report problems and starts the response.
+4. Separate roles provide independent review and cover for absence.
+5. One person in all roles removes independence, creates a single point of failure and may be implicated in the incident.
 
-**Source:** Verify and reflect
+**Source:** A register makes questions inspectable
 
 ## ES-ch14.58
 
-Assessment 3 asks you to rewrite ready-for-human-review and review-required as precise sentences that do not overclaim. Write both sentences, choose the verb, and say what evidence would justify a stronger one.
+A company argues that because an AI system cannot be sued, no one needs to be accountable for its outputs. Explain why this is wrong, and what accountability for AI-assisted decisions should look like.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Writes ready-for-human-review as: the teaching record cleared the structural checks and nothing was flagged for review.
-2. Writes review-required as: the validator flagged an unknown or sensitive data class or an external write and routes the decision to a person.
-3. Makes clear that neither sentence implies approval, consent, or compliance.
-4. Chooses "reported" as the verb the function earned, not confirmed, accepted, or verified.
-5. Names the evidence behind stronger verbs: confirmed (the person told you), exercised (you ran the route), verified (you inspected the store).
+1. An AI system is not a legal person; responsibility falls on natural persons and organizations.
+2. Choosing to deploy and rely on a system is a human decision with consequences.
+3. Someone must be able to answer for outcomes, correct errors and stop the system.
+4. The accountable party should be named and have authority and resources.
+5. A system may stop its own work as a safe default, but this does not move accountability to the system.
 
-**Source:** Assessments - ungraded practice
+**Source:** Who decided? Five choices that exist before the form does
 
 ## ES-ch14.59
 
-What does the Anthropics section tell you to do with Anthropic's Claude Code security guidance, and what limits does it put on how that guidance and the register may be read?
+A hollow governance record has a green validator status but no working response. Describe how a team can test whether its incident route works, and what a failing result would look like.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Says the guidance can inform analysis of access boundaries, untrusted inputs, and safe operation.
-2. Says to connect a relevant recommendation to a named owner, monitoring signal, and incident response in your register rather than copying general security prose.
-3. Notes the primary link was checked for the approved research packet on 2026-09-06.
-4. Says product guidance supplements the governance analysis and applicable Northeastern policies determine institutional use.
-5. Says the register is a course mechanism and not a claim about Anthropic's internal governance or a legal compliance tool.
+1. Send a clearly labeled test report to the named incident contact.
+2. Check whether it is acknowledged within the stated time.
+3. A failing result is no acknowledgment, an unreachable contact, or an acknowledgment with no one able to act.
+4. Test the backup path and the escalation when the first contact is unavailable.
+5. Record the date, the result and any fixes; this upgrades the claim from "a contact is named" to "the route was exercised and worked".
 
-**Source:** Anthropics
+**Source:** A register makes questions inspectable
 
 ## ES-ch14.60
 
-Using the Computational Skepticism section, name the diagnostic about responsibility, list the parties whose choices shaped the rehearsal incident, and state the questions it asks you to apply to your register.
+A retention-day validator must accept non-negative integers (including 0) and reject negative numbers, Booleans, strings and floats. Describe two plausible wrong implementations that a good test suite must catch, explain the specific inputs that expose each, and explain why passing only a demonstration case is not enough.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States the diagnostic: responsibility for a failure distributes across parties whose choices were each necessary and none sufficient.
-2. Lists at least four of the parties: the reporting student, the content owner, the maker of the drafting tool, the model provider, and the institution whose schedule is the source of truth.
-3. Says that for each party other than the register's one owner, you find where the register records their decision as a dependency checked rather than assumed.
-4. Asks what change to the register, made before the incident, would have prevented it.
-5. Asks whether that change is an action someone takes or a sentence someone wrote.
+1. Wrong version one accepts anything that isinstance(int) accepts, so True passes as one day; the test input is True.
+2. Wrong version two treats any falsy value as missing, so a deliberate zero is rejected; the test input is 0.
+3. A demonstration case with a typical value like 30 and an empty record passes under both wrong versions.
+4. Boundary and type cases are needed: zero, negative, Boolean, string and float.
+5. A suite should be checked against deliberately wrong implementations to confirm it can tell right from wrong.
 
-**Source:** Computational Skepticism
+**Source:** Tear down the validator
 
 ## ES-ch14.61
 
-Apply the three-cell test from the Conducting AI section to one sentence of Claude's register draft: name each cell and its question, and say what the section argues about fluent output.
+A developer's validator tests all pass. State what this establishes and what it does not, and describe two things the developer should do beyond running the tests to understand the result.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Notes the test borrows Suchman's three legitimacies, an adaptation by the book's author and not Suchman's own.
-2. Pragmatic: does the sentence serve the people it is for? A fluent draft usually passes.
-3. Moral: whose standards would acting on it have to survive, and who would have to answer for it?
-4. Cognitive: do you trust the sentence because you can account for it, with these facts verified in these ways, or because it reads well?
-5. Says fluent output supplies the appearance of cognitive trust without its grounds, and supplying the grounds is the human's work, which the decision note shows.
+1. The tests establish that the exercised behaviors work as the tests specify.
+2. They do not establish reliability for untested inputs, the adequacy of the specification, or permission to deploy.
+3. The developer should walk through one passing case from input to returned status without relying on an assistant's explanation.
+4. The developer should explain why one raised error belongs to the contract, as refusing invalid input is part of what the validator promises.
+5. The developer should record the commands, outputs and interpretation, and test the strongest claim in the write-up by asking what evidence, and whose action, actually supports it.
 
-**Source:** Conducting AI
-
-## ES-ch14.62
-
-According to the Irreducibly Human section, what does an institution teach, what example does the book give, what should you ask of your own team, and what are the "AI should" and "Human should" responsibilities?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Says an institution teaches what it actually rewards, not what it nominally teaches.
-2. Gives the example of medical training, where environments rewarding efficiency erode the empathy their curricula ask for.
-3. Asks whether anyone gets time for consultation and whether the person with pause authority is rewarded or penalized for using it, noting that if shipping is rewarded and listening is not, the team does what is rewarded.
-4. AI should draft plain-language explanations, suggest questions, organize authorized sanitized feedback, surface uncertainty, and preserve objections, but not invent stakeholder testimony, imply consent, or speak as though it represents an affected person.
-5. Human should hold the actual conversation, listen for concerns outside the script, obtain permission where required, remain reachable, and decide how feedback changes access, retention, evaluation, or deployment.
-
-**Source:** Irreducibly Human
-
-## ES-ch14.63
-
-What does Chapter 15 ask of the team's parts, what must be true for the capstone to succeed, and what do you carry forward?
-
-**Points:** 5
-
-**Rubric (1 point each):**
-
-1. Says Chapter 15 asks whether the register, owners, gates, evidence, and incident routes form one defensible system.
-2. Says another person must be able to reproduce the capstone's central result.
-3. Says another person must be able to observe a controlled failure.
-4. Says another person must be able to inspect recovery and understand why the accountable owner chose to ship, narrow, defer, or stop.
-5. Says to carry the register forward with its sign-off, or with your reason for withholding it.
-
-**Source:** Forward bridge
+**Source:** Verify and reflect
