@@ -1,14 +1,26 @@
 # INFO 7375: Prompt Engineering for Generative AI
 
-Exam-format questions, in two folders. Run `python3 -I scripts/check_format.py` to validate.
+Exam-format questions. The markdown files are the source; the JSON files are generated from them for the website and include the answers.
 
-## `multiple-answer/` (5 points each)
-- Exactly 5 statements (A-E), each true or false on its own.
-- The student checks the statements they believe are true.
-- 1 point per statement: **checked and true = 1; unchecked and false = 1; checked and false = 0; unchecked and true = 0.**
-- Every question has a Key (A=T B=F ...) and a one-line Why for all five statements.
+## Layout
 
-## `essay/` (5 points each)
-- Short essay with a rubric of exactly 5 items, 1 point each.
+- `multiple-answer/00-foundations.md` plus `multiple-answer/ch01-...ch15-*.md`: one document per chapter, many questions each.
+- `essay/00-foundations.md` plus `essay/ch01-...ch15-*.md`: same.
+- `json/multiple-answer.json` and `json/essay.json`: every question with its answer data (below).
+- `scripts/check_format.py`: validates the markdown. `scripts/build_json.py`: rebuilds the JSON.
 
-Files are numbered by midterm-prep section (01 history of AI ... 12 solve-verify and falsifiability). IDs: `MA-<section>.<n>`, `ES-<section>.<n>`.
+After editing a markdown file: `python3 -I scripts/check_format.py && python3 -I scripts/build_json.py`.
+
+## Multiple-answer (5 points)
+
+Exactly 5 statements (A-E), each true or false on its own. The student checks the statements they believe are true. 1 point per statement: **checked and true = 1; unchecked and false = 1; checked and false = 0; unchecked and true = 0.**
+
+JSON per question: `id`, `chapter` (1-15, or null for foundations), `group`, `section`, `source`, `stem`, and `statements`: five objects with `label`, `text`, `correct` (true/false) and `explanation`.
+
+## Essay (5 points)
+
+Short essay scored on a rubric of exactly 5 items, 1 point each. The rubric is the answer key.
+
+JSON per question: `id`, `chapter`, `group`, `section`, `source`, `prompt`, and `rubric`: five objects with `point` (1-5) and `text`.
+
+Question IDs: `MA-<section>.<n>` / `ES-<section>.<n>` for foundations, `MA-chNN.<n>` / `ES-chNN.<n>` for chapters.
