@@ -1,8 +1,10 @@
-"""Validate multiple-answer/ and essay/ files against the course format. Exit 1 on any problem."""
+"""Validate multiple-answer/ and essay/ files against the course format (optionally only the files given as arguments). Exit 1 on any problem."""
 import re, sys, pathlib
 root = pathlib.Path(__file__).resolve().parent.parent
 bad = []; ma = es = 0
-for f in sorted((root/"multiple-answer").glob("*.md")):
+args=[pathlib.Path(a).resolve() for a in sys.argv[1:]]
+sel=lambda d:[f for f in sorted((root/d).glob("*.md")) if not args or f in args]
+for f in sel("multiple-answer"):
     for blk in re.split(r"(?m)^## ", f.read_text())[1:]:
         qid = blk.split("\n",1)[0].strip(); ma += 1
         opts = re.findall(r"(?m)^- \[ \] ([A-Z])\. (.+)$", blk)
@@ -15,7 +17,7 @@ for f in sorted((root/"multiple-answer").glob("*.md")):
         if [x[0] for x in k] != list("ABCDE"): bad.append(f"{f.name} {qid}: key must give A-E each T or F")
         if [w[0] for w in why] != list("ABCDE"): bad.append(f"{f.name} {qid}: need a Why line for each of A-E")
         if k and all(x[1]=="T" for x in k) or k and all(x[1]=="F" for x in k): bad.append(f"{f.name} {qid}: all same answer")
-for f in sorted((root/"essay").glob("*.md")):
+for f in sel("essay"):
     for blk in re.split(r"(?m)^## ", f.read_text())[1:]:
         qid = blk.split("\n",1)[0].strip(); es += 1
         if not qid.startswith("ES-"): bad.append(f"{f.name} {qid}: bad id")
