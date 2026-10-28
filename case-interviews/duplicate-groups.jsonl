@@ -1,0 +1,3 @@
+{"id": "related-grocery-clarification", "relationship": "near-duplicate drill; numeric scenario variants retained", "members": ["exercise-mba-ch01-1", "exercise-mba-ch02-1"], "reason": "Different decline metrics and periods; same clarification skill."}
+{"id": "related-reframe-diagnosis", "relationship": "near-duplicate drill; response constraints retained", "members": ["exercise-mba-ch01-5", "exercise-mba-ch02-5"], "reason": "Cost-to-revenue correction, with different answer requirements."}
+{"id": "related-bcg-limitations", "relationship": "related variants; not merged", "members": ["exercise-mba-ch13-9", "exercise-mba-ch14-15.6"], "reason": "Platform-specific argument versus open-industry alternative-metric design."}

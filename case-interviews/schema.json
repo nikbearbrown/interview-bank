@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Case-interview reference index v1",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "record_type",
+    "track",
+    "topic",
+    "role",
+    "source",
+    "rights",
+    "evidence",
+    "quality_flags",
+    "duplicate_group_ids"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "record_type": {
+      "enum": [
+        "case_reference",
+        "local_exercise",
+        "historical_learning_prompt"
+      ]
+    },
+    "track": {
+      "const": "case-interview"
+    },
+    "canonical_question": {
+      "type": "null"
+    },
+    "scenario": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "source_id",
+        "url",
+        "local_path",
+        "sha256",
+        "location"
+      ],
+      "properties": {
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "location": {
+          "type": "object"
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "required": [
+        "reuse_class",
+        "license",
+        "attribution"
+      ],
+      "properties": {
+        "reuse_class": {
+          "const": "reference_only"
+        },
+        "permission_to_republish_prompts": {
+          "const": false
+        }
+      }
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "quality_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "duplicate_group_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

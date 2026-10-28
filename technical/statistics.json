@@ -1,0 +1,102 @@
+{
+  "source_repositories": 26,
+  "downloaded_repositories": 24,
+  "downloaded_files": 2447,
+  "download_skipped_files": 1035,
+  "download_failed_files": 0,
+  "source_question_occurrences": 43316,
+  "unique_question_records": 34850,
+  "licensed_reuse_candidates": 1666,
+  "reference_only_records": 33184,
+  "answer_context_not_found": 12085,
+  "near_duplicate_pairs": 5124,
+  "by_topic": {
+    "programming": 22899,
+    "data-engineering": 1836,
+    "frontend": 2355,
+    "machine-learning": 2579,
+    "mathematics": 227,
+    "professional-skills": 2109,
+    "data-science": 382,
+    "data-analysis-tools": 359,
+    "llm-engineering": 358,
+    "system-design": 615,
+    "security": 365,
+    "reliability": 224,
+    "observability": 107,
+    "behavioral": 291,
+    "ai-agents": 78,
+    "transformers": 66
+  },
+  "by_repository_occurrences": {
+    "Ebazhanov/linkedin-skill-assessments-quizzes": 12687,
+    "andmev/interview-question-with-context": 625,
+    "justindal/leetcode-python-dataset": 7339,
+    "newfacade/LeetCodeDataset": 2869,
+    "avidanborisov/leetcode2000-rl": 2000,
+    "AI-Mock-Interviewer/Train_data": 6931,
+    "sudheerj/reactjs-interview-questions": 461,
+    "alirezadir/Machine-Learning-Interviews": 306,
+    "chiphuyen/ml-interviews-book": 288,
+    "Sroy20/machine-learning-interview-questions": 262,
+    "yangshun/front-end-interview-handbook": 355,
+    "amitshekhariitbhu/ai-engineering-interview-questions": 439,
+    "khangich/machine-learning-interview": 91,
+    "Vineeshsuiii/Software_Engineering_interview_datasets": 8166,
+    "ByteByteGoHq/system-design-101": 106,
+    "donnemartin/system-design-primer": 109,
+    "Devinterview-io/llms-interview-questions": 14,
+    "SimranAnand1/LLMInterviewQuestions": 100,
+    "UdayG01/DataScienceInterviewQuestions": 49,
+    "karanpratapsingh/system-design": 56,
+    "YuSunwisc/machine_learning_interview": 58,
+    "dsgiitr/ML-InterviewQs": 5
+  },
+  "by_repository_unique_records": {
+    "Ebazhanov/linkedin-skill-assessments-quizzes": 11783,
+    "andmev/interview-question-with-context": 493,
+    "justindal/leetcode-python-dataset": 3607,
+    "newfacade/LeetCodeDataset": 2869,
+    "avidanborisov/leetcode2000-rl": 1988,
+    "AI-Mock-Interviewer/Train_data": 6255,
+    "sudheerj/reactjs-interview-questions": 461,
+    "alirezadir/Machine-Learning-Interviews": 276,
+    "chiphuyen/ml-interviews-book": 285,
+    "Sroy20/machine-learning-interview-questions": 262,
+    "yangshun/front-end-interview-handbook": 341,
+    "amitshekhariitbhu/ai-engineering-interview-questions": 439,
+    "khangich/machine-learning-interview": 90,
+    "Vineeshsuiii/Software_Engineering_interview_datasets": 5381,
+    "ByteByteGoHq/system-design-101": 106,
+    "donnemartin/system-design-primer": 86,
+    "Devinterview-io/llms-interview-questions": 14,
+    "SimranAnand1/LLMInterviewQuestions": 100,
+    "UdayG01/DataScienceInterviewQuestions": 49,
+    "karanpratapsingh/system-design": 52,
+    "YuSunwisc/machine_learning_interview": 58,
+    "dsgiitr/ML-InterviewQs": 5
+  },
+  "by_interview_category": {
+    "technical": 32445,
+    "professional-skill-assessment": 2109,
+    "behavioral": 291,
+    "case": 5
+  },
+  "extraction_file_status": {
+    "skipped": 1476,
+    "inspected": 969,
+    "extraction_failed": 2
+  },
+  "extraction_errors": [
+    {
+      "repository": "Machine-Learning-Interviews",
+      "path": "src/MLC/notebooks/linear_regression.ipynb",
+      "error": "Expecting value: line 145 column 1 (char 4461)"
+    },
+    {
+      "repository": "Machine-Learning-Interviews",
+      "path": "src/MLC/notebooks/softmax.ipynb",
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  ]
+}
