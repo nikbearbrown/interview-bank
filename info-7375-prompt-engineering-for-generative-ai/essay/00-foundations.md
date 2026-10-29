@@ -118,9 +118,23 @@ Explain how a word embedding captures semantic meaning rather than merely labeli
 
 1. Explains that a token ID or one-hot code is only a label: every pair of different words is equally different, so it carries no information about meaning.
 2. Explains that an embedding is a vector in a space where distance and direction can reflect similarity and relationships, so related words such as "dog" and "cat" are near each other and unrelated words are far apart.
-3. Explains where the meaning comes from: training on text pulls words that occur in similar contexts toward similar vectors, so meaning here is meaning as use, not a dictionary definition.
+3. Explains where the meaning comes from: training to predict the next token pulls words that fit the same contexts, and so are reasonable predictions in the same places, toward similar vectors, so meaning here is meaning as use, not a dictionary definition.
 4. Gives an example of a relationship captured in the geometry, such as similar words lying close together or a consistent direction for a relation like singular to plural, with the caveat that this holds for some relationships and not others.
 5. States what can and cannot be claimed: closeness shows similar use in the training text and supports tasks such as searching by meaning, but it does not show human-style understanding, and it can carry biases from the text, so claims need testing on tasks.
+
+## ES-4.4
+
+Explain why "Labrador" and "sheepdog" end up close together in a language model's embedding space even though no one told the model that both are dogs. Use the idea of reasonable predictions in a context, say how the training task creates the closeness, and say what could go wrong if you read the closeness as understanding.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that the model is trained to predict the next token, and that in contexts such as "I walk my ___" both words are reasonable continuations.
+2. Explains that, to predict well across many such contexts, the model gives similar scores to words that fit the same contexts, which pushes their vectors toward each other.
+3. States that no one labeled the words as related; the semantic relationship is a by-product of the prediction task and of how the words were used in the training text.
+4. Explains that this is why embeddings capture meaning as use, and why a word's nearest neighbors tend to be words that could fill the same slot.
+5. Notes the limits: words that fit the same contexts can still differ in meaning, and opposites often do, and closeness can reflect biases or associations in the text, so it is not evidence of human-style understanding and needs testing.
 
 # 5. Softmax and temperature
 

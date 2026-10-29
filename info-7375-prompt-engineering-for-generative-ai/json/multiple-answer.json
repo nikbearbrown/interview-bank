@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 978,
+  "count": 979,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -505,7 +505,7 @@
         },
         {
           "label": "B",
-          "text": "The closeness arises because training pulls words that occur in similar contexts toward similar vectors.",
+          "text": "The closeness arises because training pulls words that occur in similar contexts, and so are reasonable predictions in the same places, toward similar vectors.",
           "correct": true,
           "explanation": "The meaning captured is meaning as use: words that appear in similar contexts get similar vectors, with no dictionary involved."
         },
@@ -526,6 +526,48 @@
           "text": "Because an embedding captures meaning from use, it captures a word's meaning equally well for words that are rare in the training text.",
           "correct": false,
           "explanation": "Meaning learned from use needs enough examples of use, so rare words get less reliable vectors."
+        }
+      ]
+    },
+    {
+      "id": "MA-4.5",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "stem": "A language model is trained to predict the next token. In the context \"I walk my ___\", the words \"Labrador\" and \"sheepdog\" are both reasonable continuations. Check each statement that is true about why their embeddings end up close together.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Both words are reasonable continuations of the same contexts, so training rewards giving them similar scores there.",
+          "correct": true,
+          "explanation": "Many sentences about walking, feeding and owning a dog fit either word, so the model learns to give both high probability in those contexts."
+        },
+        {
+          "label": "B",
+          "text": "Training toward the actual next word across many such sentences tends to place words like these close together in the embedding space.",
+          "correct": true,
+          "explanation": "Words that receive similar predictions in the same contexts get similar vectors, because that is what lowers the prediction error across many sentences."
+        },
+        {
+          "label": "C",
+          "text": "Their closeness was set by a person who labeled both words as dogs.",
+          "correct": false,
+          "explanation": "No labels were supplied; the structure comes from the text and the prediction task."
+        },
+        {
+          "label": "D",
+          "text": "The closeness is a by-product of the prediction task: the model was not asked to learn word meanings directly.",
+          "correct": true,
+          "explanation": "The training target is the next token; the semantic structure of the space emerges from doing that well."
+        },
+        {
+          "label": "E",
+          "text": "Words that are close in the embedding space can be swapped in any sentence without changing the meaning.",
+          "correct": false,
+          "explanation": "Words used in similar contexts can still differ in meaning, and opposite words often occur in similar contexts, so closeness is not interchangeability."
         }
       ]
     },

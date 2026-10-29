@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 936,
+  "count": 937,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -269,7 +269,7 @@
         },
         {
           "point": 3,
-          "text": "Explains where the meaning comes from: training on text pulls words that occur in similar contexts toward similar vectors, so meaning here is meaning as use, not a dictionary definition."
+          "text": "Explains where the meaning comes from: training to predict the next token pulls words that fit the same contexts, and so are reasonable predictions in the same places, toward similar vectors, so meaning here is meaning as use, not a dictionary definition."
         },
         {
           "point": 4,
@@ -278,6 +278,38 @@
         {
           "point": 5,
           "text": "States what can and cannot be claimed: closeness shows similar use in the training text and supports tasks such as searching by meaning, but it does not show human-style understanding, and it can carry biases from the text, so claims need testing on tasks."
+        }
+      ]
+    },
+    {
+      "id": "ES-4.4",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "prompt": "Explain why \"Labrador\" and \"sheepdog\" end up close together in a language model's embedding space even though no one told the model that both are dogs. Use the idea of reasonable predictions in a context, say how the training task creates the closeness, and say what could go wrong if you read the closeness as understanding.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that the model is trained to predict the next token, and that in contexts such as \"I walk my ___\" both words are reasonable continuations."
+        },
+        {
+          "point": 2,
+          "text": "Explains that, to predict well across many such contexts, the model gives similar scores to words that fit the same contexts, which pushes their vectors toward each other."
+        },
+        {
+          "point": 3,
+          "text": "States that no one labeled the words as related; the semantic relationship is a by-product of the prediction task and of how the words were used in the training text."
+        },
+        {
+          "point": 4,
+          "text": "Explains that this is why embeddings capture meaning as use, and why a word's nearest neighbors tend to be words that could fill the same slot."
+        },
+        {
+          "point": 5,
+          "text": "Notes the limits: words that fit the same contexts can still differ in meaning, and opposites often do, and closeness can reflect biases or associations in the text, so it is not evidence of human-style understanding and needs testing."
         }
       ]
     },
