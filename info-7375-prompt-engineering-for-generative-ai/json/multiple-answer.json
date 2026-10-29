@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 976,
+  "count": 977,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -199,7 +199,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
+      "section": "3. Feedforward networks, encoders, decoders, context and prediction",
       "source": null,
       "stem": "Check each statement that is true about the two main parts of a transformer language model.",
       "statements": [
@@ -241,7 +241,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
+      "section": "3. Feedforward networks, encoders, decoders, context and prediction",
       "source": null,
       "stem": "Check each statement that is true about what the structure of a transformer language model does and does not provide.",
       "statements": [
@@ -283,7 +283,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
+      "section": "3. Feedforward networks, encoders, decoders, context and prediction",
       "source": null,
       "stem": "Check each statement that is true about encoders and decoders in the transformer design.",
       "statements": [
@@ -316,6 +316,48 @@
           "text": "An encoder that reads a sentence in order to label it generates its output one token at a time, from left to right.",
           "correct": false,
           "explanation": "An encoder produces representations of an input, which can be read out as a label; it does not generate text token by token."
+        }
+      ]
+    },
+    {
+      "id": "MA-3.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "3. Feedforward networks, encoders, decoders, context and prediction",
+      "source": null,
+      "stem": "Check each statement that is true about what a feedforward network (a multi-layer perceptron) does.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "It maps an input vector of numbers to an output, such as a prediction, by passing the values forward through layers.",
+          "correct": true,
+          "explanation": "Data goes in at one end, passes through the layers in one direction with no loops back, and a prediction comes out."
+        },
+        {
+          "label": "B",
+          "text": "Its behavior comes from weights that are learned from examples during training.",
+          "correct": true,
+          "explanation": "Training adjusts the weights so that the outputs fit the examples."
+        },
+        {
+          "label": "C",
+          "text": "The nonlinear step between its layers lets it represent relationships that a single weighted sum cannot.",
+          "correct": true,
+          "explanation": "Without nonlinear steps, any number of layers collapses into one weighted sum; the nonlinearity is what lets the network fit curved, complicated relationships."
+        },
+        {
+          "label": "D",
+          "text": "A transformer applies a feedforward network to each token's vector after attention has mixed in context.",
+          "correct": true,
+          "explanation": "In a transformer layer, attention mixes information across tokens and the feedforward network then transforms each token's vector on its own."
+        },
+        {
+          "label": "E",
+          "text": "A feedforward network that predicts well on its training examples is guaranteed to predict well on new inputs.",
+          "correct": false,
+          "explanation": "Fitting the training examples well does not show that the network will do well on new inputs; that has to be tested on data it was not trained on."
         }
       ]
     },

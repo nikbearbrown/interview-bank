@@ -34,7 +34,7 @@ Trace what happens between typing a prompt and receiving the first generated tok
 4. Softmax converts logits to probabilities and one token is sampled.
 5. States that a prompt is input to inference, not training, so weights stay fixed.
 
-# 3. Inside a transformer: encoder, decoder, context and prediction
+# 3. Feedforward networks, encoders, decoders, context and prediction
 
 ## ES-3.1
 
@@ -63,6 +63,20 @@ Explain what an encoder and a decoder are in a transformer, how they differ in w
 3. States the difference in what they can see: an encoder can use tokens on both sides of a position, while a decoder cannot use later tokens when it predicts.
 4. Matches the tasks: classifying a complete email fits an encoder, whose representation is read out as a label, and writing a reply fits a decoder, alone or with an encoder reading the email.
 5. Notes that neither part checks its output against the world, so both the classification and the reply need evaluation on held-out examples or against sources.
+
+## ES-3.3
+
+Explain in plain language what a feedforward network (a multi-layer perceptron) does: what goes in, what comes out, what is learned, and why it can handle relationships that a single straight-line rule cannot. Then say how it is used inside a transformer, and what a reader evaluating its predictions should not assume.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that a feedforward network takes a vector of numbers as input and passes it forward through layers, each combining its inputs with learned weights, to produce an output such as a score, a probability or a transformed vector.
+2. Explains that the weights are learned from examples during training, so the network's behavior comes from data rather than hand-written rules.
+3. Explains that nonlinear steps between the layers let it represent curved or interacting relationships that a single weighted sum, a straight-line rule, cannot.
+4. Explains that in a transformer a feedforward network transforms each token's vector after attention has mixed in context, and that this kind of network is the common way neural networks make predictions.
+5. States that a good fit to the training examples does not guarantee good predictions on new inputs, so its predictions need testing on held-out data and should not be trusted because the network is large or complex.
 
 # 4. Tokens and input embeddings
 

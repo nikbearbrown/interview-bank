@@ -86,7 +86,7 @@ Check each statement that is true about how an LLM turns a prompt into output. E
 - D: None of these change the weights.
 - E: That is autoregressive generation.
 
-# 3. Inside a transformer: encoder, decoder, context and prediction
+# 3. Feedforward networks, encoders, decoders, context and prediction
 
 ## MA-3.1
 
@@ -147,6 +147,26 @@ Check each statement that is true about encoders and decoders in the transformer
 - C: Later tokens are hidden from a decoder while it predicts; at generation time they do not exist yet.
 - D: Text continuation needs only the generating half, and many language models are built this way.
 - E: An encoder produces representations of an input, which can be read out as a label; it does not generate text token by token.
+
+## MA-3.4
+
+Check each statement that is true about what a feedforward network (a multi-layer perceptron) does. Each statement is worth 1 point (5 points total).
+
+- [ ] A. It maps an input vector of numbers to an output, such as a prediction, by passing the values forward through layers.
+- [ ] B. Its behavior comes from weights that are learned from examples during training.
+- [ ] C. The nonlinear step between its layers lets it represent relationships that a single weighted sum cannot.
+- [ ] D. A transformer applies a feedforward network to each token's vector after attention has mixed in context.
+- [ ] E. A feedforward network that predicts well on its training examples is guaranteed to predict well on new inputs.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Data goes in at one end, passes through the layers in one direction with no loops back, and a prediction comes out.
+- B: Training adjusts the weights so that the outputs fit the examples.
+- C: Without nonlinear steps, any number of layers collapses into one weighted sum; the nonlinearity is what lets the network fit curved, complicated relationships.
+- D: In a transformer layer, attention mixes information across tokens and the feedforward network then transforms each token's vector on its own.
+- E: Fitting the training examples well does not show that the network will do well on new inputs; that has to be tested on data it was not trained on.
 
 # 4. Tokens and input embeddings
 

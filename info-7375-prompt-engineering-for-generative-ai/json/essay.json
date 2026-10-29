@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 934,
+  "count": 935,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -95,7 +95,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
+      "section": "3. Feedforward networks, encoders, decoders, context and prediction",
       "source": null,
       "prompt": "Describe the two main parts of a transformer language model and what each contributes to producing the next token. Then explain what this structure does not include that a reader evaluating the output might assume it does.",
       "rubric": [
@@ -127,7 +127,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
+      "section": "3. Feedforward networks, encoders, decoders, context and prediction",
       "source": null,
       "prompt": "Explain what an encoder and a decoder are in a transformer, how they differ in what they can see and what they produce, and which you would expect to use for (a) classifying a customer email as urgent or not urgent and (b) writing a reply to it.",
       "rubric": [
@@ -150,6 +150,38 @@
         {
           "point": 5,
           "text": "Notes that neither part checks its output against the world, so both the classification and the reply need evaluation on held-out examples or against sources."
+        }
+      ]
+    },
+    {
+      "id": "ES-3.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "3. Feedforward networks, encoders, decoders, context and prediction",
+      "source": null,
+      "prompt": "Explain in plain language what a feedforward network (a multi-layer perceptron) does: what goes in, what comes out, what is learned, and why it can handle relationships that a single straight-line rule cannot. Then say how it is used inside a transformer, and what a reader evaluating its predictions should not assume.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that a feedforward network takes a vector of numbers as input and passes it forward through layers, each combining its inputs with learned weights, to produce an output such as a score, a probability or a transformed vector."
+        },
+        {
+          "point": 2,
+          "text": "Explains that the weights are learned from examples during training, so the network's behavior comes from data rather than hand-written rules."
+        },
+        {
+          "point": 3,
+          "text": "Explains that nonlinear steps between the layers let it represent curved or interacting relationships that a single weighted sum, a straight-line rule, cannot."
+        },
+        {
+          "point": 4,
+          "text": "Explains that in a transformer a feedforward network transforms each token's vector after attention has mixed in context, and that this kind of network is the common way neural networks make predictions."
+        },
+        {
+          "point": 5,
+          "text": "States that a good fit to the training examples does not guarantee good predictions on new inputs, so its predictions need testing on held-out data and should not be trusted because the network is large or complex."
         }
       ]
     },
