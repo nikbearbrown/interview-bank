@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 979,
+  "count": 980,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -568,6 +568,48 @@
           "text": "Words that are close in the embedding space can be swapped in any sentence without changing the meaning.",
           "correct": false,
           "explanation": "Words used in similar contexts can still differ in meaning, and opposite words often occur in similar contexts, so closeness is not interchangeability."
+        }
+      ]
+    },
+    {
+      "id": "MA-4.6",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "stem": "One way to encode a vocabulary is a one-hot vector: a vector as long as the vocabulary, with a 1 in the position of the word and 0 everywhere else. Words could also simply be numbered in alphabetical order. Check each statement that is true about why neither is used to represent words in a language model.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "With a vocabulary of 50,000 words, a one-hot vector needs 50,000 numbers per word, almost all of them zero.",
+          "correct": true,
+          "explanation": "The length equals the vocabulary size and all but one entry is zero, which wastes memory and computation at internet scale."
+        },
+        {
+          "label": "B",
+          "text": "In a one-hot encoding, every pair of different words is equally far apart, so \"dog\" is no nearer to \"cat\" than to \"carburetor\".",
+          "correct": true,
+          "explanation": "Each word is its own axis, so any two different words are the same distance apart, with no similarity structure."
+        },
+        {
+          "label": "C",
+          "text": "Words that are neighbors in alphabetical order, such as \"cat\" and \"catalog\", tend to be close in meaning.",
+          "correct": false,
+          "explanation": "Alphabetical order reflects spelling, not meaning: \"cat\" and \"catalog\" are neighbors but unrelated, while \"cat\" and \"feline\" are far apart."
+        },
+        {
+          "label": "D",
+          "text": "An embedding of a few hundred numbers per word is far shorter than a one-hot vector and can place related words near each other.",
+          "correct": true,
+          "explanation": "A short dense vector is much smaller and, once trained, places words used in similar ways near each other."
+        },
+        {
+          "label": "E",
+          "text": "What a model learns about one word from its one-hot vector carries over to similar words.",
+          "correct": false,
+          "explanation": "Each word has its own separate position, so what is learned about \"Labrador\" says nothing about \"sheepdog\"; similar embeddings let learning transfer."
         }
       ]
     },

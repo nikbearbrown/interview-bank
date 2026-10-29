@@ -270,6 +270,26 @@ A language model is trained to predict the next token. In the context "I walk my
 - D: The training target is the next token; the semantic structure of the space emerges from doing that well.
 - E: Words used in similar contexts can still differ in meaning, and opposite words often occur in similar contexts, so closeness is not interchangeability.
 
+## MA-4.6
+
+One way to encode a vocabulary is a one-hot vector: a vector as long as the vocabulary, with a 1 in the position of the word and 0 everywhere else. Words could also simply be numbered in alphabetical order. Check each statement that is true about why neither is used to represent words in a language model. Each statement is worth 1 point (5 points total).
+
+- [ ] A. With a vocabulary of 50,000 words, a one-hot vector needs 50,000 numbers per word, almost all of them zero.
+- [ ] B. In a one-hot encoding, every pair of different words is equally far apart, so "dog" is no nearer to "cat" than to "carburetor".
+- [ ] C. Words that are neighbors in alphabetical order, such as "cat" and "catalog", tend to be close in meaning.
+- [ ] D. An embedding of a few hundred numbers per word is far shorter than a one-hot vector and can place related words near each other.
+- [ ] E. What a model learns about one word from its one-hot vector carries over to similar words.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: The length equals the vocabulary size and all but one entry is zero, which wastes memory and computation at internet scale.
+- B: Each word is its own axis, so any two different words are the same distance apart, with no similarity structure.
+- C: Alphabetical order reflects spelling, not meaning: "cat" and "catalog" are neighbors but unrelated, while "cat" and "feline" are far apart.
+- D: A short dense vector is much smaller and, once trained, places words used in similar ways near each other.
+- E: Each word has its own separate position, so what is learned about "Labrador" says nothing about "sheepdog"; similar embeddings let learning transfer.
+
 # 5. Softmax and temperature
 
 ## MA-5.1

@@ -136,6 +136,20 @@ Explain why "Labrador" and "sheepdog" end up close together in a language model'
 4. Explains that this is why embeddings capture meaning as use, and why a word's nearest neighbors tend to be words that could fill the same slot.
 5. Notes the limits: words that fit the same contexts can still differ in meaning, and opposites often do, and closeness can reflect biases or associations in the text, so it is not evidence of human-style understanding and needs testing.
 
+## ES-4.5
+
+Explain why a language model does not represent each word as a one-hot vector, or as its position in an alphabetical dictionary, and what an embedding does instead. Cover the size of the representation, whether it carries any meaning, and what happens to learning about related words.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that a one-hot vector is as long as the vocabulary with a single 1 and the rest zeros, so it is very sparse and large, wasteful in memory and computation when vocabularies run to tens of thousands of tokens.
+2. Explains that one-hot vectors carry no meaning: every pair of different words is equally far apart, so "dog" is no nearer to "cat" than to an unrelated word.
+3. Explains that numbering words alphabetically, or in any fixed order, reflects spelling or the order of listing and not meaning, so neighboring numbers do not indicate related words.
+4. Explains that an embedding is a short dense vector learned in training so that words used in similar contexts get nearby vectors, giving a compact representation that carries semantic similarity.
+5. Explains the consequence for learning: with one-hot codes what is learned about one word does not transfer to related words, while with embeddings it does, so the model can generalize from "walk my Labrador" to "walk my sheepdog".
+
 # 5. Softmax and temperature
 
 ## ES-5.1

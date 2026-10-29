@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 937,
+  "count": 938,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -310,6 +310,38 @@
         {
           "point": 5,
           "text": "Notes the limits: words that fit the same contexts can still differ in meaning, and opposites often do, and closeness can reflect biases or associations in the text, so it is not evidence of human-style understanding and needs testing."
+        }
+      ]
+    },
+    {
+      "id": "ES-4.5",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "prompt": "Explain why a language model does not represent each word as a one-hot vector, or as its position in an alphabetical dictionary, and what an embedding does instead. Cover the size of the representation, whether it carries any meaning, and what happens to learning about related words.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that a one-hot vector is as long as the vocabulary with a single 1 and the rest zeros, so it is very sparse and large, wasteful in memory and computation when vocabularies run to tens of thousands of tokens."
+        },
+        {
+          "point": 2,
+          "text": "Explains that one-hot vectors carry no meaning: every pair of different words is equally far apart, so \"dog\" is no nearer to \"cat\" than to an unrelated word."
+        },
+        {
+          "point": 3,
+          "text": "Explains that numbering words alphabetically, or in any fixed order, reflects spelling or the order of listing and not meaning, so neighboring numbers do not indicate related words."
+        },
+        {
+          "point": 4,
+          "text": "Explains that an embedding is a short dense vector learned in training so that words used in similar contexts get nearby vectors, giving a compact representation that carries semantic similarity."
+        },
+        {
+          "point": 5,
+          "text": "Explains the consequence for learning: with one-hot codes what is learned about one word does not transfer to related words, while with embeddings it does, so the model can generalize from \"walk my Labrador\" to \"walk my sheepdog\"."
         }
       ]
     },
