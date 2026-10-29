@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 930,
+  "count": 934,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -33,27 +33,27 @@
       "group": "foundations",
       "section": "1. A brief history of AI",
       "source": null,
-      "prompt": "Put these four in chronological order and give the year of each: the Transformer paper, Rosenblatt's Perceptron, Turing's \"Computing Machinery and Intelligence\", backpropagation popularized for multi-layer networks. Then explain in one or two sentences why \"AI was founded in 1943\" is a mix-up.",
+      "prompt": "A team can build a spam filter in two ways: by writing rules by hand (for example, flag any message that contains a listed phrase), or by training a model on thousands of messages labeled spam or not spam. Compare how each approach fails, and say what a person still has to decide in both cases.",
       "rubric": [
         {
           "point": 1,
-          "text": "Turing's paper is placed first and dated 1950."
+          "text": "States that the rule-based filter's behavior comes only from the rules a person wrote, so every decision can be traced to a rule."
         },
         {
           "point": 2,
-          "text": "The Perceptron is placed second and dated 1958."
+          "text": "States that the rule-based filter fails on messages its rules did not anticipate, such as a spammer rewording a listed phrase, and must be extended by hand."
         },
         {
           "point": 3,
-          "text": "Backpropagation popularized is placed third and dated 1986."
+          "text": "States that the trained model infers patterns from the labeled examples and can flag messages that no rule described, if they resemble the training data."
         },
         {
           "point": 4,
-          "text": "The Transformer paper is placed fourth and dated 2017."
+          "text": "States that the trained model fails where its data is unrepresentative, outdated or mislabeled, and that its errors are harder to trace to a single cause."
         },
         {
           "point": 5,
-          "text": "Explains that 1943 is the artificial neuron model while AI as a named field dates to 1956 (Dartmouth)."
+          "text": "States that in both cases a person must decide what counts as correct and check the filter against that standard on messages it has not seen."
         }
       ]
     },
@@ -95,29 +95,61 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Neural network structure and RNNs",
+      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
       "source": null,
-      "prompt": "Compare how an RNN and a Transformer handle a long sequence. Cover how each carries information, whether training can be parallelized, and what happens to long-range dependencies.",
+      "prompt": "Describe the two main parts of a transformer language model and what each contributes to producing the next token. Then explain what this structure does not include that a reader evaluating the output might assume it does.",
       "rubric": [
         {
           "point": 1,
-          "text": "RNN passes information through a hidden state, one step at a time."
+          "text": "Explains that self-attention updates each token's representation using information from the other tokens in the context, so a token's representation depends on its surroundings."
         },
         {
           "point": 2,
-          "text": "RNN training is hard to parallelize because steps are sequential."
+          "text": "Explains that the prediction step converts the final representation into a score for each possible next token and then into probabilities, from which the next token is chosen."
         },
         {
           "point": 3,
-          "text": "RNN long-range dependencies suffer from vanishing or exploding gradients."
+          "text": "Notes that text is produced one token at a time, with each chosen token added to the context for the next prediction."
         },
         {
           "point": 4,
-          "text": "Transformer uses attention so every position can look at every other position directly."
+          "text": "States that nothing in this structure checks the output against the world; the model produces text that is likely given its context and training."
         },
         {
           "point": 5,
-          "text": "Transformer training runs in parallel; notes LSTM/GRU only reduce the RNN problem."
+          "text": "Draws the consequence for evaluation: fluent, confident output is not evidence of truth, so claims that matter need independent checking."
+        }
+      ]
+    },
+    {
+      "id": "ES-3.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
+      "source": null,
+      "prompt": "Explain what an encoder and a decoder are in a transformer, how they differ in what they can see and what they produce, and which you would expect to use for (a) classifying a customer email as urgent or not urgent and (b) writing a reply to it.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "States that an encoder reads a whole input and produces a context-aware representation of each token, using self-attention over the input."
+        },
+        {
+          "point": 2,
+          "text": "States that a decoder produces output one token at a time, each prediction using the tokens before it, with each chosen token added to the context."
+        },
+        {
+          "point": 3,
+          "text": "States the difference in what they can see: an encoder can use tokens on both sides of a position, while a decoder cannot use later tokens when it predicts."
+        },
+        {
+          "point": 4,
+          "text": "Matches the tasks: classifying a complete email fits an encoder, whose representation is read out as a label, and writing a reply fits a decoder, alone or with an encoder reading the email."
+        },
+        {
+          "point": 5,
+          "text": "Notes that neither part checks its output against the world, so both the classification and the reply need evaluation on held-out examples or against sources."
         }
       ]
     },
@@ -127,7 +159,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "4. Tokens",
+      "section": "4. Tokens and input embeddings",
       "source": null,
       "prompt": "A model has a vocabulary of 50,000 tokens and an embedding size of 768. A prompt is tokenized into 12 tokens. Give (a) the size of the token ID array, (b) the size of the embedded input matrix, and (c) the size of the logits vector for the next-token prediction. Explain why (c) does not depend on the prompt length.",
       "rubric": [
@@ -150,6 +182,38 @@
         {
           "point": 5,
           "text": "Notes the context window limits the token array length, not the logits length."
+        }
+      ]
+    },
+    {
+      "id": "ES-4.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "prompt": "Explain what an input embedding is and how it is produced from a token. Use the words \"dog\" and \"cat\" to explain why related words may end up with nearby embeddings, and say what that nearness does and does not show.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines an input embedding as a learned vector of numbers that represents a token, selected by the token's ID from a table, and learned in training together with the rest of the model rather than written by hand."
+        },
+        {
+          "point": 2,
+          "text": "Explains that \"dog\" and \"cat\" occur in similar contexts in the training text, for example near words about pets, feeding and walking, and that training pulls tokens that fit similar contexts toward similar vectors."
+        },
+        {
+          "point": 3,
+          "text": "States that no person labeled the two words as related; the closeness comes from how the words were used in the text."
+        },
+        {
+          "point": 4,
+          "text": "States that the input embedding depends only on the token, and that attention later revises each token's vector using the surrounding context."
+        },
+        {
+          "point": 5,
+          "text": "States that nearness reflects similar use in the training text, not verified similarity of meaning, and can carry associations and biases from that text, so claims about what it shows need testing."
         }
       ]
     },
@@ -191,29 +255,93 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "6. Attention and the Transformer",
+      "section": "6. Self-attention, positional encoding and the Transformer",
       "source": null,
-      "prompt": "Describe the steps of scaled dot-product attention, softmax(Q·Kᵀ / √d_k)·V, and explain what the √d_k does. Then explain what it does and does not show when the vector for \"bank\" differs between \"river bank\" and \"bank account\", and what kind of evidence would be needed to claim the model handles both senses.",
+      "prompt": "Explain in plain language what self-attention does for a token in a sentence. Then explain what it does and does not show when a model's vector for \"bank\" differs between \"river bank\" and \"bank account\", and what kind of evidence would show that the model handles both senses.",
       "rubric": [
         {
           "point": 1,
-          "text": "Scores every query against every key with a dot product."
+          "text": "States that self-attention lets each token take in information from other tokens in the context, giving some more weight than others."
         },
         {
           "point": 2,
-          "text": "Divides by √d_k to keep scores in a stable range as the dimension grows."
+          "text": "States that the weights are computed from the sentence itself, so which tokens matter depends on the context."
         },
         {
           "point": 3,
-          "text": "Applies softmax so each row of weights sums to 1, then outputs a weighted sum of the value vectors."
-        },
-        {
-          "point": 4,
           "text": "States that the differing vector shows the representation depends on context."
         },
         {
+          "point": 4,
+          "text": "States that a context-dependent vector is not by itself evidence that the model understands either sense."
+        },
+        {
           "point": 5,
-          "text": "States that a context-dependent vector is not by itself evidence of understanding either sense, and that behavioral tests (for example word-sense disambiguation on held-out sentences) are needed."
+          "text": "Says that behavioral tests, such as choosing the right sense of \"bank\" on new sentences, are needed to show it."
+        }
+      ]
+    },
+    {
+      "id": "ES-6.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "6. Self-attention, positional encoding and the Transformer",
+      "source": null,
+      "prompt": "Explain why parallelism matters for transformers at internet scale, both in training on very large text collections and in serving very many users. Say what is still sequential, and what all of this implies for cost, speed and the evaluation of outputs.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that during training the whole text is available, so the predictions for all positions can be computed in the same pass instead of one position after another."
+        },
+        {
+          "point": 2,
+          "text": "Explains that this suits parallel hardware such as GPUs, which is what makes training on internet-scale text across many chips practical in time and cost."
+        },
+        {
+          "point": 3,
+          "text": "Explains that generation stays sequential: each new token depends on the tokens before it, so a longer reply takes more steps and takes longer to arrive."
+        },
+        {
+          "point": 4,
+          "text": "Explains that a service handles many users by running many requests together in batches, which raises throughput and lowers the cost per request, at some cost in waiting time."
+        },
+        {
+          "point": 5,
+          "text": "Draws an evaluation consequence: batching and parallel hardware can produce tiny numerical differences between runs, so comparisons should record the setup and repeat runs instead of relying on a single one."
+        }
+      ]
+    },
+    {
+      "id": "ES-6.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "6. Self-attention, positional encoding and the Transformer",
+      "source": null,
+      "prompt": "Explain why a transformer needs positional encoding when it already has self-attention, what positional encoding adds, and what this implies for how you would test a prompt.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that self-attention weighs tokens by their content and on its own carries no information about order, so the same words in any order would be treated alike."
+        },
+        {
+          "point": 2,
+          "text": "Gives an example in which order changes meaning, such as \"dog bites man\" and \"man bites dog\"."
+        },
+        {
+          "point": 3,
+          "text": "Explains that positional encoding adds position information to each token's representation so the model can use order, and that this is part of the model's design rather than something the user supplies."
+        },
+        {
+          "point": 4,
+          "text": "Notes that having position information does not guarantee equal use of information wherever it appears, so the placement and order of instructions and facts in a prompt can change the output."
+        },
+        {
+          "point": 5,
+          "text": "Proposes testing a prompt under reordered variants and repeated runs, and limiting conclusions to the arrangements that were tested."
         }
       ]
     },
@@ -993,27 +1121,27 @@
       "group": "chapter",
       "section": null,
       "source": "Inside one prediction step",
-      "prompt": "Older sequence models read text one position at a time, passing a hidden state forward, while the transformer takes the whole context in at once. Compare the two designs on training speed, on how information from a distant token reaches the current token, and on what changes at generation time.",
+      "prompt": "Explain how a language model produces a multi-sentence answer one token at a time, and why an early mistake can carry forward. Then say what this implies for how you would evaluate a long answer.",
       "rubric": [
         {
           "point": 1,
-          "text": "Explains that a recurrent model must process positions sequentially, which limits parallelism during training."
+          "text": "Explains that the model predicts one token at a time, each chosen from a probability distribution given the context so far."
         },
         {
           "point": 2,
-          "text": "Explains that a transformer with a causal mask can compute predictions for all positions of a training sequence at once, which makes training on large corpora practical on parallel hardware."
+          "text": "Explains that each chosen token is added to the context, so later predictions depend on earlier ones."
         },
         {
           "point": 3,
-          "text": "Explains that in a recurrent model information from an early token must pass through every intermediate state and can fade, whereas attention connects any two visible tokens directly."
+          "text": "Explains that an early wrong or odd token can steer the rest of the answer, since later tokens are predicted to fit what came before."
         },
         {
           "point": 4,
-          "text": "States that at generation time a transformer still produces one token at a time because each token depends on the previous ones."
+          "text": "Notes that the model does not by itself review a finished answer before showing it, so contradictions and errors can persist."
         },
         {
           "point": 5,
-          "text": "Notes a cost of the transformer design, such as attention cost growing quadratically with context length."
+          "text": "Says that a long answer should be checked in parts and as a whole against sources or tests, not judged by how fluent it is."
         }
       ]
     },
@@ -1025,27 +1153,27 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "prompt": "In one attention head, the current token has query q = [1, 0]. It can read three tokens with keys k1 = [1, 0], k2 = [0, 1], k3 = [1, 1] and values v1 = [1, 0], v2 = [0, 1], v3 = [2, 2]. The key length is d_k = 2, and scores are q·k divided by the square root of d_k. Compute the scores, the softmax weights and the output vector, and explain what each stage does.",
+      "prompt": "A reader says: \"The model has my whole document in its context, so its answer must reflect all of it.\" Evaluate the claim: what access to the context gives the model, what it does not guarantee, and how you would test whether the model used a particular passage.",
       "rubric": [
         {
           "point": 1,
-          "text": "Computes the raw dot products as [1, 0, 1] and scales by 1/sqrt(2) to get about [0.707, 0, 0.707]."
+          "text": "Explains that self-attention gives the model access to the tokens inside its context window when it predicts each next token."
         },
         {
           "point": 2,
-          "text": "Applies softmax to get weights of about [0.401, 0.198, 0.401], which sum to 1."
+          "text": "Explains that access does not guarantee use: the model can overlook, misread or contradict text that is present."
         },
         {
           "point": 3,
-          "text": "Computes the output as the weighted sum of the values: about 0.401 x [1, 0] + 0.198 x [0, 1] + 0.401 x [2, 2] = [1.20, 1.00]."
+          "text": "Notes that text outside the window, whether cut off or never supplied, is unavailable to the model."
         },
         {
           "point": 4,
-          "text": "Explains that queries and keys decide how much to read from each token (relevance), and values carry the content that is mixed."
+          "text": "Proposes a test: change or remove the passage, or move it elsewhere in the prompt, and check whether the answer changes as expected."
         },
         {
           "point": 5,
-          "text": "Notes that the weights depend on the input and are recomputed every time, while the learned parameters are the projections that produce queries, keys and values."
+          "text": "Concludes that the claim should be stated no more strongly than such tests support, and that important answers are checked against the document itself."
         }
       ]
     },
@@ -1057,27 +1185,27 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "prompt": "Attention scores in a transformer are computed as q·k divided by the square root of d_k, before the softmax. Explain why the division is there, using what happens to the size of dot products as d_k grows, and what goes wrong in training without it.",
+      "prompt": "A colleague says a language model \"learns as you chat\", so it will remember tomorrow what you told it today. Explain what changes and what does not during a conversation, using the difference between the model's parameters and its context, and say how you would test the claim.",
       "rubric": [
         {
           "point": 1,
-          "text": "States that a dot product of two d_k-dimensional vectors sums d_k terms, so its magnitude grows with d_k."
+          "text": "States that using a model does not change its parameters; what it learned in training is fixed while it answers."
         },
         {
           "point": 2,
-          "text": "Gives the statistical reasoning: if components have unit variance and are independent, the dot product has variance d_k and standard deviation the square root of d_k."
+          "text": "States that earlier turns are available only if the application resends them, or notes from them, in the context."
         },
         {
           "point": 3,
-          "text": "Explains that dividing by the square root of d_k restores a spread of about 1 regardless of dimension."
+          "text": "Explains that apparent memory therefore comes from the context, and fails when the history is cut, truncated or not resent."
         },
         {
           "point": 4,
-          "text": "Explains that very large scores push the softmax into a saturated, nearly one-hot regime in which the gradients with respect to the scores are tiny, which slows or destabilizes learning."
+          "text": "Notes that information in the context can still be misread or ignored, so having it there is not the same as using it correctly."
         },
         {
           "point": 5,
-          "text": "Notes that dividing all scores by the same positive constant does not change their ordering, only how peaked the resulting weights are."
+          "text": "Proposes a test: start a fresh conversation without the history and see whether the model still gives the information."
         }
       ]
     },
@@ -1089,27 +1217,27 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "prompt": "A decoder-only language model is trained by showing it a sentence and computing the next-token loss at every position in a single pass. Explain why a causal mask on attention is required, how it is implemented, and what would happen to training and to the trained model's usefulness without it.",
+      "prompt": "A language model is trained to predict each next token of a text. Explain why the model must not be able to see the token it is predicting during training, and what would go wrong if it could.",
       "rubric": [
         {
           "point": 1,
-          "text": "Explains that predicting position i must depend only on positions before i, because at generation time the later tokens do not exist yet."
+          "text": "Explains that during training the target is the next token, which the model must predict from the tokens before it."
         },
         {
           "point": 2,
-          "text": "Explains that without the mask, each position could read the very token it is supposed to predict, so the loss could be driven down by copying."
+          "text": "Explains that if the target were visible the model could copy it, so the loss would be low without learning to predict."
         },
         {
           "point": 3,
-          "text": "Describes the implementation: scores for later positions are set to negative infinity (or a large negative number) before the softmax, so their weights become zero."
+          "text": "Explains that at generation time later tokens do not exist yet, so training must match that condition."
         },
         {
           "point": 4,
-          "text": "Explains the consequence of omitting it: very low training loss that does not transfer, because the model would fail at generation time when future tokens are unavailable."
+          "text": "States the consequence: very low training loss that does not carry over to generation, so measured training performance would overstate usefulness."
         },
         {
           "point": 5,
-          "text": "Contrasts with bidirectional encoders used for tasks where the full input is available, which may attend in both directions."
+          "text": "Connects to evaluation: performance must be measured under conditions that match use, using only information available at prediction time, which is avoiding leakage."
         }
       ]
     },
@@ -1121,27 +1249,27 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "prompt": "The original transformer used 8 attention heads with a model dimension of 512. Explain what multi-head attention is, why it is used, and how the parameter count and the per-head dimension work out when the dimension is split among heads.",
+      "prompt": "A researcher claims that one component of a transformer \"stores facts\" (or \"handles grammar\"). Explain how to treat such a claim and how you would test it.",
       "rubric": [
         {
           "point": 1,
-          "text": "Describes several attention operations running side by side, each with its own learned query, key and value projections, whose outputs are concatenated and projected."
+          "text": "States that claims about what a component does are hypotheses about mechanism, not facts to be assumed."
         },
         {
           "point": 2,
-          "text": "Explains the motivation: different heads can attend to different kinds of relationships or positions at the same time."
+          "text": "Notes that a model has many components that interact, so a component's apparent role may not be its whole role."
         },
         {
           "point": 3,
-          "text": "Computes the per-head dimension as 512 / 8 = 64."
+          "text": "Proposes an intervention: disable, change or swap the component and measure the effect on a specific behavior."
         },
         {
           "point": 4,
-          "text": "Notes that the total projection parameters (query, key, value and output) remain about 4 x 512 x 512 = 1,048,576 weights, ignoring biases, because the dimension is divided among heads."
+          "text": "Says to compare against a control, such as a randomly chosen component or an unchanged model, so that an effect is not just general damage."
         },
         {
           "point": 5,
-          "text": "Notes that what each head learns emerges from training and should not be assumed to correspond to a clean human-interpretable role without evidence."
+          "text": "Concludes that the claim should be reported only as strongly as the experiments support, naming the behaviors and models tested."
         }
       ]
     },
@@ -1153,27 +1281,27 @@
       "group": "chapter",
       "section": null,
       "source": "The feed-forward network: an ordinary neural network",
-      "prompt": "A transformer layer contains a self-attention sublayer followed by a position-wise feed-forward network. Explain what each sublayer contributes, why they are separate components, and show with a small calculation what the feed-forward network does for x = [1, -2], first weight matrix [[1, -1, 2], [0, 1, -1]], ReLU, second matrix [[1, 0], [2, 1], [0, -1]], no biases.",
+      "prompt": "Describe the two kinds of step in a transformer layer and what each contributes. Then explain why \"the model learned it in training\" and \"it is in the prompt\" are different sources of information, and what that implies when an answer is wrong because a fact is missing or out of date.",
       "rubric": [
         {
           "point": 1,
-          "text": "Explains that attention mixes information across token positions, giving each token context from the others."
+          "text": "Describes attention as the step that mixes information across token positions, giving each token context."
         },
         {
           "point": 2,
-          "text": "Explains that the feed-forward network is applied to each position independently with the same weights, transforming each context-informed vector."
+          "text": "Describes the per-token step as transforming each token's vector using learned parameters, the same ones for every position."
         },
         {
           "point": 3,
-          "text": "Computes the hidden vector [1, -3, 4] and applies the ReLU to get [1, 0, 4]."
+          "text": "Explains that learned parameters come from training and stay fixed while the model answers."
         },
         {
           "point": 4,
-          "text": "Computes the output [1, -4]."
+          "text": "Explains that information in the prompt is available only for that request and does not change the parameters."
         },
         {
           "point": 5,
-          "text": "Notes that the feed-forward weights make up a large share of a transformer's parameters and are where much learned knowledge and patterns are believed to be stored, while stating this is a working hypothesis rather than a settled fact."
+          "text": "Concludes that a missing or stale fact is fixed by supplying it in the prompt or retrieving it with a tool, not by correcting the model in conversation, and that answers should still be checked against sources."
         }
       ]
     },
@@ -1185,27 +1313,27 @@
       "group": "chapter",
       "section": null,
       "source": "Putting the pieces together",
-      "prompt": "Transformer sublayers are wrapped in residual connections, so each sublayer's output is added to its input, and layers are stacked dozens of times. Explain what a residual connection does, why it matters for training deep networks, and how the final layer's output becomes next-token probabilities.",
+      "prompt": "A model gives a wrong answer. Describe how you would work out whether the cause is the information it was given or the way it predicts from that information.",
       "rubric": [
         {
           "point": 1,
-          "text": "Describes the residual connection as adding the sublayer's output to its input, creating a stream of vectors that each sublayer reads from and writes to."
+          "text": "Distinguishes failures where the needed information was absent from the context from failures where it was present but not used correctly."
         },
         {
           "point": 2,
-          "text": "Explains that this gives gradients a direct path through many layers, which reduces vanishing gradients and makes deep stacks trainable."
+          "text": "Proposes testing by supplying the needed information explicitly and seeing whether the answer changes."
         },
         {
           "point": 3,
-          "text": "Explains that each sublayer can learn an adjustment to the existing representation rather than needing to reconstruct it."
+          "text": "Proposes varying the wording and order of the context, and repeating runs to separate sampling variation from a real effect."
         },
         {
           "point": 4,
-          "text": "Explains that the vector at the final position is mapped by a learned linear layer to one score (logit) per vocabulary token."
+          "text": "Notes that a fluent wrong answer does not show the model holds a correct answer it is withholding; the model produces likely text."
         },
         {
           "point": 5,
-          "text": "Explains that a softmax converts these scores into a probability distribution over the vocabulary."
+          "text": "Concludes with an action tied to the cause, such as supplying or retrieving the information, restructuring the prompt, adding a check or limiting the task, and then re-testing."
         }
       ]
     },
@@ -1217,27 +1345,27 @@
       "group": "chapter",
       "section": null,
       "source": "Inside one prediction step",
-      "prompt": "Self-attention treats its inputs as a set: if you permute the input vectors, the outputs are permuted in the same way. Yet transformers handle word order well. Explain why attention alone cannot capture order, how order information is supplied, and what could go wrong if it were omitted.",
+      "prompt": "Explain why word order matters for meaning, why a language model must represent it, and what this implies for testing prompts.",
       "rubric": [
         {
           "point": 1,
-          "text": "Explains that attention scores depend only on content-based comparisons of queries and keys, with nothing tying a token to a position."
+          "text": "Gives an example in which the same words in a different order change meaning, such as \"dog bites man\" and \"man bites dog\"."
         },
         {
           "point": 2,
-          "text": "Gives an example, such as \"dog bites man\" versus \"man bites dog\", that would look identical as a bag of tokens."
+          "text": "Explains that a model that saw only the set of words could not tell such sentences apart, so position information must be part of its input."
         },
         {
           "point": 3,
-          "text": "Describes the remedy: position-dependent information (fixed sinusoidal encodings, learned position embeddings, or relative or rotary schemes) is added to or mixed into the token representations."
+          "text": "Notes that, as a result, the placement and order of instructions and facts in a prompt can change the output."
         },
         {
           "point": 4,
-          "text": "Explains that the causal mask also gives some positional signal in a decoder, but explicit position information remains the standard approach."
+          "text": "Proposes testing prompts under reordered variants and repeated runs instead of a single arrangement."
         },
         {
           "point": 5,
-          "text": "States the consequence of omission: the model could not distinguish sentences that differ only in word order, so meaning and grammar that depend on order would be lost."
+          "text": "States that conclusions about a prompt should be limited to the arrangements and tasks that were tested."
         }
       ]
     },
@@ -16257,27 +16385,27 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "prompt": "A one-feature classifier has weight w = 1.2 and bias b = -0.6, with probability sigma(w*x + b) for label 1 (sigma(1.8) is about 0.858). Compute the score and probability for x = 0.5, x = 2, and x = -1; state the decisions at threshold 0.5; locate the decision boundary; and explain why these probabilities do not say that x causes the label.",
+      "prompt": "A one-feature classifier has a weight and a bias, turns its score into a probability with the sigmoid function, and predicts label 1 when the probability passes a threshold. Explain what the weight and the bias each do, where the decision boundary comes from, and what the probability does and does not tell you.",
       "rubric": [
         {
           "point": 1,
-          "text": "Computes the scores 0, 1.8, and -1.8 for x = 0.5, 2, and -1."
+          "text": "Explains that the classifier computes a score from the feature, with the weight setting how strongly the feature moves the score and the bias shifting it."
         },
         {
           "point": 2,
-          "text": "Gives the probabilities 0.5, about 0.858, and about 0.142, noting sigma(-a) = 1 - sigma(a)."
+          "text": "Explains that the sigmoid turns the score into a number between 0 and 1 that is read as a probability."
         },
         {
           "point": 3,
-          "text": "States the decisions: label 1 for x = 2, label 0 for x = -1, and x = 0.5 sits exactly on the boundary where the tie rule decides."
+          "text": "Explains that the decision comes from comparing the probability with a threshold, and that with a threshold of 0.5 the boundary is where the score is zero, which the bias moves along the feature."
         },
         {
           "point": 4,
-          "text": "Locates the boundary at w*x + b = 0, that is x = 0.5, because sigma(0) = 0.5."
+          "text": "Notes that the weight captures an association in the supplied data and the probability is the model's output under its objective, not evidence of cause."
         },
         {
           "point": 5,
-          "text": "Explains that the weight captures an association in the supplied data and the probability is the model's output under its objective, not evidence of causation."
+          "text": "Notes that a number between 0 and 1 is not automatically accurate, so the probabilities have to be checked against outcomes on data not used for training."
         }
       ]
     },
@@ -16289,27 +16417,27 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "prompt": "A logistic classifier starts with all parameters at zero. Explain what it predicts for every input, what its average binary cross-entropy is on any binary dataset (give the number), why that value does not depend on label balance, and how this gives a baseline against which to judge training.",
+      "prompt": "A classifier starts with all parameters at zero. Explain what it predicts for every input, what that implies about the loss it starts with, and how this gives a baseline for judging training and a check on the training code.",
       "rubric": [
         {
           "point": 1,
-          "text": "States that the score is 0 for every input, so the probability is sigma(0) = 0.5."
+          "text": "States that every input receives the same prediction, a probability of 0.5, so no relationship between the feature and the label has been encoded yet."
         },
         {
           "point": 2,
-          "text": "Notes that every example gets the same prediction whatever its feature value, so no relationship has been encoded yet."
+          "text": "Explains that the starting loss is therefore that of an uninformed fifty-fifty guesser, the same whatever the balance of the labels."
         },
         {
           "point": 3,
-          "text": "Gives the per-example loss -ln(0.5) = ln 2, about 0.693, for either label, so the average is 0.693 whatever the label balance."
+          "text": "Treats that value as the baseline that training should drive the loss below."
         },
         {
           "point": 4,
-          "text": "Treats 0.693 as the baseline of an uninformed model, so training should drive the loss below it."
+          "text": "Notes that predicting the starting loss before running gives a check on the code: a different number signals a bug."
         },
         {
           "point": 5,
-          "text": "Notes that predicting this value before running gives a check on the code: a different initial loss signals a bug."
+          "text": "Notes that beating the baseline on the training data does not show that the model will beat it on new data."
         }
       ]
     },
@@ -16321,27 +16449,27 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "prompt": "A naive sigmoid implementation, 1 / (1 + exp(-x)), can fail in floating point for very negative x. Explain why, how a two-branch implementation fixes the problem, and what a unit test of the fix does and does not establish.",
+      "prompt": "A direct implementation of a formula can fail in floating point for extreme inputs even though the mathematics is right. Using the sigmoid function as an example, explain why this happens, how an equivalent rewrite can fix it, and what a unit test of the fix does and does not establish.",
       "rubric": [
         {
           "point": 1,
-          "text": "Explains that for very negative x, exp(-x) is a huge number that overflows double precision (about exp(710) and above)."
+          "text": "Explains that computers hold numbers with limited range and precision, so an intermediate value can overflow or round away even when the final answer is representable."
         },
         {
           "point": 2,
-          "text": "Describes the two-branch fix: use 1/(1+e^(-x)) for x >= 0 and e^x/(1+e^x) for x < 0, which are mathematically identical but only exponentiate non-positive numbers."
+          "text": "Explains the example: for a very large negative score the direct formula computes a huge exponential that overflows."
         },
         {
           "point": 3,
-          "text": "Notes that the true value for very negative x is tiny but positive, and underflowing to 0.0 is acceptable."
+          "text": "Describes the fix: an algebraically equivalent form chosen so that only safe values are exponentiated."
         },
         {
           "point": 4,
-          "text": "States that a test such as sigmoid(-1000) being approximately 0 shows no overflow at that input."
+          "text": "States that a test on an extreme input shows there is no failure at that input."
         },
         {
           "point": 5,
-          "text": "Notes that such a test does not prove correctness for NaN, infinities, other numeric types, or all edge cases, so the claim should stay limited to the demonstrated behavior."
+          "text": "Notes that the test does not prove correctness for other inputs or edge cases, so the claim should stay limited to the behavior that was demonstrated."
         }
       ]
     },
@@ -16353,27 +16481,27 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "prompt": "Define binary cross-entropy for one example. Evaluate it for a true label of 1 when the model's probability for label 1 is 0.9, 0.5, and 0.01, and use those numbers to explain how the loss treats confident right and confident wrong predictions and why it suits a probabilistic classifier.",
+      "prompt": "Explain what cross-entropy loss is for a classifier that outputs probabilities and how it treats confident right and confident wrong predictions. Say why accuracy and cross-entropy can disagree and what choosing a loss decides.",
       "rubric": [
         {
           "point": 1,
-          "text": "Gives the formula -y ln(p) - (1-y) ln(1-p), which reduces to -ln(p) for label 1."
+          "text": "Describes the loss as a penalty based on the probability the model gave to the true label: small when that probability is high and large when it is low."
         },
         {
           "point": 2,
-          "text": "Computes about 0.105 for p = 0.9, about 0.693 for p = 0.5, and about 4.61 for p = 0.01."
+          "text": "Explains that a confident wrong prediction is penalized heavily and without a fixed limit, while a confident right one costs little."
         },
         {
           "point": 3,
-          "text": "Explains that a confident wrong prediction is penalized heavily and without bound, while a confident right one costs little."
+          "text": "Explains that accuracy counts only whether each decision was right, so two models with equal accuracy can have different cross-entropy."
         },
         {
           "point": 4,
-          "text": "Explains that minimizing it is maximum likelihood for Bernoulli labels, which rewards honest probabilities."
+          "text": "Explains that minimizing the loss rewards honest probabilities, not only correct decisions."
         },
         {
           "point": 5,
-          "text": "Contrasts it with accuracy, which only counts errors, and notes that the optimizer lowers whatever objective it is given, so the loss is a choice about the task."
+          "text": "Notes that the optimizer lowers whatever objective it is given, so the loss is a choice about the task made by people."
         }
       ]
     },
@@ -16385,23 +16513,23 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "prompt": "A model outputs probabilities of label 1 of 0.8, 0.3, and 0.6 for three examples whose true labels are 1, 0, and 0. Compute each example's binary cross-entropy and the average. Say which example contributes most and why, and what the average does and does not tell you.",
+      "prompt": "A model outputs probabilities for three examples. On one it is confidently right, on one it is mildly right, and on one it leans toward the wrong label. Explain how the average loss is formed, which example contributes most and why, and what the average does and does not tell you.",
       "rubric": [
         {
           "point": 1,
-          "text": "Computes the three losses: -ln(0.8) is about 0.223, -ln(0.7) is about 0.357, and -ln(0.4) is about 0.916."
+          "text": "Explains that each example gets its own loss and that the training objective is the average of them."
         },
         {
           "point": 2,
-          "text": "Computes the average as about 0.499."
+          "text": "Identifies the example where the model leaned the wrong way as contributing the most, and the confidently right one as contributing the least."
         },
         {
           "point": 3,
-          "text": "Identifies the third example as the largest contributor because the model leaned toward the wrong label with p = 0.6 on a label-0 example."
+          "text": "Notes that a few confidently wrong predictions can dominate the average."
         },
         {
           "point": 4,
-          "text": "Notes that the average is the number the optimizer lowers on this data, and that at threshold 0.5 two of the three are classified correctly."
+          "text": "Notes that the average is the number the optimizer lowers on this data, and that it differs from the fraction of examples classified correctly."
         },
         {
           "point": 5,
@@ -16417,27 +16545,27 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "prompt": "A score-based form of the binary logistic loss, max(a, 0) - y*a + ln(1 + e^(-|a|)), is used instead of computing the probability first. Show that it matches the usual loss for y = 1 and a > 0, say what numerical problem it avoids, and evaluate it for a = 40 with y = 0.",
+      "prompt": "A team switches to a different, supposedly equivalent way of computing its loss and the reported loss changes. Explain how you would check whether the two implementations really agree and what to do about any difference.",
       "rubric": [
         {
           "point": 1,
-          "text": "Shows that for y = 1 and a > 0 the form reduces to ln(1 + e^(-a)), which equals -ln(sigma(a))."
+          "text": "Proposes computing both on the same small inputs for which the answer can be worked out by hand."
         },
         {
           "point": 2,
-          "text": "States that the form is algebraically equivalent to the usual loss for all scores and labels."
+          "text": "Proposes including extreme inputs, such as very confident predictions, where numerical problems appear."
         },
         {
           "point": 3,
-          "text": "Explains that it avoids forming a probability that rounds to exactly 0 or 1 for large |a|, where the log would be undefined or lose precision."
+          "text": "Proposes comparing within a stated tolerance, since floating-point results should not be expected to match exactly."
         },
         {
           "point": 4,
-          "text": "Evaluates a = 40, y = 0 as 40 + ln(1 + e^-40), about 40."
+          "text": "Says to treat an unexplained disagreement as a bug in one of the two until it is explained, not as noise."
         },
         {
           "point": 5,
-          "text": "Contrasts the naive route, where p rounds to 1.0 and ln(1 - p) fails, and notes that clipping the probability gives a capped value that is no longer the true loss."
+          "text": "Says to report what was tested, so the claim of equivalence is limited to those cases."
         }
       ]
     },
@@ -16449,27 +16577,27 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "prompt": "For a one-feature logistic classifier with p = sigma(w*x + b) and binary cross-entropy loss, derive the derivative of the loss for one example with respect to w and b. Then evaluate both for x = 3, y = 0, w = 0.2, b = 0.1 (so the score is 0.7 and p is about 0.668), and say which way gradient descent moves each parameter.",
+      "prompt": "Explain, in words, what the gradient of a loss is, how it is used to update a classifier's parameters, and how the direction of an update can be predicted from the data before any code is run.",
       "rubric": [
         {
           "point": 1,
-          "text": "Shows that the derivative of the loss with respect to the score is p - y, because the sigmoid derivative p(1-p) cancels in the chain rule."
+          "text": "Describes the gradient as how the loss changes as each parameter changes; it points toward higher loss."
         },
         {
           "point": 2,
-          "text": "Uses d(score)/dw = x and d(score)/db = 1 to get (p - y)*x and (p - y)."
+          "text": "Describes the update as a small step in the opposite direction, scaled by the learning rate."
         },
         {
           "point": 3,
-          "text": "Evaluates numerically: dL/dw is about 2.00 and dL/db is about 0.67."
+          "text": "Explains that the gradient is computed from the training data and the current parameter values, and averaged over the examples used."
         },
         {
           "point": 4,
-          "text": "States that both gradients are positive, so descent decreases w and b."
+          "text": "Gives a prediction from the data: if larger feature values go with label 1, the first update raises the weight."
         },
         {
           "point": 5,
-          "text": "Notes that over a dataset with an average loss the gradient is the average of per-example gradients."
+          "text": "Explains that writing the prediction down before running gives a check that does not depend on the code's output."
         }
       ]
     },
@@ -16481,27 +16609,27 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "prompt": "Training pairs (x, y) are (-1, 0), (0, 1), (2, 1). A logistic classifier starts at w = 0, b = 0 and takes one full-batch gradient descent step with learning rate 0.4 on the average binary cross-entropy. Compute the per-example errors, the averaged gradients, the updated parameters, and the loss before and after.",
+      "prompt": "An AI assistant writes a training loop for a small classifier. After one update the loss on the training data is a little lower. Explain what one training step should do, why the lower loss does not show the code is correct, and what stronger check you would add.",
       "rubric": [
         {
           "point": 1,
-          "text": "States that every prediction is 0.5, so the errors p - y are 0.5, -0.5, and -0.5."
+          "text": "States that one step should change the parameters slightly in the direction that lowers the training loss."
         },
         {
           "point": 2,
-          "text": "Computes the averaged weight gradient mean((p-y)*x) = -0.5 and the averaged bias gradient -0.167."
+          "text": "States that the loss on the same data should fall slightly after the step if the learning rate is small enough."
         },
         {
           "point": 3,
-          "text": "Computes the updated parameters w = 0.2 and b of about 0.067."
+          "text": "Explains that the direction of each parameter's change can be predicted from the data."
         },
         {
           "point": 4,
-          "text": "Reports the loss falling from about 0.693 to about 0.592."
+          "text": "Explains that buggy code can also lower the loss, for example by taking a wrong-sized step, so a decrease is necessary evidence but not sufficient."
         },
         {
           "point": 5,
-          "text": "Explains the directions: w rises because the label-1 examples have larger x, and b rises because positives outnumber negatives."
+          "text": "Proposes comparing the first step with a hand-worked expected value on a tiny dataset."
         }
       ]
     },
@@ -16513,27 +16641,27 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "prompt": "A developer's training code sums the per-example gradients instead of averaging them. On three training pairs (-1, 0), (0, 1), (2, 1), starting from w = 0, b = 0 with learning rate 0.4, the summed version moves to w = 0.6 and b = 0.2 after one step instead of w = 0.2 and b of about 0.067, and its loss after that step is about 0.444 versus 0.592 for the averaged version. Explain why this bug can go unnoticed by a test that only checks that the loss decreased, why it matters at scale, and what test would catch it.",
+      "prompt": "A developer's training code sums the per-example gradients instead of averaging them. Explain what difference this makes, why the training loss still goes down, and how a test could catch the mistake.",
       "rubric": [
         {
           "point": 1,
-          "text": "Explains that a summed gradient is N times the mean, so it acts like a learning rate N times larger."
+          "text": "Explains that a summed gradient is N times the average, so it acts like a learning rate N times larger."
         },
         {
           "point": 2,
-          "text": "Notes that the direction is unchanged, so the loss still falls, here even faster after one step."
+          "text": "Notes that the direction is unchanged, so the loss still falls, perhaps even faster at first."
         },
         {
           "point": 3,
-          "text": "Concludes that a lower number after an update does not show the code is correct."
+          "text": "Concludes that a lower loss after an update does not show the code is correct."
         },
         {
           "point": 4,
-          "text": "Explains that at scale the step grows with the dataset size, so the code can overshoot or diverge and its behavior depends on N."
+          "text": "Explains that the step grows with the dataset size, so the code can overshoot or diverge and its behavior depends on N."
         },
         {
           "point": 5,
-          "text": "Proposes a test that asserts the exact first-step parameters derived by hand, or compares against a finite-difference check of the average loss."
+          "text": "Proposes a test that asserts the first-step parameters worked out by hand, or compares against a numerical check of the average loss."
         }
       ]
     },
@@ -16545,27 +16673,27 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "prompt": "Describe how to check a hand-derived gradient with a central finite difference. State what the check establishes, what it cannot catch, and why shrinking the step size indefinitely is not the answer.",
+      "prompt": "Describe how to check a hand-derived gradient numerically. State what the check establishes, what it cannot catch, and why making the step size smaller and smaller is not the answer.",
       "rubric": [
         {
           "point": 1,
-          "text": "Describes the check: evaluate (L(w+h) - L(w-h)) / (2h) for each parameter at the same point and compare it with the analytic gradient within a tolerance."
+          "text": "Describes the check: change a parameter slightly up and down, recompute the loss each time, and compare the estimated slope with the formula's value within a tolerance."
         },
         {
           "point": 2,
-          "text": "Notes that it does not use the derivative formula, so it can catch algebra, sign, or missing-factor errors."
+          "text": "Notes that the check does not use the derivative formula, so it can catch algebra, sign or missing-factor errors."
         },
         {
           "point": 3,
-          "text": "States that it cannot catch a wrong objective or an error in the loss function itself, because both routes describe the same coded loss."
+          "text": "States that it cannot catch a wrong objective or an error in the loss function itself, because both routes use the same coded loss."
         },
         {
           "point": 4,
-          "text": "Explains the trade-off in h: truncation error shrinks roughly as h squared, but round-off error grows as h gets very small, so a moderate h is used."
+          "text": "Explains that very tiny steps make the estimate noisy because of the computer's limited precision, so a moderate step is used."
         },
         {
           "point": 5,
-          "text": "Recommends pairing it with a hand-computed expected value, so the code is checked against more than one independent route."
+          "text": "Recommends pairing it with a hand-computed expected value, so the code is checked by more than one independent route."
         }
       ]
     },
@@ -16577,27 +16705,27 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "prompt": "Gradient descent minimizes L(w) = 2w^2, whose gradient is 4w, from w = 1, so each step gives w <- (1 - 4r)w. Work out the first few iterates for r = 0.1, 0.25, 0.5, and 0.6, state the condition on r for convergence, and say what this suggests about choosing a learning rate for a real model.",
+      "prompt": "Describe what happens to gradient descent on a simple bowl-shaped loss as the learning rate is raised from very small to very large, and say what this suggests about choosing a learning rate for a real model.",
       "rubric": [
         {
           "point": 1,
-          "text": "Identifies the step multiplier as (1 - 4r)."
+          "text": "Explains that a very small rate makes steady but slow progress and may not finish within the step budget."
         },
         {
           "point": 2,
-          "text": "Shows r = 0.1 giving 0.6, 0.36, 0.216, and so on, and r = 0.25 reaching 0 in one step."
+          "text": "Explains that a moderate rate can reach the minimum quickly."
         },
         {
           "point": 3,
-          "text": "Shows r = 0.5 alternating between 1 and -1 forever and r = 0.6 diverging with multiplier -1.4."
+          "text": "Explains that a larger rate overshoots and oscillates around the minimum, and that a rate that is too large makes the loss grow and training diverge."
         },
         {
           "point": 4,
-          "text": "States that it converges exactly when 0 < r < 0.5, and that the limit depends on the curvature of the loss."
+          "text": "States that the safe limit depends on the shape of the loss and the scale of the features, which are not known in advance for a real model."
         },
         {
           "point": 5,
-          "text": "Concludes that a real model has unknown curvature and feature scales, so there is no universal safe rate; test candidate rates on declared data and report all runs, including divergent ones."
+          "text": "Concludes that there is no universal safe rate: test candidate rates on declared validation data and report all runs, including divergent ones."
         }
       ]
     },
@@ -16961,23 +17089,23 @@
       "group": "chapter",
       "section": null,
       "source": "Score, probability, and decision are three layers",
-      "prompt": "Explain the role of the bias term in a one-feature logistic classifier. Why might a learned bias come out near zero on a symmetric dataset, and why would it be a mistake to conclude that the bias can be dropped?",
+      "prompt": "Explain the role of the bias term in a one-feature classifier. Why might a learned bias come out near zero on one symmetric toy dataset, and why would it be a mistake to conclude that the bias can be dropped?",
       "rubric": [
         {
           "point": 1,
-          "text": "States that the decision boundary is at x = -b/w, so the bias shifts it."
+          "text": "States that the bias shifts where the decision boundary lies along the feature; without it the boundary is fixed at a feature value of zero."
         },
         {
           "point": 2,
-          "text": "Notes that without a bias the boundary is fixed at x = 0."
+          "text": "Notes that data not centered at zero need a bias, or the boundary cannot be placed where the data call for it."
         },
         {
           "point": 3,
-          "text": "Explains that on mirror-image symmetric data the errors cancel in the bias gradient, so the learned bias stays near zero."
+          "text": "Explains that on symmetric data the pushes on the bias cancel, so the learned bias stays near zero."
         },
         {
           "point": 4,
-          "text": "Notes that removing a point or flipping a label breaks the symmetry and moves the bias, and that data not centered at zero need one."
+          "text": "Notes that removing a point or flipping a label breaks the symmetry and moves the bias."
         },
         {
           "point": 5,
@@ -16993,23 +17121,23 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "prompt": "A one-feature classifier trained from zero on symmetric data in which larger x goes with label 1 learns a positive weight and a bias near zero. Predict, with reasons, what happens to the learned weight, bias, boundary, and final training loss if every label is flipped, and say how you would verify the prediction.",
+      "prompt": "A one-feature classifier trained from zero on symmetric data in which larger feature values go with label 1 learns a positive weight and a bias near zero. Predict, with reasons, what happens to the learned weight, bias, boundary and final training loss if every label is flipped, and say how you would verify the prediction.",
       "rubric": [
         {
           "point": 1,
-          "text": "Predicts that the learned weight becomes negative, since larger x now goes with label 0."
+          "text": "Predicts that the learned weight becomes negative, since larger feature values now go with label 0."
         },
         {
           "point": 2,
-          "text": "Predicts that, because the data remain symmetric about zero, the bias stays near zero and the boundary near x = 0."
+          "text": "Predicts that, because the data remain symmetric about zero, the bias stays near zero and the boundary stays near a feature value of zero."
         },
         {
           "point": 3,
-          "text": "Uses the identity sigma(-a) = 1 - sigma(a): flipping labels is equivalent to negating the weight, so the final training loss matches the original run."
+          "text": "Explains that flipping the labels mirrors the problem, so the final training loss should match the original run."
         },
         {
           "point": 4,
-          "text": "Notes that the initial predictions (0.5) and initial loss (ln 2) are the same in both runs."
+          "text": "Notes that the starting predictions and the starting loss are the same in both runs, because nothing has been learned yet."
         },
         {
           "point": 5,
@@ -17025,27 +17153,27 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "prompt": "Explain how feature scale affects gradient-descent training of logistic regression, using the gradient formulas, and say what to do about it.",
+      "prompt": "Explain how feature scale affects the training of a classifier by gradient descent, and say what to do about it.",
       "rubric": [
         {
           "point": 1,
-          "text": "Notes that the weight gradient mean((p-y)*x) scales with the feature, while the bias gradient mean(p-y) has no x factor."
+          "text": "Notes that the weight's update scales with the feature value, while the bias's update has no feature factor."
         },
         {
           "point": 2,
-          "text": "Explains that large features produce large weight steps and can destabilize a fixed rate, while small features make progress slow."
+          "text": "Explains that large features produce large weight steps and can destabilize a fixed learning rate, while small features make progress slow."
         },
         {
           "point": 3,
-          "text": "Recommends standardizing features to zero mean and unit variance so one rate works across features."
+          "text": "Recommends standardizing features to zero mean and unit variance so one learning rate works across features."
         },
         {
           "point": 4,
-          "text": "Notes that changing units rescales the optimal weight inversely, leaving predictions unchanged if training converges."
+          "text": "Notes that changing units rescales the best weight inversely, leaving predictions unchanged if training converges."
         },
         {
           "point": 5,
-          "text": "Says to compute standardization statistics on the training data and apply the same transform to held-out data, to avoid leakage."
+          "text": "Says to compute the standardization statistics on the training data and apply the same transform to held-out data, to avoid leakage."
         }
       ]
     },
@@ -17065,7 +17193,7 @@
         },
         {
           "point": 2,
-          "text": "Describes minibatch descent as an unbiased noisy estimate with cheaper updates and more updates per pass (for example 1,000 examples in batches of 100 give 10 updates)."
+          "text": "Describes minibatch descent as using a noisy but unbiased estimate, with cheaper updates, more updates per pass over the data, and batches that map well onto parallel hardware."
         },
         {
           "point": 3,
@@ -17073,11 +17201,11 @@
         },
         {
           "point": 4,
-          "text": "Notes that gradient noise and shuffling affect optimization paths and can influence generalization."
+          "text": "Notes that gradient noise and shuffling affect the optimization path and can influence how well the model generalizes."
         },
         {
           "point": 5,
-          "text": "Says a full-batch teaching loop is easy to trace but omits shuffling, minibatches, and adaptive rates, so analogies to large-scale training are limited."
+          "text": "Says a full-batch teaching loop is easy to trace but omits shuffling, minibatches and adaptive rates, so analogies to large-scale training are limited."
         }
       ]
     },
@@ -17121,27 +17249,27 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "prompt": "For a sigmoid output p and label y = 1, the derivative of cross-entropy with respect to the score is p - 1, while the derivative of the half-squared error (p - y)^2 / 2 is (p - y)*p*(1 - p). At p = 0.001 these are about -0.999 and -0.001. Explain what this means for training when a model is confidently wrong, and what it implies about choosing an objective.",
+      "prompt": "Explain why cross-entropy is usually preferred to squared error for training a classifier that outputs probabilities, in terms of what happens to training when the model is confidently wrong.",
       "rubric": [
         {
           "point": 1,
-          "text": "States that the cross-entropy gradient with respect to the score is p - y, about -0.999 here, a strong corrective signal."
+          "text": "States that with cross-entropy the training signal stays strong when the model is confidently wrong."
         },
         {
           "point": 2,
-          "text": "States that the squared-error gradient carries the factor p(1-p), about -0.001 here, nearly vanishing."
+          "text": "States that with squared error on a squashed output the signal nearly vanishes when the output is saturated, so training stalls exactly when the model is most wrong."
         },
         {
           "point": 3,
-          "text": "Explains that a saturated sigmoid therefore makes squared-error training stall exactly when the model is most wrong."
+          "text": "Explains that the squashing function flattens at the extremes and squared error does not undo that."
         },
         {
           "point": 4,
-          "text": "Notes that cross-entropy pairs naturally with sigmoid outputs because it corresponds to the Bernoulli likelihood."
+          "text": "Notes that cross-entropy corresponds naturally to treating labels as random outcomes with probabilities."
         },
         {
           "point": 5,
-          "text": "Concludes that the choice of objective affects training dynamics, not only the number reported."
+          "text": "Concludes that the choice of objective affects how training behaves, not only the number that is reported."
         }
       ]
     },
@@ -17793,11 +17921,11 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "prompt": "Describe the steps of full-batch gradient descent for training a one-feature logistic classifier, including input validation, initialization, the update, and what is recorded, and identify which choices are design decisions rather than learned quantities.",
+      "prompt": "Describe the steps of training a simple classifier by gradient descent, including checking the inputs, choosing starting values, the repeated update, and what is recorded, and identify which choices are design decisions rather than learned quantities.",
       "rubric": [
         {
           "point": 1,
-          "text": "Describes validating the inputs: labels in {0, 1}, finite features, a positive integer number of steps, and a positive finite rate."
+          "text": "Describes validating the inputs: labels are valid, features are finite, the number of steps is a positive integer and the learning rate is positive and finite."
         },
         {
           "point": 2,
@@ -17805,15 +17933,15 @@
         },
         {
           "point": 3,
-          "text": "Describes each step: compute predictions, form the errors p - y, average the gradient contributions, and update w and b by subtracting rate times gradient."
+          "text": "Describes each step: compute predictions, compare them with the labels, average the gradient contributions, and move the parameters against the gradient by the learning rate times the gradient."
         },
         {
           "point": 4,
-          "text": "Describes recording the final loss after the budget and returning the parameters."
+          "text": "Describes recording the final loss after the step budget and returning the parameters."
         },
         {
           "point": 5,
-          "text": "Identifies the learning rate, step budget, initialization, objective, and data split as design decisions, not quantities the loop learns."
+          "text": "Identifies the learning rate, step budget, initialization, objective and data split as design decisions, not quantities the loop learns."
         }
       ]
     },
@@ -17921,27 +18049,27 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "prompt": "A logistic regression has a weight of 0.7 on a feature x. Interpret the weight in terms of log-odds, odds, and probability, show with a numerical example why the probability change per unit of x varies, and say why the weight alone does not show that x causes the outcome.",
+      "prompt": "A fitted classifier has a positive weight on a feature x. Explain what the weight says, why the same change in x does not always change the predicted probability by the same amount, and why the weight alone does not show that x causes the outcome.",
       "rubric": [
         {
           "point": 1,
-          "text": "States that each one-unit increase in x adds 0.7 to the log-odds."
+          "text": "States that a positive weight means larger values of x went with a higher predicted chance of label 1 in the training data, other features held fixed."
         },
         {
           "point": 2,
-          "text": "States that each one-unit increase multiplies the odds by e^0.7, about 2.01."
+          "text": "Notes that the size of the weight depends on the units in which x is measured."
         },
         {
           "point": 3,
-          "text": "Notes that probability responds nonlinearly through the sigmoid, so the same step changes probability most near 0.5 and least near 0 or 1."
+          "text": "Explains that the probability responds nonlinearly through the sigmoid, so the same change in x moves it most near the middle and least near 0 or 1."
         },
         {
           "point": 4,
-          "text": "Gives an example: from probability 0.5 (odds 1) the odds become about 2.01, giving a probability of about 0.67."
+          "text": "Notes that the weight describes the data the model was fit on and may not hold in a different population."
         },
         {
           "point": 5,
-          "text": "Explains that the weight is an association in the training data and does not identify the effect of intervening on x."
+          "text": "Explains that the weight is an association and does not identify the effect of intervening on x."
         }
       ]
     },

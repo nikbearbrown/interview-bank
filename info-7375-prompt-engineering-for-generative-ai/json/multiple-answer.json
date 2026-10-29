@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 972,
+  "count": 976,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -33,37 +33,37 @@
       "group": "foundations",
       "section": "1. A brief history of AI",
       "source": null,
-      "stem": "Check each statement that is historically accurate.",
+      "stem": "Check each statement that is true about AI systems built from hand-written rules and AI systems that learn from data.",
       "statements": [
         {
           "label": "A",
-          "text": "McCulloch and Pitts published a mathematical model of an artificial neuron in 1943.",
+          "text": "In a rule-based system, a person writes the conditions that decide each output.",
           "correct": true,
-          "explanation": "The artificial neuron model is from 1943."
+          "explanation": "Every decision traces back to a rule that a person authored."
         },
         {
           "label": "B",
-          "text": "The term \"artificial intelligence\" comes from the proposal for the 1956 Dartmouth workshop.",
+          "text": "A system that learns from data can give sensible output for inputs that no one wrote a rule for.",
           "correct": true,
-          "explanation": "McCarthy coined it in the 1955 proposal for the 1956 workshop."
+          "explanation": "A learned model generalizes from patterns in its examples, within the range the data covers."
         },
         {
           "label": "C",
-          "text": "AI was founded as a field in 1942.",
+          "text": "A rule-based system behaves sensibly on inputs its rules did not anticipate.",
           "correct": false,
-          "explanation": "The neuron model is 1943 and the field was named in 1956; nothing founded it in 1942."
+          "explanation": "Rules cover only what their authors anticipated; an unanticipated input falls through or is mishandled."
         },
         {
           "label": "D",
-          "text": "AlexNet's 2012 ImageNet result is widely seen as the start of the modern deep learning boom.",
-          "correct": true,
-          "explanation": "That is the standard marker for the boom."
+          "text": "Two learned models with identical code but different training data will behave identically.",
+          "correct": false,
+          "explanation": "The same code trained on different data gives different behavior."
         },
         {
           "label": "E",
-          "text": "ChatGPT was released to the public in 2015.",
+          "text": "Good performance on its training examples shows that a learned model will perform well on new inputs.",
           "correct": false,
-          "explanation": "ChatGPT launched in November 2022."
+          "explanation": "A model can do well on examples it has already seen by memorizing them; only inputs it has not seen show how it handles new ones."
         }
       ]
     },
@@ -75,37 +75,37 @@
       "group": "foundations",
       "section": "1. A brief history of AI",
       "source": null,
-      "stem": "Check each statement that is historically accurate.",
+      "stem": "Check each statement that is true about why language models became much more capable.",
       "statements": [
         {
           "label": "A",
-          "text": "The Transformer was introduced in 2017 in \"Attention Is All You Need\".",
+          "text": "Neural network training is mostly matrix multiplication, which suits hardware that performs many operations in parallel.",
           "correct": true,
-          "explanation": "Vaswani and colleagues published the Transformer paper in 2017."
+          "explanation": "Matrix multiplications run in parallel on GPU-style hardware, which made training large networks practical."
         },
         {
           "label": "B",
-          "text": "Turing's \"Computing Machinery and Intelligence\" (1950) was published before Rosenblatt's Perceptron (1958).",
+          "text": "Training on more text with more computation has been a major source of capability gains.",
           "correct": true,
-          "explanation": "1950 comes before 1958."
+          "explanation": "Scaling data, parameters and computation has produced large measured improvements."
         },
         {
           "label": "C",
-          "text": "Backpropagation was popularized in 1986 for training multi-layer networks.",
-          "correct": true,
-          "explanation": "Rumelhart, Hinton and Williams, 1986."
+          "text": "High benchmark scores alone establish that a model understands text the way a person does.",
+          "correct": false,
+          "explanation": "A benchmark measures performance on its own tasks; whether that amounts to human-style understanding is a separate question the score does not settle."
         },
         {
           "label": "D",
-          "text": "The LSTM (1997) was introduced before AlexNet (2012).",
+          "text": "Because the next token in a text serves as the training target, pretraining on raw text needs no human labeling of each example.",
           "correct": true,
-          "explanation": "1997 comes before 2012."
+          "explanation": "The text supplies its own labels, so very large unlabeled collections can be used."
         },
         {
           "label": "E",
-          "text": "The Perceptron (1958) was introduced after backpropagation was popularized (1986).",
+          "text": "A model with more parameters has, for that reason alone, been shown to be more accurate on a given task.",
           "correct": false,
-          "explanation": "Reversed: the Perceptron came first."
+          "explanation": "Size tends to bring capability but is not evidence of accuracy on a task; accuracy has to be measured on that task."
         }
       ]
     },
@@ -199,39 +199,39 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Neural network structure and RNNs",
+      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
       "source": null,
-      "stem": "Check each statement that is true about feedforward neural networks.",
+      "stem": "Check each statement that is true about the two main parts of a transformer language model.",
       "statements": [
         {
           "label": "A",
-          "text": "Each neuron computes an activation function applied to w · x + b.",
+          "text": "Self-attention lets each token's representation take in information from the other tokens in the context.",
           "correct": true,
-          "explanation": "Weights, bias, then nonlinear activation."
+          "explanation": "Attention is how context enters the computation: each token's representation is updated using the tokens around it."
         },
         {
           "label": "B",
-          "text": "Without nonlinear activations, a stack of layers collapses into a single linear transformation.",
+          "text": "The prediction step turns the final representation into a probability for each possible next token.",
           "correct": true,
-          "explanation": "Linear composed with linear is linear."
+          "explanation": "The last stage maps the representation to a score for every vocabulary token and then to probabilities."
         },
         {
           "label": "C",
-          "text": "Backpropagation computes the gradients of the loss used to update the weights.",
-          "correct": true,
-          "explanation": "Forward pass, loss, backprop, gradient descent."
+          "text": "Self-attention checks each statement the model writes against a database of verified facts.",
+          "correct": false,
+          "explanation": "Nothing in attention checks claims against a source; it only mixes information that is already in the context."
         },
         {
           "label": "D",
-          "text": "Backpropagation is the step that changes the weights, while the optimizer only computes the gradients.",
+          "text": "A token has the same internal representation wherever it appears, whatever the words around it.",
           "correct": false,
-          "explanation": "Reversed: backpropagation computes gradients and the optimizer uses them to update the weights."
+          "explanation": "Representations change with context, so \"bank\" beside \"river\" is represented differently from \"bank\" beside \"loan\"."
         },
         {
           "label": "E",
-          "text": "In training, the loss is computed before the forward pass.",
-          "correct": false,
-          "explanation": "The forward pass comes first; the loss measures its output."
+          "text": "Because the model is trained to predict the next token of text, its output reflects what text tends to follow, not what has been verified.",
+          "correct": true,
+          "explanation": "The training target is the next token of the text, which rewards plausible continuation, not verified truth."
         }
       ]
     },
@@ -241,39 +241,81 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "3. Neural network structure and RNNs",
+      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
       "source": null,
-      "stem": "Check each statement that is true about RNNs.",
+      "stem": "Check each statement that is true about what the structure of a transformer language model does and does not provide.",
       "statements": [
         {
           "label": "A",
-          "text": "An RNN carries a hidden state from one time step to the next.",
+          "text": "When predicting the next token, the model can draw on the tokens in its context.",
           "correct": true,
-          "explanation": "h_t depends on h_(t-1)."
+          "explanation": "Attention is the route by which information in the context reaches the prediction."
         },
         {
           "label": "B",
-          "text": "An RNN processes a sequence step by step, which limits parallel training.",
+          "text": "A document that is not in the context and was not in the training data is unavailable to the model unless a tool retrieves it.",
           "correct": true,
-          "explanation": "Tokens are handled in order."
+          "explanation": "A model has no access to documents beyond its context and its training, apart from what tools fetch for it."
         },
         {
           "label": "C",
-          "text": "Plain RNNs struggle with long-range dependencies because of vanishing or exploding gradients.",
-          "correct": true,
-          "explanation": "Early information fades or blows up as gradients pass through many steps."
+          "text": "The prediction step includes a check that the chosen token is true.",
+          "correct": false,
+          "explanation": "The prediction step ranks tokens by probability; it does not verify them."
         },
         {
           "label": "D",
-          "text": "LSTM and GRU gating eliminates the vanishing-gradient problem entirely.",
-          "correct": false,
-          "explanation": "Gating reduces the problem; it does not eliminate it."
+          "text": "With sampling turned on, two runs on the same context can produce different outputs, because the next token is drawn from a probability distribution.",
+          "correct": true,
+          "explanation": "Sampling draws from a distribution, so identical context can yield different tokens."
         },
         {
           "label": "E",
-          "text": "Replacing a plain RNN with an LSTM removes the need to process tokens one at a time.",
+          "text": "Because attention connects every token in the context, the model's answer is guaranteed to agree with everything in the context.",
           "correct": false,
-          "explanation": "An LSTM still updates its state step by step, so training stays sequential across time."
+          "explanation": "Access to the context does not guarantee agreement with it; models can overlook or contradict text they were given."
+        }
+      ]
+    },
+    {
+      "id": "MA-3.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "3. Inside a transformer: encoder, decoder, context and prediction",
+      "source": null,
+      "stem": "Check each statement that is true about encoders and decoders in the transformer design.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An encoder reads a whole input and builds a representation of each token that takes the surrounding tokens into account.",
+          "correct": true,
+          "explanation": "Self-attention in an encoder lets each token's representation draw on the whole input, on both sides of it."
+        },
+        {
+          "label": "B",
+          "text": "A decoder produces output one token at a time, each chosen from the tokens that came before it.",
+          "correct": true,
+          "explanation": "The decoder is the generating half: it predicts the next token, adds it to the context and repeats."
+        },
+        {
+          "label": "C",
+          "text": "A decoder can use the tokens that come after the one it is predicting.",
+          "correct": false,
+          "explanation": "Later tokens are hidden from a decoder while it predicts; at generation time they do not exist yet."
+        },
+        {
+          "label": "D",
+          "text": "A model that only continues a prompt with new text can be built from a decoder alone.",
+          "correct": true,
+          "explanation": "Text continuation needs only the generating half, and many language models are built this way."
+        },
+        {
+          "label": "E",
+          "text": "An encoder that reads a sentence in order to label it generates its output one token at a time, from left to right.",
+          "correct": false,
+          "explanation": "An encoder produces representations of an input, which can be read out as a label; it does not generate text token by token."
         }
       ]
     },
@@ -283,7 +325,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "4. Tokens",
+      "section": "4. Tokens and input embeddings",
       "source": null,
       "stem": "Check each statement that is true.",
       "statements": [
@@ -325,7 +367,7 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "4. Tokens",
+      "section": "4. Tokens and input embeddings",
       "source": null,
       "stem": "Check each statement that is true.",
       "statements": [
@@ -358,6 +400,48 @@
           "text": "The logits vector has length equal to the number of tokens in the prompt.",
           "correct": false,
           "explanation": "Its length is the vocabulary size, regardless of prompt length."
+        }
+      ]
+    },
+    {
+      "id": "MA-4.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "stem": "Check each statement that is true about input embeddings in a language model.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An input embedding is a vector of numbers that represents a token and is selected by the token's ID.",
+          "correct": true,
+          "explanation": "The token ID selects one row of a learned table, and that vector is what the rest of the model works on."
+        },
+        {
+          "label": "B",
+          "text": "The embedding vectors are learned during training, along with the rest of the model's parameters.",
+          "correct": true,
+          "explanation": "Embeddings are parameters adjusted during training, not written by hand."
+        },
+        {
+          "label": "C",
+          "text": "The same token receives a different input embedding each time it appears, depending on the sentence around it.",
+          "correct": false,
+          "explanation": "The lookup depends only on the token; context enters later, when attention revises each token's vector."
+        },
+        {
+          "label": "D",
+          "text": "The tokens \"dog\" and \"cat\" tend to end up with similar vectors because they occur in similar contexts in the training text.",
+          "correct": true,
+          "explanation": "Both words appear with words like \"pet\", \"feed\" and \"vet\", and training pulls tokens that fit similar contexts toward similar vectors; no person labeled them as animals."
+        },
+        {
+          "label": "E",
+          "text": "Two tokens whose embeddings are close have been verified to mean the same thing.",
+          "correct": false,
+          "explanation": "Closeness reflects how tokens were used in text; it does not verify that they mean the same, and it can carry associations and biases from that text."
         }
       ]
     },
@@ -493,39 +577,39 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "6. Attention and the Transformer",
+      "section": "6. Self-attention, positional encoding and the Transformer",
       "source": null,
       "stem": "Check each statement that is true about self-attention.",
       "statements": [
         {
           "label": "A",
-          "text": "Queries, keys and values are learned linear projections of token representations.",
+          "text": "Each token's new representation is built from a weighted mix of information from tokens in the context.",
           "correct": true,
-          "explanation": "Q, K and V are projections."
+          "explanation": "Attention is how a token takes in information from the rest of the context."
         },
         {
           "label": "B",
-          "text": "Attention scores are computed as Q·Kᵀ divided by √d_k.",
+          "text": "The weights are computed from the tokens themselves, so they differ from one sentence to another.",
           "correct": true,
-          "explanation": "Scaled dot-product attention."
+          "explanation": "The weights depend on the content of the current sentence, not on a fixed table."
         },
         {
           "label": "C",
-          "text": "Softmax over each query's scores produces weights that sum to 1.",
-          "correct": true,
-          "explanation": "Each row is normalized."
+          "text": "Self-attention gives every token in the context the same weight.",
+          "correct": false,
+          "explanation": "Equal weights would give no way to focus on the tokens that matter for the current one."
         },
         {
           "label": "D",
-          "text": "Attention on its own encodes word order, so positional information is unnecessary.",
-          "correct": false,
-          "explanation": "Attention is order-agnostic; positional encoding is added."
+          "text": "When a decoder-only language model predicts the next token, it uses the tokens before that position and not later ones.",
+          "correct": true,
+          "explanation": "At generation time later tokens do not exist yet, so the prediction can use only earlier ones."
         },
         {
           "label": "E",
-          "text": "In a decoder-only language model, a causal mask prevents tokens from attending to future tokens.",
-          "correct": true,
-          "explanation": "Tokens see only earlier tokens."
+          "text": "Self-attention is the stage that turns the final representation into next-token probabilities.",
+          "correct": false,
+          "explanation": "Turning representations into probabilities is the separate prediction step at the end."
         }
       ]
     },
@@ -535,39 +619,123 @@
       "points": 5,
       "chapter": null,
       "group": "foundations",
-      "section": "6. Attention and the Transformer",
+      "section": "6. Self-attention, positional encoding and the Transformer",
       "source": null,
-      "stem": "Check each statement that is true.",
+      "stem": "A trained model represents the word \"bank\" in \"river bank\" and in \"bank account\". Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The output for each token is a weighted sum of value vectors.",
+          "text": "The model's vector for \"bank\" can differ between the two sentences.",
           "correct": true,
-          "explanation": "Weights times V."
+          "explanation": "The representation is computed from the word in its context."
         },
         {
           "label": "B",
-          "text": "Multi-head attention lets the model attend to different kinds of relationships in parallel.",
+          "text": "The difference shows that the representation depends on the surrounding words.",
           "correct": true,
-          "explanation": "Several heads run at once."
+          "explanation": "Context-dependent representations are the purpose of attention."
         },
         {
           "label": "C",
-          "text": "Observing that the vector for \"bank\" differs when \"river\" is nearby proves the model understands both senses of \"bank\".",
+          "text": "The difference alone proves the model understands both meanings of \"bank\".",
           "correct": false,
-          "explanation": "It shows the representation depends on context; whether the model handles both senses has to be tested on its behavior."
+          "explanation": "A representation that varies is not itself evidence of correct use; behavior has to show that."
         },
         {
           "label": "D",
-          "text": "Surrounding tokens can influence a token's representation through attention.",
+          "text": "Whether the model handles both meanings correctly can be tested by giving it new sentences and checking its answers.",
           "correct": true,
-          "explanation": "That is how context changes it."
+          "explanation": "New sentences test the behavior directly."
         },
         {
           "label": "E",
-          "text": "Attention was introduced to compress the whole input into a single fixed-size vector.",
+          "text": "Attention lets the model use any text it saw in training even when that text is not in the current context.",
           "correct": false,
-          "explanation": "The opposite: attention lets the model look back at every input position instead of relying on one fixed-size summary."
+          "explanation": "Attention works over the tokens currently in the context; what training left in the parameters is a separate matter."
+        }
+      ]
+    },
+    {
+      "id": "MA-6.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "6. Self-attention, positional encoding and the Transformer",
+      "source": null,
+      "stem": "Check each statement that is true about parallelism in transformers, which matters most when a model is trained on internet-scale text and used by very many people.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "During training, a transformer can compute the predictions for all positions of a text in the same pass, rather than one position after another.",
+          "correct": true,
+          "explanation": "The whole training text is known in advance, so every position's prediction can be computed together; a model that had to process positions one after another could not."
+        },
+        {
+          "label": "B",
+          "text": "Hardware such as GPUs, which performs many calculations at the same time, is well suited to this.",
+          "correct": true,
+          "explanation": "GPU-style hardware performs huge numbers of matrix operations simultaneously, which is what makes training on internet-scale text practical."
+        },
+        {
+          "label": "C",
+          "text": "Because of this parallelism, a transformer also generates the tokens of a reply all at once.",
+          "correct": false,
+          "explanation": "At generation time each token depends on the tokens before it, so the tokens of a reply are produced one after another."
+        },
+        {
+          "label": "D",
+          "text": "A service that handles many users can process many requests together in batches to use its hardware efficiently.",
+          "correct": true,
+          "explanation": "Batching requests raises throughput and lowers the cost per request, at some cost in waiting time."
+        },
+        {
+          "label": "E",
+          "text": "Parallel computation guarantees that the same prompt gives bit-for-bit identical numbers on every run.",
+          "correct": false,
+          "explanation": "The order in which parallel hardware adds floating-point numbers can change with batching and hardware, so tiny differences can appear even with sampling turned off."
+        }
+      ]
+    },
+    {
+      "id": "MA-6.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "6. Self-attention, positional encoding and the Transformer",
+      "source": null,
+      "stem": "Check each statement that is true about positional encoding in a transformer.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Self-attention on its own does not tell the model which token came first.",
+          "correct": true,
+          "explanation": "Attention weighs tokens by their content, so on its own it carries no information about order."
+        },
+        {
+          "label": "B",
+          "text": "Positional encoding adds information about each token's position to the token's vector, so the model can use word order.",
+          "correct": true,
+          "explanation": "Position information is added to the token vectors so that order is available to the model."
+        },
+        {
+          "label": "C",
+          "text": "Positional encoding is needed only for languages with strict word order, such as English.",
+          "correct": false,
+          "explanation": "Order carries meaning in every language, and the model needs position information whichever language it reads."
+        },
+        {
+          "label": "D",
+          "text": "Positional encoding is chosen by the person writing each prompt.",
+          "correct": false,
+          "explanation": "It is part of the model's design and training, not something a prompt writer sets."
+        },
+        {
+          "label": "E",
+          "text": "Because positions are encoded, the model uses information equally well wherever it appears in a long context.",
+          "correct": false,
+          "explanation": "Having position information does not guarantee equal use of every part of a long context; where information sits in a prompt can change results."
         }
       ]
     },
@@ -1797,37 +1965,37 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "stem": "In one self-attention step, the current token's query gives raw scores of 2.0, 1.0 and 0.1 against the keys of the three tokens it may read. A softmax turns the scores into weights, and the token's new vector is the weighted sum of the three value vectors. Check each statement that is true.",
+      "stem": "In one self-attention step, a token gives a weight to each token it may read. The weights are non-negative and sum to 1, and the token's new representation is a mix of information from those tokens in proportion to the weights. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The token with the highest raw score receives all of the weight.",
-          "correct": false,
-          "explanation": "Softmax is smooth; lower scores still receive positive weight."
+          "text": "A token with a larger weight contributes more to the mix.",
+          "correct": true,
+          "explanation": "The weights set the proportions of the mix."
         },
         {
           "label": "B",
-          "text": "The three weights sum to 1.",
-          "correct": true,
-          "explanation": "Softmax outputs are nonnegative and sum to 1."
+          "text": "The token with the highest weight receives all of the weight.",
+          "correct": false,
+          "explanation": "The weights sum to 1, so a high weight on one token still leaves weight for the others."
         },
         {
           "label": "C",
-          "text": "The attention weights are learned parameters stored in the model and reused unchanged for every input.",
+          "text": "The weights are fixed values stored in the model and reused unchanged for every input.",
           "correct": false,
-          "explanation": "The weights are recomputed from queries and keys for each input; the learned parameters are the projections that produce them."
+          "explanation": "The weights are computed from the current tokens; what is learned in training is how to compute them."
         },
         {
           "label": "D",
-          "text": "The weights are approximately 0.66, 0.24 and 0.10.",
+          "text": "If two tokens receive weights of 0.6 and 0.4 and no other token receives weight, the mix is 60 percent from the first and 40 percent from the second.",
           "correct": true,
-          "explanation": "Softmax of (2.0, 1.0, 0.1) is about (0.659, 0.242, 0.099)."
+          "explanation": "The weights are the proportions: 0.6 and 0.4 give a 60/40 mix."
         },
         {
           "label": "E",
-          "text": "The output is a weighted mix of the value vectors, not of the key vectors.",
+          "text": "Self-attention lets a token place weight on itself as well as on the other tokens.",
           "correct": true,
-          "explanation": "Keys are used only to compute scores; values are what get mixed."
+          "explanation": "A token's own representation is one of the inputs it may read."
         }
       ]
     },
@@ -1839,37 +2007,37 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "stem": "In scaled dot-product attention, scores are computed as q·k divided by the square root of d_k, where d_k is the length of the key vector. Suppose d_k = 64 and the components of q and k are independent with mean 0 and variance 1. Check each statement that is true.",
+      "stem": "A user says: \"The assistant has the whole conversation in its context, so every detail I gave it will be used correctly in its answers.\" Check each statement that is true about that claim.",
       "statements": [
         {
           "label": "A",
-          "text": "After dividing by the square root of d_k, the dot product has a standard deviation of about 1.",
+          "text": "Having text in the context makes it available to the model when it predicts the next token.",
           "correct": true,
-          "explanation": "Dividing by 8 brings the standard deviation back to about 1."
+          "explanation": "Attention gives the model access to everything inside the window."
         },
         {
           "label": "B",
-          "text": "Before scaling, the dot product q·k has a standard deviation of 8.",
+          "text": "Having text in the context does not guarantee that the model uses it correctly.",
           "correct": true,
-          "explanation": "A sum of 64 independent unit-variance products has variance 64, so a standard deviation of 8."
+          "explanation": "Models can overlook, misread or contradict text that is present."
         },
         {
           "label": "C",
-          "text": "For these dimensions, each scaled score equals the raw dot product divided by 8.",
+          "text": "Text that was cut from the context because the conversation exceeded the context window is unavailable to the model.",
           "correct": true,
-          "explanation": "The square root of 64 is 8, so every score is divided by 8."
+          "explanation": "Once text no longer fits, it is simply not part of the input."
         },
         {
           "label": "D",
-          "text": "Without scaling, large scores can push the softmax toward saturation, where one weight is near 1 and gradients become very small.",
-          "correct": true,
-          "explanation": "Large-magnitude inputs make the softmax nearly one-hot, which flattens its gradients."
+          "text": "If a fact appears in the context, the model's answer cannot contradict it.",
+          "correct": false,
+          "explanation": "Contradictions of text the model was given do occur."
         },
         {
           "label": "E",
-          "text": "The scaling is needed because the softmax cannot accept negative inputs.",
+          "text": "On its own, a language model checks its finished answer against the context before showing it.",
           "correct": false,
-          "explanation": "Softmax accepts any real inputs; the scaling addresses magnitude, not sign."
+          "explanation": "A plain model produces tokens one at a time and has no separate pass that reviews the result unless the application adds one."
         }
       ]
     },
@@ -1881,37 +2049,37 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "stem": "A decoder-only language model is trained on a five-token sentence. Predictions at all five positions are computed in one pass, and before each softmax the attention scores to later positions are set to negative infinity. Check each statement that is true.",
+      "stem": "A language model that generates text from left to right is trained on a five-token sentence. For each position it must predict the next token from the tokens before it. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "Masking prevents the model from using earlier tokens.",
-          "correct": false,
-          "explanation": "Masking removes only later positions; earlier positions stay visible."
+          "text": "While predicting token 3 from tokens 1 and 2, the model is allowed to use tokens 1 and 2.",
+          "correct": true,
+          "explanation": "Earlier tokens are the context for the prediction."
         },
         {
           "label": "B",
-          "text": "The mask is only needed when generating text and can be dropped during training.",
-          "correct": false,
-          "explanation": "Training computes all positions at once, so the mask must be present then to match the generation-time condition."
+          "text": "While predicting token 3, the model must not be able to see token 3 itself, or the training task would be trivial.",
+          "correct": true,
+          "explanation": "If the answer is visible the model can copy it, and the loss says nothing about prediction."
         },
         {
           "label": "C",
-          "text": "After masking, the attention weight placed on later positions is 0.",
-          "correct": true,
-          "explanation": "The exponential of negative infinity is 0, so those positions get zero weight."
+          "text": "Hiding later tokens is needed only when generating text and can be dropped during training.",
+          "correct": false,
+          "explanation": "Training must match generation, where later tokens do not exist yet."
         },
         {
           "label": "D",
-          "text": "An encoder that reads a complete input sentence to classify it typically needs the same causal mask.",
+          "text": "A model that reads a complete sentence in order to classify it needs the same left-to-right restriction.",
           "correct": false,
-          "explanation": "A bidirectional encoder is allowed to read the whole input; the causal mask is for left-to-right prediction."
+          "explanation": "When the whole input is available and the task is to label it, nothing needs to be hidden."
         },
         {
           "label": "E",
-          "text": "Without this mask, the position that predicts token 3 could read token 3 itself, making the training task trivial.",
-          "correct": true,
-          "explanation": "Leaked access to the answer would let the model copy rather than predict."
+          "text": "Hiding later tokens means the model cannot use earlier tokens.",
+          "correct": false,
+          "explanation": "The restriction hides later tokens, not earlier ones."
         }
       ]
     },
@@ -1923,37 +2091,37 @@
       "group": "chapter",
       "section": null,
       "source": "Self-attention: each token chooses what to read from",
-      "stem": "A transformer layer has model dimension 512 and uses 8 attention heads, each with its own learned projections. Check each statement that is true.",
+      "stem": "A transformer applies its steps in many stacked layers. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The four projection matrices (query, key, value and output) hold 4 x 512 x 512 = 1,048,576 weights, ignoring biases, regardless of the number of heads.",
+          "text": "Each layer works on the representations produced by the layer before it.",
           "correct": true,
-          "explanation": "Splitting the dimension across heads keeps the total projection size fixed at four 512 x 512 matrices."
+          "explanation": "Stacking passes the representation through repeated rounds of processing."
         },
         {
           "label": "B",
-          "text": "Each head has its own learned projection matrices, so different heads can attend to different patterns.",
-          "correct": true,
-          "explanation": "Separate projections let each head learn a different way of comparing tokens."
+          "text": "A model's behavior on a prompt is set only by its last layer.",
+          "correct": false,
+          "explanation": "All layers contribute to the result."
         },
         {
           "label": "C",
-          "text": "If the dimension is split evenly across heads, each head works with 64-dimensional query, key and value vectors.",
-          "correct": true,
-          "explanation": "512 divided by 8 heads is 64 dimensions per head."
+          "text": "A researcher can assume that a given layer or attention head has a clean human-readable role without testing it.",
+          "correct": false,
+          "explanation": "What a head or layer does must be shown by experiments, not assumed."
         },
         {
           "label": "D",
-          "text": "All heads must produce identical outputs because they read the same input.",
-          "correct": false,
-          "explanation": "Different projections give different outputs; the diversity is the point of having several heads."
+          "text": "The parameters in all layers were learned in training and stay fixed while the model answers a prompt.",
+          "correct": true,
+          "explanation": "Using a model does not change its parameters."
         },
         {
           "label": "E",
-          "text": "Using 8 heads multiplies the attention parameter count by 8 relative to a single 512-dimensional head.",
+          "text": "Having many layers makes it easy to read off why the model gave an answer.",
           "correct": false,
-          "explanation": "When the dimension is divided among heads, the parameter count stays the same."
+          "explanation": "Many layers of numeric vectors are hard to interpret; an explanation needs separate evidence."
         }
       ]
     },
@@ -2049,37 +2217,37 @@
       "group": "chapter",
       "section": null,
       "source": "The feed-forward network: an ordinary neural network",
-      "stem": "A position-wise feed-forward layer computes ReLU(xW1)W2 with no biases, where ReLU(v) = max(0, v). The input is x = [1, -2], with W1 = [[1, -1, 2], [0, 1, -1]] and W2 = [[1, 0], [2, 1], [0, -1]]. Check each statement that is true.",
+      "stem": "A transformer layer has two kinds of step: attention, which mixes information across token positions, and a second step that transforms each token's vector on its own using learned parameters. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The hidden vector after the ReLU is [1, 3, 4].",
-          "correct": false,
-          "explanation": "The ReLU sets -3 to 0, giving [1, 0, 4]."
+          "text": "Mixing information across token positions is the job of attention.",
+          "correct": true,
+          "explanation": "Attention is where tokens exchange information."
         },
         {
           "label": "B",
-          "text": "The hidden vector before the ReLU is [1, -3, 4].",
+          "text": "The per-token step uses parameters learned in training that stay fixed while the model answers a prompt.",
           "correct": true,
-          "explanation": "x times W1 gives [1x1 + (-2)x0, 1x(-1) + (-2)x1, 1x2 + (-2)x(-1)] = [1, -3, 4]."
+          "explanation": "Learned parameters do not change during use."
         },
         {
           "label": "C",
-          "text": "This layer mixes information between this token's position and its neighbouring positions.",
+          "text": "The per-token step lets a token read the other tokens in the context.",
           "correct": false,
-          "explanation": "The same weights are applied to each position independently, so no mixing between positions happens here."
+          "explanation": "Reading other tokens is attention's job; the per-token step sees only that token's current vector."
         },
         {
           "label": "D",
-          "text": "The layer output is [1, -4].",
-          "correct": true,
-          "explanation": "[1, 0, 4] times W2 gives [1x1 + 0x2 + 4x0, 1x0 + 0x1 + 4x(-1)] = [1, -4]."
+          "text": "The per-token step looks up stored facts in a table by exact key.",
+          "correct": false,
+          "explanation": "The step is arithmetic with learned numbers, not a lookup table of facts."
         },
         {
           "label": "E",
-          "text": "The ReLU leaves negative values unchanged.",
-          "correct": false,
-          "explanation": "The ReLU replaces negative values with zero."
+          "text": "The per-token step is applied to every token in the context using the same learned parameters.",
+          "correct": true,
+          "explanation": "The same learned transformation processes each position."
         }
       ]
     },
@@ -2091,37 +2259,37 @@
       "group": "chapter",
       "section": null,
       "source": "The feed-forward network: an ordinary neural network",
-      "stem": "A transformer layer contains a self-attention sublayer and a position-wise feed-forward sublayer. Check each statement that is true.",
+      "stem": "Check each statement that is true about where a language model's learned knowledge and its working information are held.",
       "statements": [
         {
           "label": "A",
-          "text": "The feed-forward sublayer is specific to language and could not be fitted to other numeric inputs.",
-          "correct": false,
-          "explanation": "It is an ordinary two-layer network that works on any numeric vector."
+          "text": "What the model learned in training is held in its parameters, not in a database of documents that it consults.",
+          "correct": true,
+          "explanation": "Training builds patterns from the text into numeric parameters; no document store is consulted at answer time."
         },
         {
           "label": "B",
-          "text": "In the original design, the feed-forward hidden layer is wider than the model dimension, for example 512 expanding to 2,048 and back.",
-          "correct": true,
-          "explanation": "Expanding to a wider hidden layer and projecting back down is the standard design."
+          "text": "A fact the model learned can be found by reading off the one parameter that stores it.",
+          "correct": false,
+          "explanation": "Knowledge is spread across many parameters; no single parameter holds a fact."
         },
         {
           "label": "C",
-          "text": "The feed-forward sublayer applies the same weights to every position independently.",
+          "text": "Information placed in the prompt is available to the model for that request but is not added to its parameters.",
           "correct": true,
-          "explanation": "\"Position-wise\" means identical weights applied separately to each position."
+          "explanation": "Context is used at run time and discarded unless the application saves it."
         },
         {
           "label": "D",
-          "text": "Interaction between different token positions happens in attention, not in the feed-forward sublayer.",
+          "text": "Training the model further on new text changes its parameters; adding that text to a prompt does not.",
           "correct": true,
-          "explanation": "Only attention reads across positions within a layer."
+          "explanation": "Only training or tuning updates parameters."
         },
         {
           "label": "E",
-          "text": "The feed-forward sublayer has no learned parameters.",
+          "text": "Because knowledge is held in parameters, any statement the model makes can be traced to the training document it came from.",
           "correct": false,
-          "explanation": "Its weight matrices are among the largest sets of parameters in the model and are learned in training."
+          "explanation": "The parameters keep no record of which document taught what, so statements cannot be traced that way."
         }
       ]
     },
@@ -2133,37 +2301,37 @@
       "group": "chapter",
       "section": null,
       "source": "The feed-forward network: an ordinary neural network",
-      "stem": "A transformer layer has model dimension 512 and a feed-forward hidden size of 2,048. The feed-forward sublayer has two weight matrices (512 to 2,048, and 2,048 back to 512), each with a bias vector. The attention sublayer has four 512 x 512 projection matrices. Check each statement that is true.",
+      "stem": "A researcher says: \"The per-token processing step is where the model stores facts.\" Check each statement that is true about how to treat this claim.",
       "statements": [
         {
           "label": "A",
-          "text": "The two feed-forward weight matrices contain 2 x 512 x 2,048 = 2,097,152 weights.",
+          "text": "It is a hypothesis that needs evidence from experiments.",
           "correct": true,
-          "explanation": "512 x 2,048 = 1,048,576 per matrix, so 2,097,152 for two."
+          "explanation": "Statements about what part of a model does what are claims about mechanism."
         },
         {
           "label": "B",
-          "text": "The number of feed-forward parameters depends on the length of the input sequence.",
-          "correct": false,
-          "explanation": "Parameter counts depend on dimensions, not on how long the current input is."
+          "text": "Changing or removing the component and observing the effect on the model's answers would be relevant evidence.",
+          "correct": true,
+          "explanation": "Interventions show whether the component matters for the behavior."
         },
         {
           "label": "C",
-          "text": "The feed-forward sublayer has about twice as many weights as the four attention projection matrices combined.",
-          "correct": true,
-          "explanation": "The projections hold 1,048,576 weights, and the feed-forward weights total 2,097,152, exactly twice as many."
+          "text": "Because the model is a neural network, the claim is true by definition.",
+          "correct": false,
+          "explanation": "Being a neural network does not settle where particular knowledge sits."
         },
         {
           "label": "D",
-          "text": "The feed-forward sublayer has about one million parameters.",
+          "text": "The claim would be established by finding that the component has many parameters.",
           "correct": false,
-          "explanation": "The total is about 2.1 million, roughly double that."
+          "explanation": "Size shows capacity, not function."
         },
         {
           "label": "E",
-          "text": "Including biases, the feed-forward sublayer has 2,099,712 parameters.",
-          "correct": true,
-          "explanation": "Adding 2,048 and 512 bias entries gives 2,097,152 + 2,560 = 2,099,712."
+          "text": "The claim is established if the model's answers about facts are correct.",
+          "correct": false,
+          "explanation": "Correct answers show behavior, not which component produced it."
         }
       ]
     },
@@ -2175,37 +2343,37 @@
       "group": "chapter",
       "section": null,
       "source": "Putting the pieces together",
-      "stem": "Inside each transformer layer, the output of a sublayer is added to its input (a residual connection). After the last layer, the vector at the final position is turned into one score per vocabulary token. Check each statement that is true.",
+      "stem": "A model gives a wrong answer. Check each statement that is true about locating the cause.",
       "statements": [
         {
           "label": "A",
-          "text": "A sublayer can learn a correction to the incoming vector rather than a full replacement of it.",
+          "text": "The answer may be wrong because the needed information was missing from the context.",
           "correct": true,
-          "explanation": "Adding output to input means each sublayer contributes an adjustment."
+          "explanation": "The model cannot use what it was not given."
         },
         {
           "label": "B",
-          "text": "A softmax over the final scores gives the next-token probabilities.",
+          "text": "The answer may be wrong even though the needed information was in the context.",
           "correct": true,
-          "explanation": "Scores, called logits, are normalized by a softmax into a distribution over the vocabulary."
+          "explanation": "Information can be present yet overlooked or contradicted."
         },
         {
           "label": "C",
-          "text": "Deep stacks of layers are impossible to train without residual connections.",
+          "text": "A fluent wrong answer is evidence that the model holds the correct answer and is withholding it.",
           "correct": false,
-          "explanation": "Residual paths help a great deal, but \"impossible\" overstates it; other techniques also stabilize training."
+          "explanation": "The model produces likely text; it does not hold a hidden correct answer that it withholds."
         },
         {
           "label": "D",
-          "text": "A residual connection multiplies the sublayer's input by zero.",
+          "text": "A wrong answer shows that the training text contained the same wrong answer.",
           "correct": false,
-          "explanation": "The connection adds the input to the output; it does not zero anything."
+          "explanation": "Wrong answers have many sources, including sampling; one wrong output does not show what the training text said."
         },
         {
           "label": "E",
-          "text": "Residual connections give gradients a direct path through many stacked layers, which eases training.",
+          "text": "An evaluator can vary the context and see whether the answer changes to help locate the cause.",
           "correct": true,
-          "explanation": "The identity path lets gradients pass without being repeatedly transformed."
+          "explanation": "Controlled changes to the context are a practical test of the cause."
         }
       ]
     },
@@ -2217,37 +2385,37 @@
       "group": "chapter",
       "section": null,
       "source": "Inside one prediction step",
-      "stem": "Self-attention computes each token's output as a weighted mix of value vectors, with weights derived from query-key scores. Consider an attention-only model, with no causal mask, that has no positional information added to its token embeddings. Check each statement that is true.",
+      "stem": "Consider the sentences \"dog bites man\" and \"man bites dog\", which contain the same words. Check each statement that is true about how a language model handles word order.",
       "statements": [
         {
           "label": "A",
-          "text": "Positional encodings or embeddings are added so that order information is available to the model.",
+          "text": "A model must represent the position of tokens, not only which tokens are present, to tell these two sentences apart.",
           "correct": true,
-          "explanation": "Positional information is injected explicitly in the input representation."
+          "explanation": "The meaning of the two sentences differs only through order."
         },
         {
           "label": "B",
-          "text": "Position information can be supplied by adding position-dependent vectors to the token embeddings.",
+          "text": "A model that saw only the set of words, with no order information, could not distinguish the two sentences.",
           "correct": true,
-          "explanation": "Learned or fixed position-dependent vectors added to embeddings are the standard approach."
+          "explanation": "With the same words and no order, the two inputs would look identical."
         },
         {
           "label": "C",
-          "text": "Order is automatically encoded because the model processes tokens left to right in one pass.",
+          "text": "Word order never affects the meaning of a prompt.",
           "correct": false,
-          "explanation": "The tokens are processed in parallel, and parallel processing carries no order by itself."
+          "explanation": "Order changes meaning, as these two sentences show."
         },
         {
           "label": "D",
-          "text": "The cost of dense attention grows linearly with the length of the context.",
-          "correct": false,
-          "explanation": "Dense attention compares every pair of tokens, so its cost grows quadratically."
+          "text": "Rearranging the order of instructions or facts in a prompt can change a model's output.",
+          "correct": true,
+          "explanation": "Models can be sensitive to ordering and placement, so prompts should be tested with variations."
         },
         {
           "label": "E",
-          "text": "Such a model cannot tell the difference between orderings of the same words, such as \"dog bites man\" and \"man bites dog\".",
+          "text": "Position information is added to the token representations so that the model can use order.",
           "correct": true,
-          "explanation": "Attention treats the context as a set, so reordering the inputs only reorders the outputs."
+          "explanation": "Models are given position information alongside the tokens so that order is available."
         }
       ]
     },
@@ -2343,37 +2511,37 @@
       "group": "chapter",
       "section": null,
       "source": "Inside one prediction step",
-      "stem": "Earlier sequence models (recurrent networks) read a text one position at a time, passing a state forward. The transformer takes the whole context at once. Check each statement that is true.",
+      "stem": "A language model generates a reply one token at a time, each token chosen after the ones before it. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "Because the transformer processes the context in parallel during training, it also generates new text in parallel across all new positions.",
-          "correct": false,
-          "explanation": "Generation is sequential because each new token depends on the previous ones."
+          "text": "Each chosen token becomes part of the context for the next prediction.",
+          "correct": true,
+          "explanation": "This is autoregressive generation: the output so far is the input for the next step."
         },
         {
           "label": "B",
-          "text": "Attention weakens the link between two tokens the further apart they are, in the same way a recurrent state does.",
-          "correct": false,
-          "explanation": "Attention compares any pair of visible tokens directly, so distance alone does not weaken the connection."
+          "text": "An early wrong token can shape the tokens that follow.",
+          "correct": true,
+          "explanation": "Later tokens are predicted given earlier ones, so an early error is carried forward."
         },
         {
           "label": "C",
-          "text": "During training, a transformer can compute predictions at all positions of a sequence in parallel.",
-          "correct": true,
-          "explanation": "With a causal mask, all positions can be trained at once, which is what made large-scale training practical."
+          "text": "On its own, the model goes back and silently revises an earlier token before showing the reply.",
+          "correct": false,
+          "explanation": "Chosen tokens are not rewritten; revision needs another pass by the application or reasoning written out in text."
         },
         {
           "label": "D",
-          "text": "In a recurrent network, information from an early token must pass through every intermediate step to reach a late token.",
-          "correct": true,
-          "explanation": "A recurrent state is updated step by step, so early information can fade as it passes through each step."
+          "text": "The model checks the finished reply for contradictions before it shows the first token.",
+          "correct": false,
+          "explanation": "There is no pass over a finished reply before it is emitted."
         },
         {
           "label": "E",
-          "text": "A transformer language model generates text from right to left.",
-          "correct": false,
-          "explanation": "Left-to-right generation is the standard setup for a decoder."
+          "text": "With sampling, choosing a different token early can lead to a different reply later.",
+          "correct": true,
+          "explanation": "A different early token changes the context for everything after it."
         }
       ]
     },
@@ -22671,37 +22839,37 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "stem": "A one-feature logistic classifier has weight w = 0.5 and bias b = -1. Its probability for label 1 is the sigmoid of the linear score, sigma(a) = 1 / (1 + e^(-a)), with a = w*x + b, and it predicts label 1 when the probability is at least 0.5. Check each statement that is true.",
+      "stem": "A simple classifier computes a score from a feature, converts the score to a probability with the sigmoid function, and predicts label 1 when the probability is at least 0.5. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "For x = 4 the linear score is 1.0.",
+          "text": "The sigmoid function turns any score into a number between 0 and 1.",
           "correct": true,
-          "explanation": "a = 0.5*4 - 1 = 1.0."
+          "explanation": "The sigmoid squashes the whole range of scores into the interval from 0 to 1."
         },
         {
           "label": "B",
-          "text": "At x = 0 the probability is below 0.5.",
+          "text": "A larger score gives a larger probability of label 1.",
           "correct": true,
-          "explanation": "At x = 0 the score is -1 and sigma(-1) is about 0.27."
+          "explanation": "The sigmoid is increasing, so a larger score gives a larger probability."
         },
         {
           "label": "C",
-          "text": "At x = 2 the probability is exactly 0.5.",
-          "correct": true,
-          "explanation": "a = 0.5*2 - 1 = 0 and sigma(0) = 0.5."
+          "text": "A probability between 0 and 1 is, for that reason alone, an accurate estimate of how likely the label is.",
+          "correct": false,
+          "explanation": "Lying between 0 and 1 is a property of the formula; whether the probabilities match real frequencies has to be checked against outcomes."
         },
         {
           "label": "D",
-          "text": "For x = 4 the predicted probability is about 0.73.",
+          "text": "Predicting label 1 when the probability is at least 0.5 is the same as predicting label 1 when the score is at least 0.",
           "correct": true,
-          "explanation": "sigma(1.0) is about 0.731."
+          "explanation": "A score of 0 maps to a probability of exactly 0.5, so the two ways of stating the rule agree."
         },
         {
           "label": "E",
-          "text": "The decision boundary is at x = 4.",
-          "correct": false,
-          "explanation": "The boundary is where w*x + b = 0, so x = 2, not 4."
+          "text": "A score of exactly 0 gives a probability of exactly 0.5.",
+          "correct": true,
+          "explanation": "The sigmoid of 0 is 0.5, which is why a probability threshold of 0.5 corresponds to a score threshold of 0."
         }
       ]
     },
@@ -22713,37 +22881,37 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "stem": "A one-feature logistic classifier is initialized with weight 0 and bias 0, then evaluated on 100 labeled examples, 70 with label 1 and 30 with label 0, whose feature values range between -5 and 5. It predicts label 1 when the probability is at least 0.5. Check each statement that is true.",
+      "stem": "A classifier's parameters are all set to zero before training. It is then evaluated on labeled data in which 70 percent of the examples have label 1. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The initial average loss would be lower than 0.693 because 70% of the labels are 1.",
-          "correct": false,
-          "explanation": "The loss is the same for both labels at p = 0.5, so label balance does not change it."
+          "text": "It gives the same probability, 0.5, for every example.",
+          "correct": true,
+          "explanation": "With every parameter at zero the score is zero for every input, and the sigmoid of zero is 0.5."
         },
         {
           "label": "B",
-          "text": "Every example receives predicted probability 0.5.",
+          "text": "Its predictions do not depend on the feature value.",
           "correct": true,
-          "explanation": "With w = 0 and b = 0 every score is 0, and sigma(0) = 0.5."
+          "explanation": "The parameters that connect the feature to the output are all zero, so the feature has no effect yet."
         },
         {
           "label": "C",
-          "text": "The average binary cross-entropy is ln 2, about 0.693.",
+          "text": "Its average loss at this point equals the loss of always answering \"fifty-fifty\", a baseline that training should beat.",
           "correct": true,
-          "explanation": "Each example's loss is -ln(0.5) for either label, so the average is 0.693."
+          "explanation": "An uninformed 50/50 guesser is the reference point that a trained model must improve on."
         },
         {
           "label": "D",
-          "text": "Accuracy at this point is 70%.",
-          "correct": true,
-          "explanation": "The at-least-0.5 rule predicts 1 for every example, which is right for the 70 positives."
+          "text": "It starts with a probability of 0.7 for every example because 70 percent of the labels are 1.",
+          "correct": false,
+          "explanation": "Setting parameters to zero does not encode the label balance; the model has not looked at the labels yet."
         },
         {
           "label": "E",
-          "text": "At this point the prediction does not depend on the feature value.",
+          "text": "A training loss that falls below this starting value shows that the model fits the training data better than a fifty-fifty guesser does.",
           "correct": true,
-          "explanation": "The score w*x + b is 0 whatever x is."
+          "explanation": "Training loss measures fit to the training data, so falling below the baseline means a better fit there; it says nothing about new data."
         }
       ]
     },
@@ -22755,37 +22923,37 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "stem": "In IEEE double precision, math.exp(709) is about 8.2e307, while math.exp(710) raises an overflow error. A programmer writes sigmoid(x) = 1 / (1 + math.exp(-x)) and calls sigmoid(-1000). Check each statement that is true.",
+      "stem": "A programmer implements the sigmoid function with a direct formula. On a very large negative score the function fails because an intermediate number is too large for the computer to represent. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "Using 1/(1+e^(-x)) for x >= 0 and e^x/(1+e^x) for x < 0 computes the same function while avoiding the huge exponential.",
+          "text": "Computers store numbers with limited range and precision, so a formula that is correct on paper can fail for extreme inputs.",
           "correct": true,
-          "explanation": "Multiplying numerator and denominator by e^x rewrites the same quantity using only a small exponent for negative x."
+          "explanation": "Overflow and rounding come from the finite size of the number format, not from a mistake in the mathematics."
         },
         {
           "label": "B",
-          "text": "For moderate inputs such as x = 2 the two-branch version gives materially different probabilities from the naive formula.",
-          "correct": false,
-          "explanation": "The branches are algebraically identical, so they differ only by rounding for ordinary inputs."
+          "text": "A mathematically equivalent rewrite of the formula can avoid the failure.",
+          "correct": true,
+          "explanation": "An equivalent form can be arranged so that only safe values are computed."
         },
         {
           "label": "C",
-          "text": "A passing test that sigmoid(-1000) is approximately 0 proves correctness for every input type and floating-point edge case.",
+          "text": "A passing test on ordinary inputs shows that the function works for every input.",
           "correct": false,
-          "explanation": "One test covers one behavior; it says nothing about NaN, infinities, or other types."
+          "explanation": "Ordinary inputs do not exercise the extreme cases where such failures occur."
         },
         {
           "label": "D",
-          "text": "The call fails because exp(1000) overflows.",
-          "correct": true,
-          "explanation": "With x = -1000 the naive code evaluates exp(1000), which exceeds the largest double."
+          "text": "If a function returns a number without raising an error, the number must be correct.",
+          "correct": false,
+          "explanation": "Floating-point code can return a wrong number silently, for example after a value rounds away."
         },
         {
           "label": "E",
-          "text": "The true value of sigmoid(-1000) is exactly 0.",
+          "text": "Testing extreme inputs is unnecessary if ordinary inputs pass.",
           "correct": false,
-          "explanation": "The sigmoid is strictly positive; double precision merely rounds its value to 0.0."
+          "explanation": "Extreme and edge-case inputs are where numerical problems show up, so passing on ordinary inputs is not enough."
         }
       ]
     },
@@ -22797,37 +22965,37 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "stem": "A one-feature logistic model has weight w = -1.5 and bias b = 3. Check each statement that is true.",
+      "stem": "A one-feature classifier has a weight and a bias. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The location of the boundary does not depend on the bias.",
-          "correct": false,
-          "explanation": "The boundary is x = -b/w, so changing b moves it."
+          "text": "The sign of the weight determines whether a larger feature value pushes the probability of label 1 up or down.",
+          "correct": true,
+          "explanation": "A positive weight pushes the score up as the feature grows; a negative weight pushes it down."
         },
         {
           "label": "B",
-          "text": "At x = 0 the predicted probability for label 1 is above 0.9.",
+          "text": "The bias shifts where along the feature the decision changes from one label to the other.",
           "correct": true,
-          "explanation": "At x = 0 the score is 3 and sigma(3) is about 0.953."
+          "explanation": "Changing the bias moves the boundary without changing how steeply the score responds to the feature."
         },
         {
           "label": "C",
-          "text": "At x = 3 the model predicts label 0.",
+          "text": "With the bias fixed at zero, the boundary is forced to the point where the feature is zero, so some data cannot be separated well.",
           "correct": true,
-          "explanation": "At x = 3 the score is -1.5 and sigma(-1.5) is about 0.18, below 0.5."
+          "explanation": "Without a bias, the score is zero, and so the boundary lies, at a feature value of zero whatever the data look like."
         },
         {
           "label": "D",
-          "text": "The probability of label 1 increases as x increases.",
+          "text": "The weight and bias are chosen by the person using the model rather than found from data.",
           "correct": false,
-          "explanation": "The weight is negative, so the score and probability fall as x rises."
+          "explanation": "The weight and bias are the parameters that training adjusts to fit the data."
         },
         {
           "label": "E",
-          "text": "The decision boundary, where the probability is 0.5, is at x = 2.",
-          "correct": true,
-          "explanation": "The boundary solves -1.5x + 3 = 0, which gives x = 2."
+          "text": "A positive weight shows that the feature causes label 1.",
+          "correct": false,
+          "explanation": "A weight describes an association in the training data; it does not show that changing the feature would change the label."
         }
       ]
     },
@@ -22839,37 +23007,37 @@
       "group": "chapter",
       "section": null,
       "source": "The model: two numbers and a squashing function",
-      "stem": "A fitted logistic regression has a weight of 0.7 on a feature x. Check each statement that is true.",
+      "stem": "A fitted classifier has a positive weight on a feature x. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "Each one-unit increase in x adds 0.7 to the log-odds of label 1.",
+          "text": "In the training data, larger values of x went with label 1 more often.",
           "correct": true,
-          "explanation": "The model is linear in log-odds, so the weight is the log-odds change per unit."
+          "explanation": "A positive weight means the fitted relationship slopes toward label 1 as x grows."
         },
         {
           "label": "B",
-          "text": "Each one-unit increase in x multiplies the odds of label 1 by 0.7.",
+          "text": "The size of the weight does not depend on the units in which x is measured.",
           "correct": false,
-          "explanation": "The log-odds rise by 0.7, so the odds are multiplied by e^0.7, about 2.01, not by 0.7."
+          "explanation": "Measuring x in millimeters instead of meters changes the weight by a factor of a thousand without changing the predictions."
         },
         {
           "label": "C",
-          "text": "The change in probability per unit of x is the same at every value of x.",
+          "text": "The weight shows that raising x would cause label 1 to become more likely.",
           "correct": false,
-          "explanation": "Through the sigmoid, the same step in x moves probability most near 0.5 and least near 0 or 1."
+          "explanation": "A weight is an association in the data; it does not show what would happen if x were changed."
         },
         {
           "label": "D",
-          "text": "The weight shows that x causes label 1.",
+          "text": "Weights on features measured in different units can be compared directly as measures of importance.",
           "correct": false,
-          "explanation": "A fitted weight describes an association in the training data and does not identify a cause."
+          "explanation": "Weights depend on the scale of their features, so raw weights are not a fair comparison of importance."
         },
         {
           "label": "E",
-          "text": "Each one-unit increase in x raises the probability of label 1 by 0.7.",
+          "text": "A weight fitted in one population necessarily holds in a different population.",
           "correct": false,
-          "explanation": "Probabilities are bounded by 1 and change nonlinearly; the weight does not add to the probability."
+          "explanation": "A fitted relationship can change when the population changes, so it has to be tested there."
         }
       ]
     },
@@ -22881,37 +23049,37 @@
       "group": "chapter",
       "section": null,
       "source": "Score, probability, and decision are three layers",
-      "stem": "A logistic model has weight w = 2 and bias b = -3. Its score is a = w*x + b, its probability is sigma(a), and its decision is label 1 when the probability is at least a chosen threshold. For a probability threshold of 0.8, the score threshold is ln 4, about 1.386. Check each statement that is true.",
+      "stem": "A classifier outputs probabilities, and the decision is label 1 when the probability passes a threshold the team chooses. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "With threshold 0.5 the decision boundary is at x = 1.5.",
+          "text": "Raising the threshold makes the classifier label fewer examples as 1.",
           "correct": true,
-          "explanation": "The score is zero when 2x - 3 = 0, so x = 1.5."
+          "explanation": "A higher bar means fewer examples clear it."
         },
         {
           "label": "B",
-          "text": "Because the sigmoid is increasing, thresholding the probability is the same as thresholding the score.",
-          "correct": true,
-          "explanation": "A monotonic function preserves order, so each probability threshold corresponds to one score threshold."
+          "text": "Changing the threshold changes the probabilities the model outputs.",
+          "correct": false,
+          "explanation": "The threshold is applied after the probabilities are computed and leaves them unchanged."
         },
         {
           "label": "C",
-          "text": "At x = 1.5 the predicted probability is 0.75.",
+          "text": "Training sets the best threshold automatically, so the team does not need to decide it.",
           "correct": false,
-          "explanation": "At x = 1.5 the score is 0, so the probability is 0.5."
+          "explanation": "The threshold is a decision about costs and uses, made by people; training does not choose it."
         },
         {
           "label": "D",
-          "text": "Raising the probability threshold to 0.8 with the same parameters moves the boundary to about x = 2.19.",
+          "text": "The best threshold depends on the costs of the two kinds of error.",
           "correct": true,
-          "explanation": "The score must reach 1.386, so x = (1.386 + 3)/2, about 2.19."
+          "explanation": "If a missed positive costs much more than a false alarm, a lower threshold is usually better."
         },
         {
           "label": "E",
-          "text": "Training updates the threshold along with the weight and bias.",
-          "correct": false,
-          "explanation": "The threshold is a decision rule chosen outside the fitting loop."
+          "text": "Two classifiers that output the same probabilities can make different decisions if their thresholds differ.",
+          "correct": true,
+          "explanation": "Decisions come from probabilities plus a threshold, so a different threshold gives different decisions."
         }
       ]
     },
@@ -22923,37 +23091,37 @@
       "group": "chapter",
       "section": null,
       "source": "Score, probability, and decision are three layers",
-      "stem": "A one-feature classifier predicts whether a job will run long from its input size x; long jobs mostly have x above 5 and short jobs mostly have x below 5. Check each statement that is true.",
+      "stem": "A one-feature classifier predicts whether a job will run long from its input size. Long jobs mostly have large sizes and short jobs mostly have small sizes, with the dividing point near 5. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The boundary is where w*x + b = 0 because the sigmoid of 0 is 0.5.",
+          "text": "A model with a bias term can place its decision boundary near 5.",
           "correct": true,
-          "explanation": "Probability 0.5 corresponds to a score of 0."
+          "explanation": "The bias lets the score cross zero at a feature value other than zero."
         },
         {
           "label": "B",
-          "text": "If the data are mirror-image symmetric around zero, the learned bias can stay near zero, which shows a bias term is unnecessary.",
-          "correct": false,
-          "explanation": "Symmetric data can hide the need for a bias; it is needed whenever the relationship is not centered at zero."
+          "text": "A model with the bias fixed at zero cannot place its boundary near 5, because its boundary is forced to a feature value of 0.",
+          "correct": true,
+          "explanation": "With no bias the score is zero at a feature value of zero, so the boundary sits there."
         },
         {
           "label": "C",
-          "text": "On mirror-image symmetric data, removing one point or flipping one label can move the learned bias away from zero.",
-          "correct": true,
-          "explanation": "A small asymmetry changes the error balance that keeps the bias near zero."
+          "text": "If a toy dataset happens to be symmetric around zero, that shows a bias term is never needed.",
+          "correct": false,
+          "explanation": "One symmetric toy dataset says nothing about the general case; most real data are not centered at zero."
         },
         {
           "label": "D",
-          "text": "With w = 0.8 and b = -4 the boundary is at x = 3.2.",
-          "correct": false,
-          "explanation": "The boundary is x = -b/w = 4/0.8 = 5, not 3.2."
+          "text": "For a sigmoid classifier, the boundary is where the score equals zero.",
+          "correct": true,
+          "explanation": "A score of zero corresponds to a probability of 0.5, the usual decision point."
         },
         {
           "label": "E",
-          "text": "With the bias fixed at 0, the decision boundary is forced to x = 0, so a boundary near 5 cannot be represented.",
-          "correct": true,
-          "explanation": "Without a bias, w*x = 0 only at x = 0."
+          "text": "Removing a single training point can never move the fitted boundary.",
+          "correct": false,
+          "explanation": "The fitted parameters depend on all of the training data, so changing one point can move the boundary."
         }
       ]
     },
@@ -22965,37 +23133,37 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "stem": "A binary logistic model gives score a = 2 for an example. The usual loss is -y*ln(p) - (1-y)*ln(1-p) with p = sigma(a), where sigma(2) is about 0.8808. An algebraically equivalent score-based form is max(a, 0) - y*a + ln(1 + e^(-|a|)). Check each statement that is true.",
+      "stem": "A classifier outputs a probability for each example, and a loss function turns each prediction into a penalty that training tries to reduce. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "For label 0 the loss is about 2.127.",
+          "text": "A loss function states, in a single number, what counts as a better or a worse prediction.",
           "correct": true,
-          "explanation": "-ln(1 - 0.8808) is about 2.127."
+          "explanation": "The loss is the explicit objective: whatever it rewards, training pushes toward."
         },
         {
           "label": "B",
-          "text": "The two forms give different values, which is why the score-based one is preferred.",
-          "correct": false,
-          "explanation": "The forms are algebraically equivalent; the second is chosen for numerical safety."
+          "text": "Cross-entropy penalizes a confident wrong prediction much more than an uncertain wrong one.",
+          "correct": true,
+          "explanation": "Cross-entropy grows steeply as the probability given to the true label approaches zero."
         },
         {
           "label": "C",
-          "text": "At this score, a label-0 example has a smaller loss than a label-1 example.",
+          "text": "Accuracy and cross-entropy always rank two models in the same order.",
           "correct": false,
-          "explanation": "A positive score favors label 1, so a label-0 example is penalized more (2.127 versus 0.127)."
+          "explanation": "Accuracy ignores how confident the predictions were, so models can rank differently under the two measures."
         },
         {
           "label": "D",
-          "text": "The score-based form avoids taking the log of a probability that has rounded to exactly 0 or 1 when |a| is large.",
-          "correct": true,
-          "explanation": "It never forms p or 1-p, so large scores do not push a log argument to zero."
+          "text": "A loss that is easy to compute is therefore a good measure of what the application needs.",
+          "correct": false,
+          "explanation": "Convenience does not make a loss fit the purpose; the loss has to reflect what matters in use."
         },
         {
           "label": "E",
-          "text": "For label 1 the loss is about 0.127.",
+          "text": "Choosing the loss is a decision about what the model is asked to do, made by people.",
           "correct": true,
-          "explanation": "-ln(0.8808) is about 0.127."
+          "explanation": "The optimizer lowers whatever it is given, so the choice of objective belongs to the people who set the task."
         }
       ]
     },
@@ -23007,37 +23175,37 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "stem": "A float64 implementation computes p = 1/(1 + exp(-a)) for score a = 40 and label y = 0, then evaluates -ln(1 - p). In double precision, e^(-40) is about 4.2e-18, which is below the spacing of numbers near 1, so 1 + e^(-40) rounds to 1.0 and p is exactly 1.0. Check each statement that is true.",
+      "stem": "Two classifiers have the same accuracy on the same test data. One gives confident probabilities, mostly right but with a few confidently wrong. The other gives cautious probabilities. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The naive computation ends up evaluating ln(0).",
+          "text": "Their cross-entropy losses can differ even though their accuracy is the same.",
           "correct": true,
-          "explanation": "With p exactly 1.0, 1 - p is 0 and its logarithm is undefined or negative infinity."
+          "explanation": "Equal counts of right and wrong decisions can hide differences in how confident the predictions were."
         },
         {
           "label": "B",
-          "text": "The score-based form max(a,0) - y*a + ln(1 + e^(-|a|)) returns about 40 here.",
+          "text": "A few confidently wrong predictions can raise the average loss a great deal.",
           "correct": true,
-          "explanation": "With a = 40 and y = 0 the formula gives 40 + ln(1 + e^-40), about 40."
+          "explanation": "The penalty for a wrong prediction grows steeply with confidence, so a few such cases can dominate the average."
         },
         {
           "label": "C",
-          "text": "The true loss for this example is about 40.",
-          "correct": true,
-          "explanation": "The loss is ln(1 + e^40), which is about 40."
+          "text": "Equal accuracy means the two models are equally good for every use.",
+          "correct": false,
+          "explanation": "Which model is better depends on the use, for example whether the probabilities themselves are relied on."
         },
         {
           "label": "D",
-          "text": "Clipping p to the range [1e-15, 1-1e-15] before taking logs would return about 34, a capped value that is no longer the true loss.",
+          "text": "Cross-entropy takes the probabilities into account, while accuracy looks only at the final decisions.",
           "correct": true,
-          "explanation": "The clipped 1 - p is on the order of 1e-15, and -ln of that is roughly 34, so clipping changes the value."
+          "explanation": "That is the difference between a probability-aware measure and one that only counts decisions."
         },
         {
           "label": "E",
-          "text": "A loss of about 40 means the model assigned a probability near 0.5 to the correct label.",
-          "correct": false,
-          "explanation": "A loss near 40 means the correct label was given a probability of roughly e^-40, far below 0.5."
+          "text": "A model with a low average loss on the training data can still have a higher loss on new data.",
+          "correct": true,
+          "explanation": "Training loss measures fit to the training data; new data can behave differently."
         }
       ]
     },
@@ -23049,37 +23217,37 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "stem": "A model outputs probabilities for label 1 on three examples: 0.9 (true label 1), 0.2 (true label 0), and 0.5 (true label 1). Use natural logs. Check each statement that is true.",
+      "stem": "Binary cross-entropy compares the probability a model gave to the true label with the outcome. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The average loss equals the misclassification rate at threshold 0.5.",
-          "correct": false,
-          "explanation": "Loss is a continuous measure of confidence in the right label, not a count of errors."
+          "text": "If the model gives a probability near 1 to the true label, the loss is near 0.",
+          "correct": true,
+          "explanation": "A confident correct prediction costs almost nothing."
         },
         {
           "label": "B",
-          "text": "The p = 0.5 example has the largest of the three losses, about 0.693.",
+          "text": "If the model gives a probability near 0 to the true label, the loss is very large.",
           "correct": true,
-          "explanation": "-ln(0.5) is 0.693, larger than 0.105 and 0.223."
+          "explanation": "The penalty grows steeply as the true label is given less and less probability."
         },
         {
           "label": "C",
-          "text": "The p = 0.2, label-0 example has a loss of about 1.61.",
-          "correct": false,
-          "explanation": "For label 0 the loss is -ln(1 - 0.2) = -ln(0.8), about 0.223; 1.61 is -ln(0.2), which would apply to a true label of 1."
+          "text": "The loss can never be negative.",
+          "correct": true,
+          "explanation": "Probabilities lie between 0 and 1, so the penalty is never below zero."
         },
         {
           "label": "D",
-          "text": "The average loss over the three examples is about 0.34.",
-          "correct": true,
-          "explanation": "(0.105 + 0.223 + 0.693) / 3 is about 0.341."
+          "text": "A loss of exactly 0 can be reached by a model that assigns 0.5 to every example.",
+          "correct": false,
+          "explanation": "A model that says fifty-fifty about everything has a fixed, clearly positive loss."
         },
         {
           "label": "E",
-          "text": "The p = 0.9 example has a binary cross-entropy loss of about 0.105.",
-          "correct": true,
-          "explanation": "-ln(0.9) is about 0.105."
+          "text": "The loss is the same thing as the fraction of predictions that are wrong.",
+          "correct": false,
+          "explanation": "The fraction wrong ignores confidence; cross-entropy does not."
         }
       ]
     },
@@ -23091,37 +23259,37 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "stem": "Two models predict the probability of label 1 for the same example whose true label is 1. Model P outputs 0.01 and Model Q outputs 0.4. Use natural logs. Check each statement that is true.",
+      "stem": "A team trains a probability classifier with a smooth loss such as cross-entropy rather than by directly maximizing accuracy. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "Cross-entropy for a label-1 example is bounded above by 1.",
-          "correct": false,
-          "explanation": "The loss -ln(p) is unbounded as p approaches 0."
+          "text": "Accuracy changes in jumps as the parameters change slightly, while a smooth loss changes gradually.",
+          "correct": true,
+          "explanation": "A tiny change in a parameter usually flips no decisions, so accuracy gives training no gradual signal."
         },
         {
           "label": "B",
-          "text": "Model P's cross-entropy loss, about 4.6, is more than five times Model Q's, about 0.92.",
+          "text": "A smooth loss tells training which direction to nudge the parameters.",
           "correct": true,
-          "explanation": "-ln(0.01) is 4.61 and -ln(0.4) is 0.92, a ratio of about 5.0."
+          "explanation": "A smooth loss has a slope that points toward better parameters."
         },
         {
           "label": "C",
-          "text": "A prediction of 0.99 for this example would have a loss of about 0.01.",
-          "correct": true,
-          "explanation": "-ln(0.99) is about 0.01, since a confident correct answer costs almost nothing."
+          "text": "Minimizing the training loss is the same objective as maximizing accuracy on new data.",
+          "correct": false,
+          "explanation": "Training loss measures fit to the training data; performance on new data is a separate question."
         },
         {
           "label": "D",
-          "text": "At threshold 0.5 both models are wrong, so accuracy treats the two predictions as equally bad.",
+          "text": "A smooth loss is computed from the examples, so it depends on the data.",
           "correct": true,
-          "explanation": "Both probabilities fall below 0.5, so both count as one error."
+          "explanation": "The loss is a function of the examples and the current parameters."
         },
         {
           "label": "E",
-          "text": "As the probability assigned to the true class approaches 0, the loss grows without bound.",
+          "text": "A model with a low training loss can still perform poorly on data it was not trained on.",
           "correct": true,
-          "explanation": "Cross-entropy punishes confident wrong answers without limit."
+          "explanation": "Fitting the training data closely does not guarantee good behavior elsewhere."
         }
       ]
     },
@@ -23133,37 +23301,37 @@
       "group": "chapter",
       "section": null,
       "source": "Loss makes the objective explicit",
-      "stem": "Binary cross-entropy for label y and predicted probability p is -y*ln(p) - (1-y)*ln(1-p). Check each statement that is true.",
+      "stem": "A classifier reaches a low loss on a dataset. Check each statement that is true about what that low loss does and does not show.",
       "statements": [
         {
           "label": "A",
-          "text": "For a label-1 example it reduces to -ln(1-p).",
-          "correct": false,
-          "explanation": "With y = 1 the second term vanishes, leaving -ln(p)."
+          "text": "It says nothing about whether the labels in that dataset were correct.",
+          "correct": true,
+          "explanation": "A model can fit mislabeled data well, and the loss will not reveal the mistakes."
         },
         {
           "label": "B",
-          "text": "Minimizing the average of this loss over a dataset maximizes the Bernoulli likelihood of the observed labels.",
+          "text": "It says nothing about whether the dataset resembles the data the model will meet in use.",
           "correct": true,
-          "explanation": "Cross-entropy is the negative log-likelihood of independent Bernoulli labels."
+          "explanation": "Loss is measured on the data at hand; a different population can behave differently."
         },
         {
           "label": "C",
-          "text": "For p = sigma(a), its derivative with respect to the score a is p - y.",
-          "correct": true,
-          "explanation": "The sigmoid and the log-loss combine so that the score derivative is the prediction error."
+          "text": "It shows that the model's reasoning matches a human's.",
+          "correct": false,
+          "explanation": "Loss measures how well the outputs fit the labels, not how the model arrives at them."
         },
         {
           "label": "D",
-          "text": "Mean squared error between p and y has the same derivative with respect to the score.",
+          "text": "Different loss functions always lead to the same trained model from the same data.",
           "correct": false,
-          "explanation": "The squared-error derivative carries an extra factor p(1-p), which shrinks when predictions saturate."
+          "explanation": "The loss defines what training pushes toward, so different choices give different models."
         },
         {
           "label": "E",
-          "text": "It equals the zero-one error.",
+          "text": "It shows that the objective was the right one for the application.",
           "correct": false,
-          "explanation": "Cross-entropy is continuous and graded, while zero-one error counts mistakes."
+          "explanation": "Whether the objective suits the application is a judgment made outside the loss."
         }
       ]
     },
@@ -23175,37 +23343,37 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "stem": "One training example has feature x = 3 and label y = 0. The model has w = 0.2 and b = 0.1, with p = sigma(w*x + b). Recall that the derivative of the binary logistic loss with respect to the score a = w*x + b is p - y. Here a = 0.7 and p is about 0.668. Check each statement that is true.",
+      "stem": "In gradient descent, the gradient tells how the loss changes as each parameter changes, and an update moves the parameters a small step. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The derivative of the loss with respect to b is about 0.67.",
+          "text": "The gradient points in the direction in which the loss increases fastest.",
           "correct": true,
-          "explanation": "The score changes by 1 per unit of b, so dL/db = p - y, about 0.67."
+          "explanation": "The gradient is the direction of steepest increase."
         },
         {
           "label": "B",
-          "text": "A gradient descent step with a positive learning rate will increase w.",
-          "correct": false,
-          "explanation": "The gradient is positive, and descent subtracts it, so w decreases."
+          "text": "An update moves the parameters in the opposite direction, to lower the loss.",
+          "correct": true,
+          "explanation": "Descent means stepping against the gradient."
         },
         {
           "label": "C",
-          "text": "The derivatives with respect to w and b are equal because both parameters multiply the same error.",
+          "text": "A single update is guaranteed to lower the loss on every individual training example.",
           "correct": false,
-          "explanation": "The weight's derivative carries the extra factor x = 3, so the two differ."
+          "explanation": "An update is chosen to lower the average loss; individual examples can get worse."
         },
         {
           "label": "D",
-          "text": "The loss for this example is about 0.40.",
+          "text": "The gradient is a fixed property of the model that does not depend on the training data.",
           "correct": false,
-          "explanation": "For label 0 the loss is -ln(1 - 0.668), about 1.10."
+          "explanation": "The gradient depends on both the data and where the parameters currently are."
         },
         {
           "label": "E",
-          "text": "The derivative of the loss with respect to w is about 2.00.",
-          "correct": true,
-          "explanation": "By the chain rule dL/dw = (p - y)*x = 0.668*3, about 2.00."
+          "text": "The size of an update does not depend on the learning rate.",
+          "correct": false,
+          "explanation": "The learning rate scales the step; a larger rate gives a larger update."
         }
       ]
     },
@@ -23217,37 +23385,37 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "stem": "Training data as (x, y) pairs: (0, 0), (1, 0), (2, 1). A model starts at w = 0 and b = 0 with p = sigma(w*x + b), uses the average binary logistic loss, and takes one full-batch gradient descent step with learning rate 0.6. The per-example derivative with respect to the score is p - y. Check each statement that is true.",
+      "stem": "A classifier starts with all parameters at zero, and in its training data larger feature values go with label 1. Check each statement that is true about the first training update.",
       "statements": [
         {
           "label": "A",
-          "text": "The bias does not move on this step because the errors sum to zero.",
-          "correct": false,
-          "explanation": "The errors sum to +0.5, so the bias gradient is +0.167 and b moves."
+          "text": "The first update should raise the weight.",
+          "correct": true,
+          "explanation": "Larger features go with label 1, so a larger weight lowers the loss."
         },
         {
           "label": "B",
-          "text": "The averaged weight gradient is about -0.167.",
+          "text": "If every label were flipped, the first update would move the weight in the opposite direction.",
           "correct": true,
-          "explanation": "The sum of error times x is 0 + 0.5 - 1.0 = -0.5, and dividing by 3 gives -0.167."
+          "explanation": "Reversing the labels reverses the relationship the update is pulling toward."
         },
         {
           "label": "C",
-          "text": "The three initial errors p - y are 0.5, 0.5, and -0.5.",
+          "text": "The direction of the first update can be predicted from the data before running any code.",
           "correct": true,
-          "explanation": "Every prediction is 0.5, so the errors are 0.5 - y for each label."
+          "explanation": "The direction follows from how the labels relate to the feature, which can be reasoned out in advance."
         },
         {
           "label": "D",
-          "text": "The average loss after the step is higher than the initial 0.693.",
+          "text": "After the first update, the model is guaranteed to classify every training example correctly.",
           "correct": false,
-          "explanation": "The loss falls to about 0.661 after a correctly signed step."
+          "explanation": "One small step improves the fit but does not make every prediction right."
         },
         {
           "label": "E",
-          "text": "After the step, w is 0.1 and b is -0.1.",
-          "correct": true,
-          "explanation": "w = 0 - 0.6*(-0.167) = 0.1 and b = 0 - 0.6*(0.167) = -0.1."
+          "text": "The first update leaves the weight unchanged because the starting probabilities are all 0.5.",
+          "correct": false,
+          "explanation": "The starting probabilities are all 0.5, but the errors against the labels are not zero, so the update is not zero."
         }
       ]
     },
@@ -23259,37 +23427,37 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "stem": "Training data as (x, y) pairs: (-1, 1), (1, 0), (2, 0), so larger x goes with label 0. A model starts at w = 0, b = 0, uses the average binary logistic loss and the error p - y, and takes one full-batch gradient descent step with a positive learning rate. Check each statement that is true.",
+      "stem": "In training a simple classifier, the weight's update depends on the feature value and the error, while the bias's update depends on the error alone. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The averaged weight gradient is about +0.67, so w decreases on the first step.",
+          "text": "A larger feature value produces a larger change to the weight's update, other things equal.",
           "correct": true,
-          "explanation": "Errors are -0.5, 0.5, 0.5; weighted by x they sum to 2.0, and the mean is 0.667."
+          "explanation": "The weight's gradient is multiplied by the feature, so large features give large steps."
         },
         {
           "label": "B",
-          "text": "After the first step, b is positive.",
-          "correct": false,
-          "explanation": "The bias gradient is positive and descent subtracts it, so b becomes negative."
+          "text": "The bias's update does not scale with the feature value.",
+          "correct": true,
+          "explanation": "The bias multiplies nothing, so its update has no feature factor."
         },
         {
           "label": "C",
-          "text": "The averaged bias gradient is 0, so b stays at 0.",
+          "text": "Rescaling a feature from meters to millimeters leaves the best weight unchanged.",
           "correct": false,
-          "explanation": "The errors sum to 0.5, giving a bias gradient of about +0.167."
+          "explanation": "Changing units rescales the best weight inversely, so the best weight changes."
         },
         {
           "label": "D",
-          "text": "The first step makes w positive because the model must raise probabilities for positive x.",
+          "text": "A learning rate that works for features near 1 will work unchanged for features in the thousands.",
           "correct": false,
-          "explanation": "The positive-x points carry label 0, so the weight must fall, not rise."
+          "explanation": "Features in the thousands make weight steps very large, which can destabilize a rate chosen for small features."
         },
         {
           "label": "E",
-          "text": "The initial average loss is below ln 2 because the label-0 points have larger x.",
+          "text": "Standardizing features never changes how large the weight updates are.",
           "correct": false,
-          "explanation": "At w = 0 and b = 0 every probability is 0.5, so the initial loss is ln 2 whatever the data."
+          "explanation": "Features on a common scale lead to updates of comparable size, which does change the update sizes."
         }
       ]
     },
@@ -23343,37 +23511,37 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "stem": "Two implementations of full-batch gradient descent for logistic regression on N = 50 examples differ in one line. Version M divides the summed per-example gradients by N. Version S does not divide. Both use learning rate 0.1. Check each statement that is true.",
+      "stem": "Two implementations of gradient descent differ in one line: one averages the per-example gradients over the dataset and the other sums them. Both use the same learning rate. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "Version S takes steps 50 times larger than Version M.",
+          "text": "The summed version takes larger steps as the dataset grows, for the same learning rate.",
           "correct": true,
-          "explanation": "The sum is N times the mean, so the step is multiplied by 50."
+          "explanation": "A sum grows with the number of examples, while an average does not."
         },
         {
           "label": "B",
-          "text": "Version S is equivalent to Version M with a learning rate of 5.0.",
+          "text": "The two versions point in the same direction.",
           "correct": true,
-          "explanation": "0.1 times 50 equals 5.0 applied to the mean gradient."
+          "explanation": "Multiplying a gradient by a positive constant does not change its direction."
         },
         {
           "label": "C",
-          "text": "Doubling the dataset doubles the size of Version S's step but not Version M's.",
+          "text": "The summed version is equivalent to the averaged version with a larger learning rate.",
           "correct": true,
-          "explanation": "The sum grows with N while the mean does not."
+          "explanation": "Summing multiplies the averaged gradient by the number of examples, which acts like a larger learning rate."
         },
         {
           "label": "D",
-          "text": "A test that only checks that the training loss decreased cannot reliably tell the two versions apart.",
-          "correct": true,
-          "explanation": "A too-large step can still reduce the loss early on, so a \"loss fell\" test may pass."
+          "text": "A test that only checks that the training loss decreased can reliably tell the two versions apart.",
+          "correct": false,
+          "explanation": "Both versions can lower the loss, so a decrease does not reveal which is which."
         },
         {
           "label": "E",
-          "text": "Version S's step points in a different direction from Version M's.",
-          "correct": false,
-          "explanation": "Scaling a vector by a positive constant leaves its direction unchanged."
+          "text": "The scaling of the gradient affects whether training is stable.",
+          "correct": true,
+          "explanation": "A step that is too large can overshoot or diverge, so the scaling matters for stability."
         }
       ]
     },
@@ -23385,37 +23553,37 @@
       "group": "chapter",
       "section": null,
       "source": "The gate: say what should change before you change it",
-      "stem": "Training data as (x, y) pairs: (-3, 0), (-1, 0), (1, 1), (3, 1). A model starts at w = 0, b = 0 and takes a full-batch step with learning rate 0.5. A correct implementation uses mean((p - y)*x) for the weight and mean(p - y) for the bias. A buggy version also uses mean((p - y)*x) for the bias. At the start p is 0.5 for every example. Check each statement that is true.",
+      "stem": "A student's trainer has a bug: it updates the bias using the feature value as well as the error, which is the weight's update rule. The loss still goes down during training. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The correct bias gradient at the start is 0, so b stays at 0 after the first step.",
+          "text": "A final accuracy number alone may not reveal the bug.",
           "correct": true,
-          "explanation": "The errors are 0.5, 0.5, -0.5, -0.5, which sum to zero."
+          "explanation": "A model with a wrongly trained bias can still look acceptable on a summary number."
         },
         {
           "label": "B",
-          "text": "The bug can only be detected by examining final held-out accuracy.",
-          "correct": false,
-          "explanation": "A test of the exact first-step values would catch the bug without any held-out data."
+          "text": "Working out by hand what the first update should do, before running the code, could expose the bug.",
+          "correct": true,
+          "explanation": "A prediction made before the run is a check that does not depend on the code's output."
         },
         {
           "label": "C",
-          "text": "The buggy version moves b because the data are asymmetric around zero.",
+          "text": "Because the loss goes down, the code must be correct.",
           "correct": false,
-          "explanation": "The data are symmetric; the movement comes from the extra x factor, which stops the errors cancelling."
+          "explanation": "A decreasing loss is necessary evidence, not sufficient; buggy updates can still lower it."
         },
         {
           "label": "D",
-          "text": "The buggy bias gradient at the start is -1.0, so b moves to 0.5.",
-          "correct": true,
-          "explanation": "The x-weighted errors are -1.5, -0.5, -0.5, -1.5, whose mean is -1.0, and 0 - 0.5*(-1.0) = 0.5."
+          "text": "A unit test of the update itself cannot catch the bug, because the loss still goes down.",
+          "correct": false,
+          "explanation": "A test that compares the update with a hand-worked case catches it directly; the decreasing loss does not hide it from such a test."
         },
         {
           "label": "E",
-          "text": "The derivative of the loss with respect to the bias includes a factor of x.",
+          "text": "The bug can be found only by examining held-out accuracy.",
           "correct": false,
-          "explanation": "The score changes by 1 per unit of bias, so the bias derivative is just the error."
+          "explanation": "Tests of the update itself catch it directly; held-out accuracy is neither the only nor the best route."
         }
       ]
     },
@@ -23427,37 +23595,37 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "stem": "To check a hand-derived gradient of a loss L(w), a developer compares it with the central finite difference [L(w+h) - L(w-h)] / (2h) for a small h. Check each statement that is true.",
+      "stem": "To check a hand-derived gradient, a developer estimates the slope numerically by changing a parameter slightly up and down, recomputing the loss each time, and comparing the estimate with the formula. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The central difference does not use the derivative formula being checked.",
+          "text": "The numerical estimate does not use the derivative formula being checked.",
           "correct": true,
-          "explanation": "It only evaluates the loss at two nearby points, so it fails differently from the algebra."
+          "explanation": "The estimate comes from evaluating the loss itself, so it is an independent route."
         },
         {
           "label": "B",
-          "text": "Agreement within tolerance shows the analytic gradient matches the derivative of the loss function as coded.",
+          "text": "Agreement within a tolerance shows the formula matches the slope of the loss as coded.",
           "correct": true,
-          "explanation": "Both quantities describe the same coded objective, so agreement confirms the derivation."
+          "explanation": "If the two agree, the formula is consistent with the coded loss."
         },
         {
           "label": "C",
-          "text": "Shrinking h toward 1e-16 keeps improving the accuracy of the estimate.",
+          "text": "Making the change smaller and smaller always improves the estimate, with no limit.",
           "correct": false,
-          "explanation": "Subtracting nearly equal numbers loses digits, so very small h adds round-off error."
+          "explanation": "With a very tiny change the computer's limited precision makes the estimate noisy, so a moderate size is used."
         },
         {
           "label": "D",
-          "text": "Agreement shows the loss function is the right objective for the application.",
+          "text": "Agreement shows that the loss is the right objective for the application.",
           "correct": false,
-          "explanation": "If the objective is wrong for the task, derivative and finite difference still agree."
+          "explanation": "The check covers the gradient, not whether the loss is what the application needs."
         },
         {
           "label": "E",
-          "text": "For a smooth loss, the central difference error shrinks roughly with h squared, while a one-sided difference shrinks roughly with h.",
+          "text": "A check like this is cheap enough to run on a few inputs before trusting AI-written gradient code.",
           "correct": true,
-          "explanation": "Taylor expansion shows the odd terms cancel in the central difference."
+          "explanation": "The check needs only a few loss evaluations per parameter."
         }
       ]
     },
@@ -23469,37 +23637,37 @@
       "group": "chapter",
       "section": null,
       "source": "Derive the first update",
-      "stem": "For a single example with x = 2, y = 1, and b = 0, the loss as a function of the weight is L(w) = ln(1 + e^(-2w)). A developer estimates the derivative at w = 0 with h = 0.01. The central difference [L(h) - L(-h)]/(2h) is about -1.0000, and the one-sided difference [L(h) - L(0)]/h is about -0.995. Check each statement that is true.",
+      "stem": "A developer's numerical check disagrees with a gradient formula on one input. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The central difference is within 0.0001 of the exact derivative.",
+          "text": "The formula, the loss code or the numerical check itself could be at fault.",
           "correct": true,
-          "explanation": "The central estimate agrees with -1 to many decimal places."
+          "explanation": "Any of the three can be wrong, and the disagreement does not say which."
         },
         {
           "label": "B",
-          "text": "The exact derivative at w = 0 is -0.5.",
+          "text": "A disagreement can be set aside until the model's accuracy has been measured.",
           "correct": false,
-          "explanation": "The derivative is (p - y)*x = (0.5 - 1)*2 = -1, not -0.5."
+          "explanation": "An unexplained disagreement is a bug until it is explained; accuracy measured later does not settle it."
         },
         {
           "label": "C",
-          "text": "Increasing h to 0.1 makes the one-sided estimate more accurate.",
+          "text": "Whether a disagreement matters has nothing to do with its size.",
           "correct": false,
-          "explanation": "The one-sided error grows roughly in proportion to h; at h = 0.1 the estimate is about -0.95."
+          "explanation": "Small differences can come from limited numerical precision, so the size relative to a tolerance matters."
         },
         {
           "label": "D",
-          "text": "The negative sign means L increases as w increases.",
+          "text": "The formula must be correct because an AI assistant produced it.",
           "correct": false,
-          "explanation": "A negative derivative means L decreases as w increases."
+          "explanation": "A source does not make code correct; the check exists because AI-written code can be wrong."
         },
         {
           "label": "E",
-          "text": "The one-sided difference is off by about 0.05.",
+          "text": "Because the loss decreases during training, the disagreement can be ignored.",
           "correct": false,
-          "explanation": "The one-sided estimate of -0.995 differs from -1 by about 0.005, not 0.05."
+          "explanation": "A decreasing loss does not show the gradient is right."
         }
       ]
     },
@@ -23511,37 +23679,37 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "stem": "Gradient descent minimizes L(w) = w^2, whose gradient is 2w, starting from w = 1 with learning rate r. Each step gives w <- (1 - 2r)w. Check each statement that is true.",
+      "stem": "Gradient descent is run on a simple bowl-shaped loss with different learning rates. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "With r = 0.1 the iterates fall steadily: 1, 0.8, 0.64, and so on.",
+          "text": "A very small learning rate makes steady but slow progress.",
           "correct": true,
-          "explanation": "The multiplier 1 - 0.2 = 0.8 shrinks the iterate without changing sign."
+          "explanation": "Small steps move steadily and may not finish within a limited step budget."
         },
         {
           "label": "B",
-          "text": "With r = 0.5 the iterate reaches the minimizer w = 0 in one step.",
+          "text": "A moderate learning rate can reach the minimum quickly.",
           "correct": true,
-          "explanation": "The multiplier 1 - 1 = 0 sends w to 0 at once."
+          "explanation": "A well-chosen step can land close to the minimum in few updates."
         },
         {
           "label": "C",
-          "text": "With r = 0.9 the iterates converge without ever changing sign.",
-          "correct": false,
-          "explanation": "The multiplier is -0.8, so the sign flips each step even though the magnitude shrinks."
+          "text": "A learning rate that is too large can overshoot the minimum and bounce around it.",
+          "correct": true,
+          "explanation": "Too large a step jumps past the minimum."
         },
         {
           "label": "D",
-          "text": "With r = 1.0 the iterates alternate between 1 and -1 forever.",
+          "text": "A learning rate that is large enough can make the loss grow instead of shrink.",
           "correct": true,
-          "explanation": "The multiplier is -1, so the magnitude never shrinks."
+          "explanation": "Past a limit, each step overshoots by more than it gains, and training diverges."
         },
         {
           "label": "E",
-          "text": "With r = 1.1 the iterates diverge, growing in magnitude by a factor of 1.2 each step.",
-          "correct": true,
-          "explanation": "The multiplier is -1.2, which has magnitude above 1."
+          "text": "A learning rate that works well on one problem will work on every problem.",
+          "correct": false,
+          "explanation": "The safe range depends on the shape of the loss and the scale of the features, which differ between problems."
         }
       ]
     },
@@ -23637,37 +23805,37 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "stem": "A one-feature logistic model with the bias fixed at 0 is fit to a single example x = 1, y = 1 using the loss ln(1 + e^(-w)). The loss is about 0.313 at w = 1, about 0.0067 at w = 5, and about 0.000045 at w = 10. Check each statement that is true.",
+      "stem": "A classifier is trained on data that it can separate perfectly. With no penalty on the size of the weights, training keeps increasing the weight, and the loss keeps shrinking toward zero but never reaches it. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "A loss of 0.000045 means the model will be 99.9955% accurate on future data.",
-          "correct": false,
-          "explanation": "Training loss on one example says nothing about accuracy on new data."
+          "text": "The training loss can keep decreasing without limit.",
+          "correct": true,
+          "explanation": "On separable data, larger weights always give more confident correct predictions and a smaller loss."
         },
         {
           "label": "B",
-          "text": "Adding an L2 penalty on w would give a finite minimizer.",
-          "correct": true,
-          "explanation": "The penalty grows with w and balances the shrinking loss, so a minimum appears at finite w."
+          "text": "A very small training loss shows that the model will be accurate on future data.",
+          "correct": false,
+          "explanation": "Training loss measures fit to the training data, not performance on future data."
         },
         {
           "label": "C",
-          "text": "At w = 5 the model's probability for label 1 on this example is about 0.993.",
+          "text": "Adding a penalty on the size of the weights can give training a stopping point.",
           "correct": true,
-          "explanation": "sigma(5) is about 0.9933, consistent with a loss of -ln(0.9933), about 0.0067."
+          "explanation": "A penalty makes very large weights costly, so the best weights are finite."
         },
         {
           "label": "D",
-          "text": "Gradient descent on this problem has no finite minimizer.",
+          "text": "A very small training loss does not show that the data were correctly labeled.",
           "correct": true,
-          "explanation": "Since the loss keeps falling, no finite w is optimal."
+          "explanation": "A model can fit incorrectly labeled data just as well; the loss does not reveal label errors."
         },
         {
           "label": "E",
-          "text": "The loss keeps decreasing as w increases and approaches, but never reaches, 0.",
+          "text": "Training has to be stopped by a rule chosen in advance, such as a step budget or a validation loss.",
           "correct": true,
-          "explanation": "The loss is positive for every finite w but falls toward zero as w grows."
+          "explanation": "Without a natural stopping point, the stopping rule has to be decided beforehand, not by looking at a flattering result."
         }
       ]
     },
@@ -23721,37 +23889,37 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "stem": "For a logistic classifier, the weight gradient for one example is (p - y)*x, while the bias gradient is (p - y). Check each statement that is true.",
+      "stem": "A team reports a training experiment. Some of its choices are learned from the data and others are settings chosen by people. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "The bias gradient depends on the feature value x.",
-          "correct": false,
-          "explanation": "The bias gradient is the mean error with no x factor."
+          "text": "The weights and bias are learned from the data.",
+          "correct": true,
+          "explanation": "Training adjusts these parameters to fit the examples."
         },
         {
           "label": "B",
-          "text": "Weight steps scale with the magnitude of the feature, so features in the thousands can need a smaller learning rate than features near 1.",
+          "text": "The learning rate, the number of steps and the decision threshold are settings chosen by people.",
           "correct": true,
-          "explanation": "A large x multiplies the error, so the weight update can overshoot at a rate fine for small x."
+          "explanation": "These are design decisions that the training loop does not learn."
         },
         {
           "label": "C",
-          "text": "Rescaling a feature from meters to millimeters leaves the optimal weight unchanged.",
+          "text": "Settings such as the learning rate can be left out of the report if the code is shared.",
           "correct": false,
-          "explanation": "Multiplying the feature by 1000 requires dividing the optimal weight by 1000."
+          "explanation": "A reader cannot judge or reproduce a result without the settings that produced it, even with the code."
         },
         {
           "label": "D",
-          "text": "A rate that works for x in [0, 1] will work unchanged for x in [0, 1000].",
+          "text": "Two runs that differ only in the learning rate are the same experiment.",
           "correct": false,
-          "explanation": "A thousandfold larger feature gives much larger weight steps, which can destabilize training."
+          "explanation": "Changing a setting changes the experiment and can change the trained parameters."
         },
         {
           "label": "E",
-          "text": "Standardizing features to zero mean and unit variance usually lets a single learning rate work across features.",
-          "correct": true,
-          "explanation": "Comparable scales give comparable gradient magnitudes."
+          "text": "The data and the code alone are enough to reproduce a trained model without stating the settings.",
+          "correct": false,
+          "explanation": "Without the settings, the same data and code can give a different model."
         }
       ]
     },
@@ -23763,37 +23931,37 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "stem": "A dataset has N = 1,000 examples. Full-batch gradient descent uses all 1,000 examples per update. Minibatch stochastic gradient descent uses randomly shuffled batches of 100. Check each statement that is true.",
+      "stem": "A model is trained with small random batches of the data per update, instead of the whole data set per update. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "With minibatches of 100, each update uses a gradient computed from all 1,000 examples.",
-          "correct": false,
-          "explanation": "Each update sees only its 100 examples."
+          "text": "Each update's gradient is a noisy estimate of the gradient computed on the full data.",
+          "correct": true,
+          "explanation": "A sample of the data gives an estimate of the full-data gradient that varies from batch to batch."
         },
         {
           "label": "B",
-          "text": "The gradient from a randomly drawn minibatch is a noisy but unbiased estimate of the full-batch gradient.",
-          "correct": true,
-          "explanation": "The average over a random subset has expectation equal to the full average."
+          "text": "Minibatch gradients require more computation per update than full-data gradients.",
+          "correct": false,
+          "explanation": "A batch needs less computation than the full data set, and batches map well onto parallel hardware."
         },
         {
           "label": "C",
-          "text": "One pass over the data with batch size 100 performs 100 updates.",
+          "text": "Gradients from small batches are less noisy than gradients from the full data set.",
           "correct": false,
-          "explanation": "1,000 / 100 = 10 batches, so a pass performs 10 updates."
+          "explanation": "Estimating from fewer examples adds noise, not less of it."
         },
         {
           "label": "D",
-          "text": "A trainer that uses full batches, never shuffles, and never adapts its rate represents every aspect of large-scale training.",
+          "text": "A trainer that uses the full data set for every update and never shuffles represents large-scale training.",
           "correct": false,
-          "explanation": "A simple full-batch loop omits shuffling, minibatches, and adaptive rates, so the analogy is limited."
+          "explanation": "Large-scale training uses batches, shuffling and other devices that a full-batch teaching loop omits."
         },
         {
           "label": "E",
-          "text": "Minibatch gradients have lower variance than full-batch gradients.",
+          "text": "At internet scale, the whole data set is normally processed in every update.",
           "correct": false,
-          "explanation": "A minibatch gradient is a noisier estimate with higher variance than the full-batch gradient; its benefit is cheaper updates."
+          "explanation": "Training sets of internet scale are far too large to process in every single update."
         }
       ]
     },
@@ -23847,37 +24015,37 @@
       "group": "chapter",
       "section": null,
       "source": "The loop, its rate, and its stop rule",
-      "stem": "A one-feature classifier is trained from w = 0, b = 0 on (-2, 0), (-1, 0), (1, 1), (2, 1) and learns a positive weight. Now every label is flipped: (-2, 1), (-1, 1), (1, 0), (2, 0). Check each statement that is true.",
+      "stem": "A classifier is trained on data in which larger feature values go with label 1 and learns a positive weight. Every label is then flipped and the classifier is retrained from the same starting point. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
           "text": "The learned weight should become negative.",
           "correct": true,
-          "explanation": "Larger x now goes with label 0, so a negative weight reduces the loss."
+          "explanation": "The relationship between the feature and the label is reversed."
         },
         {
           "label": "B",
-          "text": "The first update moves w in the same direction as in the original run.",
+          "text": "The first update moves the weight in the same direction as in the original run.",
           "correct": false,
-          "explanation": "The gradient sign reverses, so w moves the opposite way."
+          "explanation": "The first update follows the labels, so it moves the other way."
         },
         {
           "label": "C",
-          "text": "The learned bias should become clearly negative.",
-          "correct": false,
-          "explanation": "The data stay symmetric about zero, so the bias stays near zero."
+          "text": "The final fit should be about as good as in the original run.",
+          "correct": true,
+          "explanation": "Flipping labels mirrors the problem, so the achievable fit is the same."
         },
         {
           "label": "D",
-          "text": "The initial loss is higher than in the original run.",
+          "text": "If the retrained weight stayed positive, the code would still be correct.",
           "correct": false,
-          "explanation": "At w = 0 and b = 0 every probability is 0.5, so the initial loss is ln 2 in both runs."
+          "explanation": "The expected answer is known in advance, so a different result points to a bug."
         },
         {
           "label": "E",
-          "text": "By the symmetry sigma(-a) = 1 - sigma(a), the final training loss should match the original run's.",
-          "correct": true,
-          "explanation": "Flipping labels and negating w maps one problem exactly onto the other."
+          "text": "This test shows that the model's accuracy on new data is high.",
+          "correct": false,
+          "explanation": "The test checks the code's behavior on a mirror problem; it says nothing about new data."
         }
       ]
     },

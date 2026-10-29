@@ -114,177 +114,177 @@ Three people each say their result is "reproducible": one supplies a training sc
 
 ## ES-ch09.8
 
-A one-feature classifier has weight w = 1.2 and bias b = -0.6, with probability sigma(w*x + b) for label 1 (sigma(1.8) is about 0.858). Compute the score and probability for x = 0.5, x = 2, and x = -1; state the decisions at threshold 0.5; locate the decision boundary; and explain why these probabilities do not say that x causes the label.
+A one-feature classifier has a weight and a bias, turns its score into a probability with the sigmoid function, and predicts label 1 when the probability passes a threshold. Explain what the weight and the bias each do, where the decision boundary comes from, and what the probability does and does not tell you.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Computes the scores 0, 1.8, and -1.8 for x = 0.5, 2, and -1.
-2. Gives the probabilities 0.5, about 0.858, and about 0.142, noting sigma(-a) = 1 - sigma(a).
-3. States the decisions: label 1 for x = 2, label 0 for x = -1, and x = 0.5 sits exactly on the boundary where the tie rule decides.
-4. Locates the boundary at w*x + b = 0, that is x = 0.5, because sigma(0) = 0.5.
-5. Explains that the weight captures an association in the supplied data and the probability is the model's output under its objective, not evidence of causation.
+1. Explains that the classifier computes a score from the feature, with the weight setting how strongly the feature moves the score and the bias shifting it.
+2. Explains that the sigmoid turns the score into a number between 0 and 1 that is read as a probability.
+3. Explains that the decision comes from comparing the probability with a threshold, and that with a threshold of 0.5 the boundary is where the score is zero, which the bias moves along the feature.
+4. Notes that the weight captures an association in the supplied data and the probability is the model's output under its objective, not evidence of cause.
+5. Notes that a number between 0 and 1 is not automatically accurate, so the probabilities have to be checked against outcomes on data not used for training.
 
 **Source:** The model: two numbers and a squashing function
 
 ## ES-ch09.9
 
-A logistic classifier starts with all parameters at zero. Explain what it predicts for every input, what its average binary cross-entropy is on any binary dataset (give the number), why that value does not depend on label balance, and how this gives a baseline against which to judge training.
+A classifier starts with all parameters at zero. Explain what it predicts for every input, what that implies about the loss it starts with, and how this gives a baseline for judging training and a check on the training code.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the score is 0 for every input, so the probability is sigma(0) = 0.5.
-2. Notes that every example gets the same prediction whatever its feature value, so no relationship has been encoded yet.
-3. Gives the per-example loss -ln(0.5) = ln 2, about 0.693, for either label, so the average is 0.693 whatever the label balance.
-4. Treats 0.693 as the baseline of an uninformed model, so training should drive the loss below it.
-5. Notes that predicting this value before running gives a check on the code: a different initial loss signals a bug.
+1. States that every input receives the same prediction, a probability of 0.5, so no relationship between the feature and the label has been encoded yet.
+2. Explains that the starting loss is therefore that of an uninformed fifty-fifty guesser, the same whatever the balance of the labels.
+3. Treats that value as the baseline that training should drive the loss below.
+4. Notes that predicting the starting loss before running gives a check on the code: a different number signals a bug.
+5. Notes that beating the baseline on the training data does not show that the model will beat it on new data.
 
 **Source:** Loss makes the objective explicit
 
 ## ES-ch09.10
 
-A naive sigmoid implementation, 1 / (1 + exp(-x)), can fail in floating point for very negative x. Explain why, how a two-branch implementation fixes the problem, and what a unit test of the fix does and does not establish.
+A direct implementation of a formula can fail in floating point for extreme inputs even though the mathematics is right. Using the sigmoid function as an example, explain why this happens, how an equivalent rewrite can fix it, and what a unit test of the fix does and does not establish.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that for very negative x, exp(-x) is a huge number that overflows double precision (about exp(710) and above).
-2. Describes the two-branch fix: use 1/(1+e^(-x)) for x >= 0 and e^x/(1+e^x) for x < 0, which are mathematically identical but only exponentiate non-positive numbers.
-3. Notes that the true value for very negative x is tiny but positive, and underflowing to 0.0 is acceptable.
-4. States that a test such as sigmoid(-1000) being approximately 0 shows no overflow at that input.
-5. Notes that such a test does not prove correctness for NaN, infinities, other numeric types, or all edge cases, so the claim should stay limited to the demonstrated behavior.
+1. Explains that computers hold numbers with limited range and precision, so an intermediate value can overflow or round away even when the final answer is representable.
+2. Explains the example: for a very large negative score the direct formula computes a huge exponential that overflows.
+3. Describes the fix: an algebraically equivalent form chosen so that only safe values are exponentiated.
+4. States that a test on an extreme input shows there is no failure at that input.
+5. Notes that the test does not prove correctness for other inputs or edge cases, so the claim should stay limited to the behavior that was demonstrated.
 
 **Source:** The model: two numbers and a squashing function
 
 ## ES-ch09.11
 
-Define binary cross-entropy for one example. Evaluate it for a true label of 1 when the model's probability for label 1 is 0.9, 0.5, and 0.01, and use those numbers to explain how the loss treats confident right and confident wrong predictions and why it suits a probabilistic classifier.
+Explain what cross-entropy loss is for a classifier that outputs probabilities and how it treats confident right and confident wrong predictions. Say why accuracy and cross-entropy can disagree and what choosing a loss decides.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Gives the formula -y ln(p) - (1-y) ln(1-p), which reduces to -ln(p) for label 1.
-2. Computes about 0.105 for p = 0.9, about 0.693 for p = 0.5, and about 4.61 for p = 0.01.
-3. Explains that a confident wrong prediction is penalized heavily and without bound, while a confident right one costs little.
-4. Explains that minimizing it is maximum likelihood for Bernoulli labels, which rewards honest probabilities.
-5. Contrasts it with accuracy, which only counts errors, and notes that the optimizer lowers whatever objective it is given, so the loss is a choice about the task.
+1. Describes the loss as a penalty based on the probability the model gave to the true label: small when that probability is high and large when it is low.
+2. Explains that a confident wrong prediction is penalized heavily and without a fixed limit, while a confident right one costs little.
+3. Explains that accuracy counts only whether each decision was right, so two models with equal accuracy can have different cross-entropy.
+4. Explains that minimizing the loss rewards honest probabilities, not only correct decisions.
+5. Notes that the optimizer lowers whatever objective it is given, so the loss is a choice about the task made by people.
 
 **Source:** Loss makes the objective explicit
 
 ## ES-ch09.12
 
-A model outputs probabilities of label 1 of 0.8, 0.3, and 0.6 for three examples whose true labels are 1, 0, and 0. Compute each example's binary cross-entropy and the average. Say which example contributes most and why, and what the average does and does not tell you.
+A model outputs probabilities for three examples. On one it is confidently right, on one it is mildly right, and on one it leans toward the wrong label. Explain how the average loss is formed, which example contributes most and why, and what the average does and does not tell you.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Computes the three losses: -ln(0.8) is about 0.223, -ln(0.7) is about 0.357, and -ln(0.4) is about 0.916.
-2. Computes the average as about 0.499.
-3. Identifies the third example as the largest contributor because the model leaned toward the wrong label with p = 0.6 on a label-0 example.
-4. Notes that the average is the number the optimizer lowers on this data, and that at threshold 0.5 two of the three are classified correctly.
+1. Explains that each example gets its own loss and that the training objective is the average of them.
+2. Identifies the example where the model leaned the wrong way as contributing the most, and the confidently right one as contributing the least.
+3. Notes that a few confidently wrong predictions can dominate the average.
+4. Notes that the average is the number the optimizer lowers on this data, and that it differs from the fraction of examples classified correctly.
 5. Notes that the average says nothing about unseen data or about the relative costs of different errors.
 
 **Source:** Loss makes the objective explicit
 
 ## ES-ch09.13
 
-A score-based form of the binary logistic loss, max(a, 0) - y*a + ln(1 + e^(-|a|)), is used instead of computing the probability first. Show that it matches the usual loss for y = 1 and a > 0, say what numerical problem it avoids, and evaluate it for a = 40 with y = 0.
+A team switches to a different, supposedly equivalent way of computing its loss and the reported loss changes. Explain how you would check whether the two implementations really agree and what to do about any difference.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Shows that for y = 1 and a > 0 the form reduces to ln(1 + e^(-a)), which equals -ln(sigma(a)).
-2. States that the form is algebraically equivalent to the usual loss for all scores and labels.
-3. Explains that it avoids forming a probability that rounds to exactly 0 or 1 for large |a|, where the log would be undefined or lose precision.
-4. Evaluates a = 40, y = 0 as 40 + ln(1 + e^-40), about 40.
-5. Contrasts the naive route, where p rounds to 1.0 and ln(1 - p) fails, and notes that clipping the probability gives a capped value that is no longer the true loss.
+1. Proposes computing both on the same small inputs for which the answer can be worked out by hand.
+2. Proposes including extreme inputs, such as very confident predictions, where numerical problems appear.
+3. Proposes comparing within a stated tolerance, since floating-point results should not be expected to match exactly.
+4. Says to treat an unexplained disagreement as a bug in one of the two until it is explained, not as noise.
+5. Says to report what was tested, so the claim of equivalence is limited to those cases.
 
 **Source:** Loss makes the objective explicit
 
 ## ES-ch09.14
 
-For a one-feature logistic classifier with p = sigma(w*x + b) and binary cross-entropy loss, derive the derivative of the loss for one example with respect to w and b. Then evaluate both for x = 3, y = 0, w = 0.2, b = 0.1 (so the score is 0.7 and p is about 0.668), and say which way gradient descent moves each parameter.
+Explain, in words, what the gradient of a loss is, how it is used to update a classifier's parameters, and how the direction of an update can be predicted from the data before any code is run.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Shows that the derivative of the loss with respect to the score is p - y, because the sigmoid derivative p(1-p) cancels in the chain rule.
-2. Uses d(score)/dw = x and d(score)/db = 1 to get (p - y)*x and (p - y).
-3. Evaluates numerically: dL/dw is about 2.00 and dL/db is about 0.67.
-4. States that both gradients are positive, so descent decreases w and b.
-5. Notes that over a dataset with an average loss the gradient is the average of per-example gradients.
+1. Describes the gradient as how the loss changes as each parameter changes; it points toward higher loss.
+2. Describes the update as a small step in the opposite direction, scaled by the learning rate.
+3. Explains that the gradient is computed from the training data and the current parameter values, and averaged over the examples used.
+4. Gives a prediction from the data: if larger feature values go with label 1, the first update raises the weight.
+5. Explains that writing the prediction down before running gives a check that does not depend on the code's output.
 
 **Source:** Derive the first update
 
 ## ES-ch09.15
 
-Training pairs (x, y) are (-1, 0), (0, 1), (2, 1). A logistic classifier starts at w = 0, b = 0 and takes one full-batch gradient descent step with learning rate 0.4 on the average binary cross-entropy. Compute the per-example errors, the averaged gradients, the updated parameters, and the loss before and after.
+An AI assistant writes a training loop for a small classifier. After one update the loss on the training data is a little lower. Explain what one training step should do, why the lower loss does not show the code is correct, and what stronger check you would add.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that every prediction is 0.5, so the errors p - y are 0.5, -0.5, and -0.5.
-2. Computes the averaged weight gradient mean((p-y)*x) = -0.5 and the averaged bias gradient -0.167.
-3. Computes the updated parameters w = 0.2 and b of about 0.067.
-4. Reports the loss falling from about 0.693 to about 0.592.
-5. Explains the directions: w rises because the label-1 examples have larger x, and b rises because positives outnumber negatives.
+1. States that one step should change the parameters slightly in the direction that lowers the training loss.
+2. States that the loss on the same data should fall slightly after the step if the learning rate is small enough.
+3. Explains that the direction of each parameter's change can be predicted from the data.
+4. Explains that buggy code can also lower the loss, for example by taking a wrong-sized step, so a decrease is necessary evidence but not sufficient.
+5. Proposes comparing the first step with a hand-worked expected value on a tiny dataset.
 
 **Source:** Derive the first update
 
 ## ES-ch09.16
 
-A developer's training code sums the per-example gradients instead of averaging them. On three training pairs (-1, 0), (0, 1), (2, 1), starting from w = 0, b = 0 with learning rate 0.4, the summed version moves to w = 0.6 and b = 0.2 after one step instead of w = 0.2 and b of about 0.067, and its loss after that step is about 0.444 versus 0.592 for the averaged version. Explain why this bug can go unnoticed by a test that only checks that the loss decreased, why it matters at scale, and what test would catch it.
+A developer's training code sums the per-example gradients instead of averaging them. Explain what difference this makes, why the training loss still goes down, and how a test could catch the mistake.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that a summed gradient is N times the mean, so it acts like a learning rate N times larger.
-2. Notes that the direction is unchanged, so the loss still falls, here even faster after one step.
-3. Concludes that a lower number after an update does not show the code is correct.
-4. Explains that at scale the step grows with the dataset size, so the code can overshoot or diverge and its behavior depends on N.
-5. Proposes a test that asserts the exact first-step parameters derived by hand, or compares against a finite-difference check of the average loss.
+1. Explains that a summed gradient is N times the average, so it acts like a learning rate N times larger.
+2. Notes that the direction is unchanged, so the loss still falls, perhaps even faster at first.
+3. Concludes that a lower loss after an update does not show the code is correct.
+4. Explains that the step grows with the dataset size, so the code can overshoot or diverge and its behavior depends on N.
+5. Proposes a test that asserts the first-step parameters worked out by hand, or compares against a numerical check of the average loss.
 
 **Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.17
 
-Describe how to check a hand-derived gradient with a central finite difference. State what the check establishes, what it cannot catch, and why shrinking the step size indefinitely is not the answer.
+Describe how to check a hand-derived gradient numerically. State what the check establishes, what it cannot catch, and why making the step size smaller and smaller is not the answer.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Describes the check: evaluate (L(w+h) - L(w-h)) / (2h) for each parameter at the same point and compare it with the analytic gradient within a tolerance.
-2. Notes that it does not use the derivative formula, so it can catch algebra, sign, or missing-factor errors.
-3. States that it cannot catch a wrong objective or an error in the loss function itself, because both routes describe the same coded loss.
-4. Explains the trade-off in h: truncation error shrinks roughly as h squared, but round-off error grows as h gets very small, so a moderate h is used.
-5. Recommends pairing it with a hand-computed expected value, so the code is checked against more than one independent route.
+1. Describes the check: change a parameter slightly up and down, recompute the loss each time, and compare the estimated slope with the formula's value within a tolerance.
+2. Notes that the check does not use the derivative formula, so it can catch algebra, sign or missing-factor errors.
+3. States that it cannot catch a wrong objective or an error in the loss function itself, because both routes use the same coded loss.
+4. Explains that very tiny steps make the estimate noisy because of the computer's limited precision, so a moderate step is used.
+5. Recommends pairing it with a hand-computed expected value, so the code is checked by more than one independent route.
 
 **Source:** Derive the first update
 
 ## ES-ch09.18
 
-Gradient descent minimizes L(w) = 2w^2, whose gradient is 4w, from w = 1, so each step gives w <- (1 - 4r)w. Work out the first few iterates for r = 0.1, 0.25, 0.5, and 0.6, state the condition on r for convergence, and say what this suggests about choosing a learning rate for a real model.
+Describe what happens to gradient descent on a simple bowl-shaped loss as the learning rate is raised from very small to very large, and say what this suggests about choosing a learning rate for a real model.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Identifies the step multiplier as (1 - 4r).
-2. Shows r = 0.1 giving 0.6, 0.36, 0.216, and so on, and r = 0.25 reaching 0 in one step.
-3. Shows r = 0.5 alternating between 1 and -1 forever and r = 0.6 diverging with multiplier -1.4.
-4. States that it converges exactly when 0 < r < 0.5, and that the limit depends on the curvature of the loss.
-5. Concludes that a real model has unknown curvature and feature scales, so there is no universal safe rate; test candidate rates on declared data and report all runs, including divergent ones.
+1. Explains that a very small rate makes steady but slow progress and may not finish within the step budget.
+2. Explains that a moderate rate can reach the minimum quickly.
+3. Explains that a larger rate overshoots and oscillates around the minimum, and that a rate that is too large makes the loss grow and training diverge.
+4. States that the safe limit depends on the shape of the loss and the scale of the features, which are not known in advance for a real model.
+5. Concludes that there is no universal safe rate: test candidate rates on declared validation data and report all runs, including divergent ones.
 
 **Source:** The loop, its rate, and its stop rule
 
@@ -466,49 +466,49 @@ Distinguish the score, the probability, and the decision in a logistic classifie
 
 ## ES-ch09.30
 
-Explain the role of the bias term in a one-feature logistic classifier. Why might a learned bias come out near zero on a symmetric dataset, and why would it be a mistake to conclude that the bias can be dropped?
+Explain the role of the bias term in a one-feature classifier. Why might a learned bias come out near zero on one symmetric toy dataset, and why would it be a mistake to conclude that the bias can be dropped?
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the decision boundary is at x = -b/w, so the bias shifts it.
-2. Notes that without a bias the boundary is fixed at x = 0.
-3. Explains that on mirror-image symmetric data the errors cancel in the bias gradient, so the learned bias stays near zero.
-4. Notes that removing a point or flipping a label breaks the symmetry and moves the bias, and that data not centered at zero need one.
+1. States that the bias shifts where the decision boundary lies along the feature; without it the boundary is fixed at a feature value of zero.
+2. Notes that data not centered at zero need a bias, or the boundary cannot be placed where the data call for it.
+3. Explains that on symmetric data the pushes on the bias cancel, so the learned bias stays near zero.
+4. Notes that removing a point or flipping a label breaks the symmetry and moves the bias.
 5. Warns against generalizing from one symmetric toy dataset to the claim that biases are unnecessary.
 
 **Source:** Score, probability, and decision are three layers
 
 ## ES-ch09.31
 
-A one-feature classifier trained from zero on symmetric data in which larger x goes with label 1 learns a positive weight and a bias near zero. Predict, with reasons, what happens to the learned weight, bias, boundary, and final training loss if every label is flipped, and say how you would verify the prediction.
+A one-feature classifier trained from zero on symmetric data in which larger feature values go with label 1 learns a positive weight and a bias near zero. Predict, with reasons, what happens to the learned weight, bias, boundary and final training loss if every label is flipped, and say how you would verify the prediction.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Predicts that the learned weight becomes negative, since larger x now goes with label 0.
-2. Predicts that, because the data remain symmetric about zero, the bias stays near zero and the boundary near x = 0.
-3. Uses the identity sigma(-a) = 1 - sigma(a): flipping labels is equivalent to negating the weight, so the final training loss matches the original run.
-4. Notes that the initial predictions (0.5) and initial loss (ln 2) are the same in both runs.
+1. Predicts that the learned weight becomes negative, since larger feature values now go with label 0.
+2. Predicts that, because the data remain symmetric about zero, the bias stays near zero and the boundary stays near a feature value of zero.
+3. Explains that flipping the labels mirrors the problem, so the final training loss should match the original run.
+4. Notes that the starting predictions and the starting loss are the same in both runs, because nothing has been learned yet.
 5. Says to verify by running both and comparing, with the prediction written down before the run.
 
 **Source:** The loop, its rate, and its stop rule
 
 ## ES-ch09.32
 
-Explain how feature scale affects gradient-descent training of logistic regression, using the gradient formulas, and say what to do about it.
+Explain how feature scale affects the training of a classifier by gradient descent, and say what to do about it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Notes that the weight gradient mean((p-y)*x) scales with the feature, while the bias gradient mean(p-y) has no x factor.
-2. Explains that large features produce large weight steps and can destabilize a fixed rate, while small features make progress slow.
-3. Recommends standardizing features to zero mean and unit variance so one rate works across features.
-4. Notes that changing units rescales the optimal weight inversely, leaving predictions unchanged if training converges.
-5. Says to compute standardization statistics on the training data and apply the same transform to held-out data, to avoid leakage.
+1. Notes that the weight's update scales with the feature value, while the bias's update has no feature factor.
+2. Explains that large features produce large weight steps and can destabilize a fixed learning rate, while small features make progress slow.
+3. Recommends standardizing features to zero mean and unit variance so one learning rate works across features.
+4. Notes that changing units rescales the best weight inversely, leaving predictions unchanged if training converges.
+5. Says to compute the standardization statistics on the training data and apply the same transform to held-out data, to avoid leakage.
 
 **Source:** The loop, its rate, and its stop rule
 
@@ -521,10 +521,10 @@ Compare full-batch gradient descent, minibatch stochastic gradient descent, and 
 **Rubric (1 point each):**
 
 1. Describes full-batch descent as using the exact average gradient, which is deterministic but costly per update on large data.
-2. Describes minibatch descent as an unbiased noisy estimate with cheaper updates and more updates per pass (for example 1,000 examples in batches of 100 give 10 updates).
+2. Describes minibatch descent as using a noisy but unbiased estimate, with cheaper updates, more updates per pass over the data, and batches that map well onto parallel hardware.
 3. Describes single-example descent as the noisiest, often needing a smaller rate or averaging.
-4. Notes that gradient noise and shuffling affect optimization paths and can influence generalization.
-5. Says a full-batch teaching loop is easy to trace but omits shuffling, minibatches, and adaptive rates, so analogies to large-scale training are limited.
+4. Notes that gradient noise and shuffling affect the optimization path and can influence how well the model generalizes.
+5. Says a full-batch teaching loop is easy to trace but omits shuffling, minibatches and adaptive rates, so analogies to large-scale training are limited.
 
 **Source:** The loop, its rate, and its stop rule
 
@@ -546,17 +546,17 @@ A training routine returns only two numbers as its loss "history": the loss befo
 
 ## ES-ch09.35
 
-For a sigmoid output p and label y = 1, the derivative of cross-entropy with respect to the score is p - 1, while the derivative of the half-squared error (p - y)^2 / 2 is (p - y)*p*(1 - p). At p = 0.001 these are about -0.999 and -0.001. Explain what this means for training when a model is confidently wrong, and what it implies about choosing an objective.
+Explain why cross-entropy is usually preferred to squared error for training a classifier that outputs probabilities, in terms of what happens to training when the model is confidently wrong.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that the cross-entropy gradient with respect to the score is p - y, about -0.999 here, a strong corrective signal.
-2. States that the squared-error gradient carries the factor p(1-p), about -0.001 here, nearly vanishing.
-3. Explains that a saturated sigmoid therefore makes squared-error training stall exactly when the model is most wrong.
-4. Notes that cross-entropy pairs naturally with sigmoid outputs because it corresponds to the Bernoulli likelihood.
-5. Concludes that the choice of objective affects training dynamics, not only the number reported.
+1. States that with cross-entropy the training signal stays strong when the model is confidently wrong.
+2. States that with squared error on a squashed output the signal nearly vanishes when the output is saturated, so training stalls exactly when the model is most wrong.
+3. Explains that the squashing function flattens at the extremes and squared error does not undo that.
+4. Notes that cross-entropy corresponds naturally to treating labels as random outcomes with probabilities.
+5. Concludes that the choice of objective affects how training behaves, not only the number that is reported.
 
 **Source:** Loss makes the objective explicit
 
@@ -882,17 +882,17 @@ A team spends two weeks revising a prompt against the same 50 test questions and
 
 ## ES-ch09.56
 
-Describe the steps of full-batch gradient descent for training a one-feature logistic classifier, including input validation, initialization, the update, and what is recorded, and identify which choices are design decisions rather than learned quantities.
+Describe the steps of training a simple classifier by gradient descent, including checking the inputs, choosing starting values, the repeated update, and what is recorded, and identify which choices are design decisions rather than learned quantities.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Describes validating the inputs: labels in {0, 1}, finite features, a positive integer number of steps, and a positive finite rate.
+1. Describes validating the inputs: labels are valid, features are finite, the number of steps is a positive integer and the learning rate is positive and finite.
 2. Describes initializing the parameters, for example at zero, and recording the initial loss.
-3. Describes each step: compute predictions, form the errors p - y, average the gradient contributions, and update w and b by subtracting rate times gradient.
-4. Describes recording the final loss after the budget and returning the parameters.
-5. Identifies the learning rate, step budget, initialization, objective, and data split as design decisions, not quantities the loop learns.
+3. Describes each step: compute predictions, compare them with the labels, average the gradient contributions, and move the parameters against the gradient by the learning rate times the gradient.
+4. Describes recording the final loss after the step budget and returning the parameters.
+5. Identifies the learning rate, step budget, initialization, objective and data split as design decisions, not quantities the loop learns.
 
 **Source:** The loop, its rate, and its stop rule
 
@@ -946,17 +946,17 @@ Explain why a report on AI-assisted work should show which task was delegated to
 
 ## ES-ch09.60
 
-A logistic regression has a weight of 0.7 on a feature x. Interpret the weight in terms of log-odds, odds, and probability, show with a numerical example why the probability change per unit of x varies, and say why the weight alone does not show that x causes the outcome.
+A fitted classifier has a positive weight on a feature x. Explain what the weight says, why the same change in x does not always change the predicted probability by the same amount, and why the weight alone does not show that x causes the outcome.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that each one-unit increase in x adds 0.7 to the log-odds.
-2. States that each one-unit increase multiplies the odds by e^0.7, about 2.01.
-3. Notes that probability responds nonlinearly through the sigmoid, so the same step changes probability most near 0.5 and least near 0 or 1.
-4. Gives an example: from probability 0.5 (odds 1) the odds become about 2.01, giving a probability of about 0.67.
-5. Explains that the weight is an association in the training data and does not identify the effect of intervening on x.
+1. States that a positive weight means larger values of x went with a higher predicted chance of label 1 in the training data, other features held fixed.
+2. Notes that the size of the weight depends on the units in which x is measured.
+3. Explains that the probability responds nonlinearly through the sigmoid, so the same change in x moves it most near the middle and least near 0 or 1.
+4. Notes that the weight describes the data the model was fit on and may not hold in a different population.
+5. Explains that the weight is an association and does not identify the effect of intervening on x.
 
 **Source:** The model: two numbers and a squashing function
 

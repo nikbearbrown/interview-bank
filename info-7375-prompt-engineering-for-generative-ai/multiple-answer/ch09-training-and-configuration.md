@@ -288,331 +288,331 @@ Three people each claim their result is reproducible. Person 1 supplies a short 
 
 ## MA-ch09.14
 
-A one-feature logistic classifier has weight w = 0.5 and bias b = -1. Its probability for label 1 is the sigmoid of the linear score, sigma(a) = 1 / (1 + e^(-a)), with a = w*x + b, and it predicts label 1 when the probability is at least 0.5. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A simple classifier computes a score from a feature, converts the score to a probability with the sigmoid function, and predicts label 1 when the probability is at least 0.5. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. For x = 4 the linear score is 1.0.
-- [ ] B. At x = 0 the probability is below 0.5.
-- [ ] C. At x = 2 the probability is exactly 0.5.
-- [ ] D. For x = 4 the predicted probability is about 0.73.
-- [ ] E. The decision boundary is at x = 4.
+- [ ] A. The sigmoid function turns any score into a number between 0 and 1.
+- [ ] B. A larger score gives a larger probability of label 1.
+- [ ] C. A probability between 0 and 1 is, for that reason alone, an accurate estimate of how likely the label is.
+- [ ] D. Predicting label 1 when the probability is at least 0.5 is the same as predicting label 1 when the score is at least 0.
+- [ ] E. A score of exactly 0 gives a probability of exactly 0.5.
 
-**Key:** A=T B=T C=T D=T E=F
+**Key:** A=T B=T C=F D=T E=T
 
 **Why:**
 
-- A: a = 0.5*4 - 1 = 1.0.
-- B: At x = 0 the score is -1 and sigma(-1) is about 0.27.
-- C: a = 0.5*2 - 1 = 0 and sigma(0) = 0.5.
-- D: sigma(1.0) is about 0.731.
-- E: The boundary is where w*x + b = 0, so x = 2, not 4.
+- A: The sigmoid squashes the whole range of scores into the interval from 0 to 1.
+- B: The sigmoid is increasing, so a larger score gives a larger probability.
+- C: Lying between 0 and 1 is a property of the formula; whether the probabilities match real frequencies has to be checked against outcomes.
+- D: A score of 0 maps to a probability of exactly 0.5, so the two ways of stating the rule agree.
+- E: The sigmoid of 0 is 0.5, which is why a probability threshold of 0.5 corresponds to a score threshold of 0.
 
 **Source:** The model: two numbers and a squashing function
 
 ## MA-ch09.15
 
-A one-feature logistic classifier is initialized with weight 0 and bias 0, then evaluated on 100 labeled examples, 70 with label 1 and 30 with label 0, whose feature values range between -5 and 5. It predicts label 1 when the probability is at least 0.5. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A classifier's parameters are all set to zero before training. It is then evaluated on labeled data in which 70 percent of the examples have label 1. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The initial average loss would be lower than 0.693 because 70% of the labels are 1.
-- [ ] B. Every example receives predicted probability 0.5.
-- [ ] C. The average binary cross-entropy is ln 2, about 0.693.
-- [ ] D. Accuracy at this point is 70%.
-- [ ] E. At this point the prediction does not depend on the feature value.
+- [ ] A. It gives the same probability, 0.5, for every example.
+- [ ] B. Its predictions do not depend on the feature value.
+- [ ] C. Its average loss at this point equals the loss of always answering "fifty-fifty", a baseline that training should beat.
+- [ ] D. It starts with a probability of 0.7 for every example because 70 percent of the labels are 1.
+- [ ] E. A training loss that falls below this starting value shows that the model fits the training data better than a fifty-fifty guesser does.
 
-**Key:** A=F B=T C=T D=T E=T
+**Key:** A=T B=T C=T D=F E=T
 
 **Why:**
 
-- A: The loss is the same for both labels at p = 0.5, so label balance does not change it.
-- B: With w = 0 and b = 0 every score is 0, and sigma(0) = 0.5.
-- C: Each example's loss is -ln(0.5) for either label, so the average is 0.693.
-- D: The at-least-0.5 rule predicts 1 for every example, which is right for the 70 positives.
-- E: The score w*x + b is 0 whatever x is.
+- A: With every parameter at zero the score is zero for every input, and the sigmoid of zero is 0.5.
+- B: The parameters that connect the feature to the output are all zero, so the feature has no effect yet.
+- C: An uninformed 50/50 guesser is the reference point that a trained model must improve on.
+- D: Setting parameters to zero does not encode the label balance; the model has not looked at the labels yet.
+- E: Training loss measures fit to the training data, so falling below the baseline means a better fit there; it says nothing about new data.
 
 **Source:** The model: two numbers and a squashing function
 
 ## MA-ch09.16
 
-In IEEE double precision, math.exp(709) is about 8.2e307, while math.exp(710) raises an overflow error. A programmer writes sigmoid(x) = 1 / (1 + math.exp(-x)) and calls sigmoid(-1000). Check each statement that is true. Each statement is worth 1 point (5 points total).
+A programmer implements the sigmoid function with a direct formula. On a very large negative score the function fails because an intermediate number is too large for the computer to represent. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Using 1/(1+e^(-x)) for x >= 0 and e^x/(1+e^x) for x < 0 computes the same function while avoiding the huge exponential.
-- [ ] B. For moderate inputs such as x = 2 the two-branch version gives materially different probabilities from the naive formula.
-- [ ] C. A passing test that sigmoid(-1000) is approximately 0 proves correctness for every input type and floating-point edge case.
-- [ ] D. The call fails because exp(1000) overflows.
-- [ ] E. The true value of sigmoid(-1000) is exactly 0.
+- [ ] A. Computers store numbers with limited range and precision, so a formula that is correct on paper can fail for extreme inputs.
+- [ ] B. A mathematically equivalent rewrite of the formula can avoid the failure.
+- [ ] C. A passing test on ordinary inputs shows that the function works for every input.
+- [ ] D. If a function returns a number without raising an error, the number must be correct.
+- [ ] E. Testing extreme inputs is unnecessary if ordinary inputs pass.
 
-**Key:** A=T B=F C=F D=T E=F
+**Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: Multiplying numerator and denominator by e^x rewrites the same quantity using only a small exponent for negative x.
-- B: The branches are algebraically identical, so they differ only by rounding for ordinary inputs.
-- C: One test covers one behavior; it says nothing about NaN, infinities, or other types.
-- D: With x = -1000 the naive code evaluates exp(1000), which exceeds the largest double.
-- E: The sigmoid is strictly positive; double precision merely rounds its value to 0.0.
+- A: Overflow and rounding come from the finite size of the number format, not from a mistake in the mathematics.
+- B: An equivalent form can be arranged so that only safe values are computed.
+- C: Ordinary inputs do not exercise the extreme cases where such failures occur.
+- D: Floating-point code can return a wrong number silently, for example after a value rounds away.
+- E: Extreme and edge-case inputs are where numerical problems show up, so passing on ordinary inputs is not enough.
 
 **Source:** The model: two numbers and a squashing function
 
 ## MA-ch09.17
 
-A one-feature logistic model has weight w = -1.5 and bias b = 3. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A one-feature classifier has a weight and a bias. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The location of the boundary does not depend on the bias.
-- [ ] B. At x = 0 the predicted probability for label 1 is above 0.9.
-- [ ] C. At x = 3 the model predicts label 0.
-- [ ] D. The probability of label 1 increases as x increases.
-- [ ] E. The decision boundary, where the probability is 0.5, is at x = 2.
+- [ ] A. The sign of the weight determines whether a larger feature value pushes the probability of label 1 up or down.
+- [ ] B. The bias shifts where along the feature the decision changes from one label to the other.
+- [ ] C. With the bias fixed at zero, the boundary is forced to the point where the feature is zero, so some data cannot be separated well.
+- [ ] D. The weight and bias are chosen by the person using the model rather than found from data.
+- [ ] E. A positive weight shows that the feature causes label 1.
 
-**Key:** A=F B=T C=T D=F E=T
+**Key:** A=T B=T C=T D=F E=F
 
 **Why:**
 
-- A: The boundary is x = -b/w, so changing b moves it.
-- B: At x = 0 the score is 3 and sigma(3) is about 0.953.
-- C: At x = 3 the score is -1.5 and sigma(-1.5) is about 0.18, below 0.5.
-- D: The weight is negative, so the score and probability fall as x rises.
-- E: The boundary solves -1.5x + 3 = 0, which gives x = 2.
+- A: A positive weight pushes the score up as the feature grows; a negative weight pushes it down.
+- B: Changing the bias moves the boundary without changing how steeply the score responds to the feature.
+- C: Without a bias, the score is zero, and so the boundary lies, at a feature value of zero whatever the data look like.
+- D: The weight and bias are the parameters that training adjusts to fit the data.
+- E: A weight describes an association in the training data; it does not show that changing the feature would change the label.
 
 **Source:** The model: two numbers and a squashing function
 
 ## MA-ch09.18
 
-A fitted logistic regression has a weight of 0.7 on a feature x. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A fitted classifier has a positive weight on a feature x. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Each one-unit increase in x adds 0.7 to the log-odds of label 1.
-- [ ] B. Each one-unit increase in x multiplies the odds of label 1 by 0.7.
-- [ ] C. The change in probability per unit of x is the same at every value of x.
-- [ ] D. The weight shows that x causes label 1.
-- [ ] E. Each one-unit increase in x raises the probability of label 1 by 0.7.
+- [ ] A. In the training data, larger values of x went with label 1 more often.
+- [ ] B. The size of the weight does not depend on the units in which x is measured.
+- [ ] C. The weight shows that raising x would cause label 1 to become more likely.
+- [ ] D. Weights on features measured in different units can be compared directly as measures of importance.
+- [ ] E. A weight fitted in one population necessarily holds in a different population.
 
 **Key:** A=T B=F C=F D=F E=F
 
 **Why:**
 
-- A: The model is linear in log-odds, so the weight is the log-odds change per unit.
-- B: The log-odds rise by 0.7, so the odds are multiplied by e^0.7, about 2.01, not by 0.7.
-- C: Through the sigmoid, the same step in x moves probability most near 0.5 and least near 0 or 1.
-- D: A fitted weight describes an association in the training data and does not identify a cause.
-- E: Probabilities are bounded by 1 and change nonlinearly; the weight does not add to the probability.
+- A: A positive weight means the fitted relationship slopes toward label 1 as x grows.
+- B: Measuring x in millimeters instead of meters changes the weight by a factor of a thousand without changing the predictions.
+- C: A weight is an association in the data; it does not show what would happen if x were changed.
+- D: Weights depend on the scale of their features, so raw weights are not a fair comparison of importance.
+- E: A fitted relationship can change when the population changes, so it has to be tested there.
 
 **Source:** The model: two numbers and a squashing function
 
 ## MA-ch09.19
 
-A logistic model has weight w = 2 and bias b = -3. Its score is a = w*x + b, its probability is sigma(a), and its decision is label 1 when the probability is at least a chosen threshold. For a probability threshold of 0.8, the score threshold is ln 4, about 1.386. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A classifier outputs probabilities, and the decision is label 1 when the probability passes a threshold the team chooses. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. With threshold 0.5 the decision boundary is at x = 1.5.
-- [ ] B. Because the sigmoid is increasing, thresholding the probability is the same as thresholding the score.
-- [ ] C. At x = 1.5 the predicted probability is 0.75.
-- [ ] D. Raising the probability threshold to 0.8 with the same parameters moves the boundary to about x = 2.19.
-- [ ] E. Training updates the threshold along with the weight and bias.
-
-**Key:** A=T B=T C=F D=T E=F
-
-**Why:**
-
-- A: The score is zero when 2x - 3 = 0, so x = 1.5.
-- B: A monotonic function preserves order, so each probability threshold corresponds to one score threshold.
-- C: At x = 1.5 the score is 0, so the probability is 0.5.
-- D: The score must reach 1.386, so x = (1.386 + 3)/2, about 2.19.
-- E: The threshold is a decision rule chosen outside the fitting loop.
-
-**Source:** Score, probability, and decision are three layers
-
-## MA-ch09.20
-
-A one-feature classifier predicts whether a job will run long from its input size x; long jobs mostly have x above 5 and short jobs mostly have x below 5. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The boundary is where w*x + b = 0 because the sigmoid of 0 is 0.5.
-- [ ] B. If the data are mirror-image symmetric around zero, the learned bias can stay near zero, which shows a bias term is unnecessary.
-- [ ] C. On mirror-image symmetric data, removing one point or flipping one label can move the learned bias away from zero.
-- [ ] D. With w = 0.8 and b = -4 the boundary is at x = 3.2.
-- [ ] E. With the bias fixed at 0, the decision boundary is forced to x = 0, so a boundary near 5 cannot be represented.
-
-**Key:** A=T B=F C=T D=F E=T
-
-**Why:**
-
-- A: Probability 0.5 corresponds to a score of 0.
-- B: Symmetric data can hide the need for a bias; it is needed whenever the relationship is not centered at zero.
-- C: A small asymmetry changes the error balance that keeps the bias near zero.
-- D: The boundary is x = -b/w = 4/0.8 = 5, not 3.2.
-- E: Without a bias, w*x = 0 only at x = 0.
-
-**Source:** Score, probability, and decision are three layers
-
-## MA-ch09.21
-
-A binary logistic model gives score a = 2 for an example. The usual loss is -y*ln(p) - (1-y)*ln(1-p) with p = sigma(a), where sigma(2) is about 0.8808. An algebraically equivalent score-based form is max(a, 0) - y*a + ln(1 + e^(-|a|)). Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For label 0 the loss is about 2.127.
-- [ ] B. The two forms give different values, which is why the score-based one is preferred.
-- [ ] C. At this score, a label-0 example has a smaller loss than a label-1 example.
-- [ ] D. The score-based form avoids taking the log of a probability that has rounded to exactly 0 or 1 when |a| is large.
-- [ ] E. For label 1 the loss is about 0.127.
+- [ ] A. Raising the threshold makes the classifier label fewer examples as 1.
+- [ ] B. Changing the threshold changes the probabilities the model outputs.
+- [ ] C. Training sets the best threshold automatically, so the team does not need to decide it.
+- [ ] D. The best threshold depends on the costs of the two kinds of error.
+- [ ] E. Two classifiers that output the same probabilities can make different decisions if their thresholds differ.
 
 **Key:** A=T B=F C=F D=T E=T
 
 **Why:**
 
-- A: -ln(1 - 0.8808) is about 2.127.
-- B: The forms are algebraically equivalent; the second is chosen for numerical safety.
-- C: A positive score favors label 1, so a label-0 example is penalized more (2.127 versus 0.127).
-- D: It never forms p or 1-p, so large scores do not push a log argument to zero.
-- E: -ln(0.8808) is about 0.127.
+- A: A higher bar means fewer examples clear it.
+- B: The threshold is applied after the probabilities are computed and leaves them unchanged.
+- C: The threshold is a decision about costs and uses, made by people; training does not choose it.
+- D: If a missed positive costs much more than a false alarm, a lower threshold is usually better.
+- E: Decisions come from probabilities plus a threshold, so a different threshold gives different decisions.
+
+**Source:** Score, probability, and decision are three layers
+
+## MA-ch09.20
+
+A one-feature classifier predicts whether a job will run long from its input size. Long jobs mostly have large sizes and short jobs mostly have small sizes, with the dividing point near 5. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A model with a bias term can place its decision boundary near 5.
+- [ ] B. A model with the bias fixed at zero cannot place its boundary near 5, because its boundary is forced to a feature value of 0.
+- [ ] C. If a toy dataset happens to be symmetric around zero, that shows a bias term is never needed.
+- [ ] D. For a sigmoid classifier, the boundary is where the score equals zero.
+- [ ] E. Removing a single training point can never move the fitted boundary.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: The bias lets the score cross zero at a feature value other than zero.
+- B: With no bias the score is zero at a feature value of zero, so the boundary sits there.
+- C: One symmetric toy dataset says nothing about the general case; most real data are not centered at zero.
+- D: A score of zero corresponds to a probability of 0.5, the usual decision point.
+- E: The fitted parameters depend on all of the training data, so changing one point can move the boundary.
+
+**Source:** Score, probability, and decision are three layers
+
+## MA-ch09.21
+
+A classifier outputs a probability for each example, and a loss function turns each prediction into a penalty that training tries to reduce. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A loss function states, in a single number, what counts as a better or a worse prediction.
+- [ ] B. Cross-entropy penalizes a confident wrong prediction much more than an uncertain wrong one.
+- [ ] C. Accuracy and cross-entropy always rank two models in the same order.
+- [ ] D. A loss that is easy to compute is therefore a good measure of what the application needs.
+- [ ] E. Choosing the loss is a decision about what the model is asked to do, made by people.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: The loss is the explicit objective: whatever it rewards, training pushes toward.
+- B: Cross-entropy grows steeply as the probability given to the true label approaches zero.
+- C: Accuracy ignores how confident the predictions were, so models can rank differently under the two measures.
+- D: Convenience does not make a loss fit the purpose; the loss has to reflect what matters in use.
+- E: The optimizer lowers whatever it is given, so the choice of objective belongs to the people who set the task.
 
 **Source:** Loss makes the objective explicit
 
 ## MA-ch09.22
 
-A float64 implementation computes p = 1/(1 + exp(-a)) for score a = 40 and label y = 0, then evaluates -ln(1 - p). In double precision, e^(-40) is about 4.2e-18, which is below the spacing of numbers near 1, so 1 + e^(-40) rounds to 1.0 and p is exactly 1.0. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Two classifiers have the same accuracy on the same test data. One gives confident probabilities, mostly right but with a few confidently wrong. The other gives cautious probabilities. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The naive computation ends up evaluating ln(0).
-- [ ] B. The score-based form max(a,0) - y*a + ln(1 + e^(-|a|)) returns about 40 here.
-- [ ] C. The true loss for this example is about 40.
-- [ ] D. Clipping p to the range [1e-15, 1-1e-15] before taking logs would return about 34, a capped value that is no longer the true loss.
-- [ ] E. A loss of about 40 means the model assigned a probability near 0.5 to the correct label.
+- [ ] A. Their cross-entropy losses can differ even though their accuracy is the same.
+- [ ] B. A few confidently wrong predictions can raise the average loss a great deal.
+- [ ] C. Equal accuracy means the two models are equally good for every use.
+- [ ] D. Cross-entropy takes the probabilities into account, while accuracy looks only at the final decisions.
+- [ ] E. A model with a low average loss on the training data can still have a higher loss on new data.
 
-**Key:** A=T B=T C=T D=T E=F
+**Key:** A=T B=T C=F D=T E=T
 
 **Why:**
 
-- A: With p exactly 1.0, 1 - p is 0 and its logarithm is undefined or negative infinity.
-- B: With a = 40 and y = 0 the formula gives 40 + ln(1 + e^-40), about 40.
-- C: The loss is ln(1 + e^40), which is about 40.
-- D: The clipped 1 - p is on the order of 1e-15, and -ln of that is roughly 34, so clipping changes the value.
-- E: A loss near 40 means the correct label was given a probability of roughly e^-40, far below 0.5.
+- A: Equal counts of right and wrong decisions can hide differences in how confident the predictions were.
+- B: The penalty for a wrong prediction grows steeply with confidence, so a few such cases can dominate the average.
+- C: Which model is better depends on the use, for example whether the probabilities themselves are relied on.
+- D: That is the difference between a probability-aware measure and one that only counts decisions.
+- E: Training loss measures fit to the training data; new data can behave differently.
 
 **Source:** Loss makes the objective explicit
 
 ## MA-ch09.23
 
-A model outputs probabilities for label 1 on three examples: 0.9 (true label 1), 0.2 (true label 0), and 0.5 (true label 1). Use natural logs. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Binary cross-entropy compares the probability a model gave to the true label with the outcome. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The average loss equals the misclassification rate at threshold 0.5.
-- [ ] B. The p = 0.5 example has the largest of the three losses, about 0.693.
-- [ ] C. The p = 0.2, label-0 example has a loss of about 1.61.
-- [ ] D. The average loss over the three examples is about 0.34.
-- [ ] E. The p = 0.9 example has a binary cross-entropy loss of about 0.105.
+- [ ] A. If the model gives a probability near 1 to the true label, the loss is near 0.
+- [ ] B. If the model gives a probability near 0 to the true label, the loss is very large.
+- [ ] C. The loss can never be negative.
+- [ ] D. A loss of exactly 0 can be reached by a model that assigns 0.5 to every example.
+- [ ] E. The loss is the same thing as the fraction of predictions that are wrong.
 
-**Key:** A=F B=T C=F D=T E=T
+**Key:** A=T B=T C=T D=F E=F
 
 **Why:**
 
-- A: Loss is a continuous measure of confidence in the right label, not a count of errors.
-- B: -ln(0.5) is 0.693, larger than 0.105 and 0.223.
-- C: For label 0 the loss is -ln(1 - 0.2) = -ln(0.8), about 0.223; 1.61 is -ln(0.2), which would apply to a true label of 1.
-- D: (0.105 + 0.223 + 0.693) / 3 is about 0.341.
-- E: -ln(0.9) is about 0.105.
+- A: A confident correct prediction costs almost nothing.
+- B: The penalty grows steeply as the true label is given less and less probability.
+- C: Probabilities lie between 0 and 1, so the penalty is never below zero.
+- D: A model that says fifty-fifty about everything has a fixed, clearly positive loss.
+- E: The fraction wrong ignores confidence; cross-entropy does not.
 
 **Source:** Loss makes the objective explicit
 
 ## MA-ch09.24
 
-Two models predict the probability of label 1 for the same example whose true label is 1. Model P outputs 0.01 and Model Q outputs 0.4. Use natural logs. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A team trains a probability classifier with a smooth loss such as cross-entropy rather than by directly maximizing accuracy. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Cross-entropy for a label-1 example is bounded above by 1.
-- [ ] B. Model P's cross-entropy loss, about 4.6, is more than five times Model Q's, about 0.92.
-- [ ] C. A prediction of 0.99 for this example would have a loss of about 0.01.
-- [ ] D. At threshold 0.5 both models are wrong, so accuracy treats the two predictions as equally bad.
-- [ ] E. As the probability assigned to the true class approaches 0, the loss grows without bound.
+- [ ] A. Accuracy changes in jumps as the parameters change slightly, while a smooth loss changes gradually.
+- [ ] B. A smooth loss tells training which direction to nudge the parameters.
+- [ ] C. Minimizing the training loss is the same objective as maximizing accuracy on new data.
+- [ ] D. A smooth loss is computed from the examples, so it depends on the data.
+- [ ] E. A model with a low training loss can still perform poorly on data it was not trained on.
 
-**Key:** A=F B=T C=T D=T E=T
+**Key:** A=T B=T C=F D=T E=T
 
 **Why:**
 
-- A: The loss -ln(p) is unbounded as p approaches 0.
-- B: -ln(0.01) is 4.61 and -ln(0.4) is 0.92, a ratio of about 5.0.
-- C: -ln(0.99) is about 0.01, since a confident correct answer costs almost nothing.
-- D: Both probabilities fall below 0.5, so both count as one error.
-- E: Cross-entropy punishes confident wrong answers without limit.
+- A: A tiny change in a parameter usually flips no decisions, so accuracy gives training no gradual signal.
+- B: A smooth loss has a slope that points toward better parameters.
+- C: Training loss measures fit to the training data; performance on new data is a separate question.
+- D: The loss is a function of the examples and the current parameters.
+- E: Fitting the training data closely does not guarantee good behavior elsewhere.
 
 **Source:** Loss makes the objective explicit
 
 ## MA-ch09.25
 
-Binary cross-entropy for label y and predicted probability p is -y*ln(p) - (1-y)*ln(1-p). Check each statement that is true. Each statement is worth 1 point (5 points total).
+A classifier reaches a low loss on a dataset. Check each statement that is true about what that low loss does and does not show. Each statement is worth 1 point (5 points total).
 
-- [ ] A. For a label-1 example it reduces to -ln(1-p).
-- [ ] B. Minimizing the average of this loss over a dataset maximizes the Bernoulli likelihood of the observed labels.
-- [ ] C. For p = sigma(a), its derivative with respect to the score a is p - y.
-- [ ] D. Mean squared error between p and y has the same derivative with respect to the score.
-- [ ] E. It equals the zero-one error.
+- [ ] A. It says nothing about whether the labels in that dataset were correct.
+- [ ] B. It says nothing about whether the dataset resembles the data the model will meet in use.
+- [ ] C. It shows that the model's reasoning matches a human's.
+- [ ] D. Different loss functions always lead to the same trained model from the same data.
+- [ ] E. It shows that the objective was the right one for the application.
 
-**Key:** A=F B=T C=T D=F E=F
+**Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: With y = 1 the second term vanishes, leaving -ln(p).
-- B: Cross-entropy is the negative log-likelihood of independent Bernoulli labels.
-- C: The sigmoid and the log-loss combine so that the score derivative is the prediction error.
-- D: The squared-error derivative carries an extra factor p(1-p), which shrinks when predictions saturate.
-- E: Cross-entropy is continuous and graded, while zero-one error counts mistakes.
+- A: A model can fit mislabeled data well, and the loss will not reveal the mistakes.
+- B: Loss is measured on the data at hand; a different population can behave differently.
+- C: Loss measures how well the outputs fit the labels, not how the model arrives at them.
+- D: The loss defines what training pushes toward, so different choices give different models.
+- E: Whether the objective suits the application is a judgment made outside the loss.
 
 **Source:** Loss makes the objective explicit
 
 ## MA-ch09.26
 
-One training example has feature x = 3 and label y = 0. The model has w = 0.2 and b = 0.1, with p = sigma(w*x + b). Recall that the derivative of the binary logistic loss with respect to the score a = w*x + b is p - y. Here a = 0.7 and p is about 0.668. Check each statement that is true. Each statement is worth 1 point (5 points total).
+In gradient descent, the gradient tells how the loss changes as each parameter changes, and an update moves the parameters a small step. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The derivative of the loss with respect to b is about 0.67.
-- [ ] B. A gradient descent step with a positive learning rate will increase w.
-- [ ] C. The derivatives with respect to w and b are equal because both parameters multiply the same error.
-- [ ] D. The loss for this example is about 0.40.
-- [ ] E. The derivative of the loss with respect to w is about 2.00.
+- [ ] A. The gradient points in the direction in which the loss increases fastest.
+- [ ] B. An update moves the parameters in the opposite direction, to lower the loss.
+- [ ] C. A single update is guaranteed to lower the loss on every individual training example.
+- [ ] D. The gradient is a fixed property of the model that does not depend on the training data.
+- [ ] E. The size of an update does not depend on the learning rate.
 
-**Key:** A=T B=F C=F D=F E=T
+**Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: The score changes by 1 per unit of b, so dL/db = p - y, about 0.67.
-- B: The gradient is positive, and descent subtracts it, so w decreases.
-- C: The weight's derivative carries the extra factor x = 3, so the two differ.
-- D: For label 0 the loss is -ln(1 - 0.668), about 1.10.
-- E: By the chain rule dL/dw = (p - y)*x = 0.668*3, about 2.00.
+- A: The gradient is the direction of steepest increase.
+- B: Descent means stepping against the gradient.
+- C: An update is chosen to lower the average loss; individual examples can get worse.
+- D: The gradient depends on both the data and where the parameters currently are.
+- E: The learning rate scales the step; a larger rate gives a larger update.
 
 **Source:** Derive the first update
 
 ## MA-ch09.27
 
-Training data as (x, y) pairs: (0, 0), (1, 0), (2, 1). A model starts at w = 0 and b = 0 with p = sigma(w*x + b), uses the average binary logistic loss, and takes one full-batch gradient descent step with learning rate 0.6. The per-example derivative with respect to the score is p - y. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A classifier starts with all parameters at zero, and in its training data larger feature values go with label 1. Check each statement that is true about the first training update. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The bias does not move on this step because the errors sum to zero.
-- [ ] B. The averaged weight gradient is about -0.167.
-- [ ] C. The three initial errors p - y are 0.5, 0.5, and -0.5.
-- [ ] D. The average loss after the step is higher than the initial 0.693.
-- [ ] E. After the step, w is 0.1 and b is -0.1.
+- [ ] A. The first update should raise the weight.
+- [ ] B. If every label were flipped, the first update would move the weight in the opposite direction.
+- [ ] C. The direction of the first update can be predicted from the data before running any code.
+- [ ] D. After the first update, the model is guaranteed to classify every training example correctly.
+- [ ] E. The first update leaves the weight unchanged because the starting probabilities are all 0.5.
 
-**Key:** A=F B=T C=T D=F E=T
+**Key:** A=T B=T C=T D=F E=F
 
 **Why:**
 
-- A: The errors sum to +0.5, so the bias gradient is +0.167 and b moves.
-- B: The sum of error times x is 0 + 0.5 - 1.0 = -0.5, and dividing by 3 gives -0.167.
-- C: Every prediction is 0.5, so the errors are 0.5 - y for each label.
-- D: The loss falls to about 0.661 after a correctly signed step.
-- E: w = 0 - 0.6*(-0.167) = 0.1 and b = 0 - 0.6*(0.167) = -0.1.
+- A: Larger features go with label 1, so a larger weight lowers the loss.
+- B: Reversing the labels reverses the relationship the update is pulling toward.
+- C: The direction follows from how the labels relate to the feature, which can be reasoned out in advance.
+- D: One small step improves the fit but does not make every prediction right.
+- E: The starting probabilities are all 0.5, but the errors against the labels are not zero, so the update is not zero.
 
 **Source:** Derive the first update
 
 ## MA-ch09.28
 
-Training data as (x, y) pairs: (-1, 1), (1, 0), (2, 0), so larger x goes with label 0. A model starts at w = 0, b = 0, uses the average binary logistic loss and the error p - y, and takes one full-batch gradient descent step with a positive learning rate. Check each statement that is true. Each statement is worth 1 point (5 points total).
+In training a simple classifier, the weight's update depends on the feature value and the error, while the bias's update depends on the error alone. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The averaged weight gradient is about +0.67, so w decreases on the first step.
-- [ ] B. After the first step, b is positive.
-- [ ] C. The averaged bias gradient is 0, so b stays at 0.
-- [ ] D. The first step makes w positive because the model must raise probabilities for positive x.
-- [ ] E. The initial average loss is below ln 2 because the label-0 points have larger x.
+- [ ] A. A larger feature value produces a larger change to the weight's update, other things equal.
+- [ ] B. The bias's update does not scale with the feature value.
+- [ ] C. Rescaling a feature from meters to millimeters leaves the best weight unchanged.
+- [ ] D. A learning rate that works for features near 1 will work unchanged for features in the thousands.
+- [ ] E. Standardizing features never changes how large the weight updates are.
 
-**Key:** A=T B=F C=F D=F E=F
+**Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: Errors are -0.5, 0.5, 0.5; weighted by x they sum to 2.0, and the mean is 0.667.
-- B: The bias gradient is positive and descent subtracts it, so b becomes negative.
-- C: The errors sum to 0.5, giving a bias gradient of about +0.167.
-- D: The positive-x points carry label 0, so the weight must fall, not rise.
-- E: At w = 0 and b = 0 every probability is 0.5, so the initial loss is ln 2 whatever the data.
+- A: The weight's gradient is multiplied by the feature, so large features give large steps.
+- B: The bias multiplies nothing, so its update has no feature factor.
+- C: Changing units rescales the best weight inversely, so the best weight changes.
+- D: Features in the thousands make weight steps very large, which can destabilize a rate chosen for small features.
+- E: Features on a common scale lead to updates of comparable size, which does change the update sizes.
 
 **Source:** Derive the first update
 
@@ -640,111 +640,111 @@ Before running an AI-written training script, a student writes down, with the da
 
 ## MA-ch09.30
 
-Two implementations of full-batch gradient descent for logistic regression on N = 50 examples differ in one line. Version M divides the summed per-example gradients by N. Version S does not divide. Both use learning rate 0.1. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Two implementations of gradient descent differ in one line: one averages the per-example gradients over the dataset and the other sums them. Both use the same learning rate. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Version S takes steps 50 times larger than Version M.
-- [ ] B. Version S is equivalent to Version M with a learning rate of 5.0.
-- [ ] C. Doubling the dataset doubles the size of Version S's step but not Version M's.
-- [ ] D. A test that only checks that the training loss decreased cannot reliably tell the two versions apart.
-- [ ] E. Version S's step points in a different direction from Version M's.
+- [ ] A. The summed version takes larger steps as the dataset grows, for the same learning rate.
+- [ ] B. The two versions point in the same direction.
+- [ ] C. The summed version is equivalent to the averaged version with a larger learning rate.
+- [ ] D. A test that only checks that the training loss decreased can reliably tell the two versions apart.
+- [ ] E. The scaling of the gradient affects whether training is stable.
 
-**Key:** A=T B=T C=T D=T E=F
+**Key:** A=T B=T C=T D=F E=T
 
 **Why:**
 
-- A: The sum is N times the mean, so the step is multiplied by 50.
-- B: 0.1 times 50 equals 5.0 applied to the mean gradient.
-- C: The sum grows with N while the mean does not.
-- D: A too-large step can still reduce the loss early on, so a "loss fell" test may pass.
-- E: Scaling a vector by a positive constant leaves its direction unchanged.
+- A: A sum grows with the number of examples, while an average does not.
+- B: Multiplying a gradient by a positive constant does not change its direction.
+- C: Summing multiplies the averaged gradient by the number of examples, which acts like a larger learning rate.
+- D: Both versions can lower the loss, so a decrease does not reveal which is which.
+- E: A step that is too large can overshoot or diverge, so the scaling matters for stability.
 
 **Source:** The loop, its rate, and its stop rule
 
 ## MA-ch09.31
 
-Training data as (x, y) pairs: (-3, 0), (-1, 0), (1, 1), (3, 1). A model starts at w = 0, b = 0 and takes a full-batch step with learning rate 0.5. A correct implementation uses mean((p - y)*x) for the weight and mean(p - y) for the bias. A buggy version also uses mean((p - y)*x) for the bias. At the start p is 0.5 for every example. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A student's trainer has a bug: it updates the bias using the feature value as well as the error, which is the weight's update rule. The loss still goes down during training. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The correct bias gradient at the start is 0, so b stays at 0 after the first step.
-- [ ] B. The bug can only be detected by examining final held-out accuracy.
-- [ ] C. The buggy version moves b because the data are asymmetric around zero.
-- [ ] D. The buggy bias gradient at the start is -1.0, so b moves to 0.5.
-- [ ] E. The derivative of the loss with respect to the bias includes a factor of x.
+- [ ] A. A final accuracy number alone may not reveal the bug.
+- [ ] B. Working out by hand what the first update should do, before running the code, could expose the bug.
+- [ ] C. Because the loss goes down, the code must be correct.
+- [ ] D. A unit test of the update itself cannot catch the bug, because the loss still goes down.
+- [ ] E. The bug can be found only by examining held-out accuracy.
 
-**Key:** A=T B=F C=F D=T E=F
+**Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: The errors are 0.5, 0.5, -0.5, -0.5, which sum to zero.
-- B: A test of the exact first-step values would catch the bug without any held-out data.
-- C: The data are symmetric; the movement comes from the extra x factor, which stops the errors cancelling.
-- D: The x-weighted errors are -1.5, -0.5, -0.5, -1.5, whose mean is -1.0, and 0 - 0.5*(-1.0) = 0.5.
-- E: The score changes by 1 per unit of bias, so the bias derivative is just the error.
+- A: A model with a wrongly trained bias can still look acceptable on a summary number.
+- B: A prediction made before the run is a check that does not depend on the code's output.
+- C: A decreasing loss is necessary evidence, not sufficient; buggy updates can still lower it.
+- D: A test that compares the update with a hand-worked case catches it directly; the decreasing loss does not hide it from such a test.
+- E: Tests of the update itself catch it directly; held-out accuracy is neither the only nor the best route.
 
 **Source:** The gate: say what should change before you change it
 
 ## MA-ch09.32
 
-To check a hand-derived gradient of a loss L(w), a developer compares it with the central finite difference [L(w+h) - L(w-h)] / (2h) for a small h. Check each statement that is true. Each statement is worth 1 point (5 points total).
+To check a hand-derived gradient, a developer estimates the slope numerically by changing a parameter slightly up and down, recomputing the loss each time, and comparing the estimate with the formula. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The central difference does not use the derivative formula being checked.
-- [ ] B. Agreement within tolerance shows the analytic gradient matches the derivative of the loss function as coded.
-- [ ] C. Shrinking h toward 1e-16 keeps improving the accuracy of the estimate.
-- [ ] D. Agreement shows the loss function is the right objective for the application.
-- [ ] E. For a smooth loss, the central difference error shrinks roughly with h squared, while a one-sided difference shrinks roughly with h.
+- [ ] A. The numerical estimate does not use the derivative formula being checked.
+- [ ] B. Agreement within a tolerance shows the formula matches the slope of the loss as coded.
+- [ ] C. Making the change smaller and smaller always improves the estimate, with no limit.
+- [ ] D. Agreement shows that the loss is the right objective for the application.
+- [ ] E. A check like this is cheap enough to run on a few inputs before trusting AI-written gradient code.
 
 **Key:** A=T B=T C=F D=F E=T
 
 **Why:**
 
-- A: It only evaluates the loss at two nearby points, so it fails differently from the algebra.
-- B: Both quantities describe the same coded objective, so agreement confirms the derivation.
-- C: Subtracting nearly equal numbers loses digits, so very small h adds round-off error.
-- D: If the objective is wrong for the task, derivative and finite difference still agree.
-- E: Taylor expansion shows the odd terms cancel in the central difference.
+- A: The estimate comes from evaluating the loss itself, so it is an independent route.
+- B: If the two agree, the formula is consistent with the coded loss.
+- C: With a very tiny change the computer's limited precision makes the estimate noisy, so a moderate size is used.
+- D: The check covers the gradient, not whether the loss is what the application needs.
+- E: The check needs only a few loss evaluations per parameter.
 
 **Source:** Derive the first update
 
 ## MA-ch09.33
 
-For a single example with x = 2, y = 1, and b = 0, the loss as a function of the weight is L(w) = ln(1 + e^(-2w)). A developer estimates the derivative at w = 0 with h = 0.01. The central difference [L(h) - L(-h)]/(2h) is about -1.0000, and the one-sided difference [L(h) - L(0)]/h is about -0.995. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer's numerical check disagrees with a gradient formula on one input. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The central difference is within 0.0001 of the exact derivative.
-- [ ] B. The exact derivative at w = 0 is -0.5.
-- [ ] C. Increasing h to 0.1 makes the one-sided estimate more accurate.
-- [ ] D. The negative sign means L increases as w increases.
-- [ ] E. The one-sided difference is off by about 0.05.
+- [ ] A. The formula, the loss code or the numerical check itself could be at fault.
+- [ ] B. A disagreement can be set aside until the model's accuracy has been measured.
+- [ ] C. Whether a disagreement matters has nothing to do with its size.
+- [ ] D. The formula must be correct because an AI assistant produced it.
+- [ ] E. Because the loss decreases during training, the disagreement can be ignored.
 
 **Key:** A=T B=F C=F D=F E=F
 
 **Why:**
 
-- A: The central estimate agrees with -1 to many decimal places.
-- B: The derivative is (p - y)*x = (0.5 - 1)*2 = -1, not -0.5.
-- C: The one-sided error grows roughly in proportion to h; at h = 0.1 the estimate is about -0.95.
-- D: A negative derivative means L decreases as w increases.
-- E: The one-sided estimate of -0.995 differs from -1 by about 0.005, not 0.05.
+- A: Any of the three can be wrong, and the disagreement does not say which.
+- B: An unexplained disagreement is a bug until it is explained; accuracy measured later does not settle it.
+- C: Small differences can come from limited numerical precision, so the size relative to a tolerance matters.
+- D: A source does not make code correct; the check exists because AI-written code can be wrong.
+- E: A decreasing loss does not show the gradient is right.
 
 **Source:** Derive the first update
 
 ## MA-ch09.34
 
-Gradient descent minimizes L(w) = w^2, whose gradient is 2w, starting from w = 1 with learning rate r. Each step gives w <- (1 - 2r)w. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Gradient descent is run on a simple bowl-shaped loss with different learning rates. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. With r = 0.1 the iterates fall steadily: 1, 0.8, 0.64, and so on.
-- [ ] B. With r = 0.5 the iterate reaches the minimizer w = 0 in one step.
-- [ ] C. With r = 0.9 the iterates converge without ever changing sign.
-- [ ] D. With r = 1.0 the iterates alternate between 1 and -1 forever.
-- [ ] E. With r = 1.1 the iterates diverge, growing in magnitude by a factor of 1.2 each step.
+- [ ] A. A very small learning rate makes steady but slow progress.
+- [ ] B. A moderate learning rate can reach the minimum quickly.
+- [ ] C. A learning rate that is too large can overshoot the minimum and bounce around it.
+- [ ] D. A learning rate that is large enough can make the loss grow instead of shrink.
+- [ ] E. A learning rate that works well on one problem will work on every problem.
 
-**Key:** A=T B=T C=F D=T E=T
+**Key:** A=T B=T C=T D=T E=F
 
 **Why:**
 
-- A: The multiplier 1 - 0.2 = 0.8 shrinks the iterate without changing sign.
-- B: The multiplier 1 - 1 = 0 sends w to 0 at once.
-- C: The multiplier is -0.8, so the sign flips each step even though the magnitude shrinks.
-- D: The multiplier is -1, so the magnitude never shrinks.
-- E: The multiplier is -1.2, which has magnitude above 1.
+- A: Small steps move steadily and may not finish within a limited step budget.
+- B: A well-chosen step can land close to the minimum in few updates.
+- C: Too large a step jumps past the minimum.
+- D: Past a limit, each step overshoots by more than it gains, and training diverges.
+- E: The safe range depends on the shape of the loss and the scale of the features, which differ between problems.
 
 **Source:** The loop, its rate, and its stop rule
 
@@ -794,23 +794,23 @@ A training function runs exactly 500 updates at a fixed learning rate, with no c
 
 ## MA-ch09.37
 
-A one-feature logistic model with the bias fixed at 0 is fit to a single example x = 1, y = 1 using the loss ln(1 + e^(-w)). The loss is about 0.313 at w = 1, about 0.0067 at w = 5, and about 0.000045 at w = 10. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A classifier is trained on data that it can separate perfectly. With no penalty on the size of the weights, training keeps increasing the weight, and the loss keeps shrinking toward zero but never reaches it. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A loss of 0.000045 means the model will be 99.9955% accurate on future data.
-- [ ] B. Adding an L2 penalty on w would give a finite minimizer.
-- [ ] C. At w = 5 the model's probability for label 1 on this example is about 0.993.
-- [ ] D. Gradient descent on this problem has no finite minimizer.
-- [ ] E. The loss keeps decreasing as w increases and approaches, but never reaches, 0.
+- [ ] A. The training loss can keep decreasing without limit.
+- [ ] B. A very small training loss shows that the model will be accurate on future data.
+- [ ] C. Adding a penalty on the size of the weights can give training a stopping point.
+- [ ] D. A very small training loss does not show that the data were correctly labeled.
+- [ ] E. Training has to be stopped by a rule chosen in advance, such as a step budget or a validation loss.
 
-**Key:** A=F B=T C=T D=T E=T
+**Key:** A=T B=F C=T D=T E=T
 
 **Why:**
 
-- A: Training loss on one example says nothing about accuracy on new data.
-- B: The penalty grows with w and balances the shrinking loss, so a minimum appears at finite w.
-- C: sigma(5) is about 0.9933, consistent with a loss of -ln(0.9933), about 0.0067.
-- D: Since the loss keeps falling, no finite w is optimal.
-- E: The loss is positive for every finite w but falls toward zero as w grows.
+- A: On separable data, larger weights always give more confident correct predictions and a smaller loss.
+- B: Training loss measures fit to the training data, not performance on future data.
+- C: A penalty makes very large weights costly, so the best weights are finite.
+- D: A model can fit incorrectly labeled data just as well; the loss does not reveal label errors.
+- E: Without a natural stopping point, the stopping rule has to be decided beforehand, not by looking at a flattering result.
 
 **Source:** The loop, its rate, and its stop rule
 
@@ -838,45 +838,45 @@ A training routine returns a "history" list containing exactly two numbers: the 
 
 ## MA-ch09.39
 
-For a logistic classifier, the weight gradient for one example is (p - y)*x, while the bias gradient is (p - y). Check each statement that is true. Each statement is worth 1 point (5 points total).
+A team reports a training experiment. Some of its choices are learned from the data and others are settings chosen by people. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The bias gradient depends on the feature value x.
-- [ ] B. Weight steps scale with the magnitude of the feature, so features in the thousands can need a smaller learning rate than features near 1.
-- [ ] C. Rescaling a feature from meters to millimeters leaves the optimal weight unchanged.
-- [ ] D. A rate that works for x in [0, 1] will work unchanged for x in [0, 1000].
-- [ ] E. Standardizing features to zero mean and unit variance usually lets a single learning rate work across features.
+- [ ] A. The weights and bias are learned from the data.
+- [ ] B. The learning rate, the number of steps and the decision threshold are settings chosen by people.
+- [ ] C. Settings such as the learning rate can be left out of the report if the code is shared.
+- [ ] D. Two runs that differ only in the learning rate are the same experiment.
+- [ ] E. The data and the code alone are enough to reproduce a trained model without stating the settings.
 
-**Key:** A=F B=T C=F D=F E=T
+**Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: The bias gradient is the mean error with no x factor.
-- B: A large x multiplies the error, so the weight update can overshoot at a rate fine for small x.
-- C: Multiplying the feature by 1000 requires dividing the optimal weight by 1000.
-- D: A thousandfold larger feature gives much larger weight steps, which can destabilize training.
-- E: Comparable scales give comparable gradient magnitudes.
+- A: Training adjusts these parameters to fit the examples.
+- B: These are design decisions that the training loop does not learn.
+- C: A reader cannot judge or reproduce a result without the settings that produced it, even with the code.
+- D: Changing a setting changes the experiment and can change the trained parameters.
+- E: Without the settings, the same data and code can give a different model.
 
 **Source:** The loop, its rate, and its stop rule
 
 ## MA-ch09.40
 
-A dataset has N = 1,000 examples. Full-batch gradient descent uses all 1,000 examples per update. Minibatch stochastic gradient descent uses randomly shuffled batches of 100. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A model is trained with small random batches of the data per update, instead of the whole data set per update. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. With minibatches of 100, each update uses a gradient computed from all 1,000 examples.
-- [ ] B. The gradient from a randomly drawn minibatch is a noisy but unbiased estimate of the full-batch gradient.
-- [ ] C. One pass over the data with batch size 100 performs 100 updates.
-- [ ] D. A trainer that uses full batches, never shuffles, and never adapts its rate represents every aspect of large-scale training.
-- [ ] E. Minibatch gradients have lower variance than full-batch gradients.
+- [ ] A. Each update's gradient is a noisy estimate of the gradient computed on the full data.
+- [ ] B. Minibatch gradients require more computation per update than full-data gradients.
+- [ ] C. Gradients from small batches are less noisy than gradients from the full data set.
+- [ ] D. A trainer that uses the full data set for every update and never shuffles represents large-scale training.
+- [ ] E. At internet scale, the whole data set is normally processed in every update.
 
-**Key:** A=F B=T C=F D=F E=F
+**Key:** A=T B=F C=F D=F E=F
 
 **Why:**
 
-- A: Each update sees only its 100 examples.
-- B: The average over a random subset has expectation equal to the full average.
-- C: 1,000 / 100 = 10 batches, so a pass performs 10 updates.
-- D: A simple full-batch loop omits shuffling, minibatches, and adaptive rates, so the analogy is limited.
-- E: A minibatch gradient is a noisier estimate with higher variance than the full-batch gradient; its benefit is cheaper updates.
+- A: A sample of the data gives an estimate of the full-data gradient that varies from batch to batch.
+- B: A batch needs less computation than the full data set, and batches map well onto parallel hardware.
+- C: Estimating from fewer examples adds noise, not less of it.
+- D: Large-scale training uses batches, shuffling and other devices that a full-batch teaching loop omits.
+- E: Training sets of internet scale are far too large to process in every single update.
 
 **Source:** The loop, its rate, and its stop rule
 
@@ -904,23 +904,23 @@ A student tries learning rates 0.01, 0.1, 1, and 10 on the same data, and report
 
 ## MA-ch09.42
 
-A one-feature classifier is trained from w = 0, b = 0 on (-2, 0), (-1, 0), (1, 1), (2, 1) and learns a positive weight. Now every label is flipped: (-2, 1), (-1, 1), (1, 0), (2, 0). Check each statement that is true. Each statement is worth 1 point (5 points total).
+A classifier is trained on data in which larger feature values go with label 1 and learns a positive weight. Every label is then flipped and the classifier is retrained from the same starting point. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. The learned weight should become negative.
-- [ ] B. The first update moves w in the same direction as in the original run.
-- [ ] C. The learned bias should become clearly negative.
-- [ ] D. The initial loss is higher than in the original run.
-- [ ] E. By the symmetry sigma(-a) = 1 - sigma(a), the final training loss should match the original run's.
+- [ ] B. The first update moves the weight in the same direction as in the original run.
+- [ ] C. The final fit should be about as good as in the original run.
+- [ ] D. If the retrained weight stayed positive, the code would still be correct.
+- [ ] E. This test shows that the model's accuracy on new data is high.
 
-**Key:** A=T B=F C=F D=F E=T
+**Key:** A=T B=F C=T D=F E=F
 
 **Why:**
 
-- A: Larger x now goes with label 0, so a negative weight reduces the loss.
-- B: The gradient sign reverses, so w moves the opposite way.
-- C: The data stay symmetric about zero, so the bias stays near zero.
-- D: At w = 0 and b = 0 every probability is 0.5, so the initial loss is ln 2 in both runs.
-- E: Flipping labels and negating w maps one problem exactly onto the other.
+- A: The relationship between the feature and the label is reversed.
+- B: The first update follows the labels, so it moves the other way.
+- C: Flipping labels mirrors the problem, so the achievable fit is the same.
+- D: The expected answer is known in advance, so a different result points to a bug.
+- E: The test checks the code's behavior on a mirror problem; it says nothing about new data.
 
 **Source:** The loop, its rate, and its stop rule
 

@@ -242,129 +242,129 @@ A startup wants to serve a 70-billion-parameter model on GPUs with 80 GB of memo
 
 ## ES-ch01.16
 
-Older sequence models read text one position at a time, passing a hidden state forward, while the transformer takes the whole context in at once. Compare the two designs on training speed, on how information from a distant token reaches the current token, and on what changes at generation time.
+Explain how a language model produces a multi-sentence answer one token at a time, and why an early mistake can carry forward. Then say what this implies for how you would evaluate a long answer.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that a recurrent model must process positions sequentially, which limits parallelism during training.
-2. Explains that a transformer with a causal mask can compute predictions for all positions of a training sequence at once, which makes training on large corpora practical on parallel hardware.
-3. Explains that in a recurrent model information from an early token must pass through every intermediate state and can fade, whereas attention connects any two visible tokens directly.
-4. States that at generation time a transformer still produces one token at a time because each token depends on the previous ones.
-5. Notes a cost of the transformer design, such as attention cost growing quadratically with context length.
+1. Explains that the model predicts one token at a time, each chosen from a probability distribution given the context so far.
+2. Explains that each chosen token is added to the context, so later predictions depend on earlier ones.
+3. Explains that an early wrong or odd token can steer the rest of the answer, since later tokens are predicted to fit what came before.
+4. Notes that the model does not by itself review a finished answer before showing it, so contradictions and errors can persist.
+5. Says that a long answer should be checked in parts and as a whole against sources or tests, not judged by how fluent it is.
 
 **Source:** Inside one prediction step
 
 ## ES-ch01.17
 
-In one attention head, the current token has query q = [1, 0]. It can read three tokens with keys k1 = [1, 0], k2 = [0, 1], k3 = [1, 1] and values v1 = [1, 0], v2 = [0, 1], v3 = [2, 2]. The key length is d_k = 2, and scores are q·k divided by the square root of d_k. Compute the scores, the softmax weights and the output vector, and explain what each stage does.
+A reader says: "The model has my whole document in its context, so its answer must reflect all of it." Evaluate the claim: what access to the context gives the model, what it does not guarantee, and how you would test whether the model used a particular passage.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Computes the raw dot products as [1, 0, 1] and scales by 1/sqrt(2) to get about [0.707, 0, 0.707].
-2. Applies softmax to get weights of about [0.401, 0.198, 0.401], which sum to 1.
-3. Computes the output as the weighted sum of the values: about 0.401 x [1, 0] + 0.198 x [0, 1] + 0.401 x [2, 2] = [1.20, 1.00].
-4. Explains that queries and keys decide how much to read from each token (relevance), and values carry the content that is mixed.
-5. Notes that the weights depend on the input and are recomputed every time, while the learned parameters are the projections that produce queries, keys and values.
+1. Explains that self-attention gives the model access to the tokens inside its context window when it predicts each next token.
+2. Explains that access does not guarantee use: the model can overlook, misread or contradict text that is present.
+3. Notes that text outside the window, whether cut off or never supplied, is unavailable to the model.
+4. Proposes a test: change or remove the passage, or move it elsewhere in the prompt, and check whether the answer changes as expected.
+5. Concludes that the claim should be stated no more strongly than such tests support, and that important answers are checked against the document itself.
 
 **Source:** Self-attention: each token chooses what to read from
 
 ## ES-ch01.18
 
-Attention scores in a transformer are computed as q·k divided by the square root of d_k, before the softmax. Explain why the division is there, using what happens to the size of dot products as d_k grows, and what goes wrong in training without it.
+A colleague says a language model "learns as you chat", so it will remember tomorrow what you told it today. Explain what changes and what does not during a conversation, using the difference between the model's parameters and its context, and say how you would test the claim.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. States that a dot product of two d_k-dimensional vectors sums d_k terms, so its magnitude grows with d_k.
-2. Gives the statistical reasoning: if components have unit variance and are independent, the dot product has variance d_k and standard deviation the square root of d_k.
-3. Explains that dividing by the square root of d_k restores a spread of about 1 regardless of dimension.
-4. Explains that very large scores push the softmax into a saturated, nearly one-hot regime in which the gradients with respect to the scores are tiny, which slows or destabilizes learning.
-5. Notes that dividing all scores by the same positive constant does not change their ordering, only how peaked the resulting weights are.
+1. States that using a model does not change its parameters; what it learned in training is fixed while it answers.
+2. States that earlier turns are available only if the application resends them, or notes from them, in the context.
+3. Explains that apparent memory therefore comes from the context, and fails when the history is cut, truncated or not resent.
+4. Notes that information in the context can still be misread or ignored, so having it there is not the same as using it correctly.
+5. Proposes a test: start a fresh conversation without the history and see whether the model still gives the information.
 
 **Source:** Self-attention: each token chooses what to read from
 
 ## ES-ch01.19
 
-A decoder-only language model is trained by showing it a sentence and computing the next-token loss at every position in a single pass. Explain why a causal mask on attention is required, how it is implemented, and what would happen to training and to the trained model's usefulness without it.
+A language model is trained to predict each next token of a text. Explain why the model must not be able to see the token it is predicting during training, and what would go wrong if it could.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that predicting position i must depend only on positions before i, because at generation time the later tokens do not exist yet.
-2. Explains that without the mask, each position could read the very token it is supposed to predict, so the loss could be driven down by copying.
-3. Describes the implementation: scores for later positions are set to negative infinity (or a large negative number) before the softmax, so their weights become zero.
-4. Explains the consequence of omitting it: very low training loss that does not transfer, because the model would fail at generation time when future tokens are unavailable.
-5. Contrasts with bidirectional encoders used for tasks where the full input is available, which may attend in both directions.
+1. Explains that during training the target is the next token, which the model must predict from the tokens before it.
+2. Explains that if the target were visible the model could copy it, so the loss would be low without learning to predict.
+3. Explains that at generation time later tokens do not exist yet, so training must match that condition.
+4. States the consequence: very low training loss that does not carry over to generation, so measured training performance would overstate usefulness.
+5. Connects to evaluation: performance must be measured under conditions that match use, using only information available at prediction time, which is avoiding leakage.
 
 **Source:** Self-attention: each token chooses what to read from
 
 ## ES-ch01.20
 
-The original transformer used 8 attention heads with a model dimension of 512. Explain what multi-head attention is, why it is used, and how the parameter count and the per-head dimension work out when the dimension is split among heads.
+A researcher claims that one component of a transformer "stores facts" (or "handles grammar"). Explain how to treat such a claim and how you would test it.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Describes several attention operations running side by side, each with its own learned query, key and value projections, whose outputs are concatenated and projected.
-2. Explains the motivation: different heads can attend to different kinds of relationships or positions at the same time.
-3. Computes the per-head dimension as 512 / 8 = 64.
-4. Notes that the total projection parameters (query, key, value and output) remain about 4 x 512 x 512 = 1,048,576 weights, ignoring biases, because the dimension is divided among heads.
-5. Notes that what each head learns emerges from training and should not be assumed to correspond to a clean human-interpretable role without evidence.
+1. States that claims about what a component does are hypotheses about mechanism, not facts to be assumed.
+2. Notes that a model has many components that interact, so a component's apparent role may not be its whole role.
+3. Proposes an intervention: disable, change or swap the component and measure the effect on a specific behavior.
+4. Says to compare against a control, such as a randomly chosen component or an unchanged model, so that an effect is not just general damage.
+5. Concludes that the claim should be reported only as strongly as the experiments support, naming the behaviors and models tested.
 
 **Source:** Self-attention: each token chooses what to read from
 
 ## ES-ch01.21
 
-A transformer layer contains a self-attention sublayer followed by a position-wise feed-forward network. Explain what each sublayer contributes, why they are separate components, and show with a small calculation what the feed-forward network does for x = [1, -2], first weight matrix [[1, -1, 2], [0, 1, -1]], ReLU, second matrix [[1, 0], [2, 1], [0, -1]], no biases.
+Describe the two kinds of step in a transformer layer and what each contributes. Then explain why "the model learned it in training" and "it is in the prompt" are different sources of information, and what that implies when an answer is wrong because a fact is missing or out of date.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that attention mixes information across token positions, giving each token context from the others.
-2. Explains that the feed-forward network is applied to each position independently with the same weights, transforming each context-informed vector.
-3. Computes the hidden vector [1, -3, 4] and applies the ReLU to get [1, 0, 4].
-4. Computes the output [1, -4].
-5. Notes that the feed-forward weights make up a large share of a transformer's parameters and are where much learned knowledge and patterns are believed to be stored, while stating this is a working hypothesis rather than a settled fact.
+1. Describes attention as the step that mixes information across token positions, giving each token context.
+2. Describes the per-token step as transforming each token's vector using learned parameters, the same ones for every position.
+3. Explains that learned parameters come from training and stay fixed while the model answers.
+4. Explains that information in the prompt is available only for that request and does not change the parameters.
+5. Concludes that a missing or stale fact is fixed by supplying it in the prompt or retrieving it with a tool, not by correcting the model in conversation, and that answers should still be checked against sources.
 
 **Source:** The feed-forward network: an ordinary neural network
 
 ## ES-ch01.22
 
-Transformer sublayers are wrapped in residual connections, so each sublayer's output is added to its input, and layers are stacked dozens of times. Explain what a residual connection does, why it matters for training deep networks, and how the final layer's output becomes next-token probabilities.
+A model gives a wrong answer. Describe how you would work out whether the cause is the information it was given or the way it predicts from that information.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Describes the residual connection as adding the sublayer's output to its input, creating a stream of vectors that each sublayer reads from and writes to.
-2. Explains that this gives gradients a direct path through many layers, which reduces vanishing gradients and makes deep stacks trainable.
-3. Explains that each sublayer can learn an adjustment to the existing representation rather than needing to reconstruct it.
-4. Explains that the vector at the final position is mapped by a learned linear layer to one score (logit) per vocabulary token.
-5. Explains that a softmax converts these scores into a probability distribution over the vocabulary.
+1. Distinguishes failures where the needed information was absent from the context from failures where it was present but not used correctly.
+2. Proposes testing by supplying the needed information explicitly and seeing whether the answer changes.
+3. Proposes varying the wording and order of the context, and repeating runs to separate sampling variation from a real effect.
+4. Notes that a fluent wrong answer does not show the model holds a correct answer it is withholding; the model produces likely text.
+5. Concludes with an action tied to the cause, such as supplying or retrieving the information, restructuring the prompt, adding a check or limiting the task, and then re-testing.
 
 **Source:** Putting the pieces together
 
 ## ES-ch01.23
 
-Self-attention treats its inputs as a set: if you permute the input vectors, the outputs are permuted in the same way. Yet transformers handle word order well. Explain why attention alone cannot capture order, how order information is supplied, and what could go wrong if it were omitted.
+Explain why word order matters for meaning, why a language model must represent it, and what this implies for testing prompts.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Explains that attention scores depend only on content-based comparisons of queries and keys, with nothing tying a token to a position.
-2. Gives an example, such as "dog bites man" versus "man bites dog", that would look identical as a bag of tokens.
-3. Describes the remedy: position-dependent information (fixed sinusoidal encodings, learned position embeddings, or relative or rotary schemes) is added to or mixed into the token representations.
-4. Explains that the causal mask also gives some positional signal in a decoder, but explicit position information remains the standard approach.
-5. States the consequence of omission: the model could not distinguish sentences that differ only in word order, so meaning and grammar that depend on order would be lost.
+1. Gives an example in which the same words in a different order change meaning, such as "dog bites man" and "man bites dog".
+2. Explains that a model that saw only the set of words could not tell such sentences apart, so position information must be part of its input.
+3. Notes that, as a result, the placement and order of instructions and facts in a prompt can change the output.
+4. Proposes testing prompts under reordered variants and repeated runs instead of a single arrangement.
+5. States that conclusions about a prompt should be limited to the arrangements and tasks that were tested.
 
 **Source:** Inside one prediction step
 

@@ -6,43 +6,43 @@ Questions on the background material and the first core ideas of working with ge
 
 ## MA-1.1
 
-Check each statement that is historically accurate. Each statement is worth 1 point (5 points total).
+Check each statement that is true about AI systems built from hand-written rules and AI systems that learn from data. Each statement is worth 1 point (5 points total).
 
-- [ ] A. McCulloch and Pitts published a mathematical model of an artificial neuron in 1943.
-- [ ] B. The term "artificial intelligence" comes from the proposal for the 1956 Dartmouth workshop.
-- [ ] C. AI was founded as a field in 1942.
-- [ ] D. AlexNet's 2012 ImageNet result is widely seen as the start of the modern deep learning boom.
-- [ ] E. ChatGPT was released to the public in 2015.
+- [ ] A. In a rule-based system, a person writes the conditions that decide each output.
+- [ ] B. A system that learns from data can give sensible output for inputs that no one wrote a rule for.
+- [ ] C. A rule-based system behaves sensibly on inputs its rules did not anticipate.
+- [ ] D. Two learned models with identical code but different training data will behave identically.
+- [ ] E. Good performance on its training examples shows that a learned model will perform well on new inputs.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Every decision traces back to a rule that a person authored.
+- B: A learned model generalizes from patterns in its examples, within the range the data covers.
+- C: Rules cover only what their authors anticipated; an unanticipated input falls through or is mishandled.
+- D: The same code trained on different data gives different behavior.
+- E: A model can do well on examples it has already seen by memorizing them; only inputs it has not seen show how it handles new ones.
+
+## MA-1.2
+
+Check each statement that is true about why language models became much more capable. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Neural network training is mostly matrix multiplication, which suits hardware that performs many operations in parallel.
+- [ ] B. Training on more text with more computation has been a major source of capability gains.
+- [ ] C. High benchmark scores alone establish that a model understands text the way a person does.
+- [ ] D. Because the next token in a text serves as the training target, pretraining on raw text needs no human labeling of each example.
+- [ ] E. A model with more parameters has, for that reason alone, been shown to be more accurate on a given task.
 
 **Key:** A=T B=T C=F D=T E=F
 
 **Why:**
 
-- A: The artificial neuron model is from 1943.
-- B: McCarthy coined it in the 1955 proposal for the 1956 workshop.
-- C: The neuron model is 1943 and the field was named in 1956; nothing founded it in 1942.
-- D: That is the standard marker for the boom.
-- E: ChatGPT launched in November 2022.
-
-## MA-1.2
-
-Check each statement that is historically accurate. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The Transformer was introduced in 2017 in "Attention Is All You Need".
-- [ ] B. Turing's "Computing Machinery and Intelligence" (1950) was published before Rosenblatt's Perceptron (1958).
-- [ ] C. Backpropagation was popularized in 1986 for training multi-layer networks.
-- [ ] D. The LSTM (1997) was introduced before AlexNet (2012).
-- [ ] E. The Perceptron (1958) was introduced after backpropagation was popularized (1986).
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: Vaswani and colleagues published the Transformer paper in 2017.
-- B: 1950 comes before 1958.
-- C: Rumelhart, Hinton and Williams, 1986.
-- D: 1997 comes before 2012.
-- E: Reversed: the Perceptron came first.
+- A: Matrix multiplications run in parallel on GPU-style hardware, which made training large networks practical.
+- B: Scaling data, parameters and computation has produced large measured improvements.
+- C: A benchmark measures performance on its own tasks; whether that amounts to human-style understanding is a separate question the score does not settle.
+- D: The text supplies its own labels, so very large unlabeled collections can be used.
+- E: Size tends to bring capability but is not evidence of accuracy on a task; accuracy has to be measured on that task.
 
 # 2. What is a model? What is a language model?
 
@@ -86,49 +86,69 @@ Check each statement that is true about how an LLM turns a prompt into output. E
 - D: None of these change the weights.
 - E: That is autoregressive generation.
 
-# 3. Neural network structure and RNNs
+# 3. Inside a transformer: encoder, decoder, context and prediction
 
 ## MA-3.1
 
-Check each statement that is true about feedforward neural networks. Each statement is worth 1 point (5 points total).
+Check each statement that is true about the two main parts of a transformer language model. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Each neuron computes an activation function applied to w · x + b.
-- [ ] B. Without nonlinear activations, a stack of layers collapses into a single linear transformation.
-- [ ] C. Backpropagation computes the gradients of the loss used to update the weights.
-- [ ] D. Backpropagation is the step that changes the weights, while the optimizer only computes the gradients.
-- [ ] E. In training, the loss is computed before the forward pass.
+- [ ] A. Self-attention lets each token's representation take in information from the other tokens in the context.
+- [ ] B. The prediction step turns the final representation into a probability for each possible next token.
+- [ ] C. Self-attention checks each statement the model writes against a database of verified facts.
+- [ ] D. A token has the same internal representation wherever it appears, whatever the words around it.
+- [ ] E. Because the model is trained to predict the next token of text, its output reflects what text tends to follow, not what has been verified.
 
-**Key:** A=T B=T C=T D=F E=F
+**Key:** A=T B=T C=F D=F E=T
 
 **Why:**
 
-- A: Weights, bias, then nonlinear activation.
-- B: Linear composed with linear is linear.
-- C: Forward pass, loss, backprop, gradient descent.
-- D: Reversed: backpropagation computes gradients and the optimizer uses them to update the weights.
-- E: The forward pass comes first; the loss measures its output.
+- A: Attention is how context enters the computation: each token's representation is updated using the tokens around it.
+- B: The last stage maps the representation to a score for every vocabulary token and then to probabilities.
+- C: Nothing in attention checks claims against a source; it only mixes information that is already in the context.
+- D: Representations change with context, so "bank" beside "river" is represented differently from "bank" beside "loan".
+- E: The training target is the next token of the text, which rewards plausible continuation, not verified truth.
 
 ## MA-3.2
 
-Check each statement that is true about RNNs. Each statement is worth 1 point (5 points total).
+Check each statement that is true about what the structure of a transformer language model does and does not provide. Each statement is worth 1 point (5 points total).
 
-- [ ] A. An RNN carries a hidden state from one time step to the next.
-- [ ] B. An RNN processes a sequence step by step, which limits parallel training.
-- [ ] C. Plain RNNs struggle with long-range dependencies because of vanishing or exploding gradients.
-- [ ] D. LSTM and GRU gating eliminates the vanishing-gradient problem entirely.
-- [ ] E. Replacing a plain RNN with an LSTM removes the need to process tokens one at a time.
+- [ ] A. When predicting the next token, the model can draw on the tokens in its context.
+- [ ] B. A document that is not in the context and was not in the training data is unavailable to the model unless a tool retrieves it.
+- [ ] C. The prediction step includes a check that the chosen token is true.
+- [ ] D. With sampling turned on, two runs on the same context can produce different outputs, because the next token is drawn from a probability distribution.
+- [ ] E. Because attention connects every token in the context, the model's answer is guaranteed to agree with everything in the context.
 
-**Key:** A=T B=T C=T D=F E=F
+**Key:** A=T B=T C=F D=T E=F
 
 **Why:**
 
-- A: h_t depends on h_(t-1).
-- B: Tokens are handled in order.
-- C: Early information fades or blows up as gradients pass through many steps.
-- D: Gating reduces the problem; it does not eliminate it.
-- E: An LSTM still updates its state step by step, so training stays sequential across time.
+- A: Attention is the route by which information in the context reaches the prediction.
+- B: A model has no access to documents beyond its context and its training, apart from what tools fetch for it.
+- C: The prediction step ranks tokens by probability; it does not verify them.
+- D: Sampling draws from a distribution, so identical context can yield different tokens.
+- E: Access to the context does not guarantee agreement with it; models can overlook or contradict text they were given.
 
-# 4. Tokens
+## MA-3.3
+
+Check each statement that is true about encoders and decoders in the transformer design. Each statement is worth 1 point (5 points total).
+
+- [ ] A. An encoder reads a whole input and builds a representation of each token that takes the surrounding tokens into account.
+- [ ] B. A decoder produces output one token at a time, each chosen from the tokens that came before it.
+- [ ] C. A decoder can use the tokens that come after the one it is predicting.
+- [ ] D. A model that only continues a prompt with new text can be built from a decoder alone.
+- [ ] E. An encoder that reads a sentence in order to label it generates its output one token at a time, from left to right.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: Self-attention in an encoder lets each token's representation draw on the whole input, on both sides of it.
+- B: The decoder is the generating half: it predicts the next token, adds it to the context and repeats.
+- C: Later tokens are hidden from a decoder while it predicts; at generation time they do not exist yet.
+- D: Text continuation needs only the generating half, and many language models are built this way.
+- E: An encoder produces representations of an input, which can be read out as a label; it does not generate text token by token.
+
+# 4. Tokens and input embeddings
 
 ## MA-4.1
 
@@ -169,6 +189,26 @@ Check each statement that is true. Each statement is worth 1 point (5 points tot
 - C: One embedding row per token.
 - D: They are measured in tokens.
 - E: Its length is the vocabulary size, regardless of prompt length.
+
+## MA-4.3
+
+Check each statement that is true about input embeddings in a language model. Each statement is worth 1 point (5 points total).
+
+- [ ] A. An input embedding is a vector of numbers that represents a token and is selected by the token's ID.
+- [ ] B. The embedding vectors are learned during training, along with the rest of the model's parameters.
+- [ ] C. The same token receives a different input embedding each time it appears, depending on the sentence around it.
+- [ ] D. The tokens "dog" and "cat" tend to end up with similar vectors because they occur in similar contexts in the training text.
+- [ ] E. Two tokens whose embeddings are close have been verified to mean the same thing.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: The token ID selects one row of a learned table, and that vector is what the rest of the model works on.
+- B: Embeddings are parameters adjusted during training, not written by hand.
+- C: The lookup depends only on the token; context enters later, when attention revises each token's vector.
+- D: Both words appear with words like "pet", "feed" and "vet", and training pulls tokens that fit similar contexts toward similar vectors; no person labeled them as animals.
+- E: Closeness reflects how tokens were used in text; it does not verify that they mean the same, and it can carry associations and biases from that text.
 
 # 5. Softmax and temperature
 
@@ -232,47 +272,87 @@ Check each statement that is true about softmax. Each statement is worth 1 point
 - D: The seed fixes the random stream.
 - E: Counts drift from expectation.
 
-# 6. Attention and the Transformer
+# 6. Self-attention, positional encoding and the Transformer
 
 ## MA-6.1
 
 Check each statement that is true about self-attention. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Queries, keys and values are learned linear projections of token representations.
-- [ ] B. Attention scores are computed as Q·Kᵀ divided by √d_k.
-- [ ] C. Softmax over each query's scores produces weights that sum to 1.
-- [ ] D. Attention on its own encodes word order, so positional information is unnecessary.
-- [ ] E. In a decoder-only language model, a causal mask prevents tokens from attending to future tokens.
-
-**Key:** A=T B=T C=T D=F E=T
-
-**Why:**
-
-- A: Q, K and V are projections.
-- B: Scaled dot-product attention.
-- C: Each row is normalized.
-- D: Attention is order-agnostic; positional encoding is added.
-- E: Tokens see only earlier tokens.
-
-## MA-6.2
-
-Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The output for each token is a weighted sum of value vectors.
-- [ ] B. Multi-head attention lets the model attend to different kinds of relationships in parallel.
-- [ ] C. Observing that the vector for "bank" differs when "river" is nearby proves the model understands both senses of "bank".
-- [ ] D. Surrounding tokens can influence a token's representation through attention.
-- [ ] E. Attention was introduced to compress the whole input into a single fixed-size vector.
+- [ ] A. Each token's new representation is built from a weighted mix of information from tokens in the context.
+- [ ] B. The weights are computed from the tokens themselves, so they differ from one sentence to another.
+- [ ] C. Self-attention gives every token in the context the same weight.
+- [ ] D. When a decoder-only language model predicts the next token, it uses the tokens before that position and not later ones.
+- [ ] E. Self-attention is the stage that turns the final representation into next-token probabilities.
 
 **Key:** A=T B=T C=F D=T E=F
 
 **Why:**
 
-- A: Weights times V.
-- B: Several heads run at once.
-- C: It shows the representation depends on context; whether the model handles both senses has to be tested on its behavior.
-- D: That is how context changes it.
-- E: The opposite: attention lets the model look back at every input position instead of relying on one fixed-size summary.
+- A: Attention is how a token takes in information from the rest of the context.
+- B: The weights depend on the content of the current sentence, not on a fixed table.
+- C: Equal weights would give no way to focus on the tokens that matter for the current one.
+- D: At generation time later tokens do not exist yet, so the prediction can use only earlier ones.
+- E: Turning representations into probabilities is the separate prediction step at the end.
+
+## MA-6.2
+
+A trained model represents the word "bank" in "river bank" and in "bank account". Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The model's vector for "bank" can differ between the two sentences.
+- [ ] B. The difference shows that the representation depends on the surrounding words.
+- [ ] C. The difference alone proves the model understands both meanings of "bank".
+- [ ] D. Whether the model handles both meanings correctly can be tested by giving it new sentences and checking its answers.
+- [ ] E. Attention lets the model use any text it saw in training even when that text is not in the current context.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: The representation is computed from the word in its context.
+- B: Context-dependent representations are the purpose of attention.
+- C: A representation that varies is not itself evidence of correct use; behavior has to show that.
+- D: New sentences test the behavior directly.
+- E: Attention works over the tokens currently in the context; what training left in the parameters is a separate matter.
+
+## MA-6.3
+
+Check each statement that is true about parallelism in transformers, which matters most when a model is trained on internet-scale text and used by very many people. Each statement is worth 1 point (5 points total).
+
+- [ ] A. During training, a transformer can compute the predictions for all positions of a text in the same pass, rather than one position after another.
+- [ ] B. Hardware such as GPUs, which performs many calculations at the same time, is well suited to this.
+- [ ] C. Because of this parallelism, a transformer also generates the tokens of a reply all at once.
+- [ ] D. A service that handles many users can process many requests together in batches to use its hardware efficiently.
+- [ ] E. Parallel computation guarantees that the same prompt gives bit-for-bit identical numbers on every run.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: The whole training text is known in advance, so every position's prediction can be computed together; a model that had to process positions one after another could not.
+- B: GPU-style hardware performs huge numbers of matrix operations simultaneously, which is what makes training on internet-scale text practical.
+- C: At generation time each token depends on the tokens before it, so the tokens of a reply are produced one after another.
+- D: Batching requests raises throughput and lowers the cost per request, at some cost in waiting time.
+- E: The order in which parallel hardware adds floating-point numbers can change with batching and hardware, so tiny differences can appear even with sampling turned off.
+
+## MA-6.4
+
+Check each statement that is true about positional encoding in a transformer. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Self-attention on its own does not tell the model which token came first.
+- [ ] B. Positional encoding adds information about each token's position to the token's vector, so the model can use word order.
+- [ ] C. Positional encoding is needed only for languages with strict word order, such as English.
+- [ ] D. Positional encoding is chosen by the person writing each prompt.
+- [ ] E. Because positions are encoded, the model uses information equally well wherever it appears in a long context.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Attention weighs tokens by their content, so on its own it carries no information about order.
+- B: Position information is added to the token vectors so that order is available to the model.
+- C: Order carries meaning in every language, and the model needs position information whichever language it reads.
+- D: It is part of the model's design and training, not something a prompt writer sets.
+- E: Having position information does not guarantee equal use of every part of a long context; where information sits in a prompt can change results.
 
 # 7. Programming languages vs language models
 

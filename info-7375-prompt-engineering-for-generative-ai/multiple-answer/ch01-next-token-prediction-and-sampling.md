@@ -318,89 +318,89 @@ A 70-billion-parameter model has its weights stored at 2 bytes per parameter (16
 
 ## MA-ch01.15
 
-In one self-attention step, the current token's query gives raw scores of 2.0, 1.0 and 0.1 against the keys of the three tokens it may read. A softmax turns the scores into weights, and the token's new vector is the weighted sum of the three value vectors. Check each statement that is true. Each statement is worth 1 point (5 points total).
+In one self-attention step, a token gives a weight to each token it may read. The weights are non-negative and sum to 1, and the token's new representation is a mix of information from those tokens in proportion to the weights. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The token with the highest raw score receives all of the weight.
-- [ ] B. The three weights sum to 1.
-- [ ] C. The attention weights are learned parameters stored in the model and reused unchanged for every input.
-- [ ] D. The weights are approximately 0.66, 0.24 and 0.10.
-- [ ] E. The output is a weighted mix of the value vectors, not of the key vectors.
+- [ ] A. A token with a larger weight contributes more to the mix.
+- [ ] B. The token with the highest weight receives all of the weight.
+- [ ] C. The weights are fixed values stored in the model and reused unchanged for every input.
+- [ ] D. If two tokens receive weights of 0.6 and 0.4 and no other token receives weight, the mix is 60 percent from the first and 40 percent from the second.
+- [ ] E. Self-attention lets a token place weight on itself as well as on the other tokens.
 
-**Key:** A=F B=T C=F D=T E=T
+**Key:** A=T B=F C=F D=T E=T
 
 **Why:**
 
-- A: Softmax is smooth; lower scores still receive positive weight.
-- B: Softmax outputs are nonnegative and sum to 1.
-- C: The weights are recomputed from queries and keys for each input; the learned parameters are the projections that produce them.
-- D: Softmax of (2.0, 1.0, 0.1) is about (0.659, 0.242, 0.099).
-- E: Keys are used only to compute scores; values are what get mixed.
+- A: The weights set the proportions of the mix.
+- B: The weights sum to 1, so a high weight on one token still leaves weight for the others.
+- C: The weights are computed from the current tokens; what is learned in training is how to compute them.
+- D: The weights are the proportions: 0.6 and 0.4 give a 60/40 mix.
+- E: A token's own representation is one of the inputs it may read.
 
 **Source:** Self-attention: each token chooses what to read from
 
 ## MA-ch01.16
 
-In scaled dot-product attention, scores are computed as q·k divided by the square root of d_k, where d_k is the length of the key vector. Suppose d_k = 64 and the components of q and k are independent with mean 0 and variance 1. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A user says: "The assistant has the whole conversation in its context, so every detail I gave it will be used correctly in its answers." Check each statement that is true about that claim. Each statement is worth 1 point (5 points total).
 
-- [ ] A. After dividing by the square root of d_k, the dot product has a standard deviation of about 1.
-- [ ] B. Before scaling, the dot product q·k has a standard deviation of 8.
-- [ ] C. For these dimensions, each scaled score equals the raw dot product divided by 8.
-- [ ] D. Without scaling, large scores can push the softmax toward saturation, where one weight is near 1 and gradients become very small.
-- [ ] E. The scaling is needed because the softmax cannot accept negative inputs.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: Dividing by 8 brings the standard deviation back to about 1.
-- B: A sum of 64 independent unit-variance products has variance 64, so a standard deviation of 8.
-- C: The square root of 64 is 8, so every score is divided by 8.
-- D: Large-magnitude inputs make the softmax nearly one-hot, which flattens its gradients.
-- E: Softmax accepts any real inputs; the scaling addresses magnitude, not sign.
-
-**Source:** Self-attention: each token chooses what to read from
-
-## MA-ch01.17
-
-A decoder-only language model is trained on a five-token sentence. Predictions at all five positions are computed in one pass, and before each softmax the attention scores to later positions are set to negative infinity. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Masking prevents the model from using earlier tokens.
-- [ ] B. The mask is only needed when generating text and can be dropped during training.
-- [ ] C. After masking, the attention weight placed on later positions is 0.
-- [ ] D. An encoder that reads a complete input sentence to classify it typically needs the same causal mask.
-- [ ] E. Without this mask, the position that predicts token 3 could read token 3 itself, making the training task trivial.
-
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: Masking removes only later positions; earlier positions stay visible.
-- B: Training computes all positions at once, so the mask must be present then to match the generation-time condition.
-- C: The exponential of negative infinity is 0, so those positions get zero weight.
-- D: A bidirectional encoder is allowed to read the whole input; the causal mask is for left-to-right prediction.
-- E: Leaked access to the answer would let the model copy rather than predict.
-
-**Source:** Self-attention: each token chooses what to read from
-
-## MA-ch01.18
-
-A transformer layer has model dimension 512 and uses 8 attention heads, each with its own learned projections. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The four projection matrices (query, key, value and output) hold 4 x 512 x 512 = 1,048,576 weights, ignoring biases, regardless of the number of heads.
-- [ ] B. Each head has its own learned projection matrices, so different heads can attend to different patterns.
-- [ ] C. If the dimension is split evenly across heads, each head works with 64-dimensional query, key and value vectors.
-- [ ] D. All heads must produce identical outputs because they read the same input.
-- [ ] E. Using 8 heads multiplies the attention parameter count by 8 relative to a single 512-dimensional head.
+- [ ] A. Having text in the context makes it available to the model when it predicts the next token.
+- [ ] B. Having text in the context does not guarantee that the model uses it correctly.
+- [ ] C. Text that was cut from the context because the conversation exceeded the context window is unavailable to the model.
+- [ ] D. If a fact appears in the context, the model's answer cannot contradict it.
+- [ ] E. On its own, a language model checks its finished answer against the context before showing it.
 
 **Key:** A=T B=T C=T D=F E=F
 
 **Why:**
 
-- A: Splitting the dimension across heads keeps the total projection size fixed at four 512 x 512 matrices.
-- B: Separate projections let each head learn a different way of comparing tokens.
-- C: 512 divided by 8 heads is 64 dimensions per head.
-- D: Different projections give different outputs; the diversity is the point of having several heads.
-- E: When the dimension is divided among heads, the parameter count stays the same.
+- A: Attention gives the model access to everything inside the window.
+- B: Models can overlook, misread or contradict text that is present.
+- C: Once text no longer fits, it is simply not part of the input.
+- D: Contradictions of text the model was given do occur.
+- E: A plain model produces tokens one at a time and has no separate pass that reviews the result unless the application adds one.
+
+**Source:** Self-attention: each token chooses what to read from
+
+## MA-ch01.17
+
+A language model that generates text from left to right is trained on a five-token sentence. For each position it must predict the next token from the tokens before it. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. While predicting token 3 from tokens 1 and 2, the model is allowed to use tokens 1 and 2.
+- [ ] B. While predicting token 3, the model must not be able to see token 3 itself, or the training task would be trivial.
+- [ ] C. Hiding later tokens is needed only when generating text and can be dropped during training.
+- [ ] D. A model that reads a complete sentence in order to classify it needs the same left-to-right restriction.
+- [ ] E. Hiding later tokens means the model cannot use earlier tokens.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Earlier tokens are the context for the prediction.
+- B: If the answer is visible the model can copy it, and the loss says nothing about prediction.
+- C: Training must match generation, where later tokens do not exist yet.
+- D: When the whole input is available and the task is to label it, nothing needs to be hidden.
+- E: The restriction hides later tokens, not earlier ones.
+
+**Source:** Self-attention: each token chooses what to read from
+
+## MA-ch01.18
+
+A transformer applies its steps in many stacked layers. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Each layer works on the representations produced by the layer before it.
+- [ ] B. A model's behavior on a prompt is set only by its last layer.
+- [ ] C. A researcher can assume that a given layer or attention head has a clean human-readable role without testing it.
+- [ ] D. The parameters in all layers were learned in training and stay fixed while the model answers a prompt.
+- [ ] E. Having many layers makes it easy to read off why the model gave an answer.
+
+**Key:** A=T B=F C=F D=T E=F
+
+**Why:**
+
+- A: Stacking passes the representation through repeated rounds of processing.
+- B: All layers contribute to the result.
+- C: What a head or layer does must be shown by experiments, not assumed.
+- D: Using a model does not change its parameters.
+- E: Many layers of numeric vectors are hard to interpret; an explanation needs separate evidence.
 
 **Source:** Self-attention: each token chooses what to read from
 
@@ -450,111 +450,111 @@ An analyst plots an attention heat map for a model's answer and writes: "The mod
 
 ## MA-ch01.21
 
-A position-wise feed-forward layer computes ReLU(xW1)W2 with no biases, where ReLU(v) = max(0, v). The input is x = [1, -2], with W1 = [[1, -1, 2], [0, 1, -1]] and W2 = [[1, 0], [2, 1], [0, -1]]. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A transformer layer has two kinds of step: attention, which mixes information across token positions, and a second step that transforms each token's vector on its own using learned parameters. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The hidden vector after the ReLU is [1, 3, 4].
-- [ ] B. The hidden vector before the ReLU is [1, -3, 4].
-- [ ] C. This layer mixes information between this token's position and its neighbouring positions.
-- [ ] D. The layer output is [1, -4].
-- [ ] E. The ReLU leaves negative values unchanged.
+- [ ] A. Mixing information across token positions is the job of attention.
+- [ ] B. The per-token step uses parameters learned in training that stay fixed while the model answers a prompt.
+- [ ] C. The per-token step lets a token read the other tokens in the context.
+- [ ] D. The per-token step looks up stored facts in a table by exact key.
+- [ ] E. The per-token step is applied to every token in the context using the same learned parameters.
 
-**Key:** A=F B=T C=F D=T E=F
+**Key:** A=T B=T C=F D=F E=T
 
 **Why:**
 
-- A: The ReLU sets -3 to 0, giving [1, 0, 4].
-- B: x times W1 gives [1x1 + (-2)x0, 1x(-1) + (-2)x1, 1x2 + (-2)x(-1)] = [1, -3, 4].
-- C: The same weights are applied to each position independently, so no mixing between positions happens here.
-- D: [1, 0, 4] times W2 gives [1x1 + 0x2 + 4x0, 1x0 + 0x1 + 4x(-1)] = [1, -4].
-- E: The ReLU replaces negative values with zero.
+- A: Attention is where tokens exchange information.
+- B: Learned parameters do not change during use.
+- C: Reading other tokens is attention's job; the per-token step sees only that token's current vector.
+- D: The step is arithmetic with learned numbers, not a lookup table of facts.
+- E: The same learned transformation processes each position.
 
 **Source:** The feed-forward network: an ordinary neural network
 
 ## MA-ch01.22
 
-A transformer layer contains a self-attention sublayer and a position-wise feed-forward sublayer. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Check each statement that is true about where a language model's learned knowledge and its working information are held. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The feed-forward sublayer is specific to language and could not be fitted to other numeric inputs.
-- [ ] B. In the original design, the feed-forward hidden layer is wider than the model dimension, for example 512 expanding to 2,048 and back.
-- [ ] C. The feed-forward sublayer applies the same weights to every position independently.
-- [ ] D. Interaction between different token positions happens in attention, not in the feed-forward sublayer.
-- [ ] E. The feed-forward sublayer has no learned parameters.
+- [ ] A. What the model learned in training is held in its parameters, not in a database of documents that it consults.
+- [ ] B. A fact the model learned can be found by reading off the one parameter that stores it.
+- [ ] C. Information placed in the prompt is available to the model for that request but is not added to its parameters.
+- [ ] D. Training the model further on new text changes its parameters; adding that text to a prompt does not.
+- [ ] E. Because knowledge is held in parameters, any statement the model makes can be traced to the training document it came from.
 
-**Key:** A=F B=T C=T D=T E=F
+**Key:** A=T B=F C=T D=T E=F
 
 **Why:**
 
-- A: It is an ordinary two-layer network that works on any numeric vector.
-- B: Expanding to a wider hidden layer and projecting back down is the standard design.
-- C: "Position-wise" means identical weights applied separately to each position.
-- D: Only attention reads across positions within a layer.
-- E: Its weight matrices are among the largest sets of parameters in the model and are learned in training.
+- A: Training builds patterns from the text into numeric parameters; no document store is consulted at answer time.
+- B: Knowledge is spread across many parameters; no single parameter holds a fact.
+- C: Context is used at run time and discarded unless the application saves it.
+- D: Only training or tuning updates parameters.
+- E: The parameters keep no record of which document taught what, so statements cannot be traced that way.
 
 **Source:** The feed-forward network: an ordinary neural network
 
 ## MA-ch01.23
 
-A transformer layer has model dimension 512 and a feed-forward hidden size of 2,048. The feed-forward sublayer has two weight matrices (512 to 2,048, and 2,048 back to 512), each with a bias vector. The attention sublayer has four 512 x 512 projection matrices. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A researcher says: "The per-token processing step is where the model stores facts." Check each statement that is true about how to treat this claim. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The two feed-forward weight matrices contain 2 x 512 x 2,048 = 2,097,152 weights.
-- [ ] B. The number of feed-forward parameters depends on the length of the input sequence.
-- [ ] C. The feed-forward sublayer has about twice as many weights as the four attention projection matrices combined.
-- [ ] D. The feed-forward sublayer has about one million parameters.
-- [ ] E. Including biases, the feed-forward sublayer has 2,099,712 parameters.
+- [ ] A. It is a hypothesis that needs evidence from experiments.
+- [ ] B. Changing or removing the component and observing the effect on the model's answers would be relevant evidence.
+- [ ] C. Because the model is a neural network, the claim is true by definition.
+- [ ] D. The claim would be established by finding that the component has many parameters.
+- [ ] E. The claim is established if the model's answers about facts are correct.
 
-**Key:** A=T B=F C=T D=F E=T
+**Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: 512 x 2,048 = 1,048,576 per matrix, so 2,097,152 for two.
-- B: Parameter counts depend on dimensions, not on how long the current input is.
-- C: The projections hold 1,048,576 weights, and the feed-forward weights total 2,097,152, exactly twice as many.
-- D: The total is about 2.1 million, roughly double that.
-- E: Adding 2,048 and 512 bias entries gives 2,097,152 + 2,560 = 2,099,712.
+- A: Statements about what part of a model does what are claims about mechanism.
+- B: Interventions show whether the component matters for the behavior.
+- C: Being a neural network does not settle where particular knowledge sits.
+- D: Size shows capacity, not function.
+- E: Correct answers show behavior, not which component produced it.
 
 **Source:** The feed-forward network: an ordinary neural network
 
 ## MA-ch01.24
 
-Inside each transformer layer, the output of a sublayer is added to its input (a residual connection). After the last layer, the vector at the final position is turned into one score per vocabulary token. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A model gives a wrong answer. Check each statement that is true about locating the cause. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A sublayer can learn a correction to the incoming vector rather than a full replacement of it.
-- [ ] B. A softmax over the final scores gives the next-token probabilities.
-- [ ] C. Deep stacks of layers are impossible to train without residual connections.
-- [ ] D. A residual connection multiplies the sublayer's input by zero.
-- [ ] E. Residual connections give gradients a direct path through many stacked layers, which eases training.
+- [ ] A. The answer may be wrong because the needed information was missing from the context.
+- [ ] B. The answer may be wrong even though the needed information was in the context.
+- [ ] C. A fluent wrong answer is evidence that the model holds the correct answer and is withholding it.
+- [ ] D. A wrong answer shows that the training text contained the same wrong answer.
+- [ ] E. An evaluator can vary the context and see whether the answer changes to help locate the cause.
 
 **Key:** A=T B=T C=F D=F E=T
 
 **Why:**
 
-- A: Adding output to input means each sublayer contributes an adjustment.
-- B: Scores, called logits, are normalized by a softmax into a distribution over the vocabulary.
-- C: Residual paths help a great deal, but "impossible" overstates it; other techniques also stabilize training.
-- D: The connection adds the input to the output; it does not zero anything.
-- E: The identity path lets gradients pass without being repeatedly transformed.
+- A: The model cannot use what it was not given.
+- B: Information can be present yet overlooked or contradicted.
+- C: The model produces likely text; it does not hold a hidden correct answer that it withholds.
+- D: Wrong answers have many sources, including sampling; one wrong output does not show what the training text said.
+- E: Controlled changes to the context are a practical test of the cause.
 
 **Source:** Putting the pieces together
 
 ## MA-ch01.25
 
-Self-attention computes each token's output as a weighted mix of value vectors, with weights derived from query-key scores. Consider an attention-only model, with no causal mask, that has no positional information added to its token embeddings. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Consider the sentences "dog bites man" and "man bites dog", which contain the same words. Check each statement that is true about how a language model handles word order. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Positional encodings or embeddings are added so that order information is available to the model.
-- [ ] B. Position information can be supplied by adding position-dependent vectors to the token embeddings.
-- [ ] C. Order is automatically encoded because the model processes tokens left to right in one pass.
-- [ ] D. The cost of dense attention grows linearly with the length of the context.
-- [ ] E. Such a model cannot tell the difference between orderings of the same words, such as "dog bites man" and "man bites dog".
+- [ ] A. A model must represent the position of tokens, not only which tokens are present, to tell these two sentences apart.
+- [ ] B. A model that saw only the set of words, with no order information, could not distinguish the two sentences.
+- [ ] C. Word order never affects the meaning of a prompt.
+- [ ] D. Rearranging the order of instructions or facts in a prompt can change a model's output.
+- [ ] E. Position information is added to the token representations so that the model can use order.
 
-**Key:** A=T B=T C=F D=F E=T
+**Key:** A=T B=T C=F D=T E=T
 
 **Why:**
 
-- A: Positional information is injected explicitly in the input representation.
-- B: Learned or fixed position-dependent vectors added to embeddings are the standard approach.
-- C: The tokens are processed in parallel, and parallel processing carries no order by itself.
-- D: Dense attention compares every pair of tokens, so its cost grows quadratically.
-- E: Attention treats the context as a set, so reordering the inputs only reorders the outputs.
+- A: The meaning of the two sentences differs only through order.
+- B: With the same words and no order, the two inputs would look identical.
+- C: Order changes meaning, as these two sentences show.
+- D: Models can be sensitive to ordering and placement, so prompts should be tested with variations.
+- E: Models are given position information alongside the tokens so that order is available.
 
 **Source:** Inside one prediction step
 
@@ -604,23 +604,23 @@ A chatbot generates a 500-token reply at about 25 ms per generated token, after 
 
 ## MA-ch01.28
 
-Earlier sequence models (recurrent networks) read a text one position at a time, passing a state forward. The transformer takes the whole context at once. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A language model generates a reply one token at a time, each token chosen after the ones before it. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Because the transformer processes the context in parallel during training, it also generates new text in parallel across all new positions.
-- [ ] B. Attention weakens the link between two tokens the further apart they are, in the same way a recurrent state does.
-- [ ] C. During training, a transformer can compute predictions at all positions of a sequence in parallel.
-- [ ] D. In a recurrent network, information from an early token must pass through every intermediate step to reach a late token.
-- [ ] E. A transformer language model generates text from right to left.
+- [ ] A. Each chosen token becomes part of the context for the next prediction.
+- [ ] B. An early wrong token can shape the tokens that follow.
+- [ ] C. On its own, the model goes back and silently revises an earlier token before showing the reply.
+- [ ] D. The model checks the finished reply for contradictions before it shows the first token.
+- [ ] E. With sampling, choosing a different token early can lead to a different reply later.
 
-**Key:** A=F B=F C=T D=T E=F
+**Key:** A=T B=T C=F D=F E=T
 
 **Why:**
 
-- A: Generation is sequential because each new token depends on the previous ones.
-- B: Attention compares any pair of visible tokens directly, so distance alone does not weaken the connection.
-- C: With a causal mask, all positions can be trained at once, which is what made large-scale training practical.
-- D: A recurrent state is updated step by step, so early information can fade as it passes through each step.
-- E: Left-to-right generation is the standard setup for a decoder.
+- A: This is autoregressive generation: the output so far is the input for the next step.
+- B: Later tokens are predicted given earlier ones, so an early error is carried forward.
+- C: Chosen tokens are not rewritten; revision needs another pass by the application or reasoning written out in text.
+- D: There is no pass over a finished reply before it is emitted.
+- E: A different early token changes the context for everything after it.
 
 **Source:** Inside one prediction step
 

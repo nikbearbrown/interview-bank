@@ -6,17 +6,17 @@ Questions on the background material and the first core ideas of working with ge
 
 ## ES-1.1
 
-Put these four in chronological order and give the year of each: the Transformer paper, Rosenblatt's Perceptron, Turing's "Computing Machinery and Intelligence", backpropagation popularized for multi-layer networks. Then explain in one or two sentences why "AI was founded in 1943" is a mix-up.
+A team can build a spam filter in two ways: by writing rules by hand (for example, flag any message that contains a listed phrase), or by training a model on thousands of messages labeled spam or not spam. Compare how each approach fails, and say what a person still has to decide in both cases.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Turing's paper is placed first and dated 1950.
-2. The Perceptron is placed second and dated 1958.
-3. Backpropagation popularized is placed third and dated 1986.
-4. The Transformer paper is placed fourth and dated 2017.
-5. Explains that 1943 is the artificial neuron model while AI as a named field dates to 1956 (Dartmouth).
+1. States that the rule-based filter's behavior comes only from the rules a person wrote, so every decision can be traced to a rule.
+2. States that the rule-based filter fails on messages its rules did not anticipate, such as a spammer rewording a listed phrase, and must be extended by hand.
+3. States that the trained model infers patterns from the labeled examples and can flag messages that no rule described, if they resemble the training data.
+4. States that the trained model fails where its data is unrepresentative, outdated or mislabeled, and that its errors are harder to trace to a single cause.
+5. States that in both cases a person must decide what counts as correct and check the filter against that standard on messages it has not seen.
 
 # 2. What is a model? What is a language model?
 
@@ -34,23 +34,37 @@ Trace what happens between typing a prompt and receiving the first generated tok
 4. Softmax converts logits to probabilities and one token is sampled.
 5. States that a prompt is input to inference, not training, so weights stay fixed.
 
-# 3. Neural network structure and RNNs
+# 3. Inside a transformer: encoder, decoder, context and prediction
 
 ## ES-3.1
 
-Compare how an RNN and a Transformer handle a long sequence. Cover how each carries information, whether training can be parallelized, and what happens to long-range dependencies.
+Describe the two main parts of a transformer language model and what each contributes to producing the next token. Then explain what this structure does not include that a reader evaluating the output might assume it does.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. RNN passes information through a hidden state, one step at a time.
-2. RNN training is hard to parallelize because steps are sequential.
-3. RNN long-range dependencies suffer from vanishing or exploding gradients.
-4. Transformer uses attention so every position can look at every other position directly.
-5. Transformer training runs in parallel; notes LSTM/GRU only reduce the RNN problem.
+1. Explains that self-attention updates each token's representation using information from the other tokens in the context, so a token's representation depends on its surroundings.
+2. Explains that the prediction step converts the final representation into a score for each possible next token and then into probabilities, from which the next token is chosen.
+3. Notes that text is produced one token at a time, with each chosen token added to the context for the next prediction.
+4. States that nothing in this structure checks the output against the world; the model produces text that is likely given its context and training.
+5. Draws the consequence for evaluation: fluent, confident output is not evidence of truth, so claims that matter need independent checking.
 
-# 4. Tokens
+## ES-3.2
+
+Explain what an encoder and a decoder are in a transformer, how they differ in what they can see and what they produce, and which you would expect to use for (a) classifying a customer email as urgent or not urgent and (b) writing a reply to it.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States that an encoder reads a whole input and produces a context-aware representation of each token, using self-attention over the input.
+2. States that a decoder produces output one token at a time, each prediction using the tokens before it, with each chosen token added to the context.
+3. States the difference in what they can see: an encoder can use tokens on both sides of a position, while a decoder cannot use later tokens when it predicts.
+4. Matches the tasks: classifying a complete email fits an encoder, whose representation is read out as a label, and writing a reply fits a decoder, alone or with an encoder reading the email.
+5. Notes that neither part checks its output against the world, so both the classification and the reply need evaluation on held-out examples or against sources.
+
+# 4. Tokens and input embeddings
 
 ## ES-4.1
 
@@ -65,6 +79,20 @@ A model has a vocabulary of 50,000 tokens and an embedding size of 768. A prompt
 3. (c) The logits vector has length 50,000.
 4. Explains logits give one score for every vocabulary token, so length is vocab_size.
 5. Notes the context window limits the token array length, not the logits length.
+
+## ES-4.2
+
+Explain what an input embedding is and how it is produced from a token. Use the words "dog" and "cat" to explain why related words may end up with nearby embeddings, and say what that nearness does and does not show.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Defines an input embedding as a learned vector of numbers that represents a token, selected by the token's ID from a table, and learned in training together with the rest of the model rather than written by hand.
+2. Explains that "dog" and "cat" occur in similar contexts in the training text, for example near words about pets, feeding and walking, and that training pulls tokens that fit similar contexts toward similar vectors.
+3. States that no person labeled the two words as related; the closeness comes from how the words were used in the text.
+4. States that the input embedding depends only on the token, and that attention later revises each token's vector using the surrounding context.
+5. States that nearness reflects similar use in the training text, not verified similarity of meaning, and can carry associations and biases from that text, so claims about what it shows need testing.
 
 # 5. Softmax and temperature
 
@@ -82,21 +110,49 @@ Logits [1, 2, 3] give p(token 3) of about 0.867 at T = 0.5, 0.665 at T = 1.0 and
 4. States that a positive T never reorders the tokens.
 5. Explains that sampling probability is not truth probability, so concentrating on a wrong top token does not make it correct.
 
-# 6. Attention and the Transformer
+# 6. Self-attention, positional encoding and the Transformer
 
 ## ES-6.1
 
-Describe the steps of scaled dot-product attention, softmax(Q·Kᵀ / √d_k)·V, and explain what the √d_k does. Then explain what it does and does not show when the vector for "bank" differs between "river bank" and "bank account", and what kind of evidence would be needed to claim the model handles both senses.
+Explain in plain language what self-attention does for a token in a sentence. Then explain what it does and does not show when a model's vector for "bank" differs between "river bank" and "bank account", and what kind of evidence would show that the model handles both senses.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Scores every query against every key with a dot product.
-2. Divides by √d_k to keep scores in a stable range as the dimension grows.
-3. Applies softmax so each row of weights sums to 1, then outputs a weighted sum of the value vectors.
-4. States that the differing vector shows the representation depends on context.
-5. States that a context-dependent vector is not by itself evidence of understanding either sense, and that behavioral tests (for example word-sense disambiguation on held-out sentences) are needed.
+1. States that self-attention lets each token take in information from other tokens in the context, giving some more weight than others.
+2. States that the weights are computed from the sentence itself, so which tokens matter depends on the context.
+3. States that the differing vector shows the representation depends on context.
+4. States that a context-dependent vector is not by itself evidence that the model understands either sense.
+5. Says that behavioral tests, such as choosing the right sense of "bank" on new sentences, are needed to show it.
+
+## ES-6.2
+
+Explain why parallelism matters for transformers at internet scale, both in training on very large text collections and in serving very many users. Say what is still sequential, and what all of this implies for cost, speed and the evaluation of outputs.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that during training the whole text is available, so the predictions for all positions can be computed in the same pass instead of one position after another.
+2. Explains that this suits parallel hardware such as GPUs, which is what makes training on internet-scale text across many chips practical in time and cost.
+3. Explains that generation stays sequential: each new token depends on the tokens before it, so a longer reply takes more steps and takes longer to arrive.
+4. Explains that a service handles many users by running many requests together in batches, which raises throughput and lowers the cost per request, at some cost in waiting time.
+5. Draws an evaluation consequence: batching and parallel hardware can produce tiny numerical differences between runs, so comparisons should record the setup and repeat runs instead of relying on a single one.
+
+## ES-6.3
+
+Explain why a transformer needs positional encoding when it already has self-attention, what positional encoding adds, and what this implies for how you would test a prompt.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that self-attention weighs tokens by their content and on its own carries no information about order, so the same words in any order would be treated alike.
+2. Gives an example in which order changes meaning, such as "dog bites man" and "man bites dog".
+3. Explains that positional encoding adds position information to each token's representation so the model can use order, and that this is part of the model's design rather than something the user supplies.
+4. Notes that having position information does not guarantee equal use of information wherever it appears, so the placement and order of instructions and facts in a prompt can change the output.
+5. Proposes testing a prompt under reordered variants and repeated runs, and limiting conclusions to the arrangements that were tested.
 
 # 7. Programming languages vs language models
 
