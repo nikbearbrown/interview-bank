@@ -187,7 +187,7 @@ A model answers each of 20 test prompts correctly with probability 0.8, independ
 Request latency for a service is modeled as a normal distribution with mean 200 ms and standard deviation 40 ms. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. About one third of requests would be faster than 160 ms.
-- [ ] B. If real latencies are fat-tailed with the same mean and standard deviation, the 2.3% figure for requests over 280 ms is still the correct fraction.
+- [ ] B. If real latencies are fat-tailed but have the same mean and standard deviation, the fraction of requests over 280 ms must still equal the fraction this normal model predicts.
 - [ ] C. A 360 ms request is a 4-standard-deviation event that the model expects about once per 1,000 requests.
 - [ ] D. About 2.3% of requests would take longer than 280 ms.
 - [ ] E. About 95% of requests would fall between 120 ms and 280 ms.
@@ -197,7 +197,7 @@ Request latency for a service is modeled as a normal distribution with mean 200 
 **Why:**
 
 - A: 160 ms is one standard deviation below the mean (z = −1), which has about 16% below it, roughly one in six.
-- B: Tail mass depends on the whole shape of the distribution, not just the mean and standard deviation, so the normal figure need not hold.
+- B: Tail mass depends on the whole shape of the distribution, not just the mean and standard deviation, so the fraction beyond 280 ms can differ from the normal model's figure (in either direction).
 - C: z = 4 has an upper tail of about 3 in 100,000, roughly one request in 31,600.
 - D: 280 ms is z = 2 and the upper tail beyond it is about 2.3%.
 - E: 120 ms and 280 ms are 2 standard deviations on either side, which contain about 95.4%.

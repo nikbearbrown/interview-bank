@@ -12,7 +12,7 @@ A linear classifier scores an input x with s(x) = w·x + b over d input values, 
 2. Explains that Σ|w_i| grows with the number of input values when typical weight magnitude is fixed, so a change tiny in every coordinate can add up to a decisive shift, with a correct numerical example (for instance d = 1000, |w_i| = 0.02, ε = 0.01 gives 0.2).
 3. Contrasts with a random direction of the same length, where contributions largely cancel and the typical shift is smaller by a factor of about √d, or notes that an attacker limited by Euclidean length r gains at most r‖w‖₂ rather than ε‖w‖₁.
 4. Extends the argument to piecewise-linear networks: they are locally linear, so the sign of the input gradient of the loss gives an effective direction, a one-step gradient-sign attack uses it, and iterating with projection gives stronger attacks.
-5. Names a limit of the linear account, such as that it does not explain why some models trained on the same data are more vulnerable than others, why perturbations transfer between models, or the role of data structure and low-variance directions.
+5. Names a limit of the linear account, such as that it does not explain why some models trained on the same data are more vulnerable than others, the role of data structure and low-variance directions, or why robustness trades against clean accuracy.
 
 **Source:** The linearity hypothesis
 
@@ -25,7 +25,7 @@ A vendor's product sheet says its traffic-sign recognizer is "robust to adversar
 **Rubric (1 point each):**
 
 1. Requires the set of allowed perturbations, such as the norm and size of the change, physical patches or transformations, and natural corruptions, because "robust" without a stated set has no input that would count as a failure.
-2. Requires the attacker's knowledge and capability (white-box, query-only, transfer) and the attack's strength and adaptivity (steps, restarts, awareness of any defense), since weak attacks yield optimistic numbers and a measured robust accuracy is only an upper bound on worst-case accuracy.
+2. Requires the attacker's knowledge and capability (white-box, query-only, transfer) and the attack's strength and adaptivity (steps, restarts, awareness of any defense), since weak attacks yield optimistic numbers.
 3. Requires reporting clean accuracy and accuracy under each stated perturbation, with sample sizes or confidence intervals, and comparison with an undefended baseline, since robustness can be bought with clean accuracy.
 4. Requires a separate axis for natural distribution shift (lighting, weather, camera changes, new regions), because robustness to constructed perturbations does not imply robustness to natural shift or the reverse.
 5. Calls for a profile or table plus a residual-risk statement of perturbation types and shifts that were not tested, and notes that failing to find failures in a finite test is not proof of safety, so monitoring and a trigger for human review are needed.
@@ -59,7 +59,7 @@ Compare empirical robustness estimates (accuracy under the strongest attack you 
 1. Explains that accuracy under a given attack is an upper bound on true worst-case accuracy in that perturbation set, since failing to find an adversarial example does not prove none exists, and that weak, non-adaptive attacks or gradient masking inflate it.
 2. Explains that certified accuracy counts only inputs for which a proof exists, so it is a lower bound on true robust accuracy, and that incomplete verifiers or loose certificates can understate robustness.
 3. Notes that both statements hold only inside a stated perturbation set, such as an L2 radius or L∞ budget, and say nothing about other norms, larger budgets or natural shift, and that a certificate for one norm does not automatically cover another (an L2 radius R covers L∞ size ε only if ε√d ≤ R).
-4. Names practical limits of certificates, such as many noise samples per prediction and a probabilistic guarantee for randomized smoothing, clean-accuracy loss at large noise levels, shrinking radii in high dimensions, and verification that scales poorly to large models or open-ended specifications.
+4. Names practical limits of certificates, such as many noise samples per prediction and a probabilistic guarantee for randomized smoothing, clean-accuracy loss at large noise levels, and verification that scales poorly to large models or open-ended specifications.
 5. Recommends reporting both, since certified ≤ true ≤ attack-measured brackets the truth, using stronger adaptive attacks to lower the upper bound and better methods to raise the lower bound, and reserving certification for narrow, high-stakes properties.
 
 **Source:** Certified defenses — what "guaranteed" means and costs
@@ -72,7 +72,7 @@ A model that reads chest X-rays scores 94% on a held-out test set drawn from the
 
 **Rubric (1 point each):**
 
-1. Explains shortcut learning: a feature that predicts the label in the training collection without being related to the disease (a hospital marker or scanner trait) is used by any model that minimizes training loss, and a random held-out split from the same sources has the same correlation, so it does not expose the shortcut.
+1. Explains shortcut learning: a feature that predicts the label in the training collection without being related to the disease (a hospital marker or scanner trait) is available to, and often exploited by, models that minimize training loss, and a random held-out split from the same sources has the same correlation, so it does not expose the shortcut.
 2. Proposes baselines that use only the shortcut (the marker, or the image with the lung region masked) and compares them with 94%; if they come close, the score is weak evidence that the model reads pathology.
 3. Proposes external evaluation on a new hospital and per-site or per-group results, including accuracy within each site-label combination, rather than one pooled figure.
 4. Proposes intervention tests that add, remove or swap the marker while holding the image content fixed and check whether predictions move, noting that saliency maps alone are weak evidence.
@@ -82,7 +82,7 @@ A model that reads chest X-rays scores 94% on a held-out test set drawn from the
 
 ## ES-ch04.6
 
-Define covariate shift, label (prior) shift and concept shift. For each, give a concrete example, say how you would detect it in a deployed model, how you would evaluate or correct performance under it, and what could go wrong with your approach.
+Define covariate shift, label (prior) shift and concept shift. For each, give a concrete example, say how you would detect it in a deployed model, and say how you would evaluate or correct performance under it. Then say what could go wrong with these approaches.
 
 **Points:** 5
 
@@ -140,7 +140,7 @@ A support-ticket classifier reports about 93% overall accuracy. Broken down by c
 2. Calls for reporting per-segment and worst-group accuracy with sample sizes and confidence intervals (small groups give wide intervals), and for basing the decision on consequences for the worst-affected group, not only the average.
 3. Gives plausible causes, such as underrepresentation in training data, different label noise or a different input-label relationship in that segment, or reliance on cues that fail for it.
 4. Gives mitigations such as collecting more data for the segment, reweighting or oversampling, group-robust objectives that minimize the worst group's loss, segment-specific thresholds or models, or human review for that segment.
-5. States limits: group labels are needed at evaluation (and sometimes training), gains for one group may cost average accuracy, overlapping groups multiply and cannot all be enumerated, a small group's score can partly be noise, and improving known groups does not cover unknown ones.
+5. States limits: group labels are needed at evaluation (and sometimes training), gains for one group may cost average accuracy, overlapping groups multiply and cannot all be enumerated, and improving known groups does not cover unknown ones.
 
 **Source:** Towards honest robustness disclosure
 
@@ -154,7 +154,7 @@ Distinguish robustness to natural perturbations (sensor noise, lighting changes,
 
 1. Defines natural perturbation as arising from the world or a shift in the data-generating process and worst-case perturbation as the loss-maximizing change inside a stated perturbation set, which makes the second depend on a threat model.
 2. Explains that neither implies the other: an adversarially trained model can still degrade under natural shifts its training budget did not cover, and a model robust to noise or corruptions can be broken by small optimized changes.
-3. Gives the high-dimensional argument: for a linear score the worst-case direction aligns with the weights and shifts the score by about ε‖w‖₁ (L∞) or r‖w‖₂ (L2), whereas a random direction of the same L2 length shifts it by about r‖w‖₂/√d, roughly √d times less.
+3. Gives the high-dimensional argument: for a linear score the worst-case direction aligns with the weights, so at a given L2 length r it shifts the score by about r‖w‖₂ whereas a random direction of the same length shifts it by about r‖w‖₂/√d, roughly √d times less (an L∞ budget ε gives a worst-case shift of ε‖w‖₁, larger than the shift from a random direction of the same L2 length by a factor ‖w‖₁/‖w‖₂, which is at most √d).
 4. Plans the natural axis: held-out data from other conditions or times, corruption tests, slice and worst-group metrics with confidence intervals, and monitoring of deployment inputs for drift.
 5. Plans the worst-case axis: a stated threat model, strong adaptive multi-step attacks under several norms and budgets, black-box or transfer checks, and certification where feasible, reported as a profile with clean accuracy and residual risk.
 
@@ -169,10 +169,10 @@ You must test a toxicity classifier for a comment platform before launch, beyond
 **Rubric (1 point each):**
 
 1. Describes slice-based evaluation on predefined subsets (dialect, topic, length, language, identity terms, negation, quoted or reclaimed uses) with per-slice metrics, sample sizes and intervals, because averages hide pockets of failure.
-2. Describes invariance tests that apply label-preserving edits (typos, case, whitespace, paraphrase, neutral name or identity-term swaps) and expect unchanged output, notes that failures expose dependence on surface cues, and notes that each edit must be checked to preserve the label.
-3. Describes counterfactual or minimal-pair tests where a small edit should flip the label in a specified direction (adding negation, removing an insult), which reveals reliance on keywords rather than meaning.
+2. Describes invariance tests that apply label-preserving edits (typos, case, whitespace, paraphrase, neutral name or identity-term swaps) and expect unchanged output, notes that failures expose dependence on surface cues, and notes that each edit must be checked to preserve the label (name or identity-term swaps may be filed here or as counterfactual tests, provided the expected behavior, unchanged or flipped, is stated).
+3. Describes counterfactual or minimal-pair tests where a small edit should change the output in a specified direction (adding negation, removing an insult; identity-term swaps also count here when the expected behavior is stated), which reveals reliance on keywords rather than meaning.
 4. States that passing a finite suite shows behavior only on those tests, that the tests encode their designers' assumptions, and that a pass does not prove invariance or understanding.
-5. Describes statistical hygiene: many slices produce chance extremes, so slices should be predefined from a risk analysis, searched-for slices should be treated as hypotheses to confirm on fresh data, and the model should not be tuned on the stress suite and then evaluated on it as clean evidence.
+5. Describes statistical hygiene: many slices produce chance extremes, so slices found by searching should be treated as hypotheses to confirm on fresh data, and the model should not be tuned on the stress suite and then evaluated on it as clean evidence.
 
 **Source:** Cross-domain transfer — the same structure in different clothes
 
@@ -202,21 +202,21 @@ A lender deploys a default-prediction model on tabular applicant data, and appli
 
 1. Explains that tabular changes are discrete and bound by feasibility (debt cannot exceed what is possible, values must be non-negative, fields depend on one another), so unconstrained gradient attacks create impossible records and the real threat is strategic edits to feasible fields.
 2. Classifies features as immutable, costly to change or cheap to change, and builds the threat model on what an applicant can change, at what cost and whether the lender verifies it.
-3. Distinguishes features that cause repayment from proxies that merely correlate with it: cheap, non-causal proxies can be gamed so the score rises while risk does not, whereas causal features are costly to fake and improving them lowers real risk.
-4. Proposes design changes such as favoring verified and causally relevant features, removing or down-weighting cheap proxies, monotonicity constraints, input verification and periodic retraining.
+3. Distinguishes features that cause repayment from proxies that merely correlate with it: cheap, non-causal proxies can be gamed so the score rises while risk does not, whereas genuinely improving a causal feature (for example paying down balances) lowers real risk, though misreporting a causal feature remains possible unless it is verified.
+4. Proposes design changes such as favoring verified and causally relevant features, removing or down-weighting cheap proxies, monotonicity constraints and input verification.
 5. Proposes evaluation by searching over feasible costed edits and simulating best-response behavior, and notes that deployment itself changes the data (the relationship between features and default can drift), so monitoring and a retraining plan are required.
 
 **Source:** Cross-domain transfer — the same structure in different clothes
 
 ## ES-ch04.14
 
-A company uses a language model with a fixed instruction to label customer emails as urgent or not urgent. Design an evaluation of the labeler's robustness to wording and formatting changes, including how you would handle randomness in the outputs and how you would report results. Then explain how an adversarial email differs from a merely differently worded one.
+A company uses a language model with a fixed instruction to label customer emails as urgent or not urgent. Design an evaluation of the labeler's robustness to wording and formatting changes (in the instruction, in the emails, or both), including how you would handle randomness in the outputs and how you would report results. Then explain how an adversarial email differs from a merely differently worded one.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
-1. Builds a set of meaning-preserving variants of the instruction and of the inputs (paraphrase, synonyms, formatting, whitespace, ordering, politeness), checked by reviewers to preserve the correct label.
+1. Builds a set of meaning-preserving variants of the instruction and/or the inputs (paraphrase, synonyms, formatting, whitespace, ordering, politeness), checked by reviewers to preserve the correct label.
 2. Measures accuracy under each variant, the best-to-worst spread, and the share of items whose label stays the same across variants, with confidence intervals so that differences can be compared with sampling error.
 3. Handles randomness: with stochastic decoding, repeats each condition several times to separate sampling variance from variance due to wording, or fixes the decoding settings and states them.
 4. Reports the mean and worst case across variants rather than the best wording picked on the test data, with variants fixed in advance and any prompt tuning done on separate validation data.
@@ -236,7 +236,7 @@ A paper reports a new defense for an image classifier with 88% accuracy under a 
 2. Applies the upper-bound logic: accuracy under any real attack is an upper bound on worst-case accuracy, so the 35% result already shows worst-case accuracy at this budget is at most 35%, and the 88% claim is refuted under the paper's own threat model.
 3. Requires adaptive attacks designed with knowledge of the defense (approximating the non-differentiable step with a differentiable one, averaging over the randomness), more steps and random restarts, and query-based black-box attacks.
 4. Requires sanity checks and fuller reporting: accuracy should fall toward zero as the budget grows, results across several budgets and norms should be reported, and the minimum over all attacks with confidence intervals should be the headline.
-5. States the claim that could be supported: robust accuracy at most the lowest value across attacks (35% so far), stated with the attack suite and residual risks, with any stronger claim requiring certification or verification.
+5. States the claim that could be supported: robust accuracy is bounded by the lowest value found across a listed attack suite, reported with that suite and the residual risks, with any stronger claim requiring certification or verification.
 
 **Source:** The robustness toolkit — what each tool does and what it costs
 
@@ -251,7 +251,7 @@ A team can deploy either a standard classifier (95% clean accuracy, 0% accuracy 
 1. States that the threat model decides which metric matters: in (a) adversaries probe and adapt, so worst-case accuracy is relevant, while in (b) there is no adversary, so clean accuracy and robustness to natural shift matter more.
 2. Quantifies the trade: if a fraction f of inputs is attacked and the rest are clean, expected accuracy is 0.95(1 − f) for the standard model and 0.85(1 − f) + 0.5f for the robust one, which cross at f = 1/6 ≈ 17%, so the robust model wins when more than about one input in six is attacked at that budget.
 3. Notes that neither number stands alone: the attack figure is an upper bound that depends on attack strength and budget realism, and the clean-accuracy cost may fall on particular slices.
-4. Commits to a choice for each setting that follows from the stated threat model (typically the robust model or a layered defense for (a) and the standard model with natural-shift testing for (b)), and notes that in (a) adversaries adapt so static robustness decays, calling for retraining on new evasions, monitoring or human review.
+4. Commits to a choice for each setting that follows from the stated threat model (for (a), either the robust model or the standard model with frequent retraining on new evasions can be defended if the adaptive-attacker issue is addressed; for (b), typically the standard model with natural-shift testing), and notes that in (a) adversaries adapt so static robustness decays, calling for retraining on new evasions, monitoring or human review.
 5. Lists information to gather: realistic attacker budgets and share of adversarial traffic, relative costs of false positives and false negatives, per-slice and natural-shift accuracy, and compute and maintenance costs.
 
 **Source:** Adversarial training and its scaling limits

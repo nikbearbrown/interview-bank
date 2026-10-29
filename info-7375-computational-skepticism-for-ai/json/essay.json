@@ -45,7 +45,7 @@
         },
         {
           "point": 5,
-          "text": "Names what is needed before acting: the base rate in that population, whether the false-flag rate differs across groups of writers, and corroborating evidence, treating a flag as a reason to look closer rather than as proof."
+          "text": "Names at least two things to check before acting, other than the base rate itself: whether the false-flag rate differs across groups of writers (for example non-native English writers), corroborating evidence (drafts, version history, a conversation with the student), and that a flag is a reason to look closer, not proof."
         }
       ]
     },
@@ -73,7 +73,7 @@
         },
         {
           "point": 4,
-          "text": "Explains that searching a large database multiplies the opportunities for a coincidence, so the size of the search matters, and a narrower search changes the result (about 1 in 21 for a 200,000-person search)."
+          "text": "Explains that the number of coincidental matches grows with the number of people searched, so the same match is much weaker evidence from a trawl through a large database than from testing one suspect already singled out by other means (optional illustration: a search of 200,000 people would give about 20 coincidences, about 1 in 21)."
         },
         {
           "point": 5,
@@ -97,7 +97,7 @@
         },
         {
           "point": 2,
-          "text": "Observes that Model A is better on both easy and hard questions yet worse overall, a reversal known as Simpson's paradox."
+          "text": "Observes that Model A is better on both easy and hard questions yet worse overall; naming this reversal Simpson's paradox is optional."
         },
         {
           "point": 3,
@@ -109,7 +109,7 @@
         },
         {
           "point": 5,
-          "text": "Notes that the right breakdown depends on the causal story, here that difficulty is a property of the question that affects the outcome and was unevenly assigned, so the stratified comparison is the one to trust."
+          "text": "Explains how to decide which breakdown to trust: stratify by a variable that is a property of the case and is not caused by the model (difficulty here), so the stratified comparison is the right one; if the stratifying variable were a downstream effect of the model, the aggregate could be the right one."
         }
       ]
     },
@@ -133,11 +133,11 @@
         },
         {
           "point": 3,
-          "text": "Explains that the true figure depends on the tail shape, for example a Student t with 3 degrees of freedom rescaled to unit standard deviation puts about 1.4% beyond 3 standard deviations, around five times the normal value."
+          "text": "Gives a concrete fat-tailed counterexample with its number, for example a Student t with 3 degrees of freedom rescaled to unit standard deviation, which puts about 0.7% above +3 standard deviations (1.4% beyond 3 in either direction), around five times the normal's 0.13% (0.27%)."
         },
         {
           "point": 4,
-          "text": "Explains that standard-deviation thresholds are calibrated only if the tail shape is right, so fat tails (and clustered failures) produce more alerts and larger extremes than the normal curve predicts."
+          "text": "Explains why a normal-based threshold is then mis-calibrated: a mean-plus-3-standard-deviation alert has the quoted false-alarm rate only if the tail is normal, and with fat tails or clustered failures (bad days arrive together) it fires more often than the dashboard says."
         },
         {
           "point": 5,
@@ -173,7 +173,7 @@
         },
         {
           "point": 5,
-          "text": "Explains that independence is an assumption: with the same per-call rate, positively correlated failures (a shared cause such as a down service) make runs with at least one failure less frequent but failures clustered, so the independent calculation can be wrong in either direction for run-level reliability."
+          "text": "Explains that independence is an assumption: with the same per-call rate, positively correlated failures (a shared cause such as a down service) cluster in fewer runs, so more runs succeed than the independent 0.998^500 ≈ 0.37 (for example, if 20% of runs hit a bad period with per-call failure rate 0.01 and the rest have none, the average rate is still 0.002 but about 80% of runs succeed), and the independent figure should be checked against observed run-level outcomes."
         }
       ]
     },
@@ -193,7 +193,7 @@
         },
         {
           "point": 2,
-          "text": "Explains that failing to reject the null is not evidence of no effect (absence of evidence is not evidence of absence), because the test may simply lack the ability to detect a real effect (a Type II error)."
+          "text": "States that failing to reject the null (p = 0.20) is not evidence of no effect: absence of evidence is not evidence of absence."
         },
         {
           "point": 3,
@@ -233,7 +233,7 @@
         },
         {
           "point": 4,
-          "text": "Names a correction: Holm, or Benjamini–Hochberg to control the false discovery rate, or pre-registering a single primary comparison before looking."
+          "text": "Names a multiplicity correction other than Bonferroni: Holm (controls the family-wise error rate) or Benjamini–Hochberg (controls the false discovery rate)."
         },
         {
           "point": 5,
@@ -269,7 +269,7 @@
         },
         {
           "point": 5,
-          "text": "Rewrites the claim in a defensible form: no failures in 300 tests, so the failure rate is below about 1% with 95% confidence for inputs like those tested."
+          "text": "Reports the result as an upper confidence bound for inputs like those tested, not as a point value of 0%, and notes that the bound depends on the confidence level chosen (for example 99% confidence gives about 1.5%, against about 1% at 95%)."
         }
       ]
     },
@@ -281,7 +281,7 @@
       "group": "foundations",
       "section": "4. Exploratory data analysis, data quality and missing data",
       "source": "Missing data and imputation",
-      "prompt": "A hospital estimates 30-day readmission from follow-up calls. Of 1,000 discharged patients, the calls reach 820, so 18% of outcomes are missing. Suppose, unknown to the analyst, that 300 patients were in poor health with 50% readmitted and 700 were in good health with 10% readmitted, and that the calls reached 40% of the poor-health patients and all of the good-health patients. (a) Compute the true readmission rate and the rate the analyst sees among those reached. (b) Classify the missingness (MCAR, MAR or MNAR) in two cases: health status is recorded for every patient, and missingness depends on whether the patient was readmitted with no recorded proxy. (c) Say what the analyst should do in each case and why dropping rows or mean imputation does not fix it.",
+      "prompt": "A hospital estimates 30-day readmission from follow-up calls. Of 1,000 discharged patients, the calls reach 820, so 18% of outcomes are missing. Suppose, unknown to the analyst, that 300 patients were in poor health with 50% readmitted and 700 were in good health with 10% readmitted, and that the calls reached 40% of the poor-health patients (chosen at random within that group) and all of the good-health patients. (a) Compute the true readmission rate and the rate the analyst sees among those reached. (b) Classify the missingness (MCAR, MAR or MNAR) in two cases: health status is recorded for every patient, and missingness depends on whether the patient was readmitted with no recorded proxy. (c) Say what the analyst should do in each case and why dropping rows or mean imputation does not fix it.",
       "rubric": [
         {
           "point": 1,
@@ -301,7 +301,7 @@
         },
         {
           "point": 5,
-          "text": "Explains that complete-case analysis and mean imputation implicitly assume missing completely at random, so they reproduce the biased 15.9% and overstate precision; keep missingness indicators and report how much is missing."
+          "text": "Explains that dropping incomplete rows (complete-case analysis) and mean imputation are justified only if the data are missing completely at random, so here both reproduce the biased 15.9%, and mean imputation also overstates precision because it treats invented values as data; keep missingness indicators and report how much is missing."
         }
       ]
     },
@@ -321,7 +321,7 @@
         },
         {
           "point": 2,
-          "text": "Computes the default rate falling from 4.8% to 4.5% (216,000 of 4,800,000), a shift small enough to pass for ordinary quarter-to-quarter variation."
+          "text": "Computes the default rate falling from 4.8% (240,000 of 5,000,000) to 4.5% (216,000 of 4,800,000), a shift of 0.3 points that a mean-versus-last-quarter check could easily miss."
         },
         {
           "point": 3,
@@ -333,7 +333,7 @@
         },
         {
           "point": 5,
-          "text": "Names two further practices, such as repeating the checks within each subgroup (region), comparing against an independent control total, and plotting distributions by group, together with domain knowledge about what the counts should be."
+          "text": "Names two further practices other than row reconciliation, such as repeating the checks within each subgroup (for example region), inspecting unmatched or dropped join keys (an anti-join), or plotting counts and default rates by region and by source."
         }
       ]
     },
@@ -345,7 +345,7 @@
       "group": "foundations",
       "section": "5. Modeling basics: fit, overfitting and evaluation",
       "source": "Classification, logistic regression and metrics",
-      "prompt": "A vendor says its screening model is \"99.3% accurate\" at flagging a rare condition. On a test set of 100,000 cases, 800 are positive. The model flags 300 cases, of which 200 are truly positive. An alternative model flags 3,000 cases and catches 600 of the positives. (a) Build the confusion matrix for the first model and compute accuracy, precision, recall and F1. (b) Compare it with a trivial baseline. (c) Explain which metrics the decision should rest on, and compare the two models when a missed positive costs 500 and a false alarm costs 10.",
+      "prompt": "A vendor says its screening model is \"99.3% accurate\" at flagging a rare condition. On a test set of 100,000 cases, 800 are positive. The model flags 300 cases, of which 200 are truly positive. An alternative model flags 3,000 cases and catches 600 of the positives. (a) Build the confusion matrix for the first model and compute accuracy, precision, recall and F1. (b) Compare it with a trivial baseline. (c) Explain which metrics the decision should rest on, and compare the two models when a missed positive costs 500 and a false alarm costs 10. (d) Say how you would choose the operating threshold.",
       "rubric": [
         {
           "point": 1,
@@ -357,7 +357,7 @@
         },
         {
           "point": 3,
-          "text": "Explains that the decision should rest on metrics that respect the rare class, such as recall (here 600 of 800 positives are missed), precision and the precision-recall trade-off, not accuracy."
+          "text": "Names the metrics the decision should rest on: recall (here 600 of the 800 positives are missed), precision and their trade-off, weighted by the cost of each kind of error."
         },
         {
           "point": 4,
@@ -365,7 +365,7 @@
         },
         {
           "point": 5,
-          "text": "Explains that the operating point should be chosen to minimize expected cost or meet a recall target on validation data, noting that with calibrated probabilities the cost-minimizing cutoff is 10 / (10 + 500) ≈ 2% and that the deployment base rate matters."
+          "text": "Explains that the operating threshold should be chosen to minimize expected cost or to meet a recall target on validation data, and that the deployment base rate changes the numbers (for example, with calibrated probabilities the cost-minimizing cutoff is 10 / (10 + 500) ≈ 2%)."
         }
       ]
     },
@@ -377,7 +377,7 @@
       "group": "foundations",
       "section": "5. Modeling basics: fit, overfitting and evaluation",
       "source": "Resampling and validation",
-      "prompt": "A team tunes a classifier by trying 200 hyperparameter configurations and scoring each on the same fixed test set of 500 labeled examples. The best configuration scores 85% accuracy and the team reports \"85% expected accuracy in production\". Suppose, hypothetically, that all 200 configurations truly have 80% accuracy. (a) Explain why the best score is still expected to exceed 80%, and estimate the size of the effect using the standard error of a single score. (b) Describe a protocol that avoids the problem. (c) List two other ways the 85% could be inflated.",
+      "prompt": "A team tunes a classifier by trying 200 hyperparameter configurations and scoring each on the same fixed test set of 500 labeled examples. The best configuration scores 85% accuracy and the team reports \"85% expected accuracy in production\". Suppose, hypothetically, that all 200 configurations truly have 80% accuracy, and treat the 200 scores as independent. (a) Explain why the best score is still expected to exceed 80%, and estimate the size of the effect using the standard error of a single score. (b) Describe a protocol that avoids the problem. (c) List two other ways the 85% could be inflated.",
       "rubric": [
         {
           "point": 1,
@@ -385,11 +385,11 @@
         },
         {
           "point": 2,
-          "text": "Explains that taking the maximum of 200 noisy scores selects luck (selection bias, the winner's curse): the expected best of 200 is about 2.7 standard errors above the truth, roughly 84 to 85% here."
+          "text": "Explains that the maximum of 200 noisy scores is biased upward, and sizes it: the expected best of 200 independent scores is about 2.7 standard errors above the truth, roughly 84 to 85% here."
         },
         {
           "point": 3,
-          "text": "States that the test set was used for model selection and is therefore no longer an independent estimate."
+          "text": "Names the cause: the same test set both chose the configuration and scored it (selection on the test data, the winner's curse), so the reported 85% is not an independent estimate and the honest expectation for the chosen configuration is about 80%."
         },
         {
           "point": 4,
@@ -429,7 +429,7 @@
         },
         {
           "point": 5,
-          "text": "Explains that the criteria are set before the results are seen and that a claim compatible with every outcome, such as \"saves time\" with no baseline or threshold, is not testable because no result could count against it."
+          "text": "Explains what makes the exercise a test and not a description: a claim compatible with every outcome, such as \"saves time\" with no baseline or threshold, is untestable because no result could count against it."
         }
       ]
     },
@@ -449,7 +449,7 @@
         },
         {
           "point": 2,
-          "text": "Identifies Reviewer 2's comment as meeting this standard because it names a population, a metric, a threshold and a consequence, and notes that the claim could actually fail the test."
+          "text": "States that Reviewer 2's comment does more for the team and applies the definition to it by showing that the claim could actually fail the stated test, for example an AUROC of 0.78 at one of the three hospitals would count as refutation."
         },
         {
           "point": 3,
@@ -521,7 +521,7 @@
         },
         {
           "point": 4,
-          "text": "Proposes an intervention or counterfactual test, such as adapting the model to the new vocabulary and seeing whether accuracy recovers, with the prediction stated before the test is run."
+          "text": "Proposes a test that could contradict the explanation, such as scoring last month's data on a subset whose vocabulary is unchanged (the explanation predicts accuracy stays near 91% there), replaying the older month through the current pipeline, or adapting only the vocabulary handling, with the prediction stated before the test is run."
         },
         {
           "point": 5,
@@ -537,11 +537,11 @@
       "group": "chapter",
       "section": null,
       "source": "The solve-verify asymmetry",
-      "prompt": "A team builds a pipeline in which one language model drafts summaries of legal clauses and a second language model, from a different vendor, \"verifies\" each summary by reading the clause and the summary and replying \"correct\" or \"incorrect.\" The team reports that the verifier agrees with the drafter on 97% of summaries and concludes that the summaries are verified. Critique this conclusion, and describe how you would build a check whose agreement would mean something.",
+      "prompt": "A team builds a pipeline in which one language model drafts summaries of legal clauses and a second language model, from a different vendor, \"verifies\" each summary by reading the clause and the summary and replying \"correct\" or \"incorrect.\" The team reports that the verifier replies \"correct\" for 97% of summaries and concludes that the summaries are verified. Critique this conclusion, and describe how you would build a check whose verdicts would mean something.",
       "rubric": [
         {
           "point": 1,
-          "text": "Notes that agreement between two models measures agreement and not correctness, since neither is ground truth and both can be wrong in the same way."
+          "text": "Notes that a verifier's \"correct\" verdicts measure its agreement with the drafter and not correctness, since neither model is ground truth."
         },
         {
           "point": 2,
@@ -549,7 +549,7 @@
         },
         {
           "point": 3,
-          "text": "Points out that 97% agreement means little without knowing how the verifier performs on summaries known to be wrong, and proposes measuring its sensitivity on a labelled or deliberately corrupted set."
+          "text": "Points out that a 97% \"correct\" rate means little without knowing how the verifier performs on summaries known to be wrong, and proposes measuring its sensitivity on a labelled or deliberately corrupted set."
         },
         {
           "point": 4,
@@ -585,7 +585,7 @@
         },
         {
           "point": 4,
-          "text": "Notes that the checks draw on sources independent of the agent, such as service-side logs and a separately obtained inventory, and are run against the live system and not a copy or a summary."
+          "text": "States why the checks are valid: they use evidence the agent did not produce and are run against the live system, not a copy or the agent's summary."
         },
         {
           "point": 5,
@@ -653,7 +653,7 @@
         },
         {
           "point": 5,
-          "text": "Notes that sampling estimates the error rate without verifying the unsampled letters, that the plan should state what is covered and what is not, that a named owner accepts the residual risk, and that using another model to check does not remove the need for a ground-truth anchor."
+          "text": "Notes that sampling estimates the error rate without verifying the unsampled letters, that the plan should state what is covered and what is not, and that a named owner accepts the residual risk."
         }
       ]
     },
@@ -681,7 +681,7 @@
         },
         {
           "point": 4,
-          "text": "Specifies the evidence shown to the approver: checks run against actual state, such as a preview computed from the real price table, a statement of what was not checked, and how the change can be rolled back, with a record of what was shown, who approved and when."
+          "text": "Specifies the supporting information shown and kept with the approval: a statement of what was not checked, a rollback path, and a record of what was shown, who approved and when."
         },
         {
           "point": 5,
@@ -717,7 +717,7 @@
         },
         {
           "point": 5,
-          "text": "Recommends a report format with scope, method, sample, criteria fixed beforehand, results, a pass, fail or not-tested status for each condition, and next tests, using wording that does not imply the whole system was verified."
+          "text": "Recommends a report format with scope, method, sample, criteria fixed beforehand, results and next tests, in wording that does not imply the whole system was verified."
         }
       ]
     },
@@ -729,7 +729,7 @@
       "group": "chapter",
       "section": null,
       "source": "What you measure and what you care about",
-      "prompt": "A hospital system trains a model to rank patients for a care-coordination program, using each patient's past-year healthcare cost as the training label on the reasoning that costlier patients are sicker. Explain how the label can come apart from the goal. Distinguish the two ways a measure and a goal can diverge (a stand-in that never tracked the goal, and a measure that tracked it and later stopped), and describe the checks that address each.",
+      "prompt": "A hospital system trains a model to rank patients for a care-coordination program, using each patient's past-year healthcare cost as the training label on the reasoning that costlier patients are sicker. Explain how the label can come apart from the goal. Distinguish the two ways a measure and a goal can diverge (a stand-in that never tracked the goal, and a measure that tracked it and later stopped), and describe the checks that address each. Say what you would change about the label and what that change would cost.",
       "rubric": [
         {
           "point": 1,
@@ -737,7 +737,7 @@
         },
         {
           "point": 2,
-          "text": "Names Goodhart's law or proxy optimization: ranking or optimizing on the stand-in can exploit the parts of it that are unrelated to the goal."
+          "text": "Names the general problem, a proxy optimized as if it were the goal (Goodhart's law), and states that ranking by the proxy selects on its goal-irrelevant components."
         },
         {
           "point": 3,
@@ -797,11 +797,11 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Distinguishes the output, a label produced by a statistical model from image pixels, from the thing it is meant to track, disease in the patient, and notes that high held-out accuracy shows only that the label can be predicted from inputs like the training data."
+          "text": "Distinguishes the output, a label produced by a statistical model from image pixels, from the thing it is meant to track, disease in the patient."
         },
         {
           "point": 2,
-          "text": "Identifies shortcut learning or spurious correlation: confounders such as scanner type, markers, patient positioning, text tags or hospital-specific prevalence that correlate with the label at the training hospitals but not elsewhere."
+          "text": "Identifies shortcut learning or spurious correlation: confounders such as scanner type, markers, patient positioning, or text tags and other cues that identify the hospital, which correlate with the label at the training hospitals but not elsewhere."
         },
         {
           "point": 3,
@@ -813,7 +813,7 @@
         },
         {
           "point": 5,
-          "text": "Names other candidate causes, such as differences in labelling, in the patient population or disease spectrum, and in image processing, and says each should be tested instead of accepting the first plausible account."
+          "text": "Names other candidate causes, such as differences in labelling, in the patient population, disease spectrum or prevalence, and in image processing, and says each should be tested instead of accepting the first plausible account."
         }
       ]
     },
@@ -829,15 +829,15 @@
       "rubric": [
         {
           "point": 1,
-          "text": "States that \"no findings\" depends on two things, whether flaws exist and whether the reviewer would detect them, so a clean report is uninformative until the detection rate is known."
+          "text": "States that \"no findings\" depends on two things, whether flaws exist and whether the reviewer would detect them, so the probability of a flaw after a clean report depends on the prior flaw rate and the detection rate, is not zero, and the report is uninformative until the detection rate is known."
         },
         {
           "point": 2,
-          "text": "Illustrates with numbers or reasoning, for example that a reviewer catching 60% of flaws leaves a 40% chance of a clean report on a flawed pull request, that the probability of a flaw after a clean report depends on the prior flaw rate and the detection rate and is not zero, and that a reviewer unable to detect a class of flaw says nothing about that class."
+          "text": "Illustrates with numbers or reasoning, for example that a reviewer catching 60% of flaws leaves a 40% chance of a clean report on a flawed pull request, and that a reviewer unable to detect a class of flaw says nothing about that class."
         },
         {
           "point": 3,
-          "text": "Proposes measuring sensitivity by seeding known flaws, or replaying known past vulnerabilities, into held-out pull requests and counting how many are flagged by class of flaw, and also measuring the false alarm rate."
+          "text": "Proposes measuring sensitivity by seeding known flaws, or replaying known past vulnerabilities, into held-out pull requests and counting how many are flagged, and also measuring the false alarm rate."
         },
         {
           "point": 4,
@@ -869,7 +869,7 @@
         },
         {
           "point": 3,
-          "text": "Computes the judge's sensitivity to failures: of the 12 answers the humans failed, the judge flagged 4 (33%), so it is lenient and misses most bad answers, and its errors are not random."
+          "text": "Computes the judge's sensitivity to failures: of the 12 answers the humans failed, the judge flagged 4 (33%), so it appears lenient and misses most bad answers; its disagreements lean in one direction (8 passes the humans failed versus 1 fail the humans passed)."
         },
         {
           "point": 4,
@@ -889,7 +889,7 @@
       "group": "chapter",
       "section": null,
       "source": "The test that is 99% accurate, and the patient it kills",
-      "prompt": "A vendor says its fraud-screening tool is \"98% accurate\", meaning it flags 98% of fraudulent transactions and clears 98% of legitimate ones. In the vendor's target market 0.2% of transactions (1 in 500) are fraudulent. (a) For 100,000 transactions, work out how many are flagged and how many of the flagged transactions are fraudulent. (b) Explain why the vendor's figure and your figure are both correct yet answer different questions. (c) Describe two changes that would raise the share of flags that are real fraud, and one cost of each.",
+      "prompt": "A vendor says its fraud-screening tool is \"98% accurate\", meaning it flags 98% of fraudulent transactions and clears 98% of legitimate ones. In the vendor's target market 0.2% of transactions (1 in 500) are fraudulent. (a) For 100,000 transactions, work out how many are flagged and how many of the flagged transactions are fraudulent. (b) Explain why the vendor's figure and your figure are both correct yet answer different questions. (c) Describe two changes that would raise the share of flags that are real fraud, and one cost of each. (d) State one operational consequence of the flag volume and what you would ask the vendor to report.",
       "rubric": [
         {
           "point": 1,
@@ -937,7 +937,7 @@
         },
         {
           "point": 4,
-          "text": "Notes that accuracy at a threshold discards confidence magnitude, can be high through class imbalance alone (a majority-class baseline), and neither implies nor is implied by calibration or AUC."
+          "text": "Notes that accuracy at a threshold ignores the size of the probability and can be high through class imbalance alone (a majority-class baseline), so high accuracy does not establish calibration or good ranking."
         },
         {
           "point": 5,
@@ -953,7 +953,7 @@
       "group": "chapter",
       "section": null,
       "source": "Calibration",
-      "prompt": "Two forecasters each give a probability for 10 events, 8 of which occur. Forecaster P says 0.8 for every event. Forecaster Q says 0.99 for every event. (a) For each forecaster compute accuracy at a 0.5 cutoff, the Brier score and the log loss (natural logarithm). (b) Define a proper scoring rule and explain why Brier score and log loss are proper while accuracy at a cutoff is not. (c) Explain how Brier score and log loss differ in their treatment of a confident forecast that turns out wrong, and when that should influence the choice between them.",
+      "prompt": "Two forecasters each give a probability for 10 events, 8 of which occur. Forecaster P says 0.8 for every event. Forecaster Q says 0.99 for every event. (a) For each forecaster compute accuracy at a 0.5 cutoff, the Brier score and the log loss (natural logarithm). (b) Define a strictly proper scoring rule and explain why Brier score and log loss are strictly proper while accuracy at a cutoff is not. (c) Explain how Brier score and log loss differ in their treatment of a confident forecast that turns out wrong, and when that should influence the choice between them.",
       "rubric": [
         {
           "point": 1,
@@ -965,11 +965,11 @@
         },
         {
           "point": 3,
-          "text": "Defines a proper scoring rule as one whose expected score is optimized by reporting one's true belief (strictly proper if only that report is optimal)."
+          "text": "Defines a proper scoring rule as one whose expected score is optimized by reporting one's true belief, and a strictly proper rule as one for which only the true belief is optimal."
         },
         {
           "point": 4,
-          "text": "Explains that Brier score and log loss are proper (honest reporting of 0.8 is optimal when 80% of events occur) while accuracy at a cutoff rewards any report on the right side of 0.5 equally, so it neither rewards honesty nor penalizes overstatement; absolute error is also not proper."
+          "text": "Explains that Brier score and log loss are strictly proper (reporting 0.8 is the unique best report when 80% of events occur) while accuracy at a cutoff is not strictly proper because any report on the correct side of 0.5 scores equally, so it neither rewards honesty nor penalizes overstatement; absolute error is improper (its expected value is minimized by reporting 0 or 1)."
         },
         {
           "point": 5,
@@ -1069,7 +1069,7 @@
         },
         {
           "point": 5,
-          "text": "Explains that a credible interval is a posterior probability statement about the parameter given a model and prior, depends on the prior, and can resemble the confidence interval only under diffuse priors; notes that all of these assume independent, roughly normal, stable measurements."
+          "text": "Explains that a credible interval is a posterior probability statement about the parameter given a model and prior, so it depends on the prior, and can numerically resemble the confidence interval when the prior is diffuse or the data dominate."
         }
       ]
     },
@@ -1081,7 +1081,7 @@
       "group": "chapter",
       "section": null,
       "source": "When the Central Limit Theorem politely declines to help",
-      "prompt": "A team reports \"our classifier is 96% accurate\" after it classified 48 of 50 test items correctly, and says this beats a competitor's published figure of 92%, which came from a different, larger test set. (a) Give an approximate 95% interval for the team's true accuracy and say whether the data support the claim. (b) Roughly how many test items would be needed to estimate accuracy to within plus or minus 2 percentage points if the true accuracy is near 96%? (c) Name two sources of error that no sampling interval accounts for.",
+      "prompt": "A team reports \"our classifier is 96% accurate\" after it classified 48 of 50 test items correctly, and says this beats a competitor's published figure of 92%, which came from a different, larger test set. (a) Give an approximate 95% interval for the team's true accuracy and say whether the data support the claim. (b) Roughly how many test items would be needed to estimate accuracy to within plus or minus 2 percentage points if the true accuracy is near 96%? (c) Name two sources of error that no sampling interval accounts for. (d) Describe how the two systems should be compared fairly.",
       "rubric": [
         {
           "point": 1,
@@ -1165,7 +1165,7 @@
         },
         {
           "point": 5,
-          "text": "Recommends confirmation with a test that works by a different mechanism, rather than interpreting a single screening positive as a diagnosis, and notes that treating accuracy as the probability of disease (for example 95% x 95%) ignores the prior."
+          "text": "Recommends confirmation with an independent test, ideally one that works by a different mechanism, rather than diagnosing from a single screening positive."
         }
       ]
     },
@@ -1185,11 +1185,11 @@
         },
         {
           "point": 2,
-          "text": "Computes that about 10 innocent people in 1,000,000 are expected to match by chance, alongside the one true source."
+          "text": "Computes the probability that the defendant is the source: about 10 innocent people in 1,000,000 are expected to match by chance alongside the one true source, equivalently Bayes' rule with a prior of 1 in 1,000,000, giving about 1 in 11, roughly 0.09."
         },
         {
           "point": 3,
-          "text": "Applies Bayes' rule with a prior of 1 in 1,000,000 to get a probability that the defendant is the source of about 1 in 11, roughly 0.09."
+          "text": "States that the probability the defendant is innocent is therefore about 0.91, not 1 in 100,000."
         },
         {
           "point": 4,
@@ -1225,7 +1225,7 @@
         },
         {
           "point": 4,
-          "text": "Explains that dividing by T preserves the ordering of cases, so predicted classes, accuracy and AUC (in the binary case) are unchanged and only the stated confidence is rescaled."
+          "text": "Explains that dividing by T preserves the ordering of cases, so AUC and the predictions at a 0.5 cutoff (hence accuracy at 0.5) are unchanged and only the stated confidence is rescaled."
         },
         {
           "point": 5,
@@ -1273,7 +1273,7 @@
       "group": "chapter",
       "section": null,
       "source": "Hume's induction problem, re-translated as distribution shift",
-      "prompt": "A screening classifier was validated at a prevalence of 20% and found to have sensitivity 90% and specificity 90%. It is later deployed in a population where the prevalence is 2%. (a) Compute the share of flagged cases that are truly positive at each prevalence. (b) Explain what changed and what did not, and whether the model got worse. (c) Explain why the model's own output scores would not alert anyone to the problem. (d) Describe the kinds of shift that can occur and a monitoring plan that would catch them, relating this to the general limits of relying on a past track record.",
+      "prompt": "A screening classifier was validated at a prevalence of 20% and found to have sensitivity 90% and specificity 90%. It is later deployed in a population where the prevalence is 2%; assume its sensitivity and specificity are unchanged in the new population. (a) Compute the share of flagged cases that are truly positive at each prevalence. (b) Explain what changed and what did not, and whether the model got worse. (c) Explain why the model's own output scores would not alert anyone to the problem. (d) Describe the kinds of shift that can occur and a monitoring plan that would catch them, relating this to the general limits of relying on a past track record.",
       "rubric": [
         {
           "point": 1,
@@ -1281,7 +1281,7 @@
         },
         {
           "point": 2,
-          "text": "Explains that sensitivity and specificity are unchanged while the prior changed, so the model did not degrade as a classifier but its flags are now mostly false, and any probability score tied to the old prior is now too high."
+          "text": "Explains that, with sensitivity and specificity unchanged, only the prior changed, so the model did not degrade as a classifier but its flags are now mostly false, and any probability score tied to the old prior is now too high."
         },
         {
           "point": 3,
@@ -1349,7 +1349,7 @@
         },
         {
           "point": 3,
-          "text": "States what the central limit theorem requires (independent observations with finite variance) and notes that convergence can be very slow when rare large values dominate the mean, so a sample must be large relative to 1 divided by the rare event's probability, and that with infinite variance the mean does not stabilize at all."
+          "text": "States that the central limit theorem needs independent observations with finite variance, and that convergence to normality can be very slow when rare large values dominate the mean, so the sample must be large relative to 1 divided by the rare event's probability (here about 1,000 or more)."
         },
         {
           "point": 4,
@@ -1369,7 +1369,7 @@
       "group": "chapter",
       "section": null,
       "source": "Reconstructing the epistemic frame — a working procedure",
-      "prompt": "A data team builds a modeling table by joining three source systems on a shared identifier. An automated report on the result shows no missing values, sensible histograms and no outliers. After deployment, the model performs noticeably worse for one customer segment. Explain how a table with no empty cells can still misrepresent the population it is meant to describe, name the check that would have exposed the problem, and say what that check cannot tell you.",
+      "prompt": "A data team builds a modeling table by joining three source systems on a shared identifier. An automated report on the result shows no missing values, sensible histograms and no outliers. After deployment, the model performs noticeably worse for one customer segment. Explain how a table with no empty cells can still misrepresent the population it is meant to describe, describe the check that would have exposed the problem, and say what that check cannot tell you.",
       "rubric": [
         {
           "point": 1,
@@ -1381,7 +1381,7 @@
         },
         {
           "point": 3,
-          "text": "Names row reconciliation: compare the row count of each source with the count after every join, filter or deduplication step, and compare counts per segment before and after."
+          "text": "Proposes comparing row counts at every join, filter or deduplication step (any name for the check is acceptable, for example row reconciliation or a count audit), including counts per segment before and after."
         },
         {
           "point": 4,
@@ -1401,7 +1401,7 @@
       "group": "chapter",
       "section": null,
       "source": "Reconstructing the epistemic frame — a working procedure",
-      "prompt": "Two tables, orders and customers, will be joined on customer_id and the result used to train a model. Specify the audit report you would require before anyone uses the joined table: what it measures, what would trigger a flag and why, and what must be decided in advance about duplicate keys. Then say what the audit cannot establish even if every check passes.",
+      "prompt": "Two tables, orders and customers, will be joined on customer_id and the result used to train a model. Specify the audit report you would require before anyone uses the joined table: what it measures (including whether any losses are evenly spread across groups), what would trigger a flag and why, and what must be decided in advance about duplicate keys. Then say what the audit cannot establish even if every check passes.",
       "rubric": [
         {
           "point": 1,
@@ -1413,7 +1413,7 @@
         },
         {
           "point": 3,
-          "text": "Reports row counts before and after for the chosen join type and requires any difference to be explained (an inner join drops unmatched rows, a left join keeps them with blanks, duplicates inflate the count)."
+          "text": "Reports row counts before and after for the chosen join type and requires any difference to be explained (an inner join drops unmatched rows, a left join keeps them with blanks)."
         },
         {
           "point": 4,
@@ -1465,11 +1465,11 @@
       "group": "chapter",
       "section": null,
       "source": "The procedural EDA pass — what it sees, and what it structurally cannot",
-      "prompt": "A dataset of 20,000 loan applicants has an income column with 18% of values blank. A missingness plot shows that blanks are far more common among applicants under 25, while the blank rate does not differ noticeably by region or loan size. (a) Which of MCAR, MAR and MNAR is most consistent with this pattern, and why can the pattern not settle the question? (b) Describe a handling strategy that fits your answer and one that would bias the results. (c) What would you do to probe the possibility of MNAR?",
+      "prompt": "A dataset of 20,000 loan applicants has an income column with 18% of values blank. A missingness plot shows that blanks are far more common among applicants under 25, while the blank rate does not differ noticeably by region or loan size. (a) Which of MCAR, MAR and MNAR does this pattern rule out, which would you adopt as the working assumption, and why can the pattern not settle the question? (b) Describe a handling strategy that fits your answer and one that would bias the results. (c) What would you do to probe the possibility of MNAR?",
       "rubric": [
         {
           "point": 1,
-          "text": "Defines the mechanisms (MCAR independent of everything, MAR dependent on observed data, MNAR dependent on the missing value itself) and says that dependence on age, an observed variable, rules out MCAR and is consistent with MAR."
+          "text": "Defines the mechanisms (MCAR independent of everything, MAR dependent on observed data, MNAR dependent on the missing value itself) and states that dependence on age, an observed variable, rules out MCAR and makes MAR the natural working assumption, with MNAR still possible."
         },
         {
           "point": 2,
@@ -1501,7 +1501,7 @@
       "rubric": [
         {
           "point": 1,
-          "text": "States that dropping rows (complete-case analysis) is unbiased under MCAR but loses data and precision, and is biased when missingness depends on the values or on other variables that matter to the analysis."
+          "text": "States that dropping rows (complete-case analysis) is unbiased under MCAR but loses data and precision, and can be biased otherwise, for example when missingness depends on the outcome (in a regression) or on the missing values or related variables (for estimates such as means)."
         },
         {
           "point": 2,
@@ -1513,7 +1513,7 @@
         },
         {
           "point": 4,
-          "text": "Gives choice guidance: complete-case is acceptable for a small MCAR fraction; multiple imputation suits MAR with informative auxiliary variables; none of the three is sufficient if the mechanism is MNAR, which calls for sensitivity analysis and domain reasoning."
+          "text": "States that none of the three is sufficient if the mechanism is MNAR, which calls for sensitivity analysis and domain reasoning, and gives an explicit rule for choosing among them (for example by the assumed mechanism, the share missing and the availability of informative auxiliary variables)."
         },
         {
           "point": 5,
@@ -1529,7 +1529,7 @@
       "group": "chapter",
       "section": null,
       "source": "Hidden assumptions that hide in plain sight",
-      "prompt": "A team trains a content-moderation classifier on 50,000 posts, each labeled once as harmful or not harmful by a crowd worker. In a pilot, two workers independently label the same 500 posts and obtain a Cohen's kappa of 0.55. Explain what this number says, how the disagreement should affect the way the team trains the model and, especially, how it evaluates it, and what steps they should take to improve label quality.",
+      "prompt": "A team trains a content-moderation classifier on 50,000 posts, each labeled once as harmful or not harmful by a crowd worker. In a pilot, two workers independently label the same 500 posts and obtain a Cohen's kappa of 0.55. Explain what this number says, how the disagreement should affect the way the team trains the model and, especially, how it evaluates it, what steps they should take to improve label quality, and what they should report alongside the results.",
       "rubric": [
         {
           "point": 1,
@@ -1541,7 +1541,7 @@
         },
         {
           "point": 3,
-          "text": "Explains the evaluation consequence: scoring against single noisy labels depresses measured accuracy and compresses differences between models, and a model cannot be shown to beat the level of human agreement, so test labels deserve more care than training labels."
+          "text": "Explains the evaluation consequence: random noise in single test labels depresses measured accuracy and compresses differences between models, so the measured score is capped by label reliability, and test labels deserve more care than training labels."
         },
         {
           "point": 4,
@@ -1565,23 +1565,23 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Target leakage: a feature recorded after or caused by the outcome (such as a follow-up appointment flag); the check is comparing each feature's timestamp with the prediction time and ablating or inspecting the most influential features."
+          "text": "Gives a first leakage mechanism with a check that confirms or rules it out; for example target leakage, a feature recorded after or caused by the outcome (such as a billing code, lab result or diagnosis recorded during the readmission stay), checked by comparing each feature's timestamp with the prediction time and ablating or inspecting the most influential features."
         },
         {
           "point": 2,
-          "text": "Entity overlap: several rows per patient fall on both sides of the split; the check is counting shared patient identifiers and re-splitting by patient."
+          "text": "Gives a second, different mechanism with a check; for example entity overlap, where several rows per patient fall on both sides of the split, checked by counting shared patient identifiers and re-splitting by patient."
         },
         {
           "point": 3,
-          "text": "Duplicates and near-duplicates across the split; the check is exact and fuzzy matching between test and training rows or nearest-neighbor distances."
+          "text": "Gives a third, different mechanism with a check; for example duplicates and near-duplicates across the split, checked by exact and fuzzy matching between test and training rows or nearest-neighbor distances."
         },
         {
           "point": 4,
-          "text": "Procedure leakage: scaling, imputation, feature selection or target encoding fitted on all data before splitting, or hyperparameters tuned on the test set; the check is reading the pipeline order and confirming the test set is used once."
+          "text": "Gives a fourth, different mechanism with a check; for example procedure leakage (scaling, imputation, feature selection or target encoding fitted on all data before splitting, or hyperparameters tuned on the test set), checked by reading the pipeline order and confirming the test set is used once, or time leakage from a random split of temporal data, checked by a split in which training precedes testing."
         },
         {
           "point": 5,
-          "text": "Time leakage from a random split of temporal data, checked by a split in which training precedes testing; concludes that a sharp drop means the original figure was an artifact and the lower number is the credible estimate."
+          "text": "Concludes that a sharp drop in the score once the problem is fixed means the original figure was an artifact and the lower number is the credible estimate."
         }
       ]
     },
@@ -1597,7 +1597,7 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Distinguishes the construct (need for support) from the recorded measurement (a failing grade), which is also shaped by grading practices, attendance, course difficulty and interventions already given."
+          "text": "Distinguishes the construct (need for support) from the recorded measurement (a failing grade) and says the measurement is shaped by more than need."
         },
         {
           "point": 2,
@@ -1633,11 +1633,11 @@
         },
         {
           "point": 2,
-          "text": "Distinguishes covariate shift (input distribution changes, detectable without labels by comparing feature distributions), concept drift (the input-output relationship changes, seen as lower performance on labeled data) and base-rate change (prevalence of fraud shifts)."
+          "text": "Distinguishes covariate shift (input distribution changes, detectable without labels by comparing feature distributions), concept drift (the input-output relationship changes, seen as lower performance on labeled data) and base-rate change (prevalence of fraud shifts, detected from the rate of labeled fraud, the alert rate or the score prevalence over time)."
         },
         {
           "point": 3,
-          "text": "Proposes monitoring of input distributions, score distributions, alert volume and performance over time, by segment, with thresholds that trigger an investigation."
+          "text": "Proposes an operational monitoring plan: tracking by segment, with thresholds that trigger an investigation, and an owner or review schedule."
         },
         {
           "point": 4,
@@ -1677,7 +1677,7 @@
         },
         {
           "point": 5,
-          "text": "Gives plausible-but-wrong entries or missing populations, found by tracing sampled records to their source, comparing with an independent source and running checks per group, and records which checks were and were not run."
+          "text": "Gives plausible-but-wrong entries or missing populations, found by tracing sampled records to their source, comparing with an independent source and running checks per group."
         }
       ]
     },
@@ -1689,7 +1689,7 @@
       "group": "chapter",
       "section": null,
       "source": "Hidden assumptions that hide in plain sight",
-      "prompt": "A lender wants to train a default-prediction model. Repayment outcomes exist only for applicants who were approved under an old scoring rule, but the new model will score every applicant. Explain what is wrong with training and evaluating on the approved applicants alone, and describe at least three ways the lender could reduce the problem, including what each one assumes or costs.",
+      "prompt": "A lender wants to train a default-prediction model. Repayment outcomes exist only for applicants who were approved under an old scoring rule, but the new model will score every applicant. Explain what is wrong with training and evaluating on the approved applicants alone, and describe at least three ways the lender could reduce the problem, including what each one assumes or costs, and say what you would claim about the model and what you would monitor after launch.",
       "rubric": [
         {
           "point": 1,
@@ -1697,11 +1697,11 @@
         },
         {
           "point": 2,
-          "text": "Explains that evaluation on approved loans overstates reliability for the full applicant pool because the rejected region is untested and any extrapolation is an assumption."
+          "text": "Explains that evaluation on approved loans says nothing reliable about the rejected region, where the model is extrapolating, so reported accuracy cannot be assumed to hold for the full applicant pool."
         },
         {
           "point": 3,
-          "text": "Notes that the missing outcomes depend on the old score, so there is no data in the rejected range to adjust from, and statistical adjustment relies on extrapolation."
+          "text": "Notes that the selection is known and observable (the old score), so within the approved range reweighting or modeling on that score can correct for it, but if approval followed a fixed cutoff there are no approved applicants in the rejected region to reweight toward, so statistical adjustment alone cannot recover outcomes that were never observed."
         },
         {
           "point": 4,
@@ -1725,7 +1725,7 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Asks what produced the column: a raw measurement or the output of a model or formula, who built it, from which inputs, parameters, version and date, and whether it can be reproduced."
+          "text": "Asks what produced the column: a raw measurement or the output of a model or formula, who built it, from which inputs, parameters and version."
         },
         {
           "point": 2,
@@ -1733,7 +1733,7 @@
         },
         {
           "point": 3,
-          "text": "Asks about stability and ownership: whether upstream owners can recompute or change it, how its assumptions could drift, and what happens to the model if it changes silently."
+          "text": "Asks about future change: who owns the upstream computation and whether it can be changed without notice, how its assumptions could drift, and what happens to the model if it changes silently."
         },
         {
           "point": 4,
@@ -1741,7 +1741,7 @@
         },
         {
           "point": 5,
-          "text": "Explains that a datasheet records motivation, composition, collection, preprocessing, uses and maintenance, so the next team can see what was assumed, while not guaranteeing correctness."
+          "text": "Explains that a datasheet records how the data were produced, processed and meant to be used (for example motivation, composition, collection, preprocessing, uses and maintenance), so the next team can see what was assumed."
         }
       ]
     },
@@ -1761,11 +1761,11 @@
         },
         {
           "point": 2,
-          "text": "Names the selection gap: completers are a filtered subset, abandoners may differ in features and outcomes, so performance on them is untested and could be worse, in an unknown direction."
+          "text": "Names the selection gap: completers are a filtered subset, abandoners may differ in features and outcomes, so performance on them is untested and could differ, possibly for the worse."
         },
         {
           "point": 3,
-          "text": "Asks for the size of the abandoned segment in deployment, the share of decisions it affects and the cost of errors there, so the risk is sized instead of assumed."
+          "text": "Sizes, or asks for, the abandoned segment's share of deployment decisions and the cost of errors there, so the risk is sized instead of assumed."
         },
         {
           "point": 4,
@@ -1773,7 +1773,7 @@
         },
         {
           "point": 5,
-          "text": "States what was and was not checked (types, missingness, ranges and outliers done; coverage of the deployment population and label validity not) and gives a conditional recommendation, not a bare yes or no."
+          "text": "Lists what was not checked (coverage of the deployment population, label validity) and gives a conditional recommendation, not a bare yes or no."
         }
       ]
     },
@@ -1789,19 +1789,19 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Places mechanical, checkable computations (row counts, type and range checks, missingness tables, histograms, outlier flags, duplicate counts) in the delegate category, because errors show in the output and rerunning is cheap."
+          "text": "Places mechanical, checkable computations (row counts, type and range checks, missingness tables, histograms, outlier flags, duplicate counts) in the light-checking category, because errors show in the output and rerunning is cheap; a different placement defended by how errors would show up also earns credit."
         },
         {
           "point": 2,
-          "text": "Places interpretations (why values are missing, whether a distribution is normal for the domain, suggested imputation, explanations of anomalies) in the verify category, since they read plausibly but depend on collection context that must be confirmed with data owners or tests."
+          "text": "Places interpretations (why values are missing, whether a distribution is normal for the domain, suggested imputation, explanations of anomalies, drafts of documentation) in the verify category, since they read plausibly but depend on collection context that must be confirmed with data owners or tests; a different defended placement also earns credit."
         },
         {
           "point": 3,
-          "text": "Keeps with a human the decisions about what the dataset is supposed to represent, what the expected counts are, which populations matter and what risk is acceptable, which depend on purpose and stakes and not on computation."
+          "text": "Keeps with a human the decisions about what the dataset is supposed to represent, what the expected counts are, which populations matter and what risk is acceptable, which depend on purpose and stakes and not on computation; a different defended placement also earns credit."
         },
         {
           "point": 4,
-          "text": "Notes that fluent documentation can look complete without containing information the human did not supply, so style is not evidence and conclusions need independent checks."
+          "text": "Notes that fluent documentation can look complete without containing information the human did not supply, so style is not evidence of correctness."
         },
         {
           "point": 5,
@@ -1837,7 +1837,7 @@
         },
         {
           "point": 5,
-          "text": "Explains that color intensity is decoded less accurately than position along a common scale, so small differences are hard to judge; uses a scatter plot, a sorted bar or dot chart, or the printed values instead."
+          "text": "Explains that color intensity is decoded less accurately than position along a common scale, so small differences are hard to judge, and that a heatmap shows no sample size or confidence interval, so whether 0.43 differs from 0.51 depends on n; uses printed values with confidence intervals, or a dot chart with error bars, instead."
         }
       ]
     },
@@ -1869,7 +1869,7 @@
         },
         {
           "point": 5,
-          "text": "Names a limit of the linear account, such as that it does not explain why some models trained on the same data are more vulnerable than others, why perturbations transfer between models, or the role of data structure and low-variance directions."
+          "text": "Names a limit of the linear account, such as that it does not explain why some models trained on the same data are more vulnerable than others, the role of data structure and low-variance directions, or why robustness trades against clean accuracy."
         }
       ]
     },
@@ -1889,7 +1889,7 @@
         },
         {
           "point": 2,
-          "text": "Requires the attacker's knowledge and capability (white-box, query-only, transfer) and the attack's strength and adaptivity (steps, restarts, awareness of any defense), since weak attacks yield optimistic numbers and a measured robust accuracy is only an upper bound on worst-case accuracy."
+          "text": "Requires the attacker's knowledge and capability (white-box, query-only, transfer) and the attack's strength and adaptivity (steps, restarts, awareness of any defense), since weak attacks yield optimistic numbers."
         },
         {
           "point": 3,
@@ -1961,7 +1961,7 @@
         },
         {
           "point": 4,
-          "text": "Names practical limits of certificates, such as many noise samples per prediction and a probabilistic guarantee for randomized smoothing, clean-accuracy loss at large noise levels, shrinking radii in high dimensions, and verification that scales poorly to large models or open-ended specifications."
+          "text": "Names practical limits of certificates, such as many noise samples per prediction and a probabilistic guarantee for randomized smoothing, clean-accuracy loss at large noise levels, and verification that scales poorly to large models or open-ended specifications."
         },
         {
           "point": 5,
@@ -1981,7 +1981,7 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Explains shortcut learning: a feature that predicts the label in the training collection without being related to the disease (a hospital marker or scanner trait) is used by any model that minimizes training loss, and a random held-out split from the same sources has the same correlation, so it does not expose the shortcut."
+          "text": "Explains shortcut learning: a feature that predicts the label in the training collection without being related to the disease (a hospital marker or scanner trait) is available to, and often exploited by, models that minimize training loss, and a random held-out split from the same sources has the same correlation, so it does not expose the shortcut."
         },
         {
           "point": 2,
@@ -2009,7 +2009,7 @@
       "group": "chapter",
       "section": null,
       "source": "Distribution shift",
-      "prompt": "Define covariate shift, label (prior) shift and concept shift. For each, give a concrete example, say how you would detect it in a deployed model, how you would evaluate or correct performance under it, and what could go wrong with your approach.",
+      "prompt": "Define covariate shift, label (prior) shift and concept shift. For each, give a concrete example, say how you would detect it in a deployed model, and say how you would evaluate or correct performance under it. Then say what could go wrong with these approaches.",
       "rubric": [
         {
           "point": 1,
@@ -2125,7 +2125,7 @@
         },
         {
           "point": 5,
-          "text": "States limits: group labels are needed at evaluation (and sometimes training), gains for one group may cost average accuracy, overlapping groups multiply and cannot all be enumerated, a small group's score can partly be noise, and improving known groups does not cover unknown ones."
+          "text": "States limits: group labels are needed at evaluation (and sometimes training), gains for one group may cost average accuracy, overlapping groups multiply and cannot all be enumerated, and improving known groups does not cover unknown ones."
         }
       ]
     },
@@ -2149,7 +2149,7 @@
         },
         {
           "point": 3,
-          "text": "Gives the high-dimensional argument: for a linear score the worst-case direction aligns with the weights and shifts the score by about ε‖w‖₁ (L∞) or r‖w‖₂ (L2), whereas a random direction of the same L2 length shifts it by about r‖w‖₂/√d, roughly √d times less."
+          "text": "Gives the high-dimensional argument: for a linear score the worst-case direction aligns with the weights, so at a given L2 length r it shifts the score by about r‖w‖₂ whereas a random direction of the same length shifts it by about r‖w‖₂/√d, roughly √d times less (an L∞ budget ε gives a worst-case shift of ε‖w‖₁, larger than the shift from a random direction of the same L2 length by a factor ‖w‖₁/‖w‖₂, which is at most √d)."
         },
         {
           "point": 4,
@@ -2177,11 +2177,11 @@
         },
         {
           "point": 2,
-          "text": "Describes invariance tests that apply label-preserving edits (typos, case, whitespace, paraphrase, neutral name or identity-term swaps) and expect unchanged output, notes that failures expose dependence on surface cues, and notes that each edit must be checked to preserve the label."
+          "text": "Describes invariance tests that apply label-preserving edits (typos, case, whitespace, paraphrase, neutral name or identity-term swaps) and expect unchanged output, notes that failures expose dependence on surface cues, and notes that each edit must be checked to preserve the label (name or identity-term swaps may be filed here or as counterfactual tests, provided the expected behavior, unchanged or flipped, is stated)."
         },
         {
           "point": 3,
-          "text": "Describes counterfactual or minimal-pair tests where a small edit should flip the label in a specified direction (adding negation, removing an insult), which reveals reliance on keywords rather than meaning."
+          "text": "Describes counterfactual or minimal-pair tests where a small edit should change the output in a specified direction (adding negation, removing an insult; identity-term swaps also count here when the expected behavior is stated), which reveals reliance on keywords rather than meaning."
         },
         {
           "point": 4,
@@ -2189,7 +2189,7 @@
         },
         {
           "point": 5,
-          "text": "Describes statistical hygiene: many slices produce chance extremes, so slices should be predefined from a risk analysis, searched-for slices should be treated as hypotheses to confirm on fresh data, and the model should not be tuned on the stress suite and then evaluated on it as clean evidence."
+          "text": "Describes statistical hygiene: many slices produce chance extremes, so slices found by searching should be treated as hypotheses to confirm on fresh data, and the model should not be tuned on the stress suite and then evaluated on it as clean evidence."
         }
       ]
     },
@@ -2245,11 +2245,11 @@
         },
         {
           "point": 3,
-          "text": "Distinguishes features that cause repayment from proxies that merely correlate with it: cheap, non-causal proxies can be gamed so the score rises while risk does not, whereas causal features are costly to fake and improving them lowers real risk."
+          "text": "Distinguishes features that cause repayment from proxies that merely correlate with it: cheap, non-causal proxies can be gamed so the score rises while risk does not, whereas genuinely improving a causal feature (for example paying down balances) lowers real risk, though misreporting a causal feature remains possible unless it is verified."
         },
         {
           "point": 4,
-          "text": "Proposes design changes such as favoring verified and causally relevant features, removing or down-weighting cheap proxies, monotonicity constraints, input verification and periodic retraining."
+          "text": "Proposes design changes such as favoring verified and causally relevant features, removing or down-weighting cheap proxies, monotonicity constraints and input verification."
         },
         {
           "point": 5,
@@ -2265,11 +2265,11 @@
       "group": "chapter",
       "section": null,
       "source": "Prompt sensitivity — the LLM-specific version of this problem",
-      "prompt": "A company uses a language model with a fixed instruction to label customer emails as urgent or not urgent. Design an evaluation of the labeler's robustness to wording and formatting changes, including how you would handle randomness in the outputs and how you would report results. Then explain how an adversarial email differs from a merely differently worded one.",
+      "prompt": "A company uses a language model with a fixed instruction to label customer emails as urgent or not urgent. Design an evaluation of the labeler's robustness to wording and formatting changes (in the instruction, in the emails, or both), including how you would handle randomness in the outputs and how you would report results. Then explain how an adversarial email differs from a merely differently worded one.",
       "rubric": [
         {
           "point": 1,
-          "text": "Builds a set of meaning-preserving variants of the instruction and of the inputs (paraphrase, synonyms, formatting, whitespace, ordering, politeness), checked by reviewers to preserve the correct label."
+          "text": "Builds a set of meaning-preserving variants of the instruction and/or the inputs (paraphrase, synonyms, formatting, whitespace, ordering, politeness), checked by reviewers to preserve the correct label."
         },
         {
           "point": 2,
@@ -2317,7 +2317,7 @@
         },
         {
           "point": 5,
-          "text": "States the claim that could be supported: robust accuracy at most the lowest value across attacks (35% so far), stated with the attack suite and residual risks, with any stronger claim requiring certification or verification."
+          "text": "States the claim that could be supported: robust accuracy is bounded by the lowest value found across a listed attack suite, reported with that suite and the residual risks, with any stronger claim requiring certification or verification."
         }
       ]
     },
@@ -2345,7 +2345,7 @@
         },
         {
           "point": 4,
-          "text": "Commits to a choice for each setting that follows from the stated threat model (typically the robust model or a layered defense for (a) and the standard model with natural-shift testing for (b)), and notes that in (a) adversaries adapt so static robustness decays, calling for retraining on new evasions, monitoring or human review."
+          "text": "Commits to a choice for each setting that follows from the stated threat model (for (a), either the robust model or the standard model with frequent retraining on new evasions can be defended if the adaptive-attacker issue is addressed; for (b), typically the standard model with natural-shift testing), and notes that in (a) adversaries adapt so static robustness decays, calling for retraining on new evasions, monitoring or human review."
         },
         {
           "point": 5,
@@ -2457,7 +2457,7 @@
       "group": "chapter",
       "section": null,
       "source": "The correlated feature problem",
-      "prompt": "Two teams train models for the same lending task on the same data. Team 1 uses a gradient-boosted tree model and team 2 a regularized logistic regression. Both reach a test AUC of 0.86 (the difference is within sampling noise) and the two models make the same decision for 94% of applicants. Team 1's Shapley-based ranking puts total_debt first; team 2's ranking puts monthly_payments first. The two inputs have a correlation of 0.9. A manager asks which ranking identifies \"the true driver\" of lending outcomes and wants to publish one. Explain why both rankings can be accurate descriptions of their models while neither identifies a true driver, what you would do to produce a more defensible statement about importance, and what the report should say.",
+      "prompt": "Two teams train models for the same lending task on the same data. Team 1 uses a gradient-boosted tree model and team 2 a regularized logistic regression. Both reach a test AUC of 0.86 (the difference is within sampling noise) and the two models make the same decision for 94% of applicants. Team 1's Shapley-based ranking puts total_debt first; team 2's ranking puts monthly_payments first. The two inputs have a correlation of 0.9. A manager asks which ranking identifies \"the true driver\" of whether applicants repay and wants to publish one. Explain why both rankings can be accurate descriptions of their models while neither identifies a true driver, what you would do to produce a more defensible statement about importance, and what the report should say.",
       "rubric": [
         {
           "point": 1,
@@ -2477,7 +2477,7 @@
         },
         {
           "point": 5,
-          "text": "Says what to report: that the ranking is not unique, which model each ranking describes, how stable it was, and the group-level finding, rather than a single \"true driver\"."
+          "text": "Says what to report: that the ranking is not unique, which model each ranking describes, and how stable it was across seeds, resamples and model classes, rather than a single \"true driver\"."
         }
       ]
     },
@@ -2489,7 +2489,7 @@
       "group": "chapter",
       "section": null,
       "source": "Counterfactuals are closer to what you actually want",
-      "prompt": "A lender must tell denied applicants what they could do to be approved. A data scientist proposes to return, for each denied applicant, the closest approved input found by an optimizer (Euclidean distance on standardized features) and to tell the applicant to change to those values. Critique this proposal. Identify at least four distinct ways the returned counterfactual can be useless or harmful as advice, and propose a design change for each.",
+      "prompt": "A lender must tell denied applicants what they could do to be approved. A data scientist proposes to return, for each denied applicant, the closest approved input found by an optimizer (Euclidean distance on standardized features) and to tell the applicant to change to those values. Critique this proposal. Identify five distinct ways the returned counterfactual can be useless or harmful as advice, and propose a design change for each.",
       "rubric": [
         {
           "point": 1,
@@ -2557,7 +2557,7 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Distinguishes a rationale that reads plausibly from a faithful account of the factors that produced the output, noting that the reasoning is itself generated text and not a readout of the model's computation."
+          "text": "Distinguishes a rationale that reads plausibly from a faithful account of the factors that produced the output, noting that the reasoning is itself generated text that may or may not reflect the factors that produced the output."
         },
         {
           "point": 2,
@@ -2569,11 +2569,11 @@
         },
         {
           "point": 4,
-          "text": "States what auditors can use the reasoning for (finding errors, checking cited rules against sources, making steps reviewable) and what they cannot conclude (that it lists all influences or shows the absence of bias)."
+          "text": "States what auditors can use the reasoning for (finding errors, making steps reviewable) and what they cannot conclude (that it lists all influences or shows the absence of bias)."
         },
         {
           "point": 5,
-          "text": "Recommends verifying the claims in the reasoning against source documents and outcome data, and not treating the text as evidence of what caused the decision."
+          "text": "Recommends verifying the claims in the reasoning against source documents, and measuring coding accuracy against expert-coded outcomes on a sample, rather than treating the text as evidence of what caused the decision."
         }
       ]
     },
@@ -2605,7 +2605,7 @@
         },
         {
           "point": 5,
-          "text": "States what would change the decision: a larger operational gap, evidence that the simple rule fails in subgroups, legal requirements for reasons, or the results of a stability analysis of the explanations."
+          "text": "States what would change the decision: evidence that the simple rule fails in subgroups, a legal requirement for reasons, or a stability analysis showing the explanations are unreliable."
         }
       ]
     },
@@ -2625,7 +2625,7 @@
         },
         {
           "point": 2,
-          "text": "Names sources of variation: random sampling of perturbed points, the number of samples, the neighborhood width or kernel, feature discretization, and regularization of the surrogate, while the classifier itself is deterministic."
+          "text": "Names sources of variation other than the random draw itself: the number of samples, the neighborhood width or kernel, feature discretization, or regularization of the surrogate (any two), while the classifier itself is deterministic."
         },
         {
           "point": 3,
@@ -2665,7 +2665,7 @@
         },
         {
           "point": 4,
-          "text": "Proposes a protocol: held-out data, repeated runs or bootstrap for variability, a random noise column as a null benchmark, grouping of correlated inputs, reporting more than one measure with their disagreements, and documenting the model, reference and settings."
+          "text": "Proposes a protocol: held-out data, repeated runs or bootstrap for variability, a random noise column as a null benchmark, reporting more than one measure with their disagreements, and documenting the model, reference and settings."
         },
         {
           "point": 5,
@@ -2701,7 +2701,7 @@
         },
         {
           "point": 5,
-          "text": "Notes that the list may be approximate or unstable, can omit interactions and correlated inputs, and recommends adding counterfactuals, documentation of the method and a route to human review."
+          "text": "Notes that the list may be approximate or unstable and can omit interactions and correlated inputs, and recommends documentation of the method and a route to human review."
         }
       ]
     },
@@ -2729,11 +2729,11 @@
         },
         {
           "point": 4,
-          "text": "Explains that A and B together add 10 beyond their separate effects (10 and 5, against a joint gain of 25) and that the Shapley value splits that synergy equally, 5 to each."
+          "text": "Explains that A and B interact, since their joint effect exceeds the sum of their separate effects, and that the Shapley value splits that interaction credit equally between them (5 each, so A = 10 + 5 and B = 5 + 5)."
         },
         {
           "point": 5,
-          "text": "Explains that the one-at-a-time effects (10, 5 and 0) sum to 15 and miss the synergy, and that an attribution based on a single ordering would give A and B different shares depending on which is added first."
+          "text": "Explains that the one-at-a-time effects (10, 5 and 0) sum to 15, not the 25 to be explained, so they do not add up to the total and leave the interaction unallocated."
         }
       ]
     },
@@ -2765,7 +2765,7 @@
         },
         {
           "point": 5,
-          "text": "States decision criteria in advance: do not deploy if explanations raise following of wrong advice or fail to improve accuracy beyond the score alone, since confidence without accuracy is unwarranted trust."
+          "text": "States decision criteria in advance, such as not deploying if explanations increase following of wrong advice, or give no benefit in accuracy or calibration that justifies their cost."
         }
       ]
     },
@@ -2785,7 +2785,7 @@
         },
         {
           "point": 2,
-          "text": "Notes that perturbation-based explainers query unrealistic points and that a deployed system can be built to behave differently on them, so the reports can be made to look clean."
+          "text": "Notes that clean-looking reports can be engineered deliberately: perturbation-based explainers query the model on unrealistic perturbed points, and a system can be built to recognize such queries and behave differently on them, so the reports do not show that the deployed model is clean."
         },
         {
           "point": 3,
@@ -2797,7 +2797,7 @@
         },
         {
           "point": 5,
-          "text": "Proposes independent replication with the auditor's own explainers and settings, access to the model and its logs, and comparison of the explanations with measured behavior."
+          "text": "Proposes independent replication, with the auditor running its own explainers, reference sets and settings on the deployed model."
         }
       ]
     },
@@ -2825,11 +2825,11 @@
         },
         {
           "point": 4,
-          "text": "Gives examples where all four properties hold and the output still misleads: credit split between duplicate inputs, interaction credit divided equally, attributions that do not predict the effect of changing an input, and approximations used when exact computation is infeasible."
+          "text": "Gives at least one example where all four properties hold and the result still misleads, such as credit split equally between duplicate inputs or interaction credit divided equally between interacting inputs."
         },
         {
           "point": 5,
-          "text": "Concludes that \"uniquely correct\" overreaches: the accurate claim is that it uniquely satisfies these properties for a stated value function, and that usefulness must be judged against the purpose and audience."
+          "text": "Says what \"correct\" hides: that satisfying a set of axioms does not make a method correct for every purpose, so \"uniquely correct\" overreaches and usefulness must be judged against the purpose and audience."
         }
       ]
     },
@@ -2853,7 +2853,7 @@
         },
         {
           "point": 3,
-          "text": "Covers measurement, labels and features: proxies for group (postcode, school, gaps in employment) or measurement that is noisier or more biased for some groups; a check predicts group from the features or ablates a suspect feature and watches the gap."
+          "text": "Covers features and measurement: proxies for group (postcode, school, gaps in employment) or measurement that is noisier or more biased for some groups; a check predicts group from the features or ablates a suspect feature and watches the gap."
         },
         {
           "point": 4,
@@ -2881,7 +2881,7 @@
         },
         {
           "point": 2,
-          "text": "Explains that a model learns whatever predicts its training labels, so if the labels reflect past disparities by gender the model can reproduce them through correlated inputs."
+          "text": "Explains that a model learns whatever predicts its training labels, so if the labels themselves record past disparities by gender, a model that fits them well can reproduce those disparities whichever inputs remain."
         },
         {
           "point": 3,
@@ -2957,7 +2957,7 @@
         },
         {
           "point": 5,
-          "text": "Names the information needed (why applicants chose different products, applicant risk within products, who set the mix) and concludes that the data alone support a description and a conditional claim, not a verdict on bias."
+          "text": "Names the information needed (why applicants chose different products, applicant risk within products) and concludes that the data alone support a description and a conditional claim, not a verdict on bias."
         }
       ]
     },
@@ -3013,11 +3013,11 @@
         },
         {
           "point": 3,
-          "text": "Describes a diagnostic: compare promotion rates by group among employees with similar independently measured performance, and look at variation across decision-makers or periods."
+          "text": "Describes a check on the label itself: compare promotion rates by group among employees with similar independently measured performance (not performance as rated by the same promoters), and look at variation across decision-makers and periods."
         },
         {
           "point": 4,
-          "text": "Describes options with their limits (a less biased outcome measure, down-weighting earlier periods, constraints that reduce reliance on group-correlated signals), each trading fit to the past against fairness, and says how much to trade is a value judgement."
+          "text": "Describes options with their limits (a less biased outcome measure, relabelling or reweighing, constraints that reduce reliance on group-correlated signals), each trading fit to the past against fairness, and says how much to trade is a value judgement."
         },
         {
           "point": 5,
@@ -3049,7 +3049,7 @@
         },
         {
           "point": 4,
-          "text": "Describes a second approach such as reject inference, bounds or sensitivity analysis, or using natural variation in decision-makers' leniency, and states that these rely on assumptions (for example no unmeasured confounding) that cannot be verified from the data."
+          "text": "Describes a second approach such as reject inference, bounds or sensitivity analysis, or using natural variation in decision-makers' leniency, and states its cost: reject inference and leniency designs rely on assumptions (for example no unmeasured confounding) that cannot be verified from the data, while bounds give wide intervals and sensitivity analysis depends on assumed strengths of confounding."
         },
         {
           "point": 5,
@@ -3073,7 +3073,7 @@
         },
         {
           "point": 2,
-          "text": "Explains the outcome: the initial imbalance is self-confirming, equal true rates still produce records that show the heavily inspected area as worse, and an allocation rule that rewards the leader more than proportionally makes the gap grow."
+          "text": "Explains the outcome: although the true rates are equal, the recorded imbalance persists (if inspectors are allocated in proportion to past records) or widens (if the allocation favours the leader more than proportionally), so the heavily inspected area keeps looking worse."
         },
         {
           "point": 3,
@@ -3113,7 +3113,7 @@
         },
         {
           "point": 4,
-          "text": "Identifies when none work: when the disparity comes from a biased label, from measurement of differing quality across groups, or from the downstream process (reviewers, cutoffs, feedback), because these methods operate on the model's fit to the labels and the metrics."
+          "text": "Identifies when none work well: when the labels are inaccurate for individuals (aggregate adjustment cannot repair individual errors), when measurement quality differs across groups, or when the gap arises in the downstream process (reviewers, cutoffs, feedback), because these methods act on the model's fit to the labels and the chosen metrics, not on the process that produced the gap."
         },
         {
           "point": 5,
@@ -3137,11 +3137,11 @@
         },
         {
           "point": 2,
-          "text": "Describes a datasheet for the dataset: how and why the data were collected, who is and is not represented, how and by whom labels were produced, known gaps and recommended uses."
+          "text": "Describes dataset documentation (for example a datasheet) covering how and why the data were collected, who is and is not represented, how and by whom labels were produced, known gaps and recommended uses; equivalent documents are accepted."
         },
         {
           "point": 3,
-          "text": "Describes a model card for the model: intended and out-of-scope uses, the evaluation data, performance broken down by subgroup with uncertainty, and known limitations."
+          "text": "Describes model documentation (for example a model card) covering intended and out-of-scope uses, the evaluation data, performance broken down by subgroup with uncertainty, and known limitations; equivalent documents are accepted."
         },
         {
           "point": 4,
@@ -3245,7 +3245,7 @@
         },
         {
           "point": 5,
-          "text": "Describes remedies and their limits: recalibrate or replace the device, apply a validated correction to the readings, or use group-aware cutoffs, all of which need gold-standard data and a named owner of the instrument."
+          "text": "Describes remedies and their limits: recalibrate or replace the device, apply a validated correction to the readings, or use group-aware cutoffs, noting that correction and recalibration need gold-standard comparison data."
         }
       ]
     },
@@ -3257,7 +3257,7 @@
       "group": "chapter",
       "section": null,
       "source": "Pearl's Ladder — Rungs 1 and 2",
-      "prompt": "A company's salary-recommendation model predicts salaries for women that are on average 8% lower than for men. When job level is added as a control, the gap shrinks to 2%. Job level was assigned by promotion decisions made before the model was built. Explain what each figure answers, whether controlling for job level is appropriate, what a \"change only the group and hold everything else fixed\" test can and cannot show, and what you would conclude.",
+      "prompt": "A company's salary-recommendation model predicts salaries for women that are on average 8% lower than for men. When an audit compares predictions among employees at the same job level, the gap shrinks to 2%. Job level was assigned by promotion decisions made before the model was built. Explain what each figure answers, whether adjusting for job level is appropriate, what a \"change only the group and hold everything else fixed\" test can and cannot show, and what you would conclude.",
       "rubric": [
         {
           "point": 1,
@@ -3265,11 +3265,11 @@
         },
         {
           "point": 2,
-          "text": "Explains that job level may be a mediator: if earlier promotion decisions were influenced by group, controlling for it removes the part of the gap that flows through those decisions and can understate disadvantage, whereas if level is an independent and legitimate reflection of qualifications the 2% is the more relevant figure."
+          "text": "Explains that job level may be a mediator: if earlier promotion decisions were influenced by group, comparing within level removes the part of the gap that flows through those decisions and can understate disadvantage."
         },
         {
           "point": 3,
-          "text": "States that which paths are acceptable is settled by causal assumptions and a normative judgement, not by the data alone."
+          "text": "States that whether job level is a legitimate reason for pay differences (so the 2% is the relevant figure) or a channel of the disparity (so the 8% matters) is settled by causal assumptions and a normative judgement, not by the data alone."
         },
         {
           "point": 4,
@@ -3309,7 +3309,7 @@
         },
         {
           "point": 5,
-          "text": "Says the company should pin the model version, re-run the audit when the provider changes the model, and keep records of tests and decisions so the assignment of responsibility can be checked later."
+          "text": "Says the company should pin the model version where the provider offers that, re-run the audit when the provider changes the model, and keep records of tests and decisions so the assignment of responsibility can be checked later."
         }
       ]
     },
@@ -3337,7 +3337,7 @@
         },
         {
           "point": 4,
-          "text": "States the reverse: requiring equal precision with unequal base rates forces TPR/FPR to differ across groups, so TPR and FPR cannot both be equal, and this is arithmetic about population rates rather than a defect of any algorithm."
+          "text": "States that this is arithmetic about population rates, not a defect of any algorithm or of the data, so more data or a better learner does not remove it; the conflict is over which criterion to prefer."
         },
         {
           "point": 5,
@@ -3385,7 +3385,7 @@
       "group": "chapter",
       "section": null,
       "source": "The COMPAS case — the theorem in public",
-      "prompt": "An independent analyst reports that a risk tool's false-positive rate is 45% for group X and 20% for group Y. The vendor answers that the tool is equally well calibrated for both groups: among people given any particular risk score, the proportion who experience the outcome is the same in X and Y. The base rate of the outcome is higher in group X. Both statements are accurate. (a) Explain how both can be true. (b) Say what kind of disagreement this is and what would and would not resolve it. (c) Say what information you would give the body that must decide whether to keep using the tool.",
+      "prompt": "An independent analyst reports that a risk tool's false-positive rate is 45% for group X and 20% for group Y. The vendor answers that the tool is equally well calibrated for both groups: among people given any particular risk score, the proportion who experience the outcome is the same in X and Y. The base rate of the outcome is higher in group X. Both statements are accurate. (a) Explain how both can be true. (b) Say what kind of disagreement this is and what would and would not resolve it. (c) Say what information you would give the body that must decide whether to keep using the tool, who should make and record that decision, and what should be monitored afterwards.",
       "rubric": [
         {
           "point": 1,
@@ -3433,7 +3433,7 @@
         },
         {
           "point": 4,
-          "text": "Notes that the metric embeds a judgment about relevant differences and can build in historical inequity, for example if it counts as meaningful a difference that reflects past disadvantage, so it needs accountable review rather than a default."
+          "text": "States what each metric assumes: ignoring postal code assumes location is irrelevant to the task (or only a proxy for something that should not count), counting it assumes location carries task-relevant information; either is a value judgment and can build in historical inequity, so it needs accountable review rather than a default."
         },
         {
           "point": 5,
@@ -3457,7 +3457,7 @@
         },
         {
           "point": 2,
-          "text": "States that omitting the attribute blocks only direct use, not indirect effects, and is not a guarantee about selection rates, error rates or calibration by group; in frameworks that recognize disparate impact a facially neutral practice can still be challenged."
+          "text": "States that fairness is judged by outcomes rather than by which inputs were used: in frameworks that recognize disparate impact a facially neutral practice can still be challenged, so \"never sees gender\" is not a defense."
         },
         {
           "point": 3,
@@ -3465,7 +3465,7 @@
         },
         {
           "point": 4,
-          "text": "Notes that deleting the attribute from all data removes the ability to audit, and that in some settings using the attribute can improve accuracy or error balance for a group when the feature-outcome relationship differs by group."
+          "text": "Names a second route to gender-disparate outcomes besides proxies: training labels that record past hiring decisions or ratings can carry earlier bias, and unequal representation or data quality across groups can make the model's errors fall unevenly, neither of which depends on the model seeing gender."
         },
         {
           "point": 5,
@@ -3493,7 +3493,7 @@
         },
         {
           "point": 3,
-          "text": "Explains that group T's score is less informative (its trade-off curve lies below S's), so no pair of cutoffs equalizes both rates, and exact equalized odds would require degrading S's decisions, for example by randomizing, at a cost in accuracy."
+          "text": "Explains that among the tabulated cutoffs no pair equalizes both rates because group T's score is less informative (at a false-positive rate of 0.20, T's true-positive rate is 0.55 versus S's 0.70), so exact equality would require degrading S's decisions in some way (for example by randomizing some of them) at a cost in accuracy."
         },
         {
           "point": 4,
@@ -3517,11 +3517,11 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Identifies when a real tradeoff arises: for demographic parity when base rates differ and labels are accurate, a perfect predictor violates parity so meeting it forces errors; for equalized odds when scores are differently informative across groups, equalizing means degrading one group's decisions."
+          "text": "Identifies when a real tradeoff arises: for demographic parity when base rates differ and labels are accurate, a perfect predictor violates parity so meeting it forces errors; for equalized odds when no perfect classifier exists and the available scores are less informative for one group, equalizing means degrading that group's decisions."
         },
         {
           "point": 2,
-          "text": "Shows the cost is not universal: with equal base rates or for criteria a perfect classifier meets (such as equalized odds), no loss is forced, and when labels are noisy or biased against a group, accuracy measured on those labels is itself distorted."
+          "text": "Shows the cost is not universal: with equal base rates, or for criteria that a perfect classifier meets (such as equalized odds) when such a classifier is possible, no loss is forced, and when labels are noisy or biased against a group, accuracy measured on those labels is itself distorted."
         },
         {
           "point": 3,
@@ -3553,11 +3553,11 @@
         },
         {
           "point": 2,
-          "text": "States what is given up and why: demographic parity will not hold because base rates differ, and precision will differ across groups, since with differing base rates precision parity cannot coexist with equal error rates."
+          "text": "States what is given up and why: if error rates are equalized, flag rates follow the base rates (for example about 0.31 versus 0.205 at a true-positive rate of 0.8 and a false-positive rate of 0.1), so demographic parity and precision parity are given up; equalizing flag rates instead would mean flagging more non-high-need patients in group Y."
         },
         {
           "point": 3,
-          "text": "Addresses the base-rate difference and label validity: because access disparities shape who appears high-need in records, checks that the recorded outcome measures need rather than past utilization, and treats any redress of the disparity as a policy question about allocation."
+          "text": "Addresses the base-rate difference: because it partly reflects unequal access to care, whether and how to redress it through allocation is a policy question rather than only a statistical one, and the chosen criterion changes who receives the limited slots."
         },
         {
           "point": 4,
@@ -3597,7 +3597,7 @@
         },
         {
           "point": 5,
-          "text": "Adds that compliance must be monitored on live data with uncertainty and drift in mind, and that meeting a mandated metric does not show that the objective or the construct being predicted is fair."
+          "text": "Adds that measuring compliance is not a one-off: it must be monitored on live data with uncertainty and drift in mind."
         }
       ]
     },
@@ -3653,7 +3653,7 @@
         },
         {
           "point": 3,
-          "text": "Computes a two-proportion test statistic of about 2.9 (pooled rate 270/2150), with a p-value well under 0.01, and says this is evidence that the true rates differ."
+          "text": "Computes a two-proportion z statistic of about 2.4 (unpooled, consistent with the interval; two-sided p about 0.017) or about 2.85 (pooled rate 270/2150; p about 0.004), and says this is evidence that the true rates differ."
         },
         {
           "point": 4,
@@ -3693,7 +3693,7 @@
         },
         {
           "point": 5,
-          "text": "Notes that deciding which causal paths are acceptable is a value judgment the graph does not make, and that counterfactual fairness does not imply group criteria such as equalized odds."
+          "text": "Notes that it also requires deciding which causal paths from the protected attribute count as unfair, a value judgment the causal graph does not make and that group metrics never ask for."
         }
       ]
     },
@@ -3741,11 +3741,11 @@
       "rubric": [
         {
           "point": 1,
-          "text": "Shows demographic parity holds (0.30 in each group) and computes true-positive rates of 0.60 (X) and 1.00 (Y), false-positive rates of 0 (X) and 10/80 = 0.125 (Y), and precisions of 1.00 and 0.67, so equal opportunity, equalized odds and predictive parity fail."
+          "text": "Shows demographic parity holds (0.30 in each group) and computes false-positive rates of 0 (X) and 10/80 = 0.125 (Y) and precisions of 1.00 and 0.67, so equalized odds and predictive parity fail."
         },
         {
           "point": 2,
-          "text": "Computes that a qualified applicant in X is selected with probability 0.60 and in Y with probability 1.00, so equally qualified people face different chances even though group selection rates are equal."
+          "text": "Computes that a qualified applicant is selected with probability 0.60 in X (30/50) and 1.00 in Y (20/20), the true-positive rates, so equal opportunity fails and equally qualified people face different chances even though group selection rates are equal."
         },
         {
           "point": 3,
@@ -3777,7 +3777,7 @@
         },
         {
           "point": 2,
-          "text": "In-processing: a technique that changes the training objective (a fairness penalty or constraint, or adversarial debiasing), which needs retraining and control of the training code, with an accuracy trade-off built in."
+          "text": "In-processing: a technique that changes the training objective (a fairness penalty or constraint, or adversarial debiasing), which needs retraining and control of the training code, with a usual accuracy trade-off."
         },
         {
           "point": 3,

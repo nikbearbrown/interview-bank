@@ -236,7 +236,7 @@ Check each statement that is true. Each statement is worth 1 point (5 points tot
 - [ ] A. With a single cutoff of 0.6, the true-positive rate is 0.70 in G and 0.55 in H.
 - [ ] B. Using cutoff 0.6 for G and 0.5 for H makes both the true-positive rates and the false-positive rates equal across the two groups, so equalized odds holds.
 - [ ] C. Under cutoffs of 0.6 for G and 0.5 for H, an applicant in G and an applicant in H who both score 0.55 receive different decisions.
-- [ ] D. With true-positive rates equalized, the large remaining precision gap is what arithmetic predicts when base rates differ (0.5 versus 0.2).
+- [ ] D. Even if both groups had identical true-positive rates and identical false-positive rates, their base rates (0.5 versus 0.2) would still leave the precision of approvals unequal.
 - [ ] E. Using cutoff 0.6 for G and 0.5 for H makes the precision of approvals about equal in the two groups, since the true-positive rates match.
 
 **Key:** A=T B=F C=T D=T E=F
@@ -246,7 +246,7 @@ Check each statement that is true. Each statement is worth 1 point (5 points tot
 - A: 700/1000 = 0.70 and 220/400 = 0.55.
 - B: True-positive rates are both 0.70, but false-positive rates are 250/1000 = 0.25 for G and 480/1600 = 0.30 for H.
 - C: The G applicant is declined (0.55 < 0.6) and the H applicant is approved (0.55 ≥ 0.5), the individual-level objection to group-specific cutoffs.
-- D: Precision odds equal base-rate odds × TPR/FPR; with similar rates and base rates of 0.5 and 0.2, precision must differ widely.
+- D: Precision odds equal base-rate odds × TPR/FPR, so identical rates with base-rate odds of 1 and 0.25 give unequal precision (for example TPR 0.70 and FPR 0.25 give about 0.74 versus 0.41); in the table the gap is wider (0.74 versus 0.37) partly because H's false-positive rate is also higher.
 - E: Precision is 700/950, about 0.74, for G and 280/760, about 0.37, for H.
 
 **Source:** The toolkit and what it cannot do
@@ -457,7 +457,7 @@ A team has built a loan-approval model by minimizing overall log loss and is now
 - [ ] B. If a regulator requires a specific metric, decisions remain open, such as which groups to compare and what tolerance counts as equal.
 - [ ] C. A tool that computes every fairness metric can identify which metric is correct for the deployment, since the best one scores highest.
 - [ ] D. If the model passes the chosen metric, there is no need to document which other criteria were traded away, since the chosen one was met.
-- [ ] E. Training for overall accuracy makes no decision about how errors are distributed across groups, because the loss function never mentions groups.
+- [ ] E. Because the loss function never mentions groups, minimizing overall log loss has no bearing on how errors are distributed across groups.
 
 **Key:** A=T B=T C=F D=F E=F
 
@@ -467,7 +467,7 @@ A team has built a loan-approval model by minimizing overall log loss and is now
 - B: A named metric fixes the formula but not its application.
 - C: Metrics describe consequences; choosing among them depends on values and on who bears the costs.
 - D: Passing one criterion can mean others fail, and affected parties and reviewers need to know what was given up.
-- E: Whatever the loss rewards determines which errors the model tolerates, and so how error rates fall across groups, whether or not anyone chose it.
+- E: Minimizing an average loss over all examples weights every example equally, which determines which errors the model tolerates and so how error rates fall across groups, whether or not anyone chose it.
 
 **Source:** Who should have decided
 
@@ -545,7 +545,7 @@ Practitioners distinguish pre-processing, in-processing and post-processing meth
 - [ ] B. Group-specific cutoffs applied to a frozen model's scores require the group attribute at decision time.
 - [ ] C. Adversarial debiasing, where a second network tries to predict the group from the model's representation, is an in-processing method.
 - [ ] D. Any of the three families can remove bias built into the recorded labels without further information about how those labels were produced, because they adjust the data or the decisions.
-- [ ] E. Choosing different decision cutoffs per group on a frozen model's scores is a post-processing method.
+- [ ] E. Any method that leaves both the training data and the trained model unchanged and adjusts only the final decisions is a post-processing method.
 
 **Key:** A=T B=T C=T D=F E=T
 
@@ -555,7 +555,7 @@ Practitioners distinguish pre-processing, in-processing and post-processing meth
 - B: The cutoff to apply depends on which group the person is assigned to.
 - C: It alters the training objective rather than the data or the final decisions.
 - D: These methods act on data, objective or decisions; they cannot know that a label is mismeasured unless that is learned some other way.
-- E: It adjusts decisions after the model is trained and leaves the model unchanged.
+- E: Post-processing is defined by acting on the model's outputs after training, with the data and the model itself left as they were.
 
 **Source:** The toolkit and what it cannot do
 

@@ -24,10 +24,10 @@ A city wants to know what share of its residents support a transit levy. The tru
 
 ## MA-ch06.2
 
-A hospital builds a sepsis alert from 10,000 admissions. At triage 2,000 patients are classed unstable (30% develop sepsis) and 8,000 stable (5% develop sepsis), so overall prevalence is 10%. The training data keep only patients who had a lab panel in the first six hours, which happened for 90% of stable and 20% of unstable patients. The triage class is recorded for every patient. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A hospital builds a sepsis alert from 10,000 admissions. At triage 2,000 patients are classed unstable (30% develop sepsis) and 8,000 stable (5% develop sepsis), so overall prevalence is 10%. The training data keep only patients who had a lab panel in the first six hours, which happened for 90% of stable and 20% of unstable patients. The triage class is recorded for every patient. Within each triage class, whether a patient had a lab panel does not depend on whether that patient develops sepsis. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. Weighting each retained patient by 1 divided by the probability of being retained given triage class recovers a prevalence of 10%.
-- [ ] B. The same weighting would still work if retention depended on an unrecorded clinician hunch that is related to sepsis.
+- [ ] B. The same weighting would still work if, instead, retention depended on an unrecorded clinician hunch that is related to sepsis.
 - [ ] C. Collecting ten times as many admissions under the same lab rule would bring the training prevalence close to 10%.
 - [ ] D. The 6.3% training prevalence is the right baseline for calibrating risk scores for all admitted patients.
 - [ ] E. Sepsis prevalence in the training data is about 6.3%, well below the true 10%.
@@ -37,7 +37,7 @@ A hospital builds a sepsis alert from 10,000 admissions. At triage 2,000 patient
 **Why:**
 
 - A: Weights of 1/0.9 and 1/0.2 restore each class to its population size, giving (400 + 600) / (8,000 + 2,000) = 10%.
-- B: Weighting needs a recorded variable that explains who was kept, and an unrecorded hunch gives nothing to weight on.
+- B: Weighting needs a recorded variable that explains who was kept; an unrecorded hunch related to sepsis gives nothing to weight on, so retained patients would stay unrepresentative within each triage class.
 - C: The same retention rule yields the same skewed mix at any volume, so more data reproduces 6.3% with a smaller standard error.
 - D: Deployment sees all admissions, whose true prevalence is 10%, so a baseline taken from the filtered sample is miscalibrated for them.
 - E: The sample has 480 sepsis cases among 7,600 patients, which is 6.3%, because unstable patients are retained at a much lower rate.
@@ -247,7 +247,7 @@ A face-attribute classifier is tested on 2,000 images, with 500 images in each c
 Two neighbourhoods, X and Y, each have 10,000 residents, and in each of them 10% commit an offence in a given year. Police patrol X heavily, so 60% of offences there lead to an arrest; in Y only 30% do. A team trains a model to predict "arrested in the next year" from past records. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. Recorded arrest rates are 6% in X and 3% in Y even though offending rates are equal.
-- [ ] B. A model that is calibrated to the arrest label will, on average, score residents of X about twice as high as residents of Y.
+- [ ] B. A model that is calibrated to the arrest label within each neighbourhood will, if next year's arrest rates match those above, give residents of X an average score about twice that of residents of Y.
 - [ ] C. Adding more years of arrest records produced by the same patrol pattern would shrink the gap between X and Y.
 - [ ] D. High accuracy at predicting arrests shows that the model identifies offenders equally well in both neighbourhoods.
 - [ ] E. Using victim-reported offences as the outcome, which depends less on patrol patterns, could reduce the distortion but has its own reporting biases.
@@ -257,7 +257,7 @@ Two neighbourhoods, X and Y, each have 10,000 residents, and in each of them 10%
 **Why:**
 
 - A: 10% x 60% = 6% and 10% x 30% = 3%.
-- B: The base rate of the arrest label is 6% against 3%, a ratio of two.
+- B: A model calibrated within a neighbourhood has an average score equal to that neighbourhood's arrest rate, 6% in X against 3% in Y, a ratio of two.
 - C: More records from the same process estimate the same distorted rates more precisely; the offset remains.
 - D: Accuracy is measured against the arrest label, and that label's relationship to offending differs by neighbourhood.
 - E: Changing the label to a measure less tied to enforcement intensity reduces dependence on patrol patterns.
@@ -599,7 +599,7 @@ A model flags 20% of applicants in each of two groups for adverse action, and a 
 A text-generating model screens résumés and answers "shortlist" or "reject" for each. Auditors build 200 pairs of résumés that are identical except for a first name signalling group A or group B. Each résumé was submitted once with the model's sampling randomness switched on, so repeating a submission could give a different answer. Results: shortlisted in both résumés of the pair, 90; in neither, 68; only the group A name, 30; only the group B name, 12. Shortlisting rates are 60% for group A names and 51% for group B names. An exact sign test on the 30 against 12 discordant pairs gives p of about 0.008. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. The test result shows that the model was trained on discriminatory hiring data and learned to copy it.
-- [ ] B. The 90 pairs shortlisted for both names and the 68 rejected for both add nothing to the comparison of the two names.
+- [ ] B. The 90 pairs shortlisted for both names and the 68 rejected for both play no part in the exact sign test.
 - [ ] C. Because each pair differs only in the name, differences in qualifications cannot explain the 30-to-12 split.
 - [ ] D. Run-to-run randomness in the model's answers makes the 30-to-12 split uninterpretable as evidence.
 - [ ] E. Because outputs vary between runs, repeating each pair several times would better estimate each name's shortlisting probability.
@@ -609,7 +609,7 @@ A text-generating model screens résumés and answers "shortlist" or "reject" fo
 **Why:**
 
 - A: The test shows that outputs depend on the name; the origin of that dependence in training data, tuning or prompt is a separate question.
-- B: Only the discordant pairs differ between the names, so only they enter the paired test.
+- B: The exact sign test uses only the pairs on which the two names were treated differently, the 30 and the 12, so the concordant pairs do not enter it (they would matter for other quantities, such as the size of the rate difference).
 - C: Matching by construction removes the qualification confounder within the tested résumés.
 - D: Randomness is already part of the null distribution: with no name effect the 42 discordant pairs would split about evenly, and the test gives p of about 0.008.
 - E: Repetitions average out sampling randomness within each pair.

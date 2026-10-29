@@ -95,7 +95,7 @@ A screening rule outputs 1 (approve) only when both of two verification flags, x
 - [ ] A. Because switching x1 on while x2 stays off changes nothing, x1 satisfies the Dummy property and its Shapley value is 0.
 - [ ] B. An attribution that gave x1 the value 1 and x2 the value 0 because x1 comes first in the input vector would satisfy the Symmetry property.
 - [ ] C. Switching off x1 alone drops the output by 1, as does switching off x2 alone, so the one-at-a-time effects add up to more than the 1 unit being explained.
-- [ ] D. Each flag receives a Shapley value of 0.5, so the two flags share the credit equally.
+- [ ] D. The Shapley value of x1 is 0.5: its marginal contribution is 0 when it is added first and 1 when it is added after x2.
 - [ ] E. The two Shapley values sum to 1, since they split the difference between this applicant's output and the reference output.
 
 **Key:** A=F B=F C=T D=T E=T
@@ -105,7 +105,7 @@ A screening rule outputs 1 (approve) only when both of two verification flags, x
 - A: Dummy requires zero marginal contribution in every coalition, and adding x1 when x2 is on raises the output by 1.
 - B: The rule and the reference are symmetric in x1 and x2, so Symmetry requires equal values; ordering in the input vector is irrelevant.
 - C: From (1,1), removing either flag drops the output by 1, so the one-at-a-time effects sum to 2 against a total of 1; they double count an interaction.
-- D: The two flags enter the rule symmetrically and the joint effect of 1 is split equally between them, 0.5 each.
+- D: Averaging x1's marginal contribution over the two orderings gives (0 + 1) / 2 = 0.5; by symmetry x2 receives 0.5 as well.
 - E: Efficiency: the values add to f(1,1) - f(0,0) = 1.
 
 **Source:** The four axioms
@@ -115,8 +115,8 @@ A screening rule outputs 1 (approve) only when both of two verification flags, x
 In a data set two columns are exact copies of each other: x2 = x1 in every row (values -1, 0 or 1, average 0). Three models are trained and all are put into a trial: Model 1 predicts 4 x x1, Model 2 predicts 4 x x2, and Model 3 predicts 2 x x1 + 2 x x2. For a new row with x1 = x2 = 1.5, Shapley values are computed by fixing the chosen inputs at the new row's values and averaging the model's prediction over the data set's rows for the remaining inputs. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. Models whose outputs are identical on every observed row can still receive different attributions.
-- [ ] B. For each of the three models the two Shapley values add to 6, the gap between the prediction for the new row and the average prediction.
-- [ ] C. The Shapley values for (x1, x2) are (6, 0) for Model 1, (0, 6) for Model 2 and (3, 3) for Model 3.
+- [ ] B. For Model 3 the two Shapley values add to 6, the gap between its prediction for the new row and its average prediction.
+- [ ] C. The Shapley values for (x1, x2) are (6, 0) for Model 1 and (0, 6) for Model 2.
 - [ ] D. Model 1's value of 0 for x2 shows that x2 carries no information about the outcome in this data set.
 - [ ] E. The three models make identical predictions on every row of the data set, so no accuracy measure on that data set can tell them apart.
 
@@ -125,8 +125,8 @@ In a data set two columns are exact copies of each other: x2 = x1 in every row (
 **Why:**
 
 - A: Attributions describe how each model computes its output, including how it treats rows where x1 and x2 differ, so identical outputs on the data do not force identical attributions.
-- B: Efficiency holds for every model: 6 + 0, 0 + 6 and 3 + 3 all equal 6 - 0.
-- C: For Model 1, fixing x2 does nothing to the prediction, so x1 takes all 6; Model 2 mirrors this; Model 3 splits the 6 equally by symmetry.
+- B: Model 3 predicts 2 x 1.5 + 2 x 1.5 = 6 for the new row and averages 0, so by efficiency its values add to 6 (they are 3 and 3 by symmetry).
+- C: For Model 1, fixing x2 does nothing to the prediction, so x1 takes all 6; Model 2 mirrors this.
 - D: x2 is a perfect copy of x1, so it carries exactly as much information as x1; Model 1 simply happened not to read it.
 - E: With x2 = x1 everywhere, 4x1, 4x2 and 2x1 + 2x2 coincide on every observed row.
 
@@ -376,12 +376,12 @@ A hospital trains a model on historical records to predict 30-day mortality for 
 
 ## MA-ch05.18
 
-A lender approves an application when score >= 40, where score = income (in thousands of dollars) + 5 x years employed - 10 x missed payments. An applicant with income 38, 2 years employed and 2 missed payments has score 28 and is denied. A counterfactual explanation looks for a changed set of inputs that would flip the decision. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A lender approves an application when score >= 40, where score = income (in thousands of dollars) + 5 x years employed - 10 x missed payments. An applicant with income 38, 2 years employed and 2 missed payments has score 28 and is denied. A counterfactual explanation looks for a changed set of inputs that would flip the decision. Treat the applicant's record of missed payments as accurate and not open to change. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. There is exactly one smallest counterfactual, so the explanation is unique and the applicant can be given a single answer.
 - [ ] B. Raising income to 50 and changing nothing else flips the decision.
 - [ ] C. Whether "raise income by 12" or "add 3 years" counts as closer depends on how a dollar change is weighted against a year, a modeling choice.
-- [ ] D. Removing both missed payments would flip the decision, but that is not a change the applicant can make.
+- [ ] D. Removing both missed payments would flip the decision, but given that the record is fixed, that is not a change the applicant can make.
 - [ ] E. Adding exactly 2 years of employment and changing nothing else flips the decision; each year adds 5 points.
 
 **Key:** A=F B=T C=T D=T E=F
@@ -391,20 +391,20 @@ A lender approves an application when score >= 40, where score = income (in thou
 - A: Several different minimal changes also work, for example income +12, years +3, or income +7 with years +1, so the closest one depends on the distance used.
 - B: 50 + 10 - 20 = 40, which meets the threshold.
 - C: Distance across features measured in dollars, years and counts requires a chosen weighting, and the choice determines which counterfactual is nearest.
-- D: With no missed payments the score would be 48, but a past missed payment cannot be undone.
+- D: With no missed payments the score would be 48, but with an accurate, unchangeable record a past missed payment cannot be undone.
 - E: 38 + 20 - 20 = 38, still below 40.
 
 **Source:** Counterfactuals are closer to what you actually want
 
 ## MA-ch05.19
 
-A lender gives each denied applicant the nearest approved input, measured by Euclidean distance on standardized features. For one applicant the returned counterfactual changes age from 24 to 31, years with the current employer from 1 to 6, and nothing else. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A lender gives each denied applicant a counterfactual: the smallest change to the applicant's inputs, measured by Euclidean distance on standardized features, that makes the model approve. For one applicant the returned counterfactual changes age from 24 to 31, years with the current employer from 1 to 6, and nothing else. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. If the lender retrains its model next quarter, the applicant is still assured of approval after making the stated changes.
 - [ ] B. Adding five years of tenure is an action the applicant can take immediately; tenure is within their control.
 - [ ] C. Because the counterfactual changes only two features, it describes a state the applicant could reach with nothing else changing.
-- [ ] D. A counterfactual that relies on a change of age cannot be acted on, but it is evidence that the decision is sensitive to age.
-- [ ] E. The nearest input in standardized Euclidean distance is the cheapest route for the applicant to reach approval.
+- [ ] D. A smallest-change counterfactual that relies on a change of age cannot be acted on, but it is evidence that the decision is sensitive to age.
+- [ ] E. The change that is smallest in standardized Euclidean distance is the cheapest route for the applicant to reach approval.
 
 **Key:** A=F B=F C=F D=T E=F
 
@@ -413,7 +413,7 @@ A lender gives each denied applicant the nearest approved input, measured by Euc
 - A: A counterfactual describes the current model; a retrained model or moved threshold can make the same changes insufficient.
 - B: Tenure grows only as time passes, so a five-year change is not available now.
 - C: Tenure and age move together with income and other inputs in real life, so holding everything else fixed may describe a state that cannot be reached.
-- D: Age cannot be changed by the applicant, yet a counterfactual that needs it shows the model's output moves with age, which is relevant to fairness review.
+- D: Age cannot be changed by the applicant, yet a smallest-change counterfactual that moves age shows the model's output moves with age, which is relevant to fairness review.
 - E: Euclidean distance on standardized features is a convenience, not a measure of the time, money or effort the applicant must spend.
 
 **Source:** Counterfactuals are closer to what you actually want

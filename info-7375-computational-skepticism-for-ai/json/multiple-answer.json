@@ -371,9 +371,9 @@
         },
         {
           "label": "B",
-          "text": "If real latencies are fat-tailed with the same mean and standard deviation, the 2.3% figure for requests over 280 ms is still the correct fraction.",
+          "text": "If real latencies are fat-tailed but have the same mean and standard deviation, the fraction of requests over 280 ms must still equal the fraction this normal model predicts.",
           "correct": false,
-          "explanation": "Tail mass depends on the whole shape of the distribution, not just the mean and standard deviation, so the normal figure need not hold."
+          "explanation": "Tail mass depends on the whole shape of the distribution, not just the mean and standard deviation, so the fraction beyond 280 ms can differ from the normal model's figure (in either direction)."
         },
         {
           "label": "C",
@@ -1159,13 +1159,13 @@
       "group": "chapter",
       "section": null,
       "source": "What I mean by skepticism",
-      "stem": "A launch review for a deployed fraud-detection model hears five sentences from the team, each offered in support of the claim that the model \"works in production.\" A checkable falsifier states an observation, possible to make, that would count against the claim. Check each statement that is a checkable falsifier.",
+      "stem": "A launch review for a deployed fraud-detection model hears five sentences from the team, each offered in support of the claim that the model \"works in production,\" meaning that it meets its operating requirements for both scoring speed and fraud detection. A checkable falsifier states an observation, possible to make, that would count against the claim. Check each statement that is a checkable falsifier.",
       "statements": [
         {
           "label": "A",
           "text": "\"Median scoring latency at the gateway stays under 150 ms across 30 days of production traffic; a 7-day median above 150 ms means the claim has failed.\"",
           "correct": true,
-          "explanation": "A latency measurement over a defined window with a stated failure threshold can be checked and can fail."
+          "explanation": "Speed is one of the stated operating requirements, and a latency measurement over a defined window with a stated failure threshold can be checked and can fail."
         },
         {
           "label": "B",
@@ -1211,7 +1211,7 @@
         },
         {
           "label": "B",
-          "text": "Falsifier: if the unsupported-claim share with retrieval is no lower than without it on those 500 questions, the claim is refuted for this setup.",
+          "text": "Falsifier, fixed before the run: if the unsupported-claim share with retrieval is not lower than without it on those 500 questions, judged by a significance test or margin stated in advance, the claim counts as refuted for this setup.",
           "correct": true,
           "explanation": "An outcome that is declared in advance to count against the claim is what makes the test capable of failing."
         },
@@ -1541,9 +1541,9 @@
       "statements": [
         {
           "label": "A",
-          "text": "A 95% confidence interval for the accuracy of those 200 answers runs from roughly 69% to 80%, so a true accuracy of 90% is not plausible for this group.",
+          "text": "A 95% confidence interval for the accuracy of those 200 answers runs from roughly 69% to 81%, so a true accuracy of 90% is not plausible for this group.",
           "correct": true,
-          "explanation": "The normal-approximation interval is 0.75 plus or minus about 0.06, which excludes 0.90."
+          "explanation": "The normal-approximation interval is 0.75 plus or minus about 0.06, roughly 0.69 to 0.81, which excludes 0.90."
         },
         {
           "label": "B",
@@ -1957,7 +1957,7 @@
       "group": "chapter",
       "section": null,
       "source": "What I mean by skepticism",
-      "stem": "A team's test suite passes on its code. To learn what a pass means, they inject 50 small deliberate faults into the code, one at a time, and rerun the suite for each. The suite fails (detects the fault) for 31 of the 50. Check each statement that is true.",
+      "stem": "A team's test suite passes on its code. To learn what a pass means, they inject 50 small deliberate faults into the code, one at a time, each confirmed to change the program's behavior on some input that can occur, and rerun the suite for each. The suite fails (detects the fault) for 31 of the 50. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
@@ -2069,9 +2069,9 @@
         },
         {
           "label": "E",
-          "text": "A random sample of 150 summaries in which no error is found shows that the error rate is below 2%.",
+          "text": "A random sample of 150 summaries in which no error is found proves, with certainty, that the error rate is below 2%.",
           "correct": false,
-          "explanation": "A clean sample of 150 is evidence against a high rate but cannot rule out a 2% rate, which would give no errors about 5% of the time."
+          "explanation": "A clean sample of 150 is evidence against a high rate but cannot rule out a 2% rate with certainty, since a 2% rate would give no errors in 150 about 5% of the time (0.98^150 is about 0.048)."
         }
       ]
     },
@@ -3287,9 +3287,9 @@
         },
         {
           "label": "E",
-          "text": "Applying a strictly increasing rescaling to M2's scores, fitted on labeled data, could correct its probabilities without changing its AUC.",
+          "text": "Applying a strictly increasing rescaling to M2's scores, fitted on labeled data, could bring its probabilities much closer to the observed frequencies without changing its AUC.",
           "correct": true,
-          "explanation": "A strictly increasing map preserves the order of scores, so AUC is unchanged while the stated probabilities can be brought into line with observed frequencies."
+          "explanation": "A strictly increasing map preserves the order of scores, so AUC is unchanged while the stated probabilities can be brought much closer to the observed frequencies (exact calibration with perfectly separated classes would need values of 0 and 1, which a strictly increasing map cannot give, so the fit is approximate)."
         }
       ]
     },
@@ -3595,7 +3595,7 @@
       "group": "chapter",
       "section": null,
       "source": "Synthesis — four questions that prevent most deployment disasters",
-      "stem": "A clinic can follow up a flagged patient at a cost of $20. A positive case that is missed costs $400. A model gives each patient a probability of being positive. For the first statements, assume the probabilities are calibrated. Check each statement that is true.",
+      "stem": "A clinic can follow up a flagged patient at a cost of $20. A positive case that is missed costs $400. A model gives each patient a probability of being positive. For statements A, B, D and E, assume the probabilities are calibrated (statement C considers miscalibrated probabilities). Check each statement that is true.",
       "statements": [
         {
           "label": "A",
@@ -4103,9 +4103,9 @@
       "statements": [
         {
           "label": "A",
-          "text": "The gap between the survivor average and the all-fund average would still appear if funds had closed for reasons unrelated to their returns.",
+          "text": "In a hypothetical in which the same funds had instead closed at random, for reasons unrelated to their returns, the survivors would still be expected to average well above the average over all 1,000 funds.",
           "correct": false,
-          "explanation": "If closure were independent of returns, the survivors would be a random subset and their average would match the full average in expectation."
+          "explanation": "If closure were independent of returns, the survivors would be a random subset of the funds and their expected average would match the all-fund average, so the gap arises only because closure is related to returns."
         },
         {
           "label": "B",
@@ -4607,9 +4607,9 @@
       "statements": [
         {
           "label": "A",
-          "text": "If the annotator's mistakes fall on the same items the model also gets wrong, measured accuracy could exceed the true accuracy.",
+          "text": "Suppose the annotator's flips, contrary to the independence stated above, fell mostly on items the model gets wrong; measured accuracy could then exceed the true accuracy.",
           "correct": true,
-          "explanation": "Correlated errors can make the model agree with wrong labels, inflating agreement."
+          "explanation": "Correlated errors make the model agree with wrong labels; if all 8% of the model's errors were flipped and the other 2% of flips hit correct items, measured accuracy would be 0.92 - 0.02 + 0.08 = 98%."
         },
         {
           "label": "B",
@@ -4661,9 +4661,9 @@
         },
         {
           "label": "C",
-          "text": "Removing the flag and re-evaluating is a reasonable check; a large drop would show the earlier score came from leakage.",
+          "text": "Removing the flag and re-evaluating is a reasonable check; a large drop would be consistent with the earlier score coming from leakage.",
           "correct": true,
-          "explanation": "An ablation isolates how much of the performance depended on the suspect feature."
+          "explanation": "An ablation isolates how much of the performance depended on the suspect feature; a large drop is consistent with leakage, though a legitimately strong predictor would also cause one, so the timing of the flag is what establishes the leak."
         },
         {
           "label": "D",
@@ -5411,9 +5411,9 @@
         },
         {
           "label": "B",
-          "text": "A white-box attack, having more information, must be at least as strong as any black-box attack on the same model.",
+          "text": "Because a white-box attacker has strictly more information, any particular white-box attack procedure, such as the gradient attack run here, is guaranteed to lower accuracy at least as much as any black-box attack on the same model.",
           "correct": false,
-          "explanation": "A white-box attack can fail through optimization difficulty (noisy, shattered or masked gradients), while another route succeeds, so no such ordering is assured."
+          "explanation": "A white-box attacker could in principle do at least as well, but a particular white-box procedure can fail through optimization difficulty (noisy, shattered or masked gradients) while another route succeeds, so no such ordering is guaranteed for a given attack."
         },
         {
           "label": "C",
@@ -5569,11 +5569,11 @@
       "group": "chapter",
       "section": null,
       "source": "What adversarial examples actually expose",
-      "stem": "A model detects pneumonia on chest X-rays. Training and test images come from two hospitals, 5000 images each. Hospital A's images carry a scanner tag and 80% of its patients are positive. Hospital B's images carry a different tag and 10% of its patients are positive. On a random held-out split of images from these two hospitals the model scores 88% accuracy. Check each statement that is true.",
+      "stem": "A model detects pneumonia on chest X-rays. The collection has 10,000 images in all, 5000 from each of two hospitals. Hospital A's images carry a scanner tag and 80% of its patients are positive. Hospital B's images carry a different tag and 10% of its patients are positive. The collection is split at random into training and held-out images, so the held-out set has the same hospital shares and the same tag-label link as the whole collection, and it is large enough that its accuracy figures are accurate to within about one percentage point. On the held-out set the model scores 88% accuracy. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
-          "text": "Always predicting the more common class overall would score 55%.",
+          "text": "Always predicting the more common class overall would score about 55% on the held-out set.",
           "correct": true,
           "explanation": "Overall prevalence is (4000 + 500)/10000 = 45% positive, so the majority-class baseline is 55%."
         },
@@ -5591,15 +5591,15 @@
         },
         {
           "label": "D",
-          "text": "A rule that ignores the lungs and predicts positive for hospital A's tag and negative for hospital B's tag would score 85% on data like this.",
+          "text": "A rule that ignores the lungs and predicts positive for hospital A's tag and negative for hospital B's tag would score about 85% on this held-out set.",
           "correct": true,
           "explanation": "Tag A is right on 4000 of 5000 images (80% positive) and tag B on 4500 of 5000 (90% negative), so 8500 of 10000 are correct."
         },
         {
           "label": "E",
-          "text": "The 88% score provides little evidence that the model reads lung findings, because a rule using only the tag already scores 85%.",
+          "text": "The 88% score alone does not show that the model reads lung findings, because a rule using only the tag already scores about 85% on this held-out set.",
           "correct": true,
-          "explanation": "The held-out split has the same tag-label link as the training data, so only 3 points separate the model from the tag rule."
+          "explanation": "The held-out set has the same tag-label link as the training data, so only about 3 points (with about 1 point of measurement error) separate the model from the tag rule, which is not enough to show that anything beyond the tag is being used."
         }
       ]
     },
@@ -5947,7 +5947,7 @@
       "group": "chapter",
       "section": null,
       "source": "Resampling and validation",
-      "stem": "A researcher has 100 samples, each with 5000 features and a binary label, with the two labels equally frequent. The features are in fact random noise unrelated to the label. She selects the 20 features most correlated with the label using all 100 samples, then runs 5-fold cross-validation of a simple classifier on those 20 features and obtains an average accuracy near 90%. Check each statement that is true.",
+      "stem": "A researcher has 100 samples, each with 5000 features and a binary label, with the two labels equally frequent both in the sample and in the population the samples are drawn from. The features are in fact random noise unrelated to the label. She selects the 20 features most correlated with the label using all 100 samples, then runs 5-fold cross-validation of a simple classifier on those 20 features and obtains an average accuracy near 90%. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
@@ -5975,9 +5975,9 @@
         },
         {
           "label": "E",
-          "text": "The expected accuracy of any classifier on new samples is 50% here, so the 90% figure is an artifact.",
+          "text": "The expected accuracy of any classifier built from these features on new samples from the population is 50%, so the 90% figure is an artifact.",
           "correct": true,
-          "explanation": "With pure noise features and balanced labels, no method can beat chance on new data."
+          "explanation": "With pure noise features and balanced labels in the population, any prediction built from the features is independent of the label, so no method can beat chance (50%) on new data."
         }
       ]
     },
@@ -6041,9 +6041,9 @@
         },
         {
           "label": "B",
-          "text": "In adversarial training, held-out robust accuracy can peak and then decline while training robust accuracy keeps rising, so early stopping on it is common.",
+          "text": "If this classifier were adversarially trained, its robust accuracy on held-out data could still peak and then decline while its robust accuracy on the training data kept rising, which is a reason to track held-out robust accuracy when choosing where to stop training.",
           "correct": true,
-          "explanation": "This pattern is called robust overfitting, and selecting the checkpoint on held-out robust accuracy is the usual response."
+          "explanation": "Adversarial training can overfit the particular perturbed training points (an effect called robust overfitting), so held-out robust accuracy can fall while training robust accuracy rises, and choosing the checkpoint on held-out robust accuracy is the usual response."
         },
         {
           "label": "C",
@@ -6283,7 +6283,7 @@
       "group": "chapter",
       "section": null,
       "source": "Certified defenses — what \"guaranteed\" means and costs",
-      "stem": "Two groups report robust accuracy for the same trained classifier at the same L∞ budget. Group 1 runs a strong 100-step gradient attack with random restarts and reports that 52% of test images are still classified correctly. Group 2 uses a sound but incomplete verifier. It proves that 45% of test images are robust, and for the others it either finds a counterexample or answers \"unknown\". Check each statement that is true.",
+      "stem": "Two groups evaluate the same trained classifier on the same test images at the same L∞ budget. In what follows, \"true robust accuracy\" means the fraction of these test images that no perturbation within the budget can make the classifier misclassify. Group 1 runs a strong 100-step gradient attack with random restarts and reports that 52% of test images are still classified correctly. Group 2 uses a sound but incomplete verifier. It proves that 45% of test images are robust, and for the others it either finds a counterexample or answers \"unknown\". Check each statement that is true.",
       "statements": [
         {
           "label": "A",
@@ -6305,7 +6305,7 @@
         },
         {
           "label": "D",
-          "text": "The model's true robust accuracy at this budget lies between 45% and 52%.",
+          "text": "On these test images, the true robust accuracy at this budget lies between 45% and 52%.",
           "correct": true,
           "explanation": "The attack gives an upper bound (it can only find some of the vulnerable images) and the sound verifier gives a lower bound, so the truth lies between them."
         },
@@ -6563,9 +6563,9 @@
         },
         {
           "label": "E",
-          "text": "Requiring the user's approval before the assistant sends mail or deletes messages bounds the damage if the model is fooled.",
+          "text": "Requiring the user's approval, shown with the actual recipient and contents, before the assistant sends mail or deletes messages limits the damage a fooled model can do, to the extent that the user actually reviews each request.",
           "correct": true,
-          "explanation": "A confirmation step or reduced privileges limits what a successful injection can do, whether or not the model is fooled."
+          "explanation": "A confirmation step puts a human check between a fooled model and the harmful action, and reduced privileges limit what a successful injection can do at all; the check is only as strong as the user's attention to what is shown."
         }
       ]
     },
@@ -6767,9 +6767,9 @@
         },
         {
           "label": "D",
-          "text": "Each flag receives a Shapley value of 0.5, so the two flags share the credit equally.",
+          "text": "The Shapley value of x1 is 0.5: its marginal contribution is 0 when it is added first and 1 when it is added after x2.",
           "correct": true,
-          "explanation": "The two flags enter the rule symmetrically and the joint effect of 1 is split equally between them, 0.5 each."
+          "explanation": "Averaging x1's marginal contribution over the two orderings gives (0 + 1) / 2 = 0.5; by symmetry x2 receives 0.5 as well."
         },
         {
           "label": "E",
@@ -6797,15 +6797,15 @@
         },
         {
           "label": "B",
-          "text": "For each of the three models the two Shapley values add to 6, the gap between the prediction for the new row and the average prediction.",
+          "text": "For Model 3 the two Shapley values add to 6, the gap between its prediction for the new row and its average prediction.",
           "correct": true,
-          "explanation": "Efficiency holds for every model: 6 + 0, 0 + 6 and 3 + 3 all equal 6 - 0."
+          "explanation": "Model 3 predicts 2 x 1.5 + 2 x 1.5 = 6 for the new row and averages 0, so by efficiency its values add to 6 (they are 3 and 3 by symmetry)."
         },
         {
           "label": "C",
-          "text": "The Shapley values for (x1, x2) are (6, 0) for Model 1, (0, 6) for Model 2 and (3, 3) for Model 3.",
+          "text": "The Shapley values for (x1, x2) are (6, 0) for Model 1 and (0, 6) for Model 2.",
           "correct": true,
-          "explanation": "For Model 1, fixing x2 does nothing to the prediction, so x1 takes all 6; Model 2 mirrors this; Model 3 splits the 6 equally by symmetry."
+          "explanation": "For Model 1, fixing x2 does nothing to the prediction, so x1 takes all 6; Model 2 mirrors this."
         },
         {
           "label": "D",
@@ -7291,7 +7291,7 @@
       "group": "chapter",
       "section": null,
       "source": "Counterfactuals are closer to what you actually want",
-      "stem": "A lender approves an application when score >= 40, where score = income (in thousands of dollars) + 5 x years employed - 10 x missed payments. An applicant with income 38, 2 years employed and 2 missed payments has score 28 and is denied. A counterfactual explanation looks for a changed set of inputs that would flip the decision. Check each statement that is true.",
+      "stem": "A lender approves an application when score >= 40, where score = income (in thousands of dollars) + 5 x years employed - 10 x missed payments. An applicant with income 38, 2 years employed and 2 missed payments has score 28 and is denied. A counterfactual explanation looks for a changed set of inputs that would flip the decision. Treat the applicant's record of missed payments as accurate and not open to change. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
@@ -7313,9 +7313,9 @@
         },
         {
           "label": "D",
-          "text": "Removing both missed payments would flip the decision, but that is not a change the applicant can make.",
+          "text": "Removing both missed payments would flip the decision, but given that the record is fixed, that is not a change the applicant can make.",
           "correct": true,
-          "explanation": "With no missed payments the score would be 48, but a past missed payment cannot be undone."
+          "explanation": "With no missed payments the score would be 48, but with an accurate, unchangeable record a past missed payment cannot be undone."
         },
         {
           "label": "E",
@@ -7333,7 +7333,7 @@
       "group": "chapter",
       "section": null,
       "source": "Counterfactuals are closer to what you actually want",
-      "stem": "A lender gives each denied applicant the nearest approved input, measured by Euclidean distance on standardized features. For one applicant the returned counterfactual changes age from 24 to 31, years with the current employer from 1 to 6, and nothing else. Check each statement that is true.",
+      "stem": "A lender gives each denied applicant a counterfactual: the smallest change to the applicant's inputs, measured by Euclidean distance on standardized features, that makes the model approve. For one applicant the returned counterfactual changes age from 24 to 31, years with the current employer from 1 to 6, and nothing else. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
@@ -7355,13 +7355,13 @@
         },
         {
           "label": "D",
-          "text": "A counterfactual that relies on a change of age cannot be acted on, but it is evidence that the decision is sensitive to age.",
+          "text": "A smallest-change counterfactual that relies on a change of age cannot be acted on, but it is evidence that the decision is sensitive to age.",
           "correct": true,
-          "explanation": "Age cannot be changed by the applicant, yet a counterfactual that needs it shows the model's output moves with age, which is relevant to fairness review."
+          "explanation": "Age cannot be changed by the applicant, yet a smallest-change counterfactual that moves age shows the model's output moves with age, which is relevant to fairness review."
         },
         {
           "label": "E",
-          "text": "The nearest input in standardized Euclidean distance is the cheapest route for the applicant to reach approval.",
+          "text": "The change that is smallest in standardized Euclidean distance is the cheapest route for the applicant to reach approval.",
           "correct": false,
           "explanation": "Euclidean distance on standardized features is a convenience, not a measure of the time, money or effort the applicant must spend."
         }
@@ -7963,7 +7963,7 @@
       "group": "chapter",
       "section": null,
       "source": "Ten mechanisms, distinguished",
-      "stem": "A hospital builds a sepsis alert from 10,000 admissions. At triage 2,000 patients are classed unstable (30% develop sepsis) and 8,000 stable (5% develop sepsis), so overall prevalence is 10%. The training data keep only patients who had a lab panel in the first six hours, which happened for 90% of stable and 20% of unstable patients. The triage class is recorded for every patient. Check each statement that is true.",
+      "stem": "A hospital builds a sepsis alert from 10,000 admissions. At triage 2,000 patients are classed unstable (30% develop sepsis) and 8,000 stable (5% develop sepsis), so overall prevalence is 10%. The training data keep only patients who had a lab panel in the first six hours, which happened for 90% of stable and 20% of unstable patients. The triage class is recorded for every patient. Within each triage class, whether a patient had a lab panel does not depend on whether that patient develops sepsis. Check each statement that is true.",
       "statements": [
         {
           "label": "A",
@@ -7973,9 +7973,9 @@
         },
         {
           "label": "B",
-          "text": "The same weighting would still work if retention depended on an unrecorded clinician hunch that is related to sepsis.",
+          "text": "The same weighting would still work if, instead, retention depended on an unrecorded clinician hunch that is related to sepsis.",
           "correct": false,
-          "explanation": "Weighting needs a recorded variable that explains who was kept, and an unrecorded hunch gives nothing to weight on."
+          "explanation": "Weighting needs a recorded variable that explains who was kept; an unrecorded hunch related to sepsis gives nothing to weight on, so retained patients would stay unrepresentative within each triage class."
         },
         {
           "label": "C",
@@ -8393,9 +8393,9 @@
         },
         {
           "label": "B",
-          "text": "A model that is calibrated to the arrest label will, on average, score residents of X about twice as high as residents of Y.",
+          "text": "A model that is calibrated to the arrest label within each neighbourhood will, if next year's arrest rates match those above, give residents of X an average score about twice that of residents of Y.",
           "correct": true,
-          "explanation": "The base rate of the arrest label is 6% against 3%, a ratio of two."
+          "explanation": "A model calibrated within a neighbourhood has an average score equal to that neighbourhood's arrest rate, 6% in X against 3% in Y, a ratio of two."
         },
         {
           "label": "C",
@@ -9065,9 +9065,9 @@
         },
         {
           "label": "B",
-          "text": "The 90 pairs shortlisted for both names and the 68 rejected for both add nothing to the comparison of the two names.",
+          "text": "The 90 pairs shortlisted for both names and the 68 rejected for both play no part in the exact sign test.",
           "correct": true,
-          "explanation": "Only the discordant pairs differ between the names, so only they enter the paired test."
+          "explanation": "The exact sign test uses only the pairs on which the two names were treated differently, the 30 and the 12, so the concordant pairs do not enter it (they would matter for other quantities, such as the size of the rate difference)."
         },
         {
           "label": "C",
@@ -9623,9 +9623,9 @@
         },
         {
           "label": "D",
-          "text": "With true-positive rates equalized, the large remaining precision gap is what arithmetic predicts when base rates differ (0.5 versus 0.2).",
+          "text": "Even if both groups had identical true-positive rates and identical false-positive rates, their base rates (0.5 versus 0.2) would still leave the precision of approvals unequal.",
           "correct": true,
-          "explanation": "Precision odds equal base-rate odds × TPR/FPR; with similar rates and base rates of 0.5 and 0.2, precision must differ widely."
+          "explanation": "Precision odds equal base-rate odds × TPR/FPR, so identical rates with base-rate odds of 1 and 0.25 give unequal precision (for example TPR 0.70 and FPR 0.25 give about 0.74 versus 0.41); in the table the gap is wider (0.74 versus 0.37) partly because H's false-positive rate is also higher."
         },
         {
           "label": "E",
@@ -10049,9 +10049,9 @@
         },
         {
           "label": "E",
-          "text": "Training for overall accuracy makes no decision about how errors are distributed across groups, because the loss function never mentions groups.",
+          "text": "Because the loss function never mentions groups, minimizing overall log loss has no bearing on how errors are distributed across groups.",
           "correct": false,
-          "explanation": "Whatever the loss rewards determines which errors the model tolerates, and so how error rates fall across groups, whether or not anyone chose it."
+          "explanation": "Minimizing an average loss over all examples weights every example equally, which determines which errors the model tolerates and so how error rates fall across groups, whether or not anyone chose it."
         }
       ]
     },
@@ -10217,9 +10217,9 @@
         },
         {
           "label": "E",
-          "text": "Choosing different decision cutoffs per group on a frozen model's scores is a post-processing method.",
+          "text": "Any method that leaves both the training data and the trained model unchanged and adjusts only the final decisions is a post-processing method.",
           "correct": true,
-          "explanation": "It adjusts decisions after the model is trained and leaves the model unchanged."
+          "explanation": "Post-processing is defined by acting on the model's outputs after training, with the data and the model itself left as they were."
         }
       ]
     },

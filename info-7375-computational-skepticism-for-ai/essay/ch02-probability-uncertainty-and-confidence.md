@@ -2,7 +2,7 @@
 
 ## ES-ch02.1
 
-A vendor says its fraud-screening tool is "98% accurate", meaning it flags 98% of fraudulent transactions and clears 98% of legitimate ones. In the vendor's target market 0.2% of transactions (1 in 500) are fraudulent. (a) For 100,000 transactions, work out how many are flagged and how many of the flagged transactions are fraudulent. (b) Explain why the vendor's figure and your figure are both correct yet answer different questions. (c) Describe two changes that would raise the share of flags that are real fraud, and one cost of each.
+A vendor says its fraud-screening tool is "98% accurate", meaning it flags 98% of fraudulent transactions and clears 98% of legitimate ones. In the vendor's target market 0.2% of transactions (1 in 500) are fraudulent. (a) For 100,000 transactions, work out how many are flagged and how many of the flagged transactions are fraudulent. (b) Explain why the vendor's figure and your figure are both correct yet answer different questions. (c) Describe two changes that would raise the share of flags that are real fraud, and one cost of each. (d) State one operational consequence of the flag volume and what you would ask the vendor to report.
 
 **Points:** 5
 
@@ -27,14 +27,14 @@ People often treat "accuracy", "discrimination" (for example AUC) and "calibrati
 1. Defines accuracy at a threshold as the fraction correct after thresholding, discrimination as the ability to rank positives above negatives (AUC is the probability a random positive outscores a random negative), and calibration as agreement between stated probabilities and observed frequencies.
 2. Gives a calibrated model without discrimination: always predicting the base rate (for example 0.10 at 10% prevalence) matches observed frequency overall but has AUC 0.5.
 3. Gives a discriminating but miscalibrated model: any strictly increasing distortion of a perfect ranker (for example scores between 0.6 and 1.0 at 10% prevalence) keeps AUC at 1.0 while the stated probabilities are far too high.
-4. Notes that accuracy at a threshold discards confidence magnitude, can be high through class imbalance alone (a majority-class baseline), and neither implies nor is implied by calibration or AUC.
+4. Notes that accuracy at a threshold ignores the size of the probability and can be high through class imbalance alone (a majority-class baseline), so high accuracy does not establish calibration or good ranking.
 5. Matches properties to decisions with checks: ranking depends on discrimination (AUC or precision at the review capacity); quoting a risk depends on calibration (reliability diagram with counts, Brier score or log loss on data from the deployment population).
 
 **Source:** Calibration
 
 ## ES-ch02.3
 
-Two forecasters each give a probability for 10 events, 8 of which occur. Forecaster P says 0.8 for every event. Forecaster Q says 0.99 for every event. (a) For each forecaster compute accuracy at a 0.5 cutoff, the Brier score and the log loss (natural logarithm). (b) Define a proper scoring rule and explain why Brier score and log loss are proper while accuracy at a cutoff is not. (c) Explain how Brier score and log loss differ in their treatment of a confident forecast that turns out wrong, and when that should influence the choice between them.
+Two forecasters each give a probability for 10 events, 8 of which occur. Forecaster P says 0.8 for every event. Forecaster Q says 0.99 for every event. (a) For each forecaster compute accuracy at a 0.5 cutoff, the Brier score and the log loss (natural logarithm). (b) Define a strictly proper scoring rule and explain why Brier score and log loss are strictly proper while accuracy at a cutoff is not. (c) Explain how Brier score and log loss differ in their treatment of a confident forecast that turns out wrong, and when that should influence the choice between them.
 
 **Points:** 5
 
@@ -42,8 +42,8 @@ Two forecasters each give a probability for 10 events, 8 of which occur. Forecas
 
 1. Finds that accuracy at 0.5 is 0.8 for both forecasters, so it cannot distinguish the calibrated forecaster from the overconfident one.
 2. Computes Brier scores of 0.160 for P and about 0.196 for Q, and log losses of about 0.500 for P and about 0.929 for Q, so P is better on both.
-3. Defines a proper scoring rule as one whose expected score is optimized by reporting one's true belief (strictly proper if only that report is optimal).
-4. Explains that Brier score and log loss are proper (honest reporting of 0.8 is optimal when 80% of events occur) while accuracy at a cutoff rewards any report on the right side of 0.5 equally, so it neither rewards honesty nor penalizes overstatement; absolute error is also not proper.
+3. Defines a proper scoring rule as one whose expected score is optimized by reporting one's true belief, and a strictly proper rule as one for which only the true belief is optimal.
+4. Explains that Brier score and log loss are strictly proper (reporting 0.8 is the unique best report when 80% of events occur) while accuracy at a cutoff is not strictly proper because any report on the correct side of 0.5 scores equally, so it neither rewards honesty nor penalizes overstatement; absolute error is improper (its expected value is minimized by reporting 0 or 1).
 5. Contrasts the penalty for a confident miss: a single wrong forecast of 0.99 costs 0.98 in Brier score (bounded by 1) but about 4.6 in log loss, which is unbounded as the probability given to the outcome approaches 0, so log loss suits settings where confident errors are very costly and Brier score is less dominated by single extreme errors.
 
 **Source:** Calibration
@@ -92,13 +92,13 @@ An engineer writes: "We timed 25 requests. The mean was 100 ms and the standard 
 2. Explains the error in the conclusion: individual requests vary with a standard deviation of 15 ms, so only about a third of them (roughly 32%) would fall inside that narrow range.
 3. Computes the prediction interval, 100 plus or minus 2.064 x 15 x sqrt(1 + 1/25), about 68.4 to 131.6 ms, and notes that it does not shrink to zero with more data because individual variability remains.
 4. States the correct frequentist meaning of the confidence level: across repeated samples the method captures the true mean 95% of the time, which is not the probability that this computed interval contains it and not a statement about the next observation.
-5. Explains that a credible interval is a posterior probability statement about the parameter given a model and prior, depends on the prior, and can resemble the confidence interval only under diffuse priors; notes that all of these assume independent, roughly normal, stable measurements.
+5. Explains that a credible interval is a posterior probability statement about the parameter given a model and prior, so it depends on the prior, and can numerically resemble the confidence interval when the prior is diffuse or the data dominate.
 
 **Source:** When the Central Limit Theorem politely declines to help
 
 ## ES-ch02.7
 
-A team reports "our classifier is 96% accurate" after it classified 48 of 50 test items correctly, and says this beats a competitor's published figure of 92%, which came from a different, larger test set. (a) Give an approximate 95% interval for the team's true accuracy and say whether the data support the claim. (b) Roughly how many test items would be needed to estimate accuracy to within plus or minus 2 percentage points if the true accuracy is near 96%? (c) Name two sources of error that no sampling interval accounts for.
+A team reports "our classifier is 96% accurate" after it classified 48 of 50 test items correctly, and says this beats a competitor's published figure of 92%, which came from a different, larger test set. (a) Give an approximate 95% interval for the team's true accuracy and say whether the data support the claim. (b) Roughly how many test items would be needed to estimate accuracy to within plus or minus 2 percentage points if the true accuracy is near 96%? (c) Name two sources of error that no sampling interval accounts for. (d) Describe how the two systems should be compared fairly.
 
 **Points:** 5
 
@@ -140,7 +140,7 @@ A disease has prevalence 0.1%. A diagnostic test has sensitivity 95% and specifi
 2. Updates correctly: the posterior from the first result becomes the prior for the second, each positive multiplies the odds by the likelihood ratio 0.95 / 0.05 = 19, and two positives give about 27% (three would give about 87%).
 3. States the assumption needed: the two results are conditionally independent given the person's true status, so errors are not shared.
 4. Gives a case where it fails (the same specimen, the same assay or the same interfering substance causing both false positives) and explains that the second positive is then much less informative than independence implies, so the posterior is overstated.
-5. Recommends confirmation with a test that works by a different mechanism, rather than interpreting a single screening positive as a diagnosis, and notes that treating accuracy as the probability of disease (for example 95% x 95%) ignores the prior.
+5. Recommends confirmation with an independent test, ideally one that works by a different mechanism, rather than diagnosing from a single screening positive.
 
 **Source:** Bayes' theorem
 
@@ -153,8 +153,8 @@ In a court case an expert testifies: "The chance that an innocent person would m
 **Rubric (1 point each):**
 
 1. Identifies the transposed conditional: 1 in 100,000 is P(match | innocent), whereas the court needs P(innocent | match), and the two are different quantities that need the prior to connect.
-2. Computes that about 10 innocent people in 1,000,000 are expected to match by chance, alongside the one true source.
-3. Applies Bayes' rule with a prior of 1 in 1,000,000 to get a probability that the defendant is the source of about 1 in 11, roughly 0.09.
+2. Computes the probability that the defendant is the source: about 10 innocent people in 1,000,000 are expected to match by chance alongside the one true source, equivalently Bayes' rule with a prior of 1 in 1,000,000, giving about 1 in 11, roughly 0.09.
+3. States that the probability the defendant is innocent is therefore about 0.91, not 1 in 100,000.
 4. Explains that the match is still strong evidence (a likelihood ratio of about 100,000 raised the probability from 0.000001 to 0.09) and that with other independent evidence the same match could give a probability near certainty.
 5. Generalizes: reading an alert's false-positive rate as the probability that a flagged case is harmless, or its detection rate as the probability that a flagged case is real, makes the same error and requires the base rate.
 
@@ -171,7 +171,7 @@ A neural network classifier assigns probability 0.95 to its predicted class on a
 1. Identifies overconfidence (stated 0.95 above observed 0.80) and says it appears as a reliability diagram point below the diagonal at high confidence.
 2. Describes temperature scaling as dividing logits by one parameter T fitted on held-out data (typically minimizing log loss), with T > 1 softening probabilities toward 0.5.
 3. Computes the example: sigma(3) is about 0.953, sigma(1.5) with T = 2 is about 0.818, and T of about 2.16 gives 0.80.
-4. Explains that dividing by T preserves the ordering of cases, so predicted classes, accuracy and AUC (in the binary case) are unchanged and only the stated confidence is rescaled.
+4. Explains that dividing by T preserves the ordering of cases, so AUC and the predictions at a 0.5 cutoff (hence accuracy at 0.5) are unchanged and only the stated confidence is rescaled.
 5. States the limits: it fits average calibration on the data it was fitted on; one parameter cannot fix class-specific or subgroup miscalibration or a shifted population; it must be fitted on data separate from the evaluation set and rechecked over time.
 
 **Source:** Calibration
@@ -194,14 +194,14 @@ A hospital can follow up flagged patients at $20 each. A missed positive costs $
 
 ## ES-ch02.13
 
-A screening classifier was validated at a prevalence of 20% and found to have sensitivity 90% and specificity 90%. It is later deployed in a population where the prevalence is 2%. (a) Compute the share of flagged cases that are truly positive at each prevalence. (b) Explain what changed and what did not, and whether the model got worse. (c) Explain why the model's own output scores would not alert anyone to the problem. (d) Describe the kinds of shift that can occur and a monitoring plan that would catch them, relating this to the general limits of relying on a past track record.
+A screening classifier was validated at a prevalence of 20% and found to have sensitivity 90% and specificity 90%. It is later deployed in a population where the prevalence is 2%; assume its sensitivity and specificity are unchanged in the new population. (a) Compute the share of flagged cases that are truly positive at each prevalence. (b) Explain what changed and what did not, and whether the model got worse. (c) Explain why the model's own output scores would not alert anyone to the problem. (d) Describe the kinds of shift that can occur and a monitoring plan that would catch them, relating this to the general limits of relying on a past track record.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
 1. Computes about 0.69 at 20% prevalence (per 1,000 cases: 180 true positives and 80 false positives) and about 0.155 at 2% (18 true positives and 98 false positives).
-2. Explains that sensitivity and specificity are unchanged while the prior changed, so the model did not degrade as a classifier but its flags are now mostly false, and any probability score tied to the old prior is now too high.
+2. Explains that, with sensitivity and specificity unchanged, only the prior changed, so the model did not degrade as a classifier but its flags are now mostly false, and any probability score tied to the old prior is now too high.
 3. Explains that a score is computed from the inputs under assumptions learned in training and does not itself register a change in the population, so scores and dashboards can look unchanged while real-world performance falls.
 4. Names kinds of shift with an example of each, such as prior (base-rate) shift, covariate shift in the inputs, concept drift in the relationship between inputs and outcomes, and changes in how measurements are made.
 5. Proposes monitoring: track realized outcomes on a labeled sample, watch input distributions, recompute calibration and the share of flags that are real over time, recalibrate or re-weight priors, and state the conditions a track record depended on, since past performance supports predictions only while those conditions hold.
@@ -234,7 +234,7 @@ A deployed model's mistakes have this cost distribution: 99.9% of mistakes cost 
 
 1. Computes the true mean as about $6.00 (0.999 x $1 + 0.001 x $5,000) and the probability of no $5,000 mistake in 500 as 0.999 to the power 500, about 0.61 (the expected number of catastrophic mistakes is only 0.5).
 2. Explains that a sample with no variation gives a zero-width interval, but the absence of rare events in a sample is not their absence in the population, so the apparent precision is an artifact.
-3. States what the central limit theorem requires (independent observations with finite variance) and notes that convergence can be very slow when rare large values dominate the mean, so a sample must be large relative to 1 divided by the rare event's probability, and that with infinite variance the mean does not stabilize at all.
+3. States that the central limit theorem needs independent observations with finite variance, and that convergence to normality can be very slow when rare large values dominate the mean, so the sample must be large relative to 1 divided by the rare event's probability (here about 1,000 or more).
 4. Gives the bound: 0 events in 500 supports only an upper limit of about 3/500 = 0.6% (about 95% confidence) on the catastrophic rate, six times the true 0.1% rate, which would correspond to an expected cost near $30 per mistake.
 5. Recommends tail-aware reporting and design: report the frequency and size of the largest losses and high quantiles rather than only the mean, use scenario or worst-case analysis, and use targeted or stratified sampling and adversarial testing to find rare severe cases.
 

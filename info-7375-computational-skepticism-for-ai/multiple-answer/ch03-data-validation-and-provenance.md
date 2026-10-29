@@ -114,7 +114,7 @@ A city has 100,000 adults: 30,000 under 30 and 70,000 aged 30 or older. Under-30
 
 A database lists the annualized returns of investment funds that are still operating today. Ten years ago 1,000 funds were launched. Of these, 600 survive and averaged an 8% annual return over the decade; 400 have closed, and they averaged -2% over the years they existed. The database contains only the survivors. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The gap between the survivor average and the all-fund average would still appear if funds had closed for reasons unrelated to their returns.
+- [ ] A. In a hypothetical in which the same funds had instead closed at random, for reasons unrelated to their returns, the survivors would still be expected to average well above the average over all 1,000 funds.
 - [ ] B. Reporting the median instead of the mean of the survivors would remove the bias.
 - [ ] C. The average over all 1,000 funds was 4%, so the survivor-only average of 8% overstates it by 4 percentage points.
 - [ ] D. A missing-value check on the survivor file would reveal the 400 closed funds as blank rows.
@@ -124,7 +124,7 @@ A database lists the annualized returns of investment funds that are still opera
 
 **Why:**
 
-- A: If closure were independent of returns, the survivors would be a random subset and their average would match the full average in expectation.
+- A: If closure were independent of returns, the survivors would be a random subset of the funds and their expected average would match the all-fund average, so the gap arises only because closure is related to returns.
 - B: The median of the survivors is still computed on a filtered group and still excludes the poor performers.
 - C: (600 x 8 + 400 x -2) / 1,000 = 4, so excluding the closed funds raises the average.
 - D: Closed funds are absent from the file, not present with blanks.
@@ -378,7 +378,7 @@ Two annotators independently label 200 items as 'toxic' or 'not toxic'. Both say
 
 A binary classifier has true accuracy 92% on a population. The test labels come from an annotator who flips the correct label on a random 10% of items, independently of what the classifier does. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. If the annotator's mistakes fall on the same items the model also gets wrong, measured accuracy could exceed the true accuracy.
+- [ ] A. Suppose the annotator's flips, contrary to the independence stated above, fell mostly on items the model gets wrong; measured accuracy could then exceed the true accuracy.
 - [ ] B. Measured accuracy is higher than true accuracy because the noisy labels add extra correct matches.
 - [ ] C. A second model with true accuracy 93% would show an expected measured advantage of about 0.8 points over the first, not 1 point.
 - [ ] D. The same true difference between two models is harder to detect with noisy labels than with clean labels.
@@ -388,7 +388,7 @@ A binary classifier has true accuracy 92% on a population. The test labels come 
 
 **Why:**
 
-- A: Correlated errors can make the model agree with wrong labels, inflating agreement.
+- A: Correlated errors make the model agree with wrong labels; if all 8% of the model's errors were flipped and the other 2% of flips hit correct items, measured accuracy would be 0.92 - 0.02 + 0.08 = 98%.
 - B: With accuracy above 50% and independent symmetric noise, measured accuracy is lower than the true value.
 - C: Measured accuracy is 84.4% versus 83.6%; independent symmetric noise scales true differences by 1 - 2 x 0.10 = 0.8.
 - D: The measured gap shrinks while sampling variability does not, so the signal-to-noise ratio falls.
@@ -402,7 +402,7 @@ A model predicts whether a subscriber will cancel within the next 30 days. Featu
 
 - [ ] A. A feature that is strongly associated with the label and has no missing values is safe to keep, since it clearly carries predictive information.
 - [ ] B. cancellation_survey_sent is produced by the outcome being predicted, so it is not available when the prediction is needed.
-- [ ] C. Removing the flag and re-evaluating is a reasonable check; a large drop would show the earlier score came from leakage.
+- [ ] C. Removing the flag and re-evaluating is a reasonable check; a large drop would be consistent with the earlier score coming from leakage.
 - [ ] D. The 0.99 AUC on a random hold-out shows the model will perform about as well on live subscribers.
 - [ ] E. A random hold-out split would have detected the leak, because leaked rows would be kept apart from the training rows.
 
@@ -412,7 +412,7 @@ A model predicts whether a subscriber will cancel within the next 30 days. Featu
 
 - A: Strong association and completeness say nothing about whether the feature exists at prediction time.
 - B: A feature set after the event cannot be known at prediction time; using it is target leakage.
-- C: An ablation isolates how much of the performance depended on the suspect feature.
+- C: An ablation isolates how much of the performance depended on the suspect feature; a large drop is consistent with leakage, though a legitimately strong predictor would also cause one, so the timing of the flag is what establishes the leak.
 - D: The hold-out contains the same leaked flag, so the score measures the leak rather than predictive skill.
 - E: A random split puts the leaked flag in both partitions, so it cannot reveal a leak.
 

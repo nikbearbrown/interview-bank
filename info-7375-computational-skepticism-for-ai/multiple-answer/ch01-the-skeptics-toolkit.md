@@ -2,7 +2,7 @@
 
 ## MA-ch01.1
 
-A launch review for a deployed fraud-detection model hears five sentences from the team, each offered in support of the claim that the model "works in production." A checkable falsifier states an observation, possible to make, that would count against the claim. Check each statement that is a checkable falsifier. Each statement is worth 1 point (5 points total).
+A launch review for a deployed fraud-detection model hears five sentences from the team, each offered in support of the claim that the model "works in production," meaning that it meets its operating requirements for both scoring speed and fraud detection. A checkable falsifier states an observation, possible to make, that would count against the claim. Check each statement that is a checkable falsifier. Each statement is worth 1 point (5 points total).
 
 - [ ] A. "Median scoring latency at the gateway stays under 150 ms across 30 days of production traffic; a 7-day median above 150 ms means the claim has failed."
 - [ ] B. "Over 30 days, recall on confirmed fraud in a weekly random audit of 400 labelled transactions stays at or above 0.85; any week below 0.80 counts as failure."
@@ -14,7 +14,7 @@ A launch review for a deployed fraud-detection model hears five sentences from t
 
 **Why:**
 
-- A: A latency measurement over a defined window with a stated failure threshold can be checked and can fail.
+- A: Speed is one of the stated operating requirements, and a latency measurement over a defined window with a stated failure threshold can be checked and can fail.
 - B: It names a metric, a sample, a threshold and a window, so a specific audit result can contradict it.
 - C: "Performs well" and "high confidence" are compatible with any outcome, so nothing could show them wrong.
 - D: "Robust" and "unexpected" fix no metric, threshold or window, so no observation could count against the statement.
@@ -27,7 +27,7 @@ A launch review for a deployed fraud-detection model hears five sentences from t
 A team says: "Adding a retrieval step makes our assistant hallucinate less." A reviewer asks them to restate the claim as an explicit prediction, with assumptions and a falsifier, to be tested on a set of 500 held-out questions. Check each statement that would be a sound part of the restatement. Each statement is worth 1 point (5 points total).
 
 - [ ] A. Assumption: the assistant's fluent phrasing shows its answers are supported, so annotators can save time by not checking each answer against the documents.
-- [ ] B. Falsifier: if the unsupported-claim share with retrieval is no lower than without it on those 500 questions, the claim is refuted for this setup.
+- [ ] B. Falsifier, fixed before the run: if the unsupported-claim share with retrieval is not lower than without it on those 500 questions, judged by a significance test or margin stated in advance, the claim counts as refuted for this setup.
 - [ ] C. Success criterion: the claim counts as supported if no user complains about invented facts during the first week after release, since complaints are the clearest sign of a problem.
 - [ ] D. Prediction: on the same 500 held-out questions, the share of answers with a claim unsupported by the supplied documents, as judged by two annotators, will be lower with retrieval than without it.
 - [ ] E. Assumption, stated so it can be inspected: the 500 questions resemble real user traffic, and the annotators' judgments of whether a claim is supported are accurate.
@@ -202,7 +202,7 @@ An LLM is given only a table of weekly revenue and asked why revenue fell 8% las
 
 An LLM assistant attaches a stated confidence to each answer. An independent audit of 200 answers for which it stated confidence of at least 90% finds that 150 were correct. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A 95% confidence interval for the accuracy of those 200 answers runs from roughly 69% to 80%, so a true accuracy of 90% is not plausible for this group.
+- [ ] A. A 95% confidence interval for the accuracy of those 200 answers runs from roughly 69% to 81%, so a true accuracy of 90% is not plausible for this group.
 - [ ] B. If the underlying model or the mix of questions changes, an earlier calibration audit may no longer describe the assistant.
 - [ ] C. The observed accuracy of those answers is 75%, which is below the stated confidence.
 - [ ] D. A phrase such as "I am 95% sure" from a language model is a calibrated probability by construction, because the model computes it from its own uncertainty.
@@ -212,7 +212,7 @@ An LLM assistant attaches a stated confidence to each answer. An independent aud
 
 **Why:**
 
-- A: The normal-approximation interval is 0.75 plus or minus about 0.06, which excludes 0.90.
+- A: The normal-approximation interval is 0.75 plus or minus about 0.06, roughly 0.69 to 0.81, which excludes 0.90.
 - B: Calibration is a property of a system on a population of questions, so it can change when either one does.
 - C: 150 / 200 = 0.75.
 - D: Verbal confidence is generated text; whether it tracks the frequency of being right has to be measured, not assumed.
@@ -420,7 +420,7 @@ A static-analysis tool finds each instance of a certain class of vulnerability i
 
 ## MA-ch01.20
 
-A team's test suite passes on its code. To learn what a pass means, they inject 50 small deliberate faults into the code, one at a time, and rerun the suite for each. The suite fails (detects the fault) for 31 of the 50. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A team's test suite passes on its code. To learn what a pass means, they inject 50 small deliberate faults into the code, one at a time, each confirmed to change the program's behavior on some input that can occur, and rerun the suite for each. The suite fails (detects the fault) for 31 of the 50. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. Injecting known faults is a way to measure whether a checking method can detect faults at all.
 - [ ] B. The pass on the unmodified code shows that the code contains no faults.
@@ -470,7 +470,7 @@ A model drafts 2,000 contract summaries a day at negligible cost. A lawyer needs
 - [ ] B. Checking a random 5% sample would take about 33 lawyer-hours per day.
 - [ ] C. Checking every summary would take about 333 lawyer-hours per day.
 - [ ] D. A random sample of 100 summaries has at least a 95% chance of containing at least one erroneous summary.
-- [ ] E. A random sample of 150 summaries in which no error is found shows that the error rate is below 2%.
+- [ ] E. A random sample of 150 summaries in which no error is found proves, with certainty, that the error rate is below 2%.
 
 **Key:** A=T B=F C=T D=F E=F
 
@@ -480,7 +480,7 @@ A model drafts 2,000 contract summaries a day at negligible cost. A lawyer needs
 - B: 5% of 2,000 is 100 summaries, which is 1,000 minutes, about 17 hours.
 - C: 2,000 x 10 minutes = 20,000 minutes, which is about 333 hours.
 - D: The chance of at least one error is 1 - 0.98^100, about 0.87, below 95%.
-- E: A clean sample of 150 is evidence against a high rate but cannot rule out a 2% rate, which would give no errors about 5% of the time.
+- E: A clean sample of 150 is evidence against a high rate but cannot rule out a 2% rate with certainty, since a 2% rate would give no errors in 150 about 5% of the time (0.98^150 is about 0.048).
 
 **Source:** The solve-verify asymmetry
 

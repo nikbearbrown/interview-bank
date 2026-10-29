@@ -426,7 +426,7 @@ A disease has 10% prevalence. Model M1 outputs 0.10 for every patient. Model M2 
 - [ ] B. M1 is calibrated in aggregate but has an AUC of 0.5, so it cannot separate patients.
 - [ ] C. M1 would be preferred over M3 for deciding which patients to examine first, because M1's probabilities match the prevalence exactly.
 - [ ] D. M2 has an AUC of 1.0 yet its scores are badly calibrated for a 10% prevalence.
-- [ ] E. Applying a strictly increasing rescaling to M2's scores, fitted on labeled data, could correct its probabilities without changing its AUC.
+- [ ] E. Applying a strictly increasing rescaling to M2's scores, fitted on labeled data, could bring its probabilities much closer to the observed frequencies without changing its AUC.
 
 **Key:** A=F B=T C=F D=T E=T
 
@@ -436,7 +436,7 @@ A disease has 10% prevalence. Model M1 outputs 0.10 for every patient. Model M2 
 - B: Predicting the base rate for everyone matches the observed frequency overall but gives no way to rank patients.
 - C: Prioritizing patients requires a ranking, which M1 cannot supply and M3 can.
 - D: Perfect ranking is consistent with scores that bear no honest relation to the actual frequency of disease.
-- E: A strictly increasing map preserves the order of scores, so AUC is unchanged while the stated probabilities can be brought into line with observed frequencies.
+- E: A strictly increasing map preserves the order of scores, so AUC is unchanged while the stated probabilities can be brought much closer to the observed frequencies (exact calibration with perfectly separated classes would need values of 0 and 1, which a strictly increasing map cannot give, so the fit is approximate).
 
 **Source:** Calibration
 
@@ -596,7 +596,7 @@ A binary classifier outputs the probability sigma(z) from a logit z, where sigma
 
 ## MA-ch02.28
 
-A clinic can follow up a flagged patient at a cost of $20. A positive case that is missed costs $400. A model gives each patient a probability of being positive. For the first statements, assume the probabilities are calibrated. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A clinic can follow up a flagged patient at a cost of $20. A positive case that is missed costs $400. A model gives each patient a probability of being positive. For statements A, B, D and E, assume the probabilities are calibrated (statement C considers miscalibrated probabilities). Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. A 0.5 cutoff minimizes expected cost, as it minimizes the number of classification errors.
 - [ ] B. Following up whenever the probability exceeds about 0.048 minimizes expected cost.

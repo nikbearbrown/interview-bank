@@ -10,7 +10,7 @@ A company wants to build a model that ranks job applicants for interview, traine
 
 1. Covers the world and history: past hiring and promotion decisions reflect earlier practices, so labels recording who was hired can encode earlier disparities even when the records are accurate; a check compares the label with an independent outcome measure or examines variation across decision-makers.
 2. Covers sampling and representation: who appears in the data (applicants screened out earlier have no performance outcomes, and some groups may be thinly represented); a check compares the composition of the data with the population the model will be applied to.
-3. Covers measurement, labels and features: proxies for group (postcode, school, gaps in employment) or measurement that is noisier or more biased for some groups; a check predicts group from the features or ablates a suspect feature and watches the gap.
+3. Covers features and measurement: proxies for group (postcode, school, gaps in employment) or measurement that is noisier or more biased for some groups; a check predicts group from the features or ablates a suspect feature and watches the gap.
 4. Covers model, objective and evaluation: training on average loss favours the largest group and pooled metrics hide weak subgroups; a check reports disaggregated metrics with uncertainty, including intersectional groups.
 5. Covers deployment and use: how cutoffs and human reviewers act on the ranking and the feedback loop in which people hired under the model generate the next training data; a check tracks outcome rates by group at each decision stage after deployment.
 
@@ -25,7 +25,7 @@ A bank removes the field "gender" from the inputs of its credit-scoring model an
 **Rubric (1 point each):**
 
 1. Explains that other inputs correlated with gender (occupation, spending categories, part-time work history) let a model reconstruct much of the removed information, so outcomes can still differ by gender.
-2. Explains that a model learns whatever predicts its training labels, so if the labels reflect past disparities by gender the model can reproduce them through correlated inputs.
+2. Explains that a model learns whatever predicts its training labels, so if the labels themselves record past disparities by gender, a model that fits them well can reproduce those disparities whichever inputs remain.
 3. Describes a test for proxies, such as trying to predict gender from the remaining inputs (high accuracy means the information is present) and comparing outcomes by gender or re-scoring with suspect inputs removed.
 4. Notes that correlation with gender does not by itself show improper use, because a correlated input may carry legitimate information about repayment, so inputs should be judged by their effects and by the cost of dropping them.
 5. Notes that deleting the attribute also removes the ability to measure outcomes by group, so the field should be retained for auditing where the law allows, and that mitigation at other stages should be considered.
@@ -60,7 +60,7 @@ A lender reports approval counts for two groups across two loan products. Secure
 2. Explains the arithmetic: each overall rate is an average of the product rates weighted by that group's application mix, and group P applies mostly for the low-approval unsecured product while group Q applies mostly for the secured one.
 3. Describes a standardized comparison on a common product mix (for example a 50/50 mix gives 50% for P and 40% for Q) as a way to compare the groups on equal footing.
 4. States that neither table is automatically correct: if product choice is independent of the lender's process the within-product comparison is fairer, but if the lender steers groups into products the overall gap may reflect real disadvantage that stratifying hides.
-5. Names the information needed (why applicants chose different products, applicant risk within products, who set the mix) and concludes that the data alone support a description and a conditional claim, not a verdict on bias.
+5. Names the information needed (why applicants chose different products, applicant risk within products) and concludes that the data alone support a description and a conditional claim, not a verdict on bias.
 
 **Source:** How bias types compound
 
@@ -90,8 +90,8 @@ A firm trains a model to predict who will be promoted, using ten years of its ow
 
 1. Explains that the label records what decision-makers did, not what ought to have happened, so a model that predicts it well reproduces past patterns and its accuracy measures fidelity to the past rather than fairness.
 2. Explains that the records can be complete, correctly entered and representative and still carry the disparity, so data-quality and sampling checks do not detect it.
-3. Describes a diagnostic: compare promotion rates by group among employees with similar independently measured performance, and look at variation across decision-makers or periods.
-4. Describes options with their limits (a less biased outcome measure, down-weighting earlier periods, constraints that reduce reliance on group-correlated signals), each trading fit to the past against fairness, and says how much to trade is a value judgement.
+3. Describes a check on the label itself: compare promotion rates by group among employees with similar independently measured performance (not performance as rated by the same promoters), and look at variation across decision-makers and periods.
+4. Describes options with their limits (a less biased outcome measure, relabelling or reweighing, constraints that reduce reliance on group-correlated signals), each trading fit to the past against fairness, and says how much to trade is a value judgement.
 5. Notes that an alternative outcome measure has its own distortions, that deployment should be monitored, and that it may be right not to automate the decision when no defensible target exists.
 
 **Source:** Ten mechanisms, distinguished
@@ -107,7 +107,7 @@ A lender approves loans only for applicants whose score exceeds a cutoff, and it
 1. Defines the problem: outcomes are observed only for applicants who received the favourable decision, and the earlier policy made that decision, so the labelled data are a selected subset rather than a random one.
 2. Explains the consequences: performance measured on approved applicants does not describe performance on rejected ones, and error rates for rejected applicants, such as how many would have repaid, cannot be computed from the data at all.
 3. Describes randomized exploration (approving a small random sample of applicants below the cutoff) as producing unbiased outcomes for the rejected region, and notes its cost and ethical considerations.
-4. Describes a second approach such as reject inference, bounds or sensitivity analysis, or using natural variation in decision-makers' leniency, and states that these rely on assumptions (for example no unmeasured confounding) that cannot be verified from the data.
+4. Describes a second approach such as reject inference, bounds or sensitivity analysis, or using natural variation in decision-makers' leniency, and states its cost: reject inference and leniency designs rely on assumptions (for example no unmeasured confounding) that cannot be verified from the data, while bounds give wide intervals and sensitivity analysis depends on assumed strengths of confounding.
 5. Says findings should be reported with the uncertainty that comes from the unobserved region, and that the old policy's bias carries into any model trained naively on the approved applicants.
 
 **Source:** Ten mechanisms, distinguished
@@ -121,7 +121,7 @@ A city uses a system that sends inspectors to the neighbourhoods with the most v
 **Rubric (1 point each):**
 
 1. Explains the mechanism: violations are recorded where inspectors look, so the number recorded depends on inspection effort as well as on the true rate, and sending inspectors by past records makes new records reflect past allocation.
-2. Explains the outcome: the initial imbalance is self-confirming, equal true rates still produce records that show the heavily inspected area as worse, and an allocation rule that rewards the leader more than proportionally makes the gap grow.
+2. Explains the outcome: although the true rates are equal, the recorded imbalance persists (if inspectors are allocated in proportion to past records) or widens (if the allocation favours the leader more than proportionally), so the heavily inspected area keeps looking worse.
 3. Explains that more data from the same process cannot correct it, because every new record is shaped by the allocation, so the estimate stays biased even as it becomes more precise.
 4. Describes detection: compare the records with a measurement independent of inspector presence (complaints, surveys, random inspections) and check whether recorded rates track effort, for example by looking at rates per inspection hour.
 5. Describes ways to break the loop: randomized or exploratory allocation of some effort, normalizing counts by effort, limits on how far allocation follows past records, and periodic audits.
@@ -139,7 +139,7 @@ A screening model selects 40% of applicants from group A and 20% from group B. T
 1. Describes a pre-processing approach (reweighing or resampling the training examples, relabelling, or removing or transforming features) and its limitation: it changes the data the model sees but does not guarantee fair predictions or correct inaccurate labels for individuals.
 2. Describes an in-processing approach (a fairness penalty or constraint in the training objective, or adversarial training) and its limitation: it needs group information during training, gives up some agreement with the training labels, and satisfies only the chosen criterion.
 3. Describes a post-processing approach (group-specific cutoffs or adjusted scores) and its limitation: it works with any trained model but treats applicants with the same score differently by group, needs group at decision time, and leaves the learned scores unchanged.
-4. Identifies when none work: when the disparity comes from a biased label, from measurement of differing quality across groups, or from the downstream process (reviewers, cutoffs, feedback), because these methods operate on the model's fit to the labels and the metrics.
+4. Identifies when none work well: when the labels are inaccurate for individuals (aggregate adjustment cannot repair individual errors), when measurement quality differs across groups, or when the gap arises in the downstream process (reviewers, cutoffs, feedback), because these methods act on the model's fit to the labels and the chosen metrics, not on the process that produced the gap.
 5. States that the choice should follow a diagnosis of where the gap arises, that the effect must be checked on held-out data with uncertainty, and that improving one metric can worsen others.
 
 **Source:** Leverage analysis — finding the high-leverage intervention point
@@ -153,8 +153,8 @@ A hospital system deploys a risk-prediction product built by a vendor, trained o
 **Rubric (1 point each):**
 
 1. Maps decisions to the parties who control them (data collection, labelling, model training, the cutoff and use in care, monitoring) and explains that accountability follows control, with the deploying hospital remaining accountable for its use of the tool.
-2. Describes a datasheet for the dataset: how and why the data were collected, who is and is not represented, how and by whom labels were produced, known gaps and recommended uses.
-3. Describes a model card for the model: intended and out-of-scope uses, the evaluation data, performance broken down by subgroup with uncertainty, and known limitations.
+2. Describes dataset documentation (for example a datasheet) covering how and why the data were collected, who is and is not represented, how and by whom labels were produced, known gaps and recommended uses; equivalent documents are accepted.
+3. Describes model documentation (for example a model card) covering intended and out-of-scope uses, the evaluation data, performance broken down by subgroup with uncertainty, and known limitations; equivalent documents are accepted.
 4. Describes an independent audit: the auditor can access or query the model and data, reproduces the reported numbers, tests subgroups the developer did not choose, and records the model version evaluated.
 5. States the limits: documents are disclosures that can be incomplete or out of date, they do not make a system fair, and they must be kept current and used in procurement and monitoring decisions for responsibility to be inspectable.
 
@@ -204,21 +204,21 @@ A screening programme flags a patient for follow-up if a device reading is below
 2. Identifies this as measurement bias: the instrument errs systematically for one group, so the recorded value is a distorted measure of the quantity of interest and the same cutoff does not mean the same thing in both groups.
 3. Explains that more data of the same kind, or a better model trained on the same readings, reproduces the offset, because the distortion is in the inputs rather than in the learning.
 4. Describes detection: compare the device readings with an independent gold-standard measurement within each group and look at residual patterns by group, rather than relying on the readings alone.
-5. Describes remedies and their limits: recalibrate or replace the device, apply a validated correction to the readings, or use group-aware cutoffs, all of which need gold-standard data and a named owner of the instrument.
+5. Describes remedies and their limits: recalibrate or replace the device, apply a validated correction to the readings, or use group-aware cutoffs, noting that correction and recalibration need gold-standard comparison data.
 
 **Source:** Three flavors of bias, mapped to the ten types
 
 ## ES-ch06.14
 
-A company's salary-recommendation model predicts salaries for women that are on average 8% lower than for men. When job level is added as a control, the gap shrinks to 2%. Job level was assigned by promotion decisions made before the model was built. Explain what each figure answers, whether controlling for job level is appropriate, what a "change only the group and hold everything else fixed" test can and cannot show, and what you would conclude.
+A company's salary-recommendation model predicts salaries for women that are on average 8% lower than for men. When an audit compares predictions among employees at the same job level, the gap shrinks to 2%. Job level was assigned by promotion decisions made before the model was built. Explain what each figure answers, whether adjusting for job level is appropriate, what a "change only the group and hold everything else fixed" test can and cannot show, and what you would conclude.
 
 **Points:** 5
 
 **Rubric (1 point each):**
 
 1. States that the 8% figure compares average predictions without conditioning (the association between group and prediction) and the 2% figure compares predictions among people at the same job level, so they answer different questions.
-2. Explains that job level may be a mediator: if earlier promotion decisions were influenced by group, controlling for it removes the part of the gap that flows through those decisions and can understate disadvantage, whereas if level is an independent and legitimate reflection of qualifications the 2% is the more relevant figure.
-3. States that which paths are acceptable is settled by causal assumptions and a normative judgement, not by the data alone.
+2. Explains that job level may be a mediator: if earlier promotion decisions were influenced by group, comparing within level removes the part of the gap that flows through those decisions and can understate disadvantage.
+3. States that whether job level is a legitimate reason for pay differences (so the 2% is the relevant figure) or a channel of the disparity (so the 8% matters) is settled by causal assumptions and a normative judgement, not by the data alone.
 4. Explains that a "change only group" test is an intervention on the model's input or on an assumed causal model, that it shows whether the output depends on group-related inputs, and that holding other features fixed can be incoherent when they are consequences of group.
 5. Concludes that neither number alone establishes discrimination or its absence, recommends reporting both with their assumptions, and notes that evidence about the real-world cause needs further design such as audit studies, natural experiments or examination of the promotion process.
 
@@ -236,6 +236,6 @@ A company deploys a customer-support assistant built on a language model that it
 2. Says to separate the paths: check whether the company's prompts, retrieved content and post-processing contribute (by ablating or replacing them) before attributing the difference to the provider's model.
 3. Lists the company's options if the cause lies upstream (switch or add providers, constrain the scope of use, add checks or human review on outputs, or decline to deploy for sensitive decisions) and notes each option's limits, for example that filters catch only what they can detect.
 4. Assigns responsibility by control: the company remains accountable for deploying the assistant and for the outcomes of its use, while the provider is accountable for documenting model behaviour, known limitations and changes, and contracts should secure access and notice.
-5. Says the company should pin the model version, re-run the audit when the provider changes the model, and keep records of tests and decisions so the assignment of responsibility can be checked later.
+5. Says the company should pin the model version where the provider offers that, re-run the audit when the provider changes the model, and keep records of tests and decisions so the assignment of responsibility can be checked later.
 
 **Source:** A limit case: when the leverage is upstream of your pipeline — and who owns it then

@@ -11,7 +11,7 @@ Two groups of applicants have base rates (shares with the positive outcome) of 0
 1. Computes precision of about 0.89 in the group with base rate 0.5 (0.4/(0.4+0.05)) and about 0.67 in the group with base rate 0.2 (0.16/(0.16+0.08)).
 2. Writes Bayes' rule for precision, or its odds form: the odds of a positive outcome given a positive prediction equal the prior (base-rate) odds times the likelihood ratio TPR/FPR.
 3. Observes that equal TPR and FPR give equal likelihood ratios, so precision then moves with the base rate and cannot be equal when base rates differ.
-4. States the reverse: requiring equal precision with unequal base rates forces TPR/FPR to differ across groups, so TPR and FPR cannot both be equal, and this is arithmetic about population rates rather than a defect of any algorithm.
+4. States that this is arithmetic about population rates, not a defect of any algorithm or of the data, so more data or a better learner does not remove it; the conflict is over which criterion to prefer.
 5. Gives the conditions under which the conflict disappears: equal base rates, or a classifier with no false positives such as a perfect one.
 
 **Source:** The arithmetic — the actual proof, not a gesture
@@ -34,7 +34,7 @@ A hospital uses a model to flag patients for a care-management program (flag mea
 
 ## ES-ch07.3
 
-An independent analyst reports that a risk tool's false-positive rate is 45% for group X and 20% for group Y. The vendor answers that the tool is equally well calibrated for both groups: among people given any particular risk score, the proportion who experience the outcome is the same in X and Y. The base rate of the outcome is higher in group X. Both statements are accurate. (a) Explain how both can be true. (b) Say what kind of disagreement this is and what would and would not resolve it. (c) Say what information you would give the body that must decide whether to keep using the tool.
+An independent analyst reports that a risk tool's false-positive rate is 45% for group X and 20% for group Y. The vendor answers that the tool is equally well calibrated for both groups: among people given any particular risk score, the proportion who experience the outcome is the same in X and Y. The base rate of the outcome is higher in group X. Both statements are accurate. (a) Explain how both can be true. (b) Say what kind of disagreement this is and what would and would not resolve it. (c) Say what information you would give the body that must decide whether to keep using the tool, who should make and record that decision, and what should be monitored afterwards.
 
 **Points:** 5
 
@@ -59,7 +59,7 @@ Explain the principle of individual fairness (similar individuals should be trea
 1. States the principle in a usable form: the difference in how two people are treated (for example their outcome distributions) should be bounded by a task-relevant distance between them.
 2. Explains that without a similarity metric the principle says nothing, because someone must specify which differences between people are relevant to the task.
 3. Shows that a metric ignoring postal code makes the two applicants similar and so requires like treatment, while a metric that counts postal-code distance permits different treatment, giving opposite verdicts for the same model.
-4. Notes that the metric embeds a judgment about relevant differences and can build in historical inequity, for example if it counts as meaningful a difference that reflects past disadvantage, so it needs accountable review rather than a default.
+4. States what each metric assumes: ignoring postal code assumes location is irrelevant to the task (or only a proxy for something that should not count), counting it assumes location carries task-relevant information; either is a value judgment and can build in historical inequity, so it needs accountable review rather than a default.
 5. Names a practical difficulty (all pairs are costly to check and need outcome distributions, so audits sample similar pairs and depend on the metric) and a disagreement (a model can meet group parity yet treat near-identical people differently, or be individually consistent yet show group disparity).
 
 **Source:** Beyond group metrics: individual fairness
@@ -73,9 +73,9 @@ A company states: "Our hiring model is fair because it never sees applicants' ge
 **Rubric (1 point each):**
 
 1. Explains proxies: features correlated with gender, such as wording, career gaps or activities, can let a model reconstruct the removed attribute, so outcomes can still differ by gender.
-2. States that omitting the attribute blocks only direct use, not indirect effects, and is not a guarantee about selection rates, error rates or calibration by group; in frameworks that recognize disparate impact a facially neutral practice can still be challenged.
+2. States that fairness is judged by outcomes rather than by which inputs were used: in frameworks that recognize disparate impact a facially neutral practice can still be challenged, so "never sees gender" is not a defense.
 3. Describes tests: keep gender in the evaluation data, apart from model inputs, and compute selection rates, error rates and calibration by gender with uncertainty; also check whether gender can be predicted from the model's inputs or scores.
-4. Notes that deleting the attribute from all data removes the ability to audit, and that in some settings using the attribute can improve accuracy or error balance for a group when the feature-outcome relationship differs by group.
+4. Names a second route to gender-disparate outcomes besides proxies: training labels that record past hiring decisions or ratings can carry earlier bias, and unequal representation or data quality across groups can make the model's errors fall unevenly, neither of which depends on the model seeing gender.
 5. Recommends concrete steps: choose which fairness criterion matters for the harm involved, measure it, mitigate within legal limits, document the choice and its trade-offs, and monitor after deployment.
 
 **Source:** Fairness through awareness vs. unawareness
@@ -98,7 +98,7 @@ Compare (i) a single cutoff of 0.6 for both groups with (ii) a cutoff of 0.6 for
 
 1. Under the single cutoff of 0.6: S has true-positive rate 0.70 and false-positive rate 0.20, T has 0.55 and 0.20, so false-positive rates match but there is a 15-point true-positive gap.
 2. Under cutoffs 0.6 for S and 0.5 for T: both true-positive rates are 0.70, but the false-positive rates are 0.20 for S and 0.35 for T, so the gap moves to the false-positive rate.
-3. Explains that group T's score is less informative (its trade-off curve lies below S's), so no pair of cutoffs equalizes both rates, and exact equalized odds would require degrading S's decisions, for example by randomizing, at a cost in accuracy.
+3. Explains that among the tabulated cutoffs no pair equalizes both rates because group T's score is less informative (at a false-positive rate of 0.20, T's true-positive rate is 0.55 versus S's 0.70), so exact equality would require degrading S's decisions in some way (for example by randomizing some of them) at a cost in accuracy.
 4. Names objections: option (ii) gives people with the same score different decisions depending on group, which individual-level arguments and some legal regimes treat as problematic; option (i) is group-blind but approves qualified applicants in T less often (0.55 versus 0.70).
 5. Recommends choosing by the harm of each error type with an accountable decision-maker, considering improving the score for T (better data or features) rather than only moving cutoffs, and monitoring both rates and precision after deployment.
 
@@ -112,8 +112,8 @@ A product manager says: "Fairness constraints always cost accuracy, so we should
 
 **Rubric (1 point each):**
 
-1. Identifies when a real tradeoff arises: for demographic parity when base rates differ and labels are accurate, a perfect predictor violates parity so meeting it forces errors; for equalized odds when scores are differently informative across groups, equalizing means degrading one group's decisions.
-2. Shows the cost is not universal: with equal base rates or for criteria a perfect classifier meets (such as equalized odds), no loss is forced, and when labels are noisy or biased against a group, accuracy measured on those labels is itself distorted.
+1. Identifies when a real tradeoff arises: for demographic parity when base rates differ and labels are accurate, a perfect predictor violates parity so meeting it forces errors; for equalized odds when no perfect classifier exists and the available scores are less informative for one group, equalizing means degrading that group's decisions.
+2. Shows the cost is not universal: with equal base rates, or for criteria that a perfect classifier meets (such as equalized odds) when such a classifier is possible, no loss is forced, and when labels are noisy or biased against a group, accuracy measured on those labels is itself distorted.
 3. Gives a valid numerical illustration, for example two equal groups with base rates 0.6 and 0.3, where a perfect classifier selects at 0.6 and 0.3 and any classifier forced to equal selection rates has accuracy at most 0.85.
 4. Explains that maximizing accuracy is itself a choice: it weights all errors equally and lets error rates fall unevenly across groups, deciding by default who bears which mistakes.
 5. Describes presenting the tradeoff as a frontier, with metrics at several cutoffs or constraint strengths and the cost stated as extra false positives and false negatives per 1,000 by group, so accountable decision-makers choose a point.
@@ -129,8 +129,8 @@ A health system will use a model to flag patients for a limited care-coordinatio
 **Rubric (1 point each):**
 
 1. Identifies the dominant harm (missed high-need patients) and who bears it, and links the chosen criterion to it, for example equal opportunity, or equalized odds if the cost of wasted slots also matters.
-2. States what is given up and why: demographic parity will not hold because base rates differ, and precision will differ across groups, since with differing base rates precision parity cannot coexist with equal error rates.
-3. Addresses the base-rate difference and label validity: because access disparities shape who appears high-need in records, checks that the recorded outcome measures need rather than past utilization, and treats any redress of the disparity as a policy question about allocation.
+2. States what is given up and why: if error rates are equalized, flag rates follow the base rates (for example about 0.31 versus 0.205 at a true-positive rate of 0.8 and a false-positive rate of 0.1), so demographic parity and precision parity are given up; equalizing flag rates instead would mean flagging more non-high-need patients in group Y.
+3. Addresses the base-rate difference: because it partly reflects unequal access to care, whether and how to redress it through allocation is a policy question rather than only a statistical one, and the chosen criterion changes who receives the limited slots.
 4. States what would change the choice: evidence on the relative costs of the two errors, a change in program capacity, a finding that labels are biased, or subgroup results with their uncertainty.
 5. Says the choice is a value decision to be made and recorded by accountable parties (clinical leadership, ethics review, affected communities) and followed by monitoring of the chosen and traded-away metrics by group.
 
@@ -148,7 +148,7 @@ A regulator requires that credit-scoring models satisfy equalized odds across a 
 2. Lists decisions left open: how close counts as equal (tolerance), which groups and intersections, which cutoff, what outcome definition and time window, and what happens when sample sizes are small.
 3. Names measurement difficulties: outcomes such as repayment are observed only for approved applicants (selective labels), so rates for declined applicants must be estimated; the group attribute may be unavailable or inferred; the outcome label may be imperfect.
 4. Explains that equalized odds generally cannot coexist with equal precision or calibration within groups when base rates differ, so the lender still accepts and should document trade-offs against other criteria.
-5. Adds that compliance must be monitored on live data with uncertainty and drift in mind, and that meeting a mandated metric does not show that the objective or the construct being predicted is fair.
+5. Adds that measuring compliance is not a one-off: it must be monitored on live data with uncertainty and drift in mind.
 
 **Source:** Who should have decided
 
@@ -178,7 +178,7 @@ In an audit of a fraud model, 2,000 legitimate transactions from customer group 
 
 1. Computes false-positive rates of 0.12 for A and 0.20 for B, a difference of 0.08.
 2. Computes a standard error of about 0.033 (the square root of (0.2×0.8/150 + 0.12×0.88/2000)) and an approximate 95% interval for the difference of roughly 0.01 to 0.15.
-3. Computes a two-proportion test statistic of about 2.9 (pooled rate 270/2150), with a p-value well under 0.01, and says this is evidence that the true rates differ.
+3. Computes a two-proportion z statistic of about 2.4 (unpooled, consistent with the interval; two-sided p about 0.017) or about 2.85 (pooled rate 270/2150; p about 0.004), and says this is evidence that the true rates differ.
 4. Interprets correctly: chance is an unlikely explanation for the gap, but its size is imprecisely known because group B is small, and the test says nothing about why the gap exists or whether it is unfair, nor about other criteria.
 5. Explains that smaller or intersectional groups give wider intervals, that failing to find a significant gap is not evidence of equality, that many subgroup comparisons inflate false alarms, and that more data or pre-planned sample sizes are needed.
 
@@ -196,7 +196,7 @@ Describe counterfactual fairness for a decision about one person. Using a causal
 2. Describes the steps: infer the person's background factors from what was observed (abduction), set the attribute to the alternative value (action), and propagate through the causal model to see the prediction (prediction).
 3. Says it requires a causal model of how the variables are generated, which observational data alone cannot supply because different structures fit the same data, and the verdict is relative to the assumed model.
 4. Gives a remedy such as using only variables not causally downstream of the protected attribute, or removing the attribute's influence from them, and names a cost: lost predictive information and the need to decide which influences to remove.
-5. Notes that deciding which causal paths are acceptable is a value judgment the graph does not make, and that counterfactual fairness does not imply group criteria such as equalized odds.
+5. Notes that it also requires deciding which causal paths from the protected attribute count as unfair, a value judgment the causal graph does not make and that group metrics never ask for.
 
 **Source:** Causal fairness: what the data cannot tell you
 
@@ -224,8 +224,8 @@ A university's admissions tool selects 30 of 100 applicants in group X and 30 of
 
 **Rubric (1 point each):**
 
-1. Shows demographic parity holds (0.30 in each group) and computes true-positive rates of 0.60 (X) and 1.00 (Y), false-positive rates of 0 (X) and 10/80 = 0.125 (Y), and precisions of 1.00 and 0.67, so equal opportunity, equalized odds and predictive parity fail.
-2. Computes that a qualified applicant in X is selected with probability 0.60 and in Y with probability 1.00, so equally qualified people face different chances even though group selection rates are equal.
+1. Shows demographic parity holds (0.30 in each group) and computes false-positive rates of 0 (X) and 10/80 = 0.125 (Y) and precisions of 1.00 and 0.67, so equalized odds and predictive parity fail.
+2. Computes that a qualified applicant is selected with probability 0.60 in X (30/50) and 1.00 in Y (20/20), the true-positive rates, so equal opportunity fails and equally qualified people face different chances even though group selection rates are equal.
 3. Explains that parity is an aggregate property blind to who is selected within a group; here it is achieved by passing over qualified applicants in one group and admitting unqualified ones in the other.
 4. States that individual fairness would require similar (equally qualified) applicants to be treated similarly, which needs a similarity metric specifying the relevant qualifications, and that the tool violates it.
 5. Proposes a revision, such as one rule applied to everyone based on qualification, accepting the group selection rates that result or addressing disparities upstream, and notes this trades demographic parity for individual consistency, a value choice.
@@ -241,7 +241,7 @@ A team wants to reduce a gap in true-positive rates between two groups in a trai
 **Rubric (1 point each):**
 
 1. Pre-processing: a technique that changes the training data (reweighting, resampling, relabeling or transforming features), which needs group labels at training time and whose limitation is that it works indirectly and may not hit the target metric.
-2. In-processing: a technique that changes the training objective (a fairness penalty or constraint, or adversarial debiasing), which needs retraining and control of the training code, with an accuracy trade-off built in.
+2. In-processing: a technique that changes the training objective (a fairness penalty or constraint, or adversarial debiasing), which needs retraining and control of the training code, with a usual accuracy trade-off.
 3. Post-processing: a technique that adjusts decisions on a frozen model (group-specific cutoffs or score adjustment), which needs the group attribute at decision time and invites objections that equal scores get different decisions.
 4. States that none can fix mismeasured or biased labels, missing data or structural conditions upstream of the data, and none can satisfy all fairness criteria at once when base rates differ; they implement a chosen criterion.
 5. Gives selection factors: legal limits, access to the model and data, the target criterion, acceptable accuracy loss and auditability, followed by evaluation by group with uncertainty before and after, and documentation of trade-offs.

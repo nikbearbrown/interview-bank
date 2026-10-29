@@ -93,7 +93,7 @@ A security team has no access to a deployed image classifier's weights or gradie
 A team evaluates a defended image classifier on 1000 test images at a fixed L∞ budget. A white-box gradient attack leaves 74% of the images correctly classified. A transfer attack from a separately trained surrogate model, with the same budget, leaves 41% correctly classified. The defense places a non-differentiable preprocessing step (random rounding of pixel values) in front of the network. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. The 41% result shows that the model's accuracy under the worst-case perturbation at this budget is exactly 41%.
-- [ ] B. A white-box attack, having more information, must be at least as strong as any black-box attack on the same model.
+- [ ] B. Because a white-box attacker has strictly more information, any particular white-box attack procedure, such as the gradient attack run here, is guaranteed to lower accuracy at least as much as any black-box attack on the same model.
 - [ ] C. A suitable next test is an adaptive attack that approximates or averages over the preprocessing step.
 - [ ] D. The transfer attack beating the white-box attack points to uninformative white-box gradients (gradient masking), so 74% overstates robustness.
 - [ ] E. Both 74% and 41% are upper bounds on the model's worst-case accuracy at this budget, and 41% is the tighter one.
@@ -103,7 +103,7 @@ A team evaluates a defended image classifier on 1000 test images at a fixed L∞
 **Why:**
 
 - A: Any particular attack gives only an upper bound on worst-case accuracy; a stronger attack could push the figure below 41%.
-- B: A white-box attack can fail through optimization difficulty (noisy, shattered or masked gradients), while another route succeeds, so no such ordering is assured.
+- B: A white-box attacker could in principle do at least as well, but a particular white-box procedure can fail through optimization difficulty (noisy, shattered or masked gradients) while another route succeeds, so no such ordering is guaranteed for a given attack.
 - C: Attacks designed with knowledge of the defense, such as approximating the non-differentiable step or averaging over the randomness, are the standard way to test such a defense.
 - D: A defense that only disrupts gradient computation makes the white-box attack fail without making nearby inputs correctly classified, and a different attack route exposes this.
 - E: Each attack's accuracy is an upper bound because the true worst case is at most what any attack finds; the lower figure is the tighter bound.
@@ -178,13 +178,13 @@ An image classifier with 3072 input values scores 93% on clean test images. Addi
 
 ## MA-ch04.9
 
-A model detects pneumonia on chest X-rays. Training and test images come from two hospitals, 5000 images each. Hospital A's images carry a scanner tag and 80% of its patients are positive. Hospital B's images carry a different tag and 10% of its patients are positive. On a random held-out split of images from these two hospitals the model scores 88% accuracy. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A model detects pneumonia on chest X-rays. The collection has 10,000 images in all, 5000 from each of two hospitals. Hospital A's images carry a scanner tag and 80% of its patients are positive. Hospital B's images carry a different tag and 10% of its patients are positive. The collection is split at random into training and held-out images, so the held-out set has the same hospital shares and the same tag-label link as the whole collection, and it is large enough that its accuracy figures are accurate to within about one percentage point. On the held-out set the model scores 88% accuracy. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Always predicting the more common class overall would score 55%.
+- [ ] A. Always predicting the more common class overall would score about 55% on the held-out set.
 - [ ] B. Testing on images from a third hospital, whose images carry neither tag and whose prevalence is unrelated to any tag, would test whether the model relies on the tag.
 - [ ] C. Cropping the visible tag out of every image guarantees that the model cannot use any other hospital-specific cue.
-- [ ] D. A rule that ignores the lungs and predicts positive for hospital A's tag and negative for hospital B's tag would score 85% on data like this.
-- [ ] E. The 88% score provides little evidence that the model reads lung findings, because a rule using only the tag already scores 85%.
+- [ ] D. A rule that ignores the lungs and predicts positive for hospital A's tag and negative for hospital B's tag would score about 85% on this held-out set.
+- [ ] E. The 88% score alone does not show that the model reads lung findings, because a rule using only the tag already scores about 85% on this held-out set.
 
 **Key:** A=T B=T C=F D=T E=T
 
@@ -194,7 +194,7 @@ A model detects pneumonia on chest X-rays. Training and test images come from tw
 - B: With no tag and no link between site and label, a model that depended on the tag has nothing to lean on and its accuracy would fall.
 - C: Sites also differ in scanner texture, contrast, positioning and annotation, so removing one visible cue does not remove all site information.
 - D: Tag A is right on 4000 of 5000 images (80% positive) and tag B on 4500 of 5000 (90% negative), so 8500 of 10000 are correct.
-- E: The held-out split has the same tag-label link as the training data, so only 3 points separate the model from the tag rule.
+- E: The held-out set has the same tag-label link as the training data, so only about 3 points (with about 1 point of measurement error) separate the model from the tag rule, which is not enough to show that anything beyond the tag is being used.
 
 **Source:** What adversarial examples actually expose
 
@@ -376,13 +376,13 @@ A team fine-tunes 50 variants of a classifier and scores each on the same 2000-e
 
 ## MA-ch04.18
 
-A researcher has 100 samples, each with 5000 features and a binary label, with the two labels equally frequent. The features are in fact random noise unrelated to the label. She selects the 20 features most correlated with the label using all 100 samples, then runs 5-fold cross-validation of a simple classifier on those 20 features and obtains an average accuracy near 90%. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A researcher has 100 samples, each with 5000 features and a binary label, with the two labels equally frequent both in the sample and in the population the samples are drawn from. The features are in fact random noise unrelated to the label. She selects the 20 features most correlated with the label using all 100 samples, then runs 5-fold cross-validation of a simple classifier on those 20 features and obtains an average accuracy near 90%. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. Because the classifier was not trained on the validation fold, no information from the validation labels can have reached the estimate.
 - [ ] B. Switching to leave-one-out cross-validation while keeping the selection on all the data would remove the problem.
 - [ ] C. The artifact arises because the feature selection step used the labels of samples that later served as validation folds.
 - [ ] D. Repeating the selection inside each training fold, using only that fold's training samples, would give a cross-validated accuracy near 50%.
-- [ ] E. The expected accuracy of any classifier on new samples is 50% here, so the 90% figure is an artifact.
+- [ ] E. The expected accuracy of any classifier built from these features on new samples from the population is 50%, so the 90% figure is an artifact.
 
 **Key:** A=F B=F C=T D=T E=T
 
@@ -392,7 +392,7 @@ A researcher has 100 samples, each with 5000 features and a binary label, with t
 - B: The leak is in the selection step, not in the number of folds, so leave-one-out with global selection stays inflated.
 - C: Among 5000 noise features some correlate with the labels by chance, and choosing them with all labels bakes the validation labels into the model.
 - D: Selection done only on training data cannot see the validation labels, so the estimate returns to roughly 50%.
-- E: With pure noise features and balanced labels, no method can beat chance on new data.
+- E: With pure noise features and balanced labels in the population, any prediction built from the features is independent of the label, so no method can beat chance (50%) on new data.
 
 **Source:** Resampling and validation
 
@@ -423,7 +423,7 @@ A subscription company trains a churn model on 12 months of customer records and
 A classifier reaches 100% accuracy on its training set, 92% on a held-out set drawn from the same source, and 3% on held-out images perturbed by a gradient-based attack within a small L∞ budget. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. An i.i.d. held-out accuracy of 92% guarantees that adversarial accuracy is at least 92% minus the 8-point generalization gap, that is, at least 84%.
-- [ ] B. In adversarial training, held-out robust accuracy can peak and then decline while training robust accuracy keeps rising, so early stopping on it is common.
+- [ ] B. If this classifier were adversarially trained, its robust accuracy on held-out data could still peak and then decline while its robust accuracy on the training data kept rising, which is a reason to track held-out robust accuracy when choosing where to stop training.
 - [ ] C. The 8-point train-to-held-out drop measures generalization to fresh same-distribution data; the fall to 3% measures worst-case behavior within a perturbation set, a different quantity.
 - [ ] D. Standard remedies for the train-to-test gap, such as weight decay, data augmentation or early stopping, can be expected to bring the 3% close to the 92%.
 - [ ] E. A model can have almost no gap between training and held-out accuracy and still be almost entirely non-robust to such perturbations.
@@ -433,7 +433,7 @@ A classifier reaches 100% accuracy on its training set, 92% on a held-out set dr
 **Why:**
 
 - A: An i.i.d. held-out set does not contain worst-case perturbations, so its accuracy places no bound on adversarial accuracy.
-- B: This pattern is called robust overfitting, and selecting the checkpoint on held-out robust accuracy is the usual response.
+- B: Adversarial training can overfit the particular perturbed training points (an effect called robust overfitting), so held-out robust accuracy can fall while training robust accuracy rises, and choosing the checkpoint on held-out robust accuracy is the usual response.
 - C: Generalization gap and adversarial gap are separate measurements: one is about fresh samples, the other about worst-case points near each sample.
 - D: These remedies address fitting the training sample, not sensitivity to worst-case perturbations, which can persist when the gap is closed.
 - E: A model that generalizes well on i.i.d. data can still have decision boundaries close to the data, which is why such a model can be fooled by tiny changes.
@@ -552,12 +552,12 @@ A smoothed classifier g(x) returns the class that a base classifier f outputs mo
 
 ## MA-ch04.26
 
-Two groups report robust accuracy for the same trained classifier at the same L∞ budget. Group 1 runs a strong 100-step gradient attack with random restarts and reports that 52% of test images are still classified correctly. Group 2 uses a sound but incomplete verifier. It proves that 45% of test images are robust, and for the others it either finds a counterexample or answers "unknown". Check each statement that is true. Each statement is worth 1 point (5 points total).
+Two groups evaluate the same trained classifier on the same test images at the same L∞ budget. In what follows, "true robust accuracy" means the fraction of these test images that no perturbation within the budget can make the classifier misclassify. Group 1 runs a strong 100-step gradient attack with random restarts and reports that 52% of test images are still classified correctly. Group 2 uses a sound but incomplete verifier. It proves that 45% of test images are robust, and for the others it either finds a counterexample or answers "unknown". Check each statement that is true. Each statement is worth 1 point (5 points total).
 
 - [ ] A. Reporting both numbers and the gap between them is more informative than reporting either alone.
 - [ ] B. The verifier's 45% should be taken as the model's robust accuracy, because a proof is exact.
 - [ ] C. The 52% figure is a lower bound on true robust accuracy, because a strong attack produced it.
-- [ ] D. The model's true robust accuracy at this budget lies between 45% and 52%.
+- [ ] D. On these test images, the true robust accuracy at this budget lies between 45% and 52%.
 - [ ] E. The 45% figure is a lower bound on true robust accuracy, because every image counted was proved robust.
 
 **Key:** A=T B=F C=F D=T E=T
@@ -690,7 +690,7 @@ An email assistant powered by a language model can read a user's inbox, summariz
 - [ ] B. This is an indirect prompt injection: untrusted content that the model reads as data contains text that the model may treat as an instruction.
 - [ ] C. Adding a rule to the system prompt telling the model to ignore any message that asks it to ignore its instructions eliminates the risk, because the model will then follow the user over the data.
 - [ ] D. A set of 500 known injection strings that the assistant resists establishes that it is robust to injection in general.
-- [ ] E. Requiring the user's approval before the assistant sends mail or deletes messages bounds the damage if the model is fooled.
+- [ ] E. Requiring the user's approval, shown with the actual recipient and contents, before the assistant sends mail or deletes messages limits the damage a fooled model can do, to the extent that the user actually reviews each request.
 
 **Key:** A=F B=T C=F D=F E=T
 
@@ -700,6 +700,6 @@ An email assistant powered by a language model can read a user's inbox, summariz
 - B: The attacker never talks to the model directly; the instruction rides in on content the assistant processes for the user.
 - C: Instructions and data share one text stream, so a prompt rule lowers the risk without removing it, and attackers can rephrase around the rule.
 - D: A finite list of known strings shows resistance to those strings; new phrasings and adaptive attacks are untested.
-- E: A confirmation step or reduced privileges limits what a successful injection can do, whether or not the model is fooled.
+- E: A confirmation step puts a human check between a fooled model and the harmful action, and reduced privileges limit what a successful injection can do at all; the check is only as strong as the user's attention to what is shown.
 
 **Source:** A taxonomy of attacks — what each targets
