@@ -150,6 +150,20 @@ Explain why a language model does not represent each word as a one-hot vector, o
 4. Explains that an embedding is a short dense vector learned in training so that words used in similar contexts get nearby vectors, giving a compact representation that carries semantic similarity.
 5. Explains the consequence for learning: with one-hot codes what is learned about one word does not transfer to related words, while with embeddings it does, so the model can generalize from "walk my Labrador" to "walk my sheepdog".
 
+## ES-4.6
+
+A language model describes each token of a vocabulary of tens of thousands with a vector of a few hundred to a thousand numbers, and it is trained on billions of words to predict missing words. Explain why predicting well through that narrow description implies that the vectors compress the meaning of words, what is and is not preserved, and what this does not show.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that each token is described by far fewer numbers than the vocabulary size, so the vector is a compressed description of the token.
+2. Explains that training rewards only accurate prediction of the missing word, so the compact vector has to keep what matters for predicting which words fit where, which is meaning as use.
+3. Explains that words used in similar ways can share similar descriptions, which is more efficient than a separate description for each, and that this is where the semantic structure of the space comes from.
+4. Notes that the compression is lossy: details that do not help prediction are discarded, while regularities of the text, including its biases, are kept.
+5. States that accurate prediction shows the vectors hold useful regularities of word use, not human-style understanding, and that any such claim needs testing on tasks.
+
 # 5. Softmax and temperature
 
 ## ES-5.1

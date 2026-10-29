@@ -290,6 +290,26 @@ One way to encode a vocabulary is a one-hot vector: a vector as long as the voca
 - D: A short dense vector is much smaller and, once trained, places words used in similar ways near each other.
 - E: Each word has its own separate position, so what is learned about "Labrador" says nothing about "sheepdog"; similar embeddings let learning transfer.
 
+## MA-4.7
+
+A language model has a vocabulary of tens of thousands of tokens but describes each token with a vector of about a thousand numbers. It is trained on billions of words to predict missing words. Check each statement that is true about what this implies. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Describing each token with far fewer numbers than the vocabulary size forces the vector to be a compressed description of the token.
+- [ ] B. To predict missing words accurately through this compact description, the vectors must keep the aspects of a token's use that matter for prediction.
+- [ ] C. The compression is lossless: nothing about a word's use is lost when it is squeezed into the vector.
+- [ ] D. Accurate prediction shows that the vector holds what the word means in the sense that a person understands it.
+- [ ] E. The length of the vector is learned during training rather than chosen by the designers.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Tens of thousands of possible tokens are squeezed into about a thousand numbers per token, so each token has to be described compactly.
+- B: Training rewards only accurate prediction, so what survives in the compact vector is what helps predict which words fit where.
+- C: Compression discards detail; the vector keeps what helps prediction and drops the rest.
+- D: Accurate prediction shows that the vectors hold regularities of word use; whether that amounts to human-style understanding is a separate question that needs testing.
+- E: The vector length is a design setting chosen before training; training adjusts the numbers inside the vectors.
+
 # 5. Softmax and temperature
 
 ## MA-5.1

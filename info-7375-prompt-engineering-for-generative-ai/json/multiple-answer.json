@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 980,
+  "count": 981,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -610,6 +610,48 @@
           "text": "What a model learns about one word from its one-hot vector carries over to similar words.",
           "correct": false,
           "explanation": "Each word has its own separate position, so what is learned about \"Labrador\" says nothing about \"sheepdog\"; similar embeddings let learning transfer."
+        }
+      ]
+    },
+    {
+      "id": "MA-4.7",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "stem": "A language model has a vocabulary of tens of thousands of tokens but describes each token with a vector of about a thousand numbers. It is trained on billions of words to predict missing words. Check each statement that is true about what this implies.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Describing each token with far fewer numbers than the vocabulary size forces the vector to be a compressed description of the token.",
+          "correct": true,
+          "explanation": "Tens of thousands of possible tokens are squeezed into about a thousand numbers per token, so each token has to be described compactly."
+        },
+        {
+          "label": "B",
+          "text": "To predict missing words accurately through this compact description, the vectors must keep the aspects of a token's use that matter for prediction.",
+          "correct": true,
+          "explanation": "Training rewards only accurate prediction, so what survives in the compact vector is what helps predict which words fit where."
+        },
+        {
+          "label": "C",
+          "text": "The compression is lossless: nothing about a word's use is lost when it is squeezed into the vector.",
+          "correct": false,
+          "explanation": "Compression discards detail; the vector keeps what helps prediction and drops the rest."
+        },
+        {
+          "label": "D",
+          "text": "Accurate prediction shows that the vector holds what the word means in the sense that a person understands it.",
+          "correct": false,
+          "explanation": "Accurate prediction shows that the vectors hold regularities of word use; whether that amounts to human-style understanding is a separate question that needs testing."
+        },
+        {
+          "label": "E",
+          "text": "The length of the vector is learned during training rather than chosen by the designers.",
+          "correct": false,
+          "explanation": "The vector length is a design setting chosen before training; training adjusts the numbers inside the vectors."
         }
       ]
     },
