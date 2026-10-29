@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 935,
+  "count": 936,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -245,7 +245,39 @@
         },
         {
           "point": 5,
-          "text": "States that nearness reflects similar use in the training text, not verified similarity of meaning, and can carry associations and biases from that text, so claims about what it shows need testing."
+          "text": "States that nearness reflects similar use in the training text, which is how embeddings capture semantic similarity in practice, but is not verification that the model understands the words as a person does, and can carry associations and biases from that text, so claims about what it shows need testing."
+        }
+      ]
+    },
+    {
+      "id": "ES-4.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "4. Tokens and input embeddings",
+      "source": null,
+      "prompt": "Explain how a word embedding captures semantic meaning rather than merely labeling a word. Contrast it with a token ID or a one-hot code, say where the meaning comes from, give an example, and say what claim you could and could not support from it.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that a token ID or one-hot code is only a label: every pair of different words is equally different, so it carries no information about meaning."
+        },
+        {
+          "point": 2,
+          "text": "Explains that an embedding is a vector in a space where distance and direction can reflect similarity and relationships, so related words such as \"dog\" and \"cat\" are near each other and unrelated words are far apart."
+        },
+        {
+          "point": 3,
+          "text": "Explains where the meaning comes from: training on text pulls words that occur in similar contexts toward similar vectors, so meaning here is meaning as use, not a dictionary definition."
+        },
+        {
+          "point": 4,
+          "text": "Gives an example of a relationship captured in the geometry, such as similar words lying close together or a consistent direction for a relation like singular to plural, with the caveat that this holds for some relationships and not others."
+        },
+        {
+          "point": 5,
+          "text": "States what can and cannot be claimed: closeness shows similar use in the training text and supports tasks such as searching by meaning, but it does not show human-style understanding, and it can carry biases from the text, so claims need testing on tasks."
         }
       ]
     },

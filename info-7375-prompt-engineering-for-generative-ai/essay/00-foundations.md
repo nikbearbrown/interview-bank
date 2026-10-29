@@ -106,7 +106,21 @@ Explain what an input embedding is and how it is produced from a token. Use the 
 2. Explains that "dog" and "cat" occur in similar contexts in the training text, for example near words about pets, feeding and walking, and that training pulls tokens that fit similar contexts toward similar vectors.
 3. States that no person labeled the two words as related; the closeness comes from how the words were used in the text.
 4. States that the input embedding depends only on the token, and that attention later revises each token's vector using the surrounding context.
-5. States that nearness reflects similar use in the training text, not verified similarity of meaning, and can carry associations and biases from that text, so claims about what it shows need testing.
+5. States that nearness reflects similar use in the training text, which is how embeddings capture semantic similarity in practice, but is not verification that the model understands the words as a person does, and can carry associations and biases from that text, so claims about what it shows need testing.
+
+## ES-4.3
+
+Explain how a word embedding captures semantic meaning rather than merely labeling a word. Contrast it with a token ID or a one-hot code, say where the meaning comes from, give an example, and say what claim you could and could not support from it.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that a token ID or one-hot code is only a label: every pair of different words is equally different, so it carries no information about meaning.
+2. Explains that an embedding is a vector in a space where distance and direction can reflect similarity and relationships, so related words such as "dog" and "cat" are near each other and unrelated words are far apart.
+3. Explains where the meaning comes from: training on text pulls words that occur in similar contexts toward similar vectors, so meaning here is meaning as use, not a dictionary definition.
+4. Gives an example of a relationship captured in the geometry, such as similar words lying close together or a consistent direction for a relation like singular to plural, with the caveat that this holds for some relationships and not others.
+5. States what can and cannot be claimed: closeness shows similar use in the training text and supports tasks such as searching by meaning, but it does not show human-style understanding, and it can carry biases from the text, so claims need testing on tasks.
 
 # 5. Softmax and temperature
 

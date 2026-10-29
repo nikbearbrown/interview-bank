@@ -230,6 +230,26 @@ Check each statement that is true about input embeddings in a language model. Ea
 - D: Both words appear with words like "pet", "feed" and "vet", and training pulls tokens that fit similar contexts toward similar vectors; no person labeled them as animals.
 - E: Closeness reflects how tokens were used in text; it does not verify that they mean the same, and it can carry associations and biases from that text.
 
+## MA-4.4
+
+A token ID is only a label: the ID for "cat" is no closer to the ID for "dog" than to the ID for "carburetor". An embedding turns each token into a vector instead. Check each statement that is true about how embeddings capture semantic meaning. Each statement is worth 1 point (5 points total).
+
+- [ ] A. In an embedding space, words with related meanings tend to have vectors that are close together.
+- [ ] B. The closeness arises because training pulls words that occur in similar contexts toward similar vectors.
+- [ ] C. Because token IDs are arbitrary labels, the numeric distance between two IDs says nothing about how related the words are.
+- [ ] D. Some relationships between words show up as consistent directions in the space, though not reliably for every relationship.
+- [ ] E. Because an embedding captures meaning from use, it captures a word's meaning equally well for words that are rare in the training text.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Words such as "cat" and "dog" end up near each other, while unrelated words end up far apart.
+- B: The meaning captured is meaning as use: words that appear in similar contexts get similar vectors, with no dictionary involved.
+- C: An ID reflects only the order in which words entered the vocabulary, so nearness between IDs carries no meaning.
+- D: Relations such as singular and plural can appear as roughly consistent directions, but this holds for some relationships and not others.
+- E: Meaning learned from use needs enough examples of use, so rare words get less reliable vectors.
+
 # 5. Softmax and temperature
 
 ## MA-5.1
