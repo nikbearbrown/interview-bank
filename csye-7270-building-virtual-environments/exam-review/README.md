@@ -4,51 +4,49 @@
 
 This is a study guide and a way to decide what belongs on the game-class exam. “Cheat sheet” means a review aid here; permission to bring notes into the exam is **not yet decided**. The worked examples below are newly written practice examples, not a released exam or confidential exam questions. Their answers are included for studying.
 
-The course is **CSYE 7270: Building Virtual Environments**. The reference materials use Godot, but **Nik's revised framework for the development-tools topic is general to games**: what capabilities do you need, what tools could provide them, what are their strengths and weaknesses, and how do they fit Godot, Unity, or Unreal? Engine choice follows the game's requirements. This framing is confirmed; exam inclusion, depth, weighting, and individual questions remain undecided.
+The course is **CSYE 7270: Building Virtual Environments**. **Nik's confirmed framework is generic across Godot, Unity, and Unreal:** understand the concepts, choose tools for the job, explain tradeoffs and integration, and use coding agents throughout. Engine names provide examples of implementations, not the organizing structure or a requirement to memorize one engine's menus. Exam inclusion, depth, weighting, and individual questions remain undecided.
 
-## Start here: what might be on the exam?
+**AI-assisted development is a thread through every topic.** Here MCP means Model Context Protocol. An agent can help inspect a project, propose a bounded change, invoke available tools, and collect evidence. Its actual abilities depend on the installed tools, permissions, engine version, and project. Do not assume that a connector available today or in three months exposes every operation in every engine. Students should be able to describe the desired behavior and how to check it even when tool names change.
 
-Discuss these twelve areas first. Each is still **undecided**:
+## Start here: proposed high-level topics
 
-1. Game-development capabilities and tool choices; strengths, weaknesses, and integration with Godot, Unity, and Unreal.
-2. Game art and sound assets; sprite sheets, rigs, and import requirements.
-3. Blender-to-engine workflows; transforms, dimensions, origins, UVs, and export verification.
-4. Collision and physics; solid bodies versus triggers, body types, layers, and masks.
-5. Game design documents; player goals, mechanics, constraints, and testable requirements.
-6. Shaders, materials, and textures; shader stages, uniforms, UVs, and surface properties.
-7. Shader verification; controlled comparisons, timing, shared resources, and visual evidence.
-8. Particle effects; emission, lifetime, bursts, trails, and rendering cost.
-9. Animation and interaction; keyframes, skeletal animation, state transitions, and hit timing.
-10. Audio and triggers; event wiring, buses, spatial sound, and listening checks.
-11. Profiling and game AI; frame budgets, bottlenecks, navigation, and decision systems.
-12. MCP and coding agents; tool contracts, permissions, project scope, failure recovery, and evidence.
+1. **Game-development tools and engine choice:** what games need; options, strengths, weaknesses, and integration with Godot, Unity, and Unreal.
+2. **Scenes, nodes, objects, and components:** hierarchy, transforms, reusable structures, and events.
+3. **2D art:** sprites, sprite sheets, image tools, import settings, and consistency.
+4. **3D assets:** meshes, modeling tools, scale, origins, export, and import.
+5. **Collision and physics:** colliders, triggers, body motion, collision filtering, and simulation.
+6. **Game design and rapid prototyping:** ideation, core loops, hypotheses, small prototypes, and playtesting.
+7. **Textures, materials, shaders, and UVs:** information maps, rendering behavior, 3D surface-to-2D mapping, and verification.
+8. **Particle effects:** what they are, when to use them, how to control them, and their cost.
+9. **Animation:** sprite-sheet animation, rigs, skeletal animation, timing, and state machines.
+10. **Audio:** recording, editing, mixing, and export—especially Audacity—then playback and events in the engine.
+11. **Profiling:** equivalent measurement and diagnosis in all three engines.
+12. **Game AI:** navigation, sensing, decisions, and native or first-party capabilities in each engine.
 
-The [current question pool](../README.md) covers engine vocabulary and chapters 0–14, plus five agent-workflow supplements. Chapter 15's final project is outside that pool's current scope. That boundary is a **starting proposal**, not a decision about this exam. Course coverage must be confirmed before selecting questions, especially if this is a midterm rather than a cumulative exam.
+**Across all twelve:** precise agent instructions, MCP/tool contracts where available, scoped changes, evidence, failure recovery, and human judgment. Coding-agent workflows are not a separate topic to memorize and then forget during the art, physics, or audio questions.
 
-## Topic map: concepts, example prompts, and a place to decide
+The [existing question pool](../README.md) contains vocabulary, chapters 0–14, and agent-workflow supplements. Its chapter labels and some questions remain Godot-oriented; use them as source material to adapt into this generic framework, not as the final exam syllabus. The pool currently excludes chapter 15's final project. Confirm taught coverage and the midterm/cumulative boundary before selecting questions.
 
-Every row is a candidate. Mark **Include / Narrow / Defer / Exclude** and add a reason during review. Links open existing practice material; they do not designate questions for the exam.
+## Topic map: concepts, agent work, and evidence
 
-| Candidate area | Study concepts | Example topic to discuss | Practice source | Decision |
-|---|---|---|---|---|
-| Game-development tools and engine fit | Required capabilities; alternative tools; strengths and weaknesses; authoring versus runtime; formats, APIs, and integration costs | What tools does this game need, why choose them, and what would work, require adaptation, or fail in Godot, Unity, and Unreal? | [Vocabulary](../multiple-answer/00-engine-vocabulary.md), [Ch. 0](../essay/ch00-the-toolchain.md); framework below | Framework confirmed; exam selection undecided |
-| Scenes, nodes, and signals | Composition, parent/child transforms, reusable scenes, event communication | Explain how a switch can notify a door without embedding all door behavior in the switch. | [Ch. 1](../essay/ch01-scenes-nodes-and-signals.md) | Undecided |
-| Art and sound assets | Sprite versus sprite sheet; dimensions, transparency, loops, consistency, provenance | Turn “make a character” into a usable sprite-sheet specification. | [Ch. 2](../essay/ch02-game-art-and-sound-assets.md) | Undecided |
-| Blender and 3D assets | Mesh, material, UV, origin, local/world transform, scale, rig, export | A prop looks correct in Blender but is huge in the game. What should be measured and checked? | [Ch. 3](../essay/ch03-3d-assets-and-the-blender-pipeline.md) | Undecided |
-| Collision and physics | Trigger versus blocker; static, simulated, and code-controlled bodies; layer versus mask | Specify a pickup that detects the player, adds score once, and never blocks movement. | [Ch. 4](../multiple-answer/ch04-scenes-collision-and-physics.md) | Undecided |
-| Game design documents | Core loop, mechanics, player feedback, constraints, acceptance criteria | Replace “make combat fun” with a bounded interaction and checks; identify what still needs human playtesting. | [Ch. 5](../essay/ch05-game-design-documents-and-virtual-worlds.md) | Undecided |
-| Shader foundations | Vertex versus fragment work; uniforms; UV; elapsed time; alpha | Choose shader stages for bending a mesh and coloring a dissolve edge. | [Ch. 6](../essay/ch06-shader-foundations.md) | Undecided |
-| Materials and textures | Shader versus material; albedo, roughness, metallic, normal maps; shared resources | Why does a normal map change the lighting response without changing the silhouette? | [Ch. 7](../essay/ch07-materials-and-textures.md) | Undecided |
-| Shader verification | Baseline, fixed camera, controlled inputs, event timing, per-instance state | The shader compiles. What would still be needed to show the intended enemy flashes at the intended time? | [Ch. 8](../essay/ch08-shader-verification.md) | Undecided |
-| Particles | Emission rate, lifetime, one-shot burst, local/world space, transparency and overdraw | Why can a small number of large transparent smoke particles be expensive? | [Ch. 9](../essay/ch09-particle-effects.md) | Undecided |
-| Animation foundations | Keyframes, interpolation, tracks, skeletal animation, forward/inverse kinematics | Explain how an animation clip and a gameplay hit window should agree. | [Ch. 10](../essay/ch10-animation-foundations.md) | Undecided |
-| State and interaction | States, transition conditions, priority, interruptibility, event timing | What happens if the character takes damage during an attack? Specify and test that transition. | [Ch. 11](../essay/ch11-animation-and-interaction.md) | Undecided |
-| Audio | Trigger event, audio stream/player, mixer bus, spatial attenuation, clipping | A sound file loads but no hit is audible. Trace the event-to-output path. | [Ch. 12](../essay/ch12-audio-and-triggers.md) | Undecided |
-| Profiling | Frame time versus FPS; CPU/GPU bottlenecks; controlled measurement | At a target of 60 FPS, does a measured 20 ms frame meet the budget? What should be investigated next? | [Ch. 13](../essay/ch13-profiling-and-optimization.md) | Undecided |
-| Game AI | State machine, behavior tree, sensing, path planning, steering | A guard has a path to the player. What else is needed for it to decide when and how to chase? | [Ch. 14](../essay/ch14-game-ai-and-systems.md) | Undecided |
-| MCP fundamentals | Host/client/server roles; tools, resources, prompts; discovery and schemas | A tool reports success. Which parts of the requested game behavior remain unverified? | [MCP](../multiple-answer/01-mcp-fundamentals.md) | Undecided |
-| Agent security and recovery | Least privilege, untrusted input, checkpoints, idempotency, uncertain results | A create-object call times out. Why might retrying immediately create duplicates? | [Security](../essay/04-agent-security.md), [Verification](../essay/05-agent-verification.md) | Undecided |
-| Godot/Unity/Unreal comparison within the tools framework | Engine strengths and weaknesses against the same requirements; external-tool fit; shared concepts versus engine-specific formats and APIs | Explain why an art tool's exported mesh may transfer while its procedural material or an engine-specific gameplay script does not. | [Unity](../essay/02-unity-agent-workflows.md), [Unreal](../essay/03-unreal-agent-workflows.md); comparison below | Framework confirmed; exam depth undecided |
+Every row remains **undecided for exam selection**. During review mark Include / Narrow / Defer / Exclude. The generic framework is confirmed; this table does not finalize coverage.
+
+| Candidate area | Concepts and tool options | Agent-assisted practice prompt and verification | Existing practice material |
+|---|---|---|---|
+| Tools and engines | Authoring versus runtime; Godot, Unity, Unreal; external editors, version control, export/build tools | Ask an agent to inventory requirements and integrations; defend a tool choice and prove a small end-to-end handoff. | [Vocabulary](../multiple-answer/00-engine-vocabulary.md), [Ch. 0](../essay/ch00-the-toolchain.md) |
+| Scenes and nodes | Hierarchies, objects/components, local/world transforms, instances, events | Specify a switch and door; have the agent inspect references, make one bounded change, and show which instance responds. | [Ch. 1](../essay/ch01-scenes-nodes-and-signals.md) |
+| 2D art | Sprites, sprite sheets, atlas regions, pivots, alpha; pixel/raster/vector editors and generation | Specify a walk sheet's frame dimensions, ordering, pivot, timing, and transparency; verify cropping and visible motion after import. | [Ch. 2](../essay/ch02-game-art-and-sound-assets.md) |
+| 3D assets | Meshes, modeling/sculpting tools such as Blender or Maya; scale, origin, topology and export | Ask for a measured prop and an explicit export contract; verify dimensions, orientation, and geometry in the receiving engine. | [Ch. 3](../essay/ch03-3d-assets-and-the-blender-pipeline.md) |
+| Physics and triggers | Collision shapes, simulated/code-driven motion, overlap versus blocking, filtering and time steps | Have an agent build a nonblocking pickup; check intended entrants, one-time scoring, and absence of blocking. | [Ch. 4](../multiple-answer/ch04-scenes-collision-and-physics.md) |
+| Ideation and prototyping | Paper prototypes, grayboxing, GDD, core loop, hypotheses, constraints | Ask for three mechanic variations and one tiny prototype; change one variable and collect playtest evidence before adding polish. | [Ch. 5](../essay/ch05-game-design-documents-and-virtual-worlds.md) |
+| Textures, materials, shaders and UVs | 2D data maps, surface parameterization, shader stages, material parameters, normal/roughness maps | Ask the agent to diagnose a stretched checkerboard and a shared flash effect; inspect UVs, parameter scope, timing and rendering. | [Ch. 6](../essay/ch06-shader-foundations.md), [Ch. 7](../essay/ch07-materials-and-textures.md), [Ch. 8](../essay/ch08-shader-verification.md) |
+| Particles | Emitters, rate, lifetime, bursts, trails, spaces, transparency and overdraw | Specify sparks as visual feedback; verify the trigger, duration, count and frame cost rather than accepting a screenshot alone. | [Ch. 9](../essay/ch09-particle-effects.md) |
+| Animation and state | Frame sequences, keyframes, rigs, skin weights, clips, transitions and interrupts | Ask the agent to synchronize a swing and damage window; test repeated input, interruption, and return to idle. | [Ch. 10](../essay/ch10-animation-foundations.md), [Ch. 11](../essay/ch11-animation-and-interaction.md) |
+| Audio and Audacity | Record/import, trim, fades, level control, loops, export; engine playback, buses and spatial sound | Give the agent an editing/export brief and event contract; inspect the exported file and listen in-game for clicks, clipping and duplicate playback. | [Ch. 12](../essay/ch12-audio-and-triggers.md) |
+| Profiling | Frame time, CPU/GPU work, allocations, physics and rendering; each engine's measurement tools | Ask the agent to capture a baseline, identify a bottleneck, change one cause, and repeat the same test on the target device. | [Ch. 13](../essay/ch13-profiling-and-optimization.md) |
+| Game AI | Sensing, decisions, pathfinding, steering, behavior trees/state machines; engine versus package capability | Ask the coding agent to assemble a patrol/chase behavior using verified capabilities; test perception loss, unreachable goals and state recovery. | [Ch. 14](../essay/ch14-game-ai-and-systems.md) |
+
+Use the [MCP](../multiple-answer/01-mcp-fundamentals.md), [security](../essay/04-agent-security.md), [verification](../essay/05-agent-verification.md), [Unity](../essay/02-unity-agent-workflows.md), and [Unreal](../essay/03-unreal-agent-workflows.md) banks to add relevant workflow questions **inside these topics**. Examples: inspect before retrying an uncertain scene edit, keep an asset conversion inside its allowed folder, and distinguish a successful import call from a correct animated character.
 
 ## Revised framework: what tools do you need to build games?
 
@@ -88,24 +86,74 @@ For each handoff, identify **the output → the receiving interface → what sur
 
 ## Compact concept cheat sheet
 
-| Remember | Explain the distinction |
+| Remember | Generic meaning and useful distinctions |
 |---|---|
-| Scene / instance / resource | A saved scene can be instantiated repeatedly. A shared resource can affect several objects when edited. Check whether a change is intended for one instance or all users of the resource. |
-| Node / signal | Nodes organize behavior and scene structure. A signal communicates an event; a connected receiver decides how to respond. |
-| Sprite sheet / skeletal rig | A sprite sheet stores image frames. A rig defines bones and relationships used to pose a character or deform a mesh. |
-| Mesh / material / texture | A mesh supplies geometry; a material configures rendering; a texture supplies sampled data. A texture need not contain color. |
-| Origin / transform / coordinate space | An origin is a reference point. Position, rotation, and scale are transforms. Local values are relative to a parent; world values describe placement in the scene. |
-| Collider / trigger | Blocking and overlap detection are different requirements. In Godot an Area detects overlaps; a solid physics body supplies blocking behavior. |
-| Collision layer / mask | A layer describes membership; a mask selects layers to detect. For an Area detecting a body, the body's layer must be included in the Area's mask. |
-| Static / rigid / character body | Static bodies suit fixed obstacles; rigid bodies are simulation-driven; character bodies are code-controlled. Do not assume character gravity is automatic. |
-| Vertex / fragment shader | Vertex work can change mesh positions. Fragment work computes surface output for fragments. A normal map affects shading, not the mesh silhouette. |
-| Uniform / varying | A uniform is supplied from outside the shader for a draw. A varying carries values between shader stages, normally interpolated across a primitive. |
-| Albedo / roughness / metallic / normal | Albedo provides base surface color; roughness controls microfacet scattering; metallic changes the material response; normal data changes the shading direction. |
-| Alpha blending / discard | Blending mixes with the existing image and makes ordering relevant. Discard removes fragments; it does not create partial transparency. |
-| Animation / state machine | Animation changes values over time. A state machine decides which behavior is active and which transitions are allowed. |
-| Path planning / steering / decision | A path identifies a route; steering controls movement along or around it; decision logic chooses a goal or action. |
-| MCP / model / permissions | MCP describes an integration interface. A model proposes actions. Operating-system and application controls determine what those actions can access; the protocol alone is not a sandbox. |
-| Success / evidence | A successful tool response is evidence about that call. Inspect state, run relevant checks, and play or listen where needed before claiming the feature works. |
+| Scene / hierarchy / instance | A scene or level organizes objects, relationships and settings. A reusable definition can produce instances. Engines package these concepts differently; changing a shared definition can affect more than one instance. |
+| Node / object / component | A node is an element in a tree or graph. Scene-hierarchy elements and shader/behavior-graph nodes are different uses of that word. Engines may attach behavior as components rather than representing every behavior as a scene node. |
+| Events | One object reports something happened; another responds. Godot signals, Unity events/callbacks and Unreal delegates/events are engine examples, not identical APIs. |
+| Sprite / sprite sheet / atlas | A sprite displays a 2D image or image region. A sprite sheet contains multiple regions, often animation frames. An atlas packs regions for reuse/rendering; not every atlas is an animation. |
+| Mesh / transform | A mesh contains geometry. Transforms specify position, rotation and scale in a coordinate space. The origin affects operations such as rotation; local coordinates depend on a parent. |
+| Texture / material / shader | A **2D texture is a sampled map of information**: color, roughness, a mask, encoded normals, or other data. A **material** describes how a surface is rendered, supplying parameters/textures and selecting or defining shading behavior. A **shader** is the computation used to produce that behavior. A material is not itself just a 2D map. Engines package material graphs and shader programs differently. |
+| XYZ / UV | XYZ locates geometry in 3D; UV addresses a 2D texture. Unwrapping assigns surface corners to 2D coordinates, creating islands and seams. This is a surface parameterization, not one universal XYZ-to-UV formula. A shared 3D position can have different UVs at a seam. |
+| Collider / trigger | A collider provides a shape for collision queries or simulation. Solid contact can block/respond; a trigger/overlap region reports interaction without that blocking response. The visible mesh or sprite need not equal the collision shape. |
+| Motion and filtering | Distinguish static obstacles, physics-simulated bodies and deliberately code-driven movement. Filters choose which pairs interact. Layers/masks, collision matrices, and channels/responses express related ideas with different rules; consult the chosen engine. |
+| Physics update | The simulation advances in steps, integrating motion and resolving constraints/contacts. Rendering and simulation rates can differ. Specify movement ownership and avoid having simulation and custom code fight over the same transform. |
+| Shader stages / parameters | Vertex work can move vertices; fragment/pixel work computes surface output. Parameters can connect gameplay events to rendering. Shared material state must be distinguished from per-instance state. |
+| Normal map / geometry | A normal map changes shading directions; it does not by itself change the silhouette. Displacement actually changes geometry when the chosen rendering approach supports it. |
+| Particle effect | Many lightweight elements evolve under emission and lifetime rules to depict smoke, sparks, dust, trails or magic. It can provide feedback without simulating every physical detail; collision/damage must be specified separately if needed. |
+| Animation / rig / skinning | Animation changes properties over time. A rig provides a structure and controls for posing; a skeleton is a bone hierarchy. Skin weights determine how bones influence mesh vertices. A rig alone does not provide motion. |
+| Sprite animation / skeletal animation | Sprite animation displays successive image regions. Skeletal animation poses bones and may deform a weighted mesh. They have different authoring and export requirements; neither eliminates timing or gameplay-state logic. |
+| State machine | States describe allowed modes of behavior; transitions define when modes change. It can drive gameplay or animation, but an animation-state graph is not automatically a complete NPC decision system. |
+| Audio asset / playback | An audio file holds samples. Engine playback determines when, where and how it is heard, including routing, level, spatialization and overlap. Editing the file does not wire the game event. |
+| Game AI / coding agent | Game AI selects or executes behavior during play. A coding agent helps develop the game. Neither requires the other, and navigation or a behavior tree does not imply a live LLM. |
+
+**Engine vocabulary examples:** Godot groups Nodes into reusable scenes; Unity uses Scenes containing GameObjects with Components and reusable Prefabs; Unreal places Actors with Components into Levels and can define reusable Actor behavior in Blueprint classes. A Godot scene can fill roles that Unity separates into scene and prefab. A Blueprint graph node is not a Godot scene-tree node. Preserve the requirement when translating, rather than matching words blindly. [Godot concepts](https://docs.godotengine.org/en/stable/getting_started/introduction/key_concepts_overview.html), [Unity GameObjects](https://docs.unity3d.com/6000.0/Documentation/Manual/GameObjects.html), [Unreal Actors](https://dev.epicgames.com/documentation/en-us/unreal-engine/actors-and-geometry-in-unreal-engine).
+
+### Textures, materials, shaders, and the UV handoff
+
+A texture can be more than a picture: a grayscale roughness map describes surface variation; an RGB normal map encodes directions; packed channels can hold different masks. Interpret color textures and data textures appropriately. Some textures are cubes or volumes; this topic's **2D information map** refers to the common 2D case, not every texture type.
+
+A simple surface workflow is **mesh XYZ and face corners → UV layout → sample texture at UV → material/shader uses the values → rendered surface**. UV coordinates are often arranged within 0–1, but can extend outside it; wrapping/clamping settings determine sampling behavior. Not all shaders need UVs: world-space or triplanar approaches are alternatives. Use a checkerboard to inspect stretching, seams, orientation and relative texel density before judging a finished texture.
+
+**Agent workflow:** inspect the mesh and existing UV sets; propose seams and an unwrap or a projection; preserve a copy; export and reimport; compare the same checkerboard and camera in the receiving engine. Verify texture-channel assignments and material parameters. A successful import does not prove the authored material transferred. [Unity shader terminology](https://docs.unity3d.com/6000.0/Documentation/Manual/shader-introduction.html), [Blender UV concepts](https://docs.blender.org/manual/en/latest/modeling/meshes/uv/unwrapping/introduction.html).
+
+### Ideation and rapid prototyping
+
+Start with a player-facing hypothesis: “Can a player recognize the safe platform before the jump?” Generate a few alternatives, choose one uncertainty, and build the smallest playable test with placeholder art. Set a time budget and an observation to collect. Compare variants, record what happened, and decide whether to iterate, discard, or expand. A GDD records decisions and constraints; it need not become a long document before the first test.
+
+**Agent workflow:** ask for alternatives and a bounded graybox implementation, specify what must stay fixed, and review the diff. The agent can implement and instrument a prototype; human playtesting still judges clarity, feel and fun. Evidence should distinguish “the jump is reachable” from “players understood it.”
+
+### Audio tools, especially Audacity
+
+Use **Audacity** to record/import sound, trim unwanted sections, arrange clips, apply fades and level changes, and export an audio file. Save the editable project separately from the exported runtime asset. A DAW such as REAPER is another option for arranging and mixing; engine audio tools handle runtime events and routing. Choose based on the task and handoff rather than treating an editor project file as a playable game asset. [Audacity editing](https://support.audacityteam.org/basics/audacity-editing), [exporting audio](https://support.audacityteam.org/basics/saving-and-exporting-projects).
+
+For a loop, inspect both the boundary and the repeated sound: trimming at a plausible point is not proof of a seamless loop. Check fades/crossfades where appropriate, clipping, silence, channel layout, and the target import format. Loudness adjustment cannot restore detail already destroyed by clipping.
+
+**Agent workflow:** specify the desired duration, event, channels and output; use only available audio automation, scripts or an installed bridge, without assuming Audacity ships an MCP server. Review destructive edits, export, inspect the actual output, and listen. Then wire and test playback in each engine's equivalent audio player/source/component and mixer/bus system. Verify one event produces the intended sound once, the loop repeats cleanly, and positional audio behaves as specified.
+
+### Profiling in all three engines
+
+Use the same method everywhere: define a target device and frame budget; make a repeatable scene; capture representative frames; identify CPU, GPU, memory, physics or audio work; change one suspected cause; repeat and check both performance and behavior. Compare like-for-like builds, resolutions and settings, and account for profiling overhead. Faster average FPS alone can hide frame spikes.
+
+| Engine example | Documented tools | What to ask the agent for and what to verify |
+|---|---|---|
+| Godot | Standard Profiler for script/physics and frame timings; Visual Profiler for rendering CPU/GPU work. The standard profiler's documentation says it does not profile C# scripts; use an appropriate external C# profiler for that code. | Capture the relevant measurement, identify which subsystem it covers, and preserve a baseline. Do not treat Visual Profiler rendering CPU time as all CPU work. [Profiler](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/the_profiler.html), [Visual Profiler](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/debugger_panel.html). |
+| Unity | Unity Profiler modules and rendering analysis tools; platform GPU profilers where appropriate. | Capture CPU/memory and relevant rendering evidence for the target; record enabled modules and overhead. Do not assume GPU counters are available on every platform/backend. [Analysis tools](https://docs.unity3d.com/6000.0/Documentation/Manual/urp/analyze-your-project.html), [Profiler modules](https://docs.unity3d.com/6000.0/Documentation/Manual/profiler-modules-activate.html). |
+| Unreal | Unreal Insights trace capture and analysis, including Timing Insights CPU/GPU tracks. | Save a trace, attribute expensive work, and repeat the same workload after a change. Verify trace settings and the build/platform, rather than presenting an editor screenshot as a target-device benchmark. [Unreal Insights](https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-insights-in-unreal-engine). |
+
+### Game AI already available: engine core, first-party packages, and custom behavior
+
+Here **native/core** means part of the engine; **first-party package/plugin** means supplied by its vendor but potentially requiring installation or enablement. Neither label guarantees that a feature is active in a particular project. Checked against official documentation on **November 3, 2026**; learn the capability and verify the installed version rather than memorize version numbers.
+
+| Engine | Verified facilities and scope | What the developer and coding agent still supply |
+|---|---|---|
+| Godot | Core AStar pathfinding and NavigationServer/navigation agents support navigation meshes, paths and avoidance; 2D and 3D facilities exist. | Define goals, sensing, decisions and movement integration. Do not infer a built-in general behavior-tree authoring system from the navigation API. Implement the decision logic or inspect a specific add-on before relying on it. [3D navigation](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html), [2D navigation](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html). |
+| Unity | Engine navigation APIs plus the first-party **AI Navigation** package for NavMesh workflows. The separate first-party **Behavior** package supplies behavior graphs and task orchestration; it is not a claim that every Unity project has that package installed. | Install/check compatible packages, configure navigation, author tasks and decision data, and connect behavior to gameplay and animation. Navigation does not decide what the character wants. [AI Navigation](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/index.html), [Behavior graphs](https://docs.unity3d.com/Packages/com.unity.behavior@1.0/manual/behavior-graph.html). |
+| Unreal | Engine/first-party systems include Navigation, Behavior Trees, AI Perception, StateTree, Environment Query System (EQS), and AI debugging tools. Check project/plugin enablement for the chosen systems. | Configure sensing and navigation; author tasks, states, transitions and query criteria. These systems provide mechanisms, not a finished game's goals or automatically correct behavior. [Unreal AI systems](https://dev.epicgames.com/documentation/en-us/unreal-engine/artificial-intelligence-in-unreal-engine). |
+
+A **navigation mesh** describes traversable space; pathfinding chooses a route; local avoidance adjusts motion around nearby agents; sensing supplies observations; a state machine or behavior tree organizes decisions. These are related layers, not synonyms. An animation state machine does not automatically replace a decision system. Learned policies, inference runtimes and generative NPC dialogue are additional choices with their own integration requirements; ordinary game AI does not require them.
+
+**Agent workflow:** inventory what is installed, implement one bounded behavior using its actual APIs, and test controlled situations: visible/hidden target, reachable/unreachable goal, interruption, repeated entry, and recovery. Require evidence of the transitions and resulting gameplay, not just a successful tool call or a moving character.
 
 Useful calculations, with assumptions stated:
 
@@ -120,22 +168,22 @@ When answering a scenario, use: **name the concept → state the intended behavi
 
 The question bank uses five-point multiple-answer questions and five-point essays. For multiple-answer items, each of five statements is independently true or false: checking a true statement or leaving a false statement unchecked earns one point. A wrong choice earns zero for that statement. Essays use five rubric items. These are the bank's existing conventions; the actual exam's format, length, and scoring remain undecided.
 
-### Example A — collision and a precise agent request
+### Example A — generic collision requirements and an agent contract
 
-**Scenario:** In a Godot 2D game, a checkpoint should activate when the player enters it, without blocking the player. The player is on layer 2 and enemies are on layer 3. The checkpoint is an Area2D with a collision shape and a mask that scans only layer 2. Assume normal overlap monitoring and a correctly connected handler.
+**Scenario:** An agent is asked to build a checkpoint in any of the three engines. The stated contract is: a trigger volume detects members of the Player category, ignores the Enemy category, activates the checkpoint once, and does not block movement. Assume the engine-specific trigger prerequisites are correctly configured. Its collision shape is separate from its visible artwork.
 
 Mark every true statement:
 
-- [ ] A. The Area2D can detect the player without physically blocking it.
-- [ ] B. Its mask includes enemies on layer 3 merely because their sprites overlap it.
-- [ ] C. Its own layer and its detection mask describe different things.
-- [ ] D. A useful test checks entry, absence of blocking, and the resulting checkpoint state.
-- [ ] E. A visible checkpoint image is sufficient; collision detection does not need a shape.
+- [ ] A. Overlap detection and physical blocking are different requirements.
+- [ ] B. An enemy's overlapping image overrides the specified collision filter.
+- [ ] C. The agent must translate the contract into the chosen engine's filtering and event rules.
+- [ ] D. A useful test checks the player, an enemy, repeated entry, and absence of blocking.
+- [ ] E. Seeing the checkpoint artwork proves that its trigger volume is configured correctly.
 
 <details>
 <summary>Practice key and explanations</summary>
 
-**A=T, B=F, C=T, D=T, E=F.** An Area senses overlaps rather than blocking. The mask scans the player's layer, not the enemy layer. Layer membership and detection selection are separate. Behavior must be observed, and a sprite is not a substitute for the physics shape.
+**A=T, B=F, C=T, D=T, E=F.** Detection need not block. Visual overlap does not replace collision filtering. The behavioral contract is portable but its API implementation differs. Tests must cover allowed and excluded entrants, repeat behavior, and physical response; artwork alone proves none of those.
 
 </details>
 
@@ -158,7 +206,7 @@ Mark every true statement:
 
 ### Example C — profiling and particles
 
-**Scenario:** A target is 60 FPS. A repeatable scene measures 20 ms per frame. Smoke emits 80 particles per second, each lasting 1.5 seconds; assume constant emission, steady state, and no early removal or limiting cap.
+**Scenario:** An agent profiles a repeatable scene in the chosen engine on a specified target device. The target is 60 FPS; the scene measures 20 ms per frame. Smoke emits 80 particles per second, each lasting 1.5 seconds; assume constant emission, steady state, and no early removal or limiting cap.
 
 Mark every true statement:
 
@@ -171,7 +219,7 @@ Mark every true statement:
 <details>
 <summary>Practice key and explanations</summary>
 
-**A=T, B=F, C=T, D=F, E=T.** `1000 / 60 ≈ 16.67`; `1000 / 20 = 50 FPS`; `80 × 1.5 = 120`. Count does not establish cost: screen coverage, shaders, overdraw, and other work matter. Compare equivalent scenes and identify the measured CPU/GPU work before assigning cause.
+**A=T, B=F, C=T, D=F, E=T.** `1000 / 60 ≈ 16.67`; `1000 / 20 = 50 FPS`; `80 × 1.5 = 120`. Count does not establish cost: screen coverage, shaders, overdraw, and other work matter. Compare equivalent scenes and identify the measured CPU/GPU work before assigning cause. The agent should retain a trace or measurement capture from the appropriate Godot, Unity, or Unreal profiler, state what it measures, and repeat the test after a controlled change.
 
 </details>
 
@@ -192,7 +240,7 @@ Mark every true statement:
 
 </details>
 
-### Example E — MCP, an uncertain outcome, and verification
+### Example E — scene editing through a tool with an uncertain result
 
 **Scenario:** An agent calls an editor tool to create one checkpoint. The request times out. The tool contract does not promise that a timeout means the edit was rolled back, and repeating the call can create another object.
 
@@ -215,13 +263,13 @@ Mark every true statement:
 
 **Scenario:** A guard should patrol, chase only after detecting the player, and return to patrol after losing the player for a specified delay. A navigation system can produce paths through walkable space.
 
-**Prompt:** Explain why navigation alone is insufficient, and specify a small test plan.
+**Prompt:** Explain why navigation alone is insufficient. Ask a coding agent to inspect which relevant facilities are present in a Godot, Unity, or Unreal project, then propose one implementation and a small test plan. Distinguish core features, first-party packages, and custom logic.
 
 <details>
 <summary>Practice rubric — five points</summary>
 
-1. Distinguish finding a route from deciding whether to chase.
-2. Define patrol and chase states, plus a return/search behavior if the design needs one.
+1. Distinguish finding a route from deciding whether to chase, and distinguish runtime game AI from the coding agent doing the implementation.
+2. Identify a documented navigation/decision option for the chosen engine and verify installation/enablement; define patrol and chase states plus return/search behavior if needed.
 3. Define what detection and losing the player mean, including the supplied delay.
 4. Handle unreachable goals or a missing route without claiming successful pursuit.
 5. Test acquisition, loss, reacquisition, and an obstructed/unreachable target; assess movement and transitions as well as path output.
@@ -232,7 +280,7 @@ Mark every true statement:
 
 **Scenario:** A small team is building a 3D exploration game for desktop computers. It needs a rigged character, painted textures, interactive doors, ambient audio, and a repeatable performance test. One teammate knows C#, another can model in Blender, and a third prefers visual behavior authoring. The team has a Blender character with a procedural material, a sound editor's project file, and an existing Unity gameplay component. It has not chosen an engine. You may state additional assumptions, but cannot assume all assets and code import unchanged.
 
-**Prompt:** Identify the capabilities and tool categories needed. Compare Godot, Unity, and Unreal against this team's needs, give a strength and a drawback for each, and defend a choice. Trace how the external character, material, sound, and gameplay code would enter the chosen engine. Identify at least two cases requiring export, baking, adaptation, or replacement, explain why, and propose checks. Explain what would change if the team switched to either other engine.
+**Prompt:** Identify the capabilities and tool categories needed, including how a coding agent would assist and verify each handoff. Compare Godot, Unity, and Unreal against this team's needs, give a strength and a drawback for each, and defend a choice. Trace how the external character, material, sound, and gameplay code would enter the chosen engine. Identify at least two cases requiring export, baking, adaptation, or replacement, explain why, and propose checks. Explain what would change if the team switched to either other engine.
 
 <details>
 <summary>Proposed practice rubric — five points; no single engine is the required answer</summary>
@@ -241,7 +289,41 @@ Mark every true statement:
 2. Compares all three engines against the same requirements and team skills, including a supported strength and a cost for each; avoids unsupported claims that an engine is universally best or cannot make this genre.
 3. Gives a concrete character/material handoff: appropriate supported format, rig/animation checks, and baking or rebuilding unsupported procedural material features as needed.
 4. Distinguishes editable sound-project source from an exported audio asset, and engine-specific gameplay code from portable data; explains the changes required by each receiving engine's formats or APIs.
-5. Defends the engine choice and a small validation plan: import and reopen assets, play the character/door interaction, listen to audio, measure an equivalent scene on target hardware, and check the exported build. Names at least one result that would cause the team to reconsider its choice.
+5. Defends the engine choice and a bounded agent-assisted validation plan: inspect the actual available tools, import and reopen assets, play the character/door interaction, listen to audio, measure an equivalent scene on target hardware, and check the exported build. Names at least one result that would cause the team to reconsider its choice.
+
+</details>
+
+### Example H — texture information and surface mapping
+
+**Scenario:** An agent imports a model whose geometry has the intended dimensions. A checkerboard looks stretched on one face. The model has a roughness texture and a normal texture. The agent proposes fixing the stretching by increasing the mesh's world-space scale and says the normal texture will repair the silhouette.
+
+**Prompt:** Distinguish texture, material and shader; explain XYZ versus UV; diagnose both proposed fixes and describe a safer check.
+
+<details>
+<summary>Proposed practice rubric — five points</summary>
+
+1. Defines the texture as sampled information, the material as rendering configuration/behavior with inputs, and the shader as computation; explains that roughness and normals are data, not just color pictures.
+2. Distinguishes 3D surface geometry from its 2D parameterization; explains that seams can give one 3D position different UV coordinates.
+3. Investigates UV distortion, texture transform and sampling rather than altering an already-correct physical size to conceal a surface-mapping problem.
+4. Explains that a normal map changes shading directions but does not itself repair or change mesh silhouette.
+5. Has the agent preserve the baseline, inspect and adjust the relevant UV/material data, reimport, and compare a checkerboard at fixed camera and object dimensions; checks channels and shading separately.
+
+</details>
+
+### Example I — sprite animation, Audacity, and a rapid prototype
+
+**Scenario:** A team wants to learn whether players recognize a jump boost. It has a four-frame sprite sheet, a rough sound recording, and a graybox level. A coding agent is available through a limited editor bridge; no audio-editing tool is exposed by that bridge.
+
+**Prompt:** Propose a small prototype and an asset workflow, including what to do in Audacity, what the agent can actually automate, and what evidence would justify keeping the design.
+
+<details>
+<summary>Proposed practice rubric — five points</summary>
+
+1. States a player-facing hypothesis and a small playable test, using placeholders and avoiding unrelated polish or mechanics.
+2. Specifies sheet regions, frame order, consistent pivot and timing; distinguishes displaying sprite frames from posing a skeletal rig.
+3. Describes trimming/editing the sound in Audacity, level/fade checks, saving editable source and exporting a supported runtime audio file; listens to the exported result.
+4. Uses the agent only through verified capabilities, or separately established automation; does not invent an audio tool. Specifies the gameplay event, animation/sound synchronization and prevention of duplicate triggers.
+5. Tests actual gameplay and collects player observations, separating correct technical execution from whether the boost is understood; compares one controlled variation before deciding to keep, change or discard it.
 
 </details>
 
@@ -249,8 +331,8 @@ Mark every true statement:
 
 - [ ] Confirm whether this is a midterm or cumulative exam, and the last taught chapter/topic.
 - [ ] Mark each topic-map row Include, Narrow, Defer, or Exclude; specify boundaries for broad rows.
-- [ ] Decide how much of the newly added MCP, security, and recovery material students have actually been taught.
-- [ ] Set the depth of the confirmed general tools framework: compare Godot, Unity, and Unreal and explain external-tool fit; decide whether assessment uses conceptual comparisons, supplied integration scenarios, or both. Exam inclusion and weighting remain undecided.
+- [ ] Confirm the agent/MCP concepts students have been taught and weave relevant contracts, permission boundaries, evidence and recovery into each selected subject.
+- [ ] Apply the confirmed generic framework throughout: use Godot, Unity and Unreal as examples, and state engine-specific premises when required. Decide comparison depth and topic weights; no engine-specific setup trivia is required by this proposal.
 - [ ] Choose the balance of terminology, applied debugging, calculations, and design/verification explanations.
 - [ ] Decide duration, question count, total points, and whether to retain the bank's five-point formats. No values are fixed here.
 - [ ] Decide whether notes, this sheet, engine access, documentation, calculators, or AI tools are allowed. Publishing a study guide does not grant exam-time permission.
@@ -265,7 +347,7 @@ Suggested discussion sequence: choose **coverage first**, then **depth and forma
 This README adds a review aid; it does not edit the question pool or change course grading policy.
 
 - [Question-pool README](../README.md): scope, formats, counts, and validation limits. At source commit [`f5c04c5`](https://github.com/nikbearbrown/interview-bank/tree/f5c04c50773b323e474489d45228e61552375682/csye-7270-building-virtual-environments), the pool contains **366 multiple-answer questions and 159 essays (525 total)**. The latest addition supplies 60 multiple-answer questions and 40 essays about MCP and agent workflows.
-- [Course chapter map](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/0240fcd07d6d8443c8a3de8d02f50ff9fbcdba4e/chapters/README.md) and [module map](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/0240fcd07d6d8443c8a3de8d02f50ff9fbcdba4e/modules/README.md): identify the Godot course and its conceptual progression. These course materials label themselves review drafts; they are evidence of the proposed curriculum, not proof of what has been taught or approved for examination.
+- [Course chapter map](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/0240fcd07d6d8443c8a3de8d02f50ff9fbcdba4e/chapters/README.md) and [module map](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/0240fcd07d6d8443c8a3de8d02f50ff9fbcdba4e/modules/README.md): provide the original course progression, which this guide reorganizes into generic concepts. These course materials label themselves review drafts; they are evidence of the proposed curriculum, not proof of what has been taught or approved for examination.
 - [MCP and agent-workflow sources](../SOURCES.md): research context and mappings for the supplementary pool. Product versions, beta status, exact commands, and port numbers are not proposed memorization topics here.
 
-**Review note:** Drafted with Codex from the repository materials; the tools framework was revised at Nik's direction on November 3, 2026. Official engine documentation linked in that section was checked for the comparison; no new engine integration was executed. The seven worked examples are original practice scenarios for this review sheet. Their arithmetic, keys, and rubrics were checked during preparation, but Nik must review subject coverage and wording before adopting any question for an exam.
+**Review note:** Drafted with Codex from the repository materials; the whole guide was revised at Nik's direction on November 3, 2026 to use generic concepts and integrated agent workflows. Official documentation was checked for engine capabilities, profiling, UVs and Audacity; no new engine or audio-tool integration was executed. The nine worked examples are original practice scenarios for this review sheet. Their arithmetic, keys, and rubrics were checked during preparation, but Nik must review subject coverage and wording before adopting any question for an exam.
