@@ -4,13 +4,13 @@
 
 This is a study guide and a way to decide what belongs on the game-class exam. “Cheat sheet” means a review aid here; permission to bring notes into the exam is **not yet decided**. The worked examples below are newly written practice examples, not a released exam or confidential exam questions. Their answers are included for studying.
 
-The course is **CSYE 7270: Building Virtual Environments**, in its Godot edition. The emphasis is understanding game-development terms well enough to specify a change to a coding agent, predict its behavior, and verify the result. Unity and Unreal comparisons are candidate extensions, not assumed requirements.
+The course is **CSYE 7270: Building Virtual Environments**. The reference materials use Godot, but **Nik's revised framework for the development-tools topic is general to games**: what capabilities do you need, what tools could provide them, what are their strengths and weaknesses, and how do they fit Godot, Unity, or Unreal? Engine choice follows the game's requirements. This framing is confirmed; exam inclusion, depth, weighting, and individual questions remain undecided.
 
 ## Start here: what might be on the exam?
 
 Discuss these twelve areas first. Each is still **undecided**:
 
-1. Engine vocabulary; scenes, nodes, signals, reusable objects, and the toolchain.
+1. Game-development capabilities and tool choices; strengths, weaknesses, and integration with Godot, Unity, and Unreal.
 2. Game art and sound assets; sprite sheets, rigs, and import requirements.
 3. Blender-to-engine workflows; transforms, dimensions, origins, UVs, and export verification.
 4. Collision and physics; solid bodies versus triggers, body types, layers, and masks.
@@ -31,7 +31,7 @@ Every row is a candidate. Mark **Include / Narrow / Defer / Exclude** and add a 
 
 | Candidate area | Study concepts | Example topic to discuss | Practice source | Decision |
 |---|---|---|---|---|
-| Vocabulary and toolchain | Engine, editor, runtime, scene instance, resource; code change versus working game | What evidence shows an agent changed the intended project and that the change works? | [Vocabulary](../multiple-answer/00-engine-vocabulary.md), [Ch. 0](../essay/ch00-the-toolchain.md) | Undecided |
+| Game-development tools and engine fit | Required capabilities; alternative tools; strengths and weaknesses; authoring versus runtime; formats, APIs, and integration costs | What tools does this game need, why choose them, and what would work, require adaptation, or fail in Godot, Unity, and Unreal? | [Vocabulary](../multiple-answer/00-engine-vocabulary.md), [Ch. 0](../essay/ch00-the-toolchain.md); framework below | Framework confirmed; exam selection undecided |
 | Scenes, nodes, and signals | Composition, parent/child transforms, reusable scenes, event communication | Explain how a switch can notify a door without embedding all door behavior in the switch. | [Ch. 1](../essay/ch01-scenes-nodes-and-signals.md) | Undecided |
 | Art and sound assets | Sprite versus sprite sheet; dimensions, transparency, loops, consistency, provenance | Turn “make a character” into a usable sprite-sheet specification. | [Ch. 2](../essay/ch02-game-art-and-sound-assets.md) | Undecided |
 | Blender and 3D assets | Mesh, material, UV, origin, local/world transform, scale, rig, export | A prop looks correct in Blender but is huge in the game. What should be measured and checked? | [Ch. 3](../essay/ch03-3d-assets-and-the-blender-pipeline.md) | Undecided |
@@ -48,7 +48,43 @@ Every row is a candidate. Mark **Include / Narrow / Defer / Exclude** and add a 
 | Game AI | State machine, behavior tree, sensing, path planning, steering | A guard has a path to the player. What else is needed for it to decide when and how to chase? | [Ch. 14](../essay/ch14-game-ai-and-systems.md) | Undecided |
 | MCP fundamentals | Host/client/server roles; tools, resources, prompts; discovery and schemas | A tool reports success. Which parts of the requested game behavior remain unverified? | [MCP](../multiple-answer/01-mcp-fundamentals.md) | Undecided |
 | Agent security and recovery | Least privilege, untrusted input, checkpoints, idempotency, uncertain results | A create-object call times out. Why might retrying immediately create duplicates? | [Security](../essay/04-agent-security.md), [Verification](../essay/05-agent-verification.md) | Undecided |
-| Unity/Unreal comparison | Shared concepts versus engine-specific object models; instance versus shared asset | Translate one behavioral requirement between engines without pretending their APIs are identical. | [Unity](../essay/02-unity-agent-workflows.md), [Unreal](../essay/03-unreal-agent-workflows.md) | Undecided; optional extension |
+| Godot/Unity/Unreal comparison within the tools framework | Engine strengths and weaknesses against the same requirements; external-tool fit; shared concepts versus engine-specific formats and APIs | Explain why an art tool's exported mesh may transfer while its procedural material or an engine-specific gameplay script does not. | [Unity](../essay/02-unity-agent-workflows.md), [Unreal](../essay/03-unreal-agent-workflows.md); comparison below | Framework confirmed; exam depth undecided |
+
+## Revised framework: what tools do you need to build games?
+
+Start with the game and the team: 2D or 3D, visual style, player interactions, target devices, performance budget, collaboration needs, existing skills, and resources. Then identify the capabilities needed. A small game may use one tool for several jobs; a larger project may need specialized tools. Naming products alone is not an explanation of a development workflow.
+
+| Capability needed | Options to compare | Strengths, weaknesses, and the handoff to test |
+|---|---|---|
+| Design and specification | Written GDD, diagrams, spreadsheets, paper or engine prototypes | Documents make intent explicit but do not demonstrate play; prototypes expose behavior but can hide assumptions. Carry requirements and acceptance checks into the engine. |
+| Images, UI, and textures | Raster/vector editors, pixel-art tools, texture-painting tools, generative-image tools; examples include Krita, Photoshop, and Blender | Direct editing gives control; generation can supply candidate assets but may need cleanup and consistency checks. Deliver supported images with appropriate resolution, transparency, color/data interpretation, and reuse rights. |
+| Models, rigs, and animation | Blender, Maya, procedural modeling, engine modeling/animation tools | External authoring can provide detailed control and reusable source assets; export introduces another boundary. Check mesh topology, units, axes, rig, animation, UVs, and which materials survive. An offline render does not establish runtime performance. |
+| Sound and music | Recording, audio editors, DAWs, synthesis/generation; examples include Audacity and REAPER | Editing and mixing give control over timing and layers; a finished audio file does not provide gameplay triggers or adaptive behavior. Export an engine-supported format, then check looping, buses, spatial playback, and runtime cost. |
+| Gameplay, rendering, and interaction | Godot, Unity, Unreal; scripts, visual scripting, engine systems, or plugins | Engine systems reduce the amount to build, but impose object models, APIs, and rendering conventions. Compare the specific project's needs and team skills, then test a representative playable slice. |
+| Coding and automation | IDEs, command-line tools, coding agents, editor scripting, MCP bridges | Automation can repeat edits and checks; generated code and tool calls still require review. An editor plugin needs the right engine API and version; an MCP connection does not translate one engine's object model into another's. |
+| Collaboration, testing, and delivery | Version control, asset storage, issue tracking, profilers, automated tests, playtesting, build tools | Text diffs help code review; large binary art assets need a deliberate storage/merge workflow. Automated tests cover defined behavior; play and listening checks cover experience. Verify builds on the intended device, not just in the editor. |
+
+The examples name possible categories and tools, not a required shopping list. Evaluate the chosen tool's actual output and integration, rather than assuming every feature transfers because an export button exists.
+
+### Compare the engines against the same requirements
+
+These are reasoned tradeoffs to discuss, not a ranking or a claim that one engine cannot make a particular genre. Capability facts are supported by the linked official documentation; project suitability is an inference to test with a prototype.
+
+| Engine | Strengths to consider | Weaknesses or costs to consider | External-tool fit |
+|---|---|---|---|
+| Godot | Integrated 2D/3D workflows and an open-source engine can suit a team that values inspecting and adapting its tools. | The team still has to learn Godot's scene/resource model; an export dependency or unsupported target workflow can outweigh a convenient editor. Verify the required platform and plugin support. | Godot recommends glTF for 3D scenes. Its direct `.blend` workflow invokes Blender to export glTF, so it requires Blender on the importing machine; native-file convenience adds a dependency. [Engine overview](https://docs.godotengine.org/en/stable/about/introduction.html), [3D formats](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html), [export setup](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html). |
+| Unity | C# scripting can fit a C#-experienced team; configurable rendering pipelines offer choices for different rendering requirements. | Pipeline choice brings compatibility work: assets and shaders must match it. Existing C# skills help, but do not eliminate learning Unity's APIs or rewriting code from another engine. | Check the selected importer, packages, and render pipeline. A texture image may remain useful while its original material/shader implementation needs rebuilding. [C# workflow](https://docs.unity3d.com/6000.0/Documentation/Manual/scripting-get-started.html), [render-pipeline compatibility](https://docs.unity3d.com/6000.1/Documentation/Manual/srp-setting-render-pipeline-asset.html). |
+| Unreal | Blueprint supports visual behavior authoring and iteration; C++ provides lower-level control and integration with external systems. The two can be combined. | Large Blueprint graphs can become difficult to manage; C++ adds programming and build complexity. Blueprint execution overhead matters in some workloads, so profile before rewriting. | Import supported source assets into Unreal assets and inspect the result. External art is different from an Unreal Blueprint or engine-specific plugin: those behaviors require Unreal's systems or a port. [Blueprint/C++ tradeoffs](https://dev.epicgames.com/documentation/en-us/unreal-engine/coding-in-unreal-engine-blueprint-vs-cplusplus), [asset import](https://dev.epicgames.com/documentation/unreal-engine/importing-assets-directly-into-unreal-engine?lang=en-US). |
+
+### Explain why a tool fits — or why it does not
+
+For each handoff, identify **the output → the receiving interface → what survives → what needs adaptation → a verification check**. Distinguish an unsupported feature from a whole tool being unusable.
+
+- **Asset interchange:** A Blender mesh can fit through a supported exporter/importer. Check scale, axes, UVs, rig and animation after import. A procedural authoring setup may need to be baked into geometry/textures or reconstructed; do not assume a file carries every authoring feature.
+- **Format limits:** Godot's documented OBJ path does not carry skeletons or animations. Thus OBJ can be a poor choice for an animated character even when it is adequate for a static prop. Choosing a richer supported format changes the fit; the problem is not “Blender cannot work with the engine.” [Godot format limits](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html).
+- **Materials and code:** A reusable image or mesh is different from a shader graph, Blueprint, Godot script, or Unity component. Engine APIs and render-pipeline conventions determine whether behavior must be translated, rebuilt, or replaced.
+- **Plugins and automation:** Check engine/version support, installation dependencies, target-platform support, available operations, and access scope. A bridge that can edit one editor is not automatically a bridge for all three engines.
+- **Technical versus practical fit:** A technically importable asset may still exceed the frame budget, fail visual requirements, or be impractical to maintain. Explain the particular constraint and test it with an exported playable build.
 
 ## Compact concept cheat sheet
 
@@ -192,12 +228,29 @@ Mark every true statement:
 
 </details>
 
+### Example G — choose a game-development workflow and defend its engine fit
+
+**Scenario:** A small team is building a 3D exploration game for desktop computers. It needs a rigged character, painted textures, interactive doors, ambient audio, and a repeatable performance test. One teammate knows C#, another can model in Blender, and a third prefers visual behavior authoring. The team has a Blender character with a procedural material, a sound editor's project file, and an existing Unity gameplay component. It has not chosen an engine. You may state additional assumptions, but cannot assume all assets and code import unchanged.
+
+**Prompt:** Identify the capabilities and tool categories needed. Compare Godot, Unity, and Unreal against this team's needs, give a strength and a drawback for each, and defend a choice. Trace how the external character, material, sound, and gameplay code would enter the chosen engine. Identify at least two cases requiring export, baking, adaptation, or replacement, explain why, and propose checks. Explain what would change if the team switched to either other engine.
+
+<details>
+<summary>Proposed practice rubric — five points; no single engine is the required answer</summary>
+
+1. Maps the game's requirements to design, asset creation, animation, audio, gameplay, collaboration, testing, and delivery capabilities; chooses plausible tool options with reasons.
+2. Compares all three engines against the same requirements and team skills, including a supported strength and a cost for each; avoids unsupported claims that an engine is universally best or cannot make this genre.
+3. Gives a concrete character/material handoff: appropriate supported format, rig/animation checks, and baking or rebuilding unsupported procedural material features as needed.
+4. Distinguishes editable sound-project source from an exported audio asset, and engine-specific gameplay code from portable data; explains the changes required by each receiving engine's formats or APIs.
+5. Defends the engine choice and a small validation plan: import and reopen assets, play the character/door interaction, listen to audio, measure an equivalent scene on target hardware, and check the exported build. Names at least one result that would cause the team to reconsider its choice.
+
+</details>
+
 ## Decisions to make together before assembling an exam
 
 - [ ] Confirm whether this is a midterm or cumulative exam, and the last taught chapter/topic.
 - [ ] Mark each topic-map row Include, Narrow, Defer, or Exclude; specify boundaries for broad rows.
 - [ ] Decide how much of the newly added MCP, security, and recovery material students have actually been taught.
-- [ ] Decide whether Unity/Unreal appear only as conceptual comparisons, as fully specified scenarios, or not at all.
+- [ ] Set the depth of the confirmed general tools framework: compare Godot, Unity, and Unreal and explain external-tool fit; decide whether assessment uses conceptual comparisons, supplied integration scenarios, or both. Exam inclusion and weighting remain undecided.
 - [ ] Choose the balance of terminology, applied debugging, calculations, and design/verification explanations.
 - [ ] Decide duration, question count, total points, and whether to retain the bank's five-point formats. No values are fixed here.
 - [ ] Decide whether notes, this sheet, engine access, documentation, calculators, or AI tools are allowed. Publishing a study guide does not grant exam-time permission.
@@ -215,4 +268,4 @@ This README adds a review aid; it does not edit the question pool or change cour
 - [Course chapter map](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/0240fcd07d6d8443c8a3de8d02f50ff9fbcdba4e/chapters/README.md) and [module map](https://github.com/nikbearbrown/csye-7270-building-virtual-environments/blob/0240fcd07d6d8443c8a3de8d02f50ff9fbcdba4e/modules/README.md): identify the Godot course and its conceptual progression. These course materials label themselves review drafts; they are evidence of the proposed curriculum, not proof of what has been taught or approved for examination.
 - [MCP and agent-workflow sources](../SOURCES.md): research context and mappings for the supplementary pool. Product versions, beta status, exact commands, and port numbers are not proposed memorization topics here.
 
-**Review note:** Drafted with Codex from the repository materials. The six worked examples are original practice scenarios for this review sheet. Their arithmetic, keys, and rubrics were checked during preparation, but Nik must review subject coverage and wording before adopting any question for an exam.
+**Review note:** Drafted with Codex from the repository materials; the tools framework was revised at Nik's direction on November 3, 2026. Official engine documentation linked in that section was checked for the comparison; no new engine integration was executed. The seven worked examples are original practice scenarios for this review sheet. Their arithmetic, keys, and rubrics were checked during preparation, but Nik must review subject coverage and wording before adopting any question for an exam.
