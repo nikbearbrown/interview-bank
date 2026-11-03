@@ -118,7 +118,9 @@ def build():
         for path in sorted((ROOT / kind).glob("*.md"), key=file_order):
             text = path.read_text()
             ch = chapter_of(path)
-            chapters[str(ch) if ch is not None else "foundations"] = parse_title(text)
+            # Several non-chapter sets share this group. Keep the original
+            # vocabulary heading; each question retains its own section title.
+            chapters.setdefault(str(ch) if ch is not None else "foundations", parse_title(text))
             qs += parser(path, text)
         doc = {"course": COURSE, "type": kind, "scoring": SCORING[kind], "count": len(qs),
                "chapters": chapters, "questions": qs}

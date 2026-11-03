@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 119,
+  "count": 159,
   "chapters": {
     "foundations": "Engine vocabulary (Godot, Unity, Unreal)",
     "0": "Chapter 0: The toolchain",
@@ -310,6 +310,1286 @@
         {
           "point": 5,
           "text": "Explains the risk for an agent: a literal translation, such as adding components to a Godot node or creating a prefab file, builds something the target engine does not have or does not use."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.1",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Foundational: explain MCP",
+      "prompt": "Explain Model Context Protocol to a game designer who thinks it is a cloud model that writes the game. Use an editor example to distinguish the host, client and server.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines MCP as an integration protocol connecting an AI application with external context and capabilities."
+        },
+        {
+          "point": 2,
+          "text": "Identifies the host as the assistant application and the client as its protocol connector."
+        },
+        {
+          "point": 3,
+          "text": "Identifies the server as the service exposing editor operations, with a concrete example such as inspecting a scene."
+        },
+        {
+          "point": 4,
+          "text": "Separates language-model inference from tool execution and engine gameplay execution."
+        },
+        {
+          "point": 5,
+          "text": "Explains that local or remote deployment is a configuration choice rather than a requirement to use cloud inference."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Foundational: choose the primitive",
+      "prompt": "Design an MCP interface for a hypothetical editor that must expose a scene inventory, a create-light operation and a reusable lighting-review checklist. Explain how the agent should use them together.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Maps the inventory to a readable resource with an identifier, or justifies a query tool when dynamic arguments are required."
+        },
+        {
+          "point": 2,
+          "text": "Maps light creation to a tool with explicit target scene and meaningful parameters."
+        },
+        {
+          "point": 3,
+          "text": "Maps the reusable checklist to a prompt template rather than claiming retrieval performs a review."
+        },
+        {
+          "point": 4,
+          "text": "Describes reading scene context before deciding where and how to create a light."
+        },
+        {
+          "point": 5,
+          "text": "Requires inspecting and testing the resulting lighting against stated criteria after the edit."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Applied: define a safe tool contract",
+      "prompt": "Specify a hypothetical move-object tool for an agent. The editor contains several objects with the same display name. Describe the contract without relying on a particular engine API.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Requires an unambiguous object identifier and checks the intended project and scene."
+        },
+        {
+          "point": 2,
+          "text": "Defines position units, coordinate space and whether the input is an offset or an absolute destination."
+        },
+        {
+          "point": 3,
+          "text": "Specifies validation for missing objects and invalid or out-of-range values before mutation."
+        },
+        {
+          "point": 4,
+          "text": "Returns structured evidence of the affected object and its resulting transform, with explicit failure information."
+        },
+        {
+          "point": 5,
+          "text": "Describes a stale-state check or equivalent precondition plus a way to recover the prior transform."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.4",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Troubleshooting: trace a failed call",
+      "prompt": "A tool call reaches an MCP server, but no object appears in the editor. Propose a diagnostic sequence that separates message delivery, argument validation, engine execution and verification.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Checks the matching request and response rather than inferring success from connection status."
+        },
+        {
+          "point": 2,
+          "text": "Checks the advertised tool and argument contract, including identity, units and supported operation."
+        },
+        {
+          "point": 3,
+          "text": "Inspects reported tool failure and relevant editor logs for execution errors."
+        },
+        {
+          "point": 4,
+          "text": "Checks the correct project, scene and editor state, including whether the result exists but is hidden or unsaved."
+        },
+        {
+          "point": 5,
+          "text": "Rereads the actual scene and records evidence before choosing a targeted repair or retry."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.5",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Applied: design a deployment",
+      "prompt": "A studio wants a cloud-hosted language model to help edit a Unity project on a workstation through a local MCP service. Describe the data flow and two separate boundaries the studio must manage.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Places model inference remotely while placing the editor and its MCP-facing integration locally."
+        },
+        {
+          "point": 2,
+          "text": "Traces user intent through the host/client to an editor tool and the resulting observation back to the host."
+        },
+        {
+          "point": 3,
+          "text": "Explains that project context sent to the remote model crosses a data-disclosure boundary."
+        },
+        {
+          "point": 4,
+          "text": "Explains that invoking a local editing tool crosses an action/permission boundary distinct from remote inference."
+        },
+        {
+          "point": 5,
+          "text": "Proposes concrete controls for both boundaries, such as context filtering and narrowly scoped local tools."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.6",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Advanced: compatibility investigation",
+      "prompt": "An older editor MCP plugin works with one client but fails with another. Plan an investigation without assuming a particular protocol revision's initialization sequence.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Records client, plugin and supported protocol revisions for both working and failing combinations."
+        },
+        {
+          "point": 2,
+          "text": "Consults the specification and vendor documentation applicable to those revisions."
+        },
+        {
+          "point": 3,
+          "text": "Compares a minimal read-only trace to distinguish transport, discovery and capability mismatches."
+        },
+        {
+          "point": 4,
+          "text": "Uses a documented compatible configuration or upgrade path and retests in an isolated project."
+        },
+        {
+          "point": 5,
+          "text": "Records the resulting compatibility requirements and avoids inventing unsupported methods to force a connection."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.7",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Advanced: stale context and concurrent editing",
+      "prompt": "A human and an agent are editing the same level. The agent plans changes from a scene inventory read several minutes earlier. Design a workflow that prevents overwriting the human's recent work.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies the inventory as a potentially stale observation rather than a current authority."
+        },
+        {
+          "point": 2,
+          "text": "Resolves object identities and compares relevant current state with the planning snapshot before mutation."
+        },
+        {
+          "point": 3,
+          "text": "Uses an available revision precondition, lock or coordinated editing window to detect or avoid conflicting writes."
+        },
+        {
+          "point": 4,
+          "text": "Applies a small bounded change and verifies its result without resetting unrelated edits."
+        },
+        {
+          "point": 5,
+          "text": "On conflict, stops or replans from fresh state and preserves a recovery record rather than silently overwriting."
+        }
+      ]
+    },
+    {
+      "id": "ES-mcp.8",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "MCP fundamentals",
+      "source": "Advanced: portable editor integration",
+      "prompt": "Design a common agent workflow for placing checkpoints in Unity and Unreal. Explain what belongs in the shared layer and what must remain engine-specific.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines shared intent with observable requirements such as checkpoint count, locations and activation behavior."
+        },
+        {
+          "point": 2,
+          "text": "Places discovery, planning, verification and failure reporting in a reusable workflow."
+        },
+        {
+          "point": 3,
+          "text": "Keeps object creation, asset references and component configuration in engine-specific adapters."
+        },
+        {
+          "point": 4,
+          "text": "Requires each adapter to expose its argument semantics and supported operations rather than reusing tool names blindly."
+        },
+        {
+          "point": 5,
+          "text": "Verifies gameplay behavior independently in each engine and does not equate protocol compatibility with asset compatibility."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.1",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Foundational: distinguish Unity products",
+      "prompt": "A teammate says, 'Unity Spark is Unity's MCP, so installing an MCP server gives us Spark.' Correct the reasoning and propose a small evaluation of each workflow without assuming access to either product.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Describes Spark as a browser-based game-creation experience based on the supplied product distinction."
+        },
+        {
+          "point": 2,
+          "text": "Describes an MCP integration as an interface exposing editor capabilities to a client."
+        },
+        {
+          "point": 3,
+          "text": "Explains why installing an interface does not establish access to a separate product experience."
+        },
+        {
+          "point": 4,
+          "text": "Proposes a bounded creation task with observable gameplay acceptance criteria for evaluating Spark if access is available."
+        },
+        {
+          "point": 5,
+          "text": "Proposes discovery, a reversible editor edit and read-back verification for evaluating an installed MCP integration."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Applied: Unity integration migration",
+      "prompt": "A Unity team's vendor documentation replaces its older in-editor MCP server with a CLI-hosted server. Plan the migration while preserving project work. Do not give version numbers or menu paths.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Inventories the installed editor integration and client configuration to establish that the migration applies."
+        },
+        {
+          "point": 2,
+          "text": "Creates a recoverable project/configuration checkpoint and selects a small test project."
+        },
+        {
+          "point": 3,
+          "text": "Follows the replacement's documented setup and checks the actual advertised tool contracts."
+        },
+        {
+          "point": 4,
+          "text": "Verifies project targeting, a read-only query and a reversible edit with persistence before switching normal work."
+        },
+        {
+          "point": 5,
+          "text": "Records compatibility findings and a rollback route rather than treating the new connection as sufficient acceptance."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Applied: say it to the Unity agent",
+      "prompt": "Write a precise instruction for a Unity agent to add three instances of an existing checkpoint prefab to a specified scene. The positions are world-space coordinates supplied by the designer. Existing prefab behavior must be preserved.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies the project, destination scene and existing prefab asset without relying on display name alone."
+        },
+        {
+          "point": 2,
+          "text": "Requires three distinct instances at the supplied world-space positions with coordinate units made explicit."
+        },
+        {
+          "point": 3,
+          "text": "Preserves the prefab asset and existing instance behavior unless a stated requirement needs an approved change."
+        },
+        {
+          "point": 4,
+          "text": "Requires checking instance count, transforms and checkpoint activation through normal gameplay interaction."
+        },
+        {
+          "point": 5,
+          "text": "Requires saving and reopening the scene and reporting the changed assets plus actual validation evidence."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.4",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Troubleshooting: missing serialized field",
+      "prompt": "A Unity script edit introduces a field, but the agent cannot set it through the editor bridge. The editor shows compilation errors and the old component layout. Explain a repair and verification sequence.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Treats compilation failure as a reason the edited script may not be loaded into the editor."
+        },
+        {
+          "point": 2,
+          "text": "Reads the compiler diagnostics and fixes the relevant code or dependency issue without suppressing the error."
+        },
+        {
+          "point": 3,
+          "text": "Waits for successful compilation/reload before inspecting the actual component layout."
+        },
+        {
+          "point": 4,
+          "text": "Checks that the field belongs to the intended component and is exposed through the supported tool contract."
+        },
+        {
+          "point": 5,
+          "text": "Sets the field, reads it back and tests the intended behavior rather than concluding from file contents alone."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.5",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Applied: one lamp versus a prefab",
+      "prompt": "A Unity scene has twenty instances of a lamp prefab sharing a material. A designer wants one lamp blue. Explain how an agent should establish the edit scope, avoid unintended propagation and prove the result.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies the requested lamp instance unambiguously."
+        },
+        {
+          "point": 2,
+          "text": "Distinguishes an instance change from editing the prefab definition or shared material asset."
+        },
+        {
+          "point": 3,
+          "text": "Chooses a justified per-instance material/property solution supported by the project's rendering setup."
+        },
+        {
+          "point": 4,
+          "text": "Checks the requested lamp and representative unchanged lamps, including the shared asset's state."
+        },
+        {
+          "point": 5,
+          "text": "Saves and reloads the intended changes and records any new asset or override for review."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.6",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Advanced: editor workflow recovery",
+      "prompt": "A Unity agent imports a mesh, creates a prefab and places instances. Import succeeds, prefab creation fails, and no instances have yet been created. Design recovery without rerunning the entire sequence blindly.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Records each step's actual result and identifies prefab creation as the first failed stage."
+        },
+        {
+          "point": 2,
+          "text": "Inspects the imported asset and error details before choosing a targeted correction."
+        },
+        {
+          "point": 3,
+          "text": "Reuses the verified import rather than generating duplicate assets on retry."
+        },
+        {
+          "point": 4,
+          "text": "Creates and validates the prefab before placing instances, using stable identifiers or duplicate detection."
+        },
+        {
+          "point": 5,
+          "text": "Verifies the final asset/instance counts and persistence while removing only artifacts known to belong to the failed attempt."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.7",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Advanced: prototype acceptance",
+      "prompt": "An AI-assisted prototype looks impressive in a browser demo. Your team needs an accessible game with keyboard controls, a save system and a defined target platform. Specify an acceptance plan before adopting the prototype.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Turns the controls, accessibility behavior and save/load requirements into observable checks."
+        },
+        {
+          "point": 2,
+          "text": "Verifies the available export/build workflow and tests the required target rather than inferring it from the browser demo."
+        },
+        {
+          "point": 3,
+          "text": "Inspects asset provenance, dependencies and permissions relevant to the team's intended use without assuming generated means unrestricted."
+        },
+        {
+          "point": 4,
+          "text": "Measures performance and functional behavior under a representative play session, including restart and save recovery."
+        },
+        {
+          "point": 5,
+          "text": "Assesses whether the team can inspect, modify and maintain the delivered project and records unmet requirements."
+        }
+      ]
+    },
+    {
+      "id": "ES-unity.8",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unity, Spark and agent workflows",
+      "source": "Advanced: designing a Unity bridge",
+      "prompt": "A team can expose either a general script evaluator or three narrow tools for inspecting lights, setting one light's intensity and saving a specified scene. Compare the designs for an automated lighting task.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that a general evaluator is flexible but can perform much broader actions than lighting edits."
+        },
+        {
+          "point": 2,
+          "text": "Shows how narrow tools validate project/object identity, allowed values and write scope."
+        },
+        {
+          "point": 3,
+          "text": "Acknowledges that narrow tools may need extension when a legitimate operation is missing rather than inventing support."
+        },
+        {
+          "point": 4,
+          "text": "Defines evidence such as old/new intensity, affected object identifiers and save results."
+        },
+        {
+          "point": 5,
+          "text": "Chooses a justified design with independent validation and a recovery strategy for unexpected changes."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.1",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Foundational: Unreal MCP and game AI",
+      "prompt": "Explain how an Unreal editor MCP server can help build an NPC without being that NPC's runtime intelligence. Give a plausible workflow and its limits.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies the MCP server as an editor-facing integration exposing available operations."
+        },
+        {
+          "point": 2,
+          "text": "Separates the assistant's development-time decisions from the NPC's packaged runtime behavior."
+        },
+        {
+          "point": 3,
+          "text": "Describes creating or configuring the relevant Actor, components or gameplay logic through supported operations."
+        },
+        {
+          "point": 4,
+          "text": "Requires compiling or validating the changed assets and testing the NPC during play."
+        },
+        {
+          "point": 5,
+          "text": "Explains that an editor connection alone does not establish runtime behavior, packaged compatibility or production readiness."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Troubleshooting: endpoint but no tools",
+      "prompt": "An Unreal MCP endpoint is reachable, but its expected scene toolset is absent. The integration uses separately enabled toolsets. Plan a diagnosis that avoids changing level content until the integration is understood.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Distinguishes successful transport communication from availability of the needed tool implementation."
+        },
+        {
+          "point": 2,
+          "text": "Checks the enabled toolsets and applicable integration documentation."
+        },
+        {
+          "point": 3,
+          "text": "Refreshes or rechecks the catalog using the integration's supported workflow."
+        },
+        {
+          "point": 4,
+          "text": "Verifies the client targets the intended editor/project and uses a supported protocol configuration."
+        },
+        {
+          "point": 5,
+          "text": "Runs a minimal read-only operation once available and records any unresolved capability gap instead of inventing a tool name."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Applied: say it to the Unreal agent",
+      "prompt": "Write an instruction for an Unreal agent to place five existing checkpoint Blueprint Actors in a specified level. The designer supplies transforms and wants the Blueprint class left unchanged.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies the project, level and Blueprint asset unambiguously."
+        },
+        {
+          "point": 2,
+          "text": "Specifies five distinct instances with the supplied transforms and explicit coordinate semantics."
+        },
+        {
+          "point": 3,
+          "text": "Limits edits to the placed instances and preserves the Blueprint class definition."
+        },
+        {
+          "point": 4,
+          "text": "Requires count/transform inspection plus an activation test through representative gameplay interaction."
+        },
+        {
+          "point": 5,
+          "text": "Requires saving the affected content, reopening it and reporting changed packages and validation results."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.4",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Troubleshooting: compiled but wrong Blueprint",
+      "prompt": "A Blueprint door compiles, but it opens without a key and sometimes opens twice. Explain how to investigate the logic and verify a repair.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Distinguishes compilation success from correctness of the gameplay conditions."
+        },
+        {
+          "point": 2,
+          "text": "Inspects the key check and event path, including possible duplicate bindings or repeated overlap events."
+        },
+        {
+          "point": 3,
+          "text": "Uses a minimal reproduction with no-key and has-key cases and records the observed transitions."
+        },
+        {
+          "point": 4,
+          "text": "Repairs the condition and guards repeated activation according to the intended door behavior."
+        },
+        {
+          "point": 5,
+          "text": "Runs regression cases for no key, one valid activation and repeated interaction without weakening the requirements."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.5",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Advanced: asynchronous result handling",
+      "prompt": "An Unreal test tool returns a job identifier before the test finishes. Design an agent workflow that reports the pressure-plate test accurately and avoids launching duplicates.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Treats the initial result as accepted or running rather than passed."
+        },
+        {
+          "point": 2,
+          "text": "Stores the job identifier and uses the tool's documented status/result mechanism."
+        },
+        {
+          "point": 3,
+          "text": "Waits or polls within a bounded policy while keeping a distinction between running, failed, completed and unknown states."
+        },
+        {
+          "point": 4,
+          "text": "Obtains the final assertions and diagnostics before claiming success."
+        },
+        {
+          "point": 5,
+          "text": "On timeout or lost connection, checks the existing job before retrying and reports unresolved status honestly."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.6",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Advanced: batch replacement recovery",
+      "prompt": "An Unreal tool is replacing ten placeholder Actors with props. It replaces four, fails on the fifth and stops. Design recovery that preserves the original transforms and avoids duplicate props.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Records the identities and outcomes of the four completed replacements and the failed/remaining targets."
+        },
+        {
+          "point": 2,
+          "text": "Inspects the failure and current scene state before changing anything else."
+        },
+        {
+          "point": 3,
+          "text": "Uses recorded transforms and target identities to verify completed work and prevent duplicate replacement."
+        },
+        {
+          "point": 4,
+          "text": "Chooses either a bounded resume or a rollback based on available recovery support, explaining the choice."
+        },
+        {
+          "point": 5,
+          "text": "Verifies all ten final placements or the restored originals and reports any remaining partial state."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.7",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Applied: local service deployment",
+      "prompt": "An Unreal editor integration is documented for same-machine use with no remote authentication layer. A team wants to use it from a remote workstation. Explain why port forwarding is not a complete solution and propose a responsible evaluation.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that exposing the endpoint broadens who can reach powerful editor operations."
+        },
+        {
+          "point": 2,
+          "text": "Distinguishes network reachability from authentication and per-operation authorization."
+        },
+        {
+          "point": 3,
+          "text": "Checks documented supported deployment options rather than assuming a local service is ready for remote exposure."
+        },
+        {
+          "point": 4,
+          "text": "Proposes a local client or a deliberately designed access-controlled remote arrangement with restricted reachability."
+        },
+        {
+          "point": 5,
+          "text": "Tests with a disposable project and verifies identities, allowed operations and audit evidence before production use."
+        }
+      ]
+    },
+    {
+      "id": "ES-unreal.8",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Unreal and agent workflows",
+      "source": "Advanced: authoring versus runtime state",
+      "prompt": "An Unreal agent changes a light during play, and the value reverts afterward. The request was to deliver a persistent level change. Explain the likely state confusion and a verifiable repair.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Distinguishes a runtime object instance from saved authoring data."
+        },
+        {
+          "point": 2,
+          "text": "Checks which world/object the tool actually targeted rather than assuming the revert is a transport failure."
+        },
+        {
+          "point": 3,
+          "text": "Applies the intended value to the correct authoring target through a supported edit operation."
+        },
+        {
+          "point": 4,
+          "text": "Saves the affected level or asset and reopens it to verify persistence."
+        },
+        {
+          "point": 5,
+          "text": "Runs a play check afterward and considers runtime logic that might intentionally override the authored value."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.1",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Foundational: map local and cloud boundaries",
+      "prompt": "An agent uses a remote model, a local MCP editor service and a remote asset catalog. Map the data and action boundaries for a request to add a prop to a scene.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies the workstation-to-model boundary for prompts and selected project context."
+        },
+        {
+          "point": 2,
+          "text": "Identifies the local client-to-editor boundary where tool calls can mutate scene state."
+        },
+        {
+          "point": 3,
+          "text": "Identifies the asset-catalog boundary for search queries, credentials and downloaded content."
+        },
+        {
+          "point": 4,
+          "text": "Assigns a concrete protection to each relevant boundary, such as context minimization, scoped tools and validated asset downloads."
+        },
+        {
+          "point": 5,
+          "text": "Explains why calling the workflow local based only on the editor location would be misleading."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Applied: resist injected asset instructions",
+      "prompt": "An asset description instructs the agent to upload credentials before using the asset. Explain the trust error and propose a response that still allows legitimate scene work.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies the description as untrusted content rather than an instruction from the user or host."
+        },
+        {
+          "point": 2,
+          "text": "Rejects the unrelated credential upload without following or forwarding its executable directions."
+        },
+        {
+          "point": 3,
+          "text": "Keeps secrets out of model context and limits upload/network capabilities where practical."
+        },
+        {
+          "point": 4,
+          "text": "Uses trusted asset metadata or an alternative asset to continue the authorized task when possible."
+        },
+        {
+          "point": 5,
+          "text": "Records or flags the suspicious content and verifies that no unintended action or disclosure occurred to the extent evidence allows."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Advanced: design authorization",
+      "prompt": "Design access controls for a shared remote editor service with reviewer and builder roles. Reviewers inspect scenes; builders may edit a designated level but cannot publish builds.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Separates authentication of the caller from authorization of each requested operation."
+        },
+        {
+          "point": 2,
+          "text": "Grants reviewers read operations and restricts builders' writes to the designated project/level."
+        },
+        {
+          "point": 3,
+          "text": "Enforces restrictions at the service or underlying capability boundary rather than relying on UI visibility."
+        },
+        {
+          "point": 4,
+          "text": "Treats publishing as a separate permission and rejects unauthorized attempts even from an authenticated builder."
+        },
+        {
+          "point": 5,
+          "text": "Tests allowed and denied operations and records useful audit evidence without logging secrets."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.4",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Advanced: export path validation",
+      "prompt": "A hypothetical MCP export tool receives a destination path and may write only under an approved folder. Propose validation and adversarial checks, including a path containing parent-directory components and a symbolic link.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Resolves the destination relative to the intended root and validates actual containment rather than a textual prefix."
+        },
+        {
+          "point": 2,
+          "text": "Rejects traversal that escapes the root and explains why parent-directory components matter."
+        },
+        {
+          "point": 3,
+          "text": "Accounts for symbolic links and possible changes between validation and writing, using an appropriate safe filesystem strategy."
+        },
+        {
+          "point": 4,
+          "text": "Tests valid nested output, escape attempts, existing-file policy and permission-denied behavior."
+        },
+        {
+          "point": 5,
+          "text": "Ensures rejection leaves protected files unchanged and returns a clear error without exposing unnecessary filesystem details."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.5",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Applied: evaluate an unfamiliar package",
+      "prompt": "A developer wants to install a third-party MCP editor package because a tutorial says it speeds up game creation. Design a review appropriate to code that will access a valuable local project.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Checks maintainer identity, source location and whether the package is official or community-maintained without equating either label with safety."
+        },
+        {
+          "point": 2,
+          "text": "Reviews requested permissions, startup behavior and relevant dependencies for access beyond the task."
+        },
+        {
+          "point": 3,
+          "text": "Pins a reviewed revision and records installation/compatibility requirements."
+        },
+        {
+          "point": 4,
+          "text": "Tests representative read, write and failure cases in a disposable project under restricted access."
+        },
+        {
+          "point": 5,
+          "text": "Defines rollback/removal and acceptance criteria before granting access to the valuable project."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.6",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Troubleshooting: accidental credential disclosure",
+      "prompt": "An agent's tool log contains a credential that was also committed to version control. Describe containment and recovery without assuming that deleting the latest file removes all exposure.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Restricts further access to the exposed credential and rotates or revokes it through the appropriate authority."
+        },
+        {
+          "point": 2,
+          "text": "Identifies relevant copies such as history, logs and artifacts while avoiding further reproduction of the secret."
+        },
+        {
+          "point": 3,
+          "text": "Moves legitimate credential use to an appropriate secret store or environment mechanism outside tracked content."
+        },
+        {
+          "point": 4,
+          "text": "Reviews evidence of credential use and evaluates the affected scope rather than assuming no access occurred."
+        },
+        {
+          "point": 5,
+          "text": "Adds redaction and a check against future secret inclusion, with cleanup coordinated so other work is preserved."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.7",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Advanced: assess an offline claim",
+      "prompt": "A vendor says its editor integration runs locally. A studio requires no project data to leave its workstation. Describe how to evaluate the complete workflow before relying on that claim.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Distinguishes local tool execution from the location of model inference and context processing."
+        },
+        {
+          "point": 2,
+          "text": "Inventories model endpoints, telemetry, update checks, asset services and other network dependencies."
+        },
+        {
+          "point": 3,
+          "text": "Inspects configuration and tests observed network behavior in a controlled session with representative tasks."
+        },
+        {
+          "point": 4,
+          "text": "Uses local inference and disables or constrains incompatible remote paths where supported, verifying the resulting workflow still works."
+        },
+        {
+          "point": 5,
+          "text": "Documents remaining limitations and does not infer an offline guarantee from the local integration label alone."
+        }
+      ]
+    },
+    {
+      "id": "ES-security.8",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent security and local versus cloud execution",
+      "source": "Advanced: safe audit trail",
+      "prompt": "Design an audit record for an agent that changes game levels. It must support incident investigation and avoid becoming a store of sensitive project text and credentials.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Records operation identity, caller, target project/object, time or ordering information and correlation identifier."
+        },
+        {
+          "point": 2,
+          "text": "Records outcome and bounded before/after evidence adequate to reconstruct relevant changes."
+        },
+        {
+          "point": 3,
+          "text": "Redacts secrets and minimizes raw prompts, asset text and payload data that are not needed for the audit purpose."
+        },
+        {
+          "point": 4,
+          "text": "Restricts log access and defines retention appropriate to the project."
+        },
+        {
+          "point": 5,
+          "text": "Protects useful failure records from silent overwriting and tests that the trail can explain a representative partial failure."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.1",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Foundational: evidence-based completion",
+      "prompt": "An agent claims a door interaction is complete after creating a script and taking a screenshot. Design a minimum evidence package for accepting a door that opens only when the player holds a key.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Requires inspecting the actual implementation and changed assets for the intended condition and scope."
+        },
+        {
+          "point": 2,
+          "text": "Requires compilation/import validation without presenting it as behavioral proof."
+        },
+        {
+          "point": 3,
+          "text": "Tests both the no-key rejection and has-key opening paths through representative interaction."
+        },
+        {
+          "point": 4,
+          "text": "Checks persistence and the relevant play/build environment for the intended deliverable."
+        },
+        {
+          "point": 5,
+          "text": "Reports actual outcomes and remaining limitations rather than relying on the completion claim or screenshot alone."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Advanced: retry after uncertainty",
+      "prompt": "An editor tool times out while creating a checkpoint. The operation has no documented atomicity guarantee. Explain how to recover without duplicating the checkpoint or deleting unrelated work.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Recognizes that a timeout leaves the execution outcome unknown."
+        },
+        {
+          "point": 2,
+          "text": "Inspects the current scene and available operation records using a stable identifier or bounded search."
+        },
+        {
+          "point": 3,
+          "text": "Uses a supported idempotency mechanism or explicit existence check before retrying creation."
+        },
+        {
+          "point": 4,
+          "text": "Verifies exactly one intended checkpoint and its configured behavior after recovery."
+        },
+        {
+          "point": 5,
+          "text": "Reports unresolved uncertainty if inspection is insufficient and avoids broad deletion or a false success claim."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Applied: cross-engine checkpoint specification",
+      "prompt": "Write an engine-neutral specification for a checkpoint, then explain how Unity and Unreal implementations could satisfy it while using different object and scripting systems.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines activation, saved location and respawn behavior in observable terms independent of engine terminology."
+        },
+        {
+          "point": 2,
+          "text": "Maps the Unity implementation to appropriate scene objects/components and a reusable asset where useful."
+        },
+        {
+          "point": 3,
+          "text": "Maps the Unreal implementation to appropriate Actors/components and Blueprint or code behavior where useful."
+        },
+        {
+          "point": 4,
+          "text": "Makes units, coordinate spaces, object identities and persistence explicit at each adapter boundary."
+        },
+        {
+          "point": 5,
+          "text": "Uses equivalent gameplay acceptance cases in both engines without requiring identical tools or serialized assets."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.4",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Applied: diagnose a flaky agent test",
+      "prompt": "An automated game test passes intermittently. It uses random spawn positions, rendered-frame waits and an asynchronously imported asset. Design a repeatable diagnosis and repair plan.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Records failures with seed, timing, import status and relevant engine configuration."
+        },
+        {
+          "point": 2,
+          "text": "Controls or records random input so a failing spawn can be reproduced."
+        },
+        {
+          "point": 3,
+          "text": "Uses a suitable fixed simulation step or bounded simulation-condition wait instead of assuming rendered frames equal elapsed game time."
+        },
+        {
+          "point": 4,
+          "text": "Waits for successful asset readiness and distinguishes import failure from gameplay failure."
+        },
+        {
+          "point": 5,
+          "text": "Reruns the repaired test under the controlled setup and retains failures rather than reporting only the first pass."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.5",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Advanced: compare Unity and Unreal workflows",
+      "prompt": "A team wants an agent to import props, place them, configure collisions and run tests. Design a fair comparison of Unity and Unreal integrations without assuming that using MCP gives them identical capabilities.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines the same observable scene and gameplay requirements for both trials."
+        },
+        {
+          "point": 2,
+          "text": "Inventories the actual tools, supported operations and required manual steps in each integration."
+        },
+        {
+          "point": 3,
+          "text": "Measures task completion, correctness, recovery from a controlled failure and human effort on comparable inputs."
+        },
+        {
+          "point": 4,
+          "text": "Includes team skills, target platform and engine-specific asset/workflow constraints in the decision."
+        },
+        {
+          "point": 5,
+          "text": "Records compatibility and evidence limitations and chooses based on the measured task rather than tool count or a demo alone."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.6",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Advanced: optimize with constraints",
+      "prompt": "An agent reduces a benchmark's steady frame time from 20 to 15 milliseconds for a 60 FPS target, but disables required shadows. Calculate the timing result and propose an acceptable next step.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Computes the target budget as about 16.67 milliseconds per frame and the baseline as 50 FPS."
+        },
+        {
+          "point": 2,
+          "text": "Computes the new steady rate as about 66.67 FPS and the time saving as 5 milliseconds per frame."
+        },
+        {
+          "point": 3,
+          "text": "Recognizes that the changed result meets the timing budget but violates the visual requirement."
+        },
+        {
+          "point": 4,
+          "text": "Restores or preserves required shadows and profiles the actual bottleneck before choosing another optimization."
+        },
+        {
+          "point": 5,
+          "text": "Rebenchmarks under the same workload and checks both timing variation and visual acceptance on the target environment."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.7",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Advanced: independent test oracle",
+      "prompt": "An agent writes a checkpoint feature and its test. The test directly assigns the expected saved position before asserting equality. Explain the weakness and design stronger evidence, including a negative case.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies that the test sets its own expected outcome and bypasses the checkpoint behavior."
+        },
+        {
+          "point": 2,
+          "text": "Drives the player through the actual activation path and then exercises respawn or load behavior."
+        },
+        {
+          "point": 3,
+          "text": "Observes the resulting position independently of the setup assignment and uses a justified tolerance if needed."
+        },
+        {
+          "point": 4,
+          "text": "Adds a negative case such as respawning before any checkpoint is activated or entering an inactive checkpoint."
+        },
+        {
+          "point": 5,
+          "text": "Reviews the test against the requirement and checks that a deliberately broken activation path would be detected."
+        }
+      ]
+    },
+    {
+      "id": "ES-verification.8",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Agent testing, troubleshooting and engine comparisons",
+      "source": "Advanced: recover a partial scene batch",
+      "prompt": "An agent changes five of ten lights before a tool fails. The contract does not provide transactions. Explain atomicity, design a recovery record and propose acceptance criteria for a resumed operation.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines atomicity as an all-or-nothing operation and explains why a batch call alone does not provide it."
+        },
+        {
+          "point": 2,
+          "text": "Records per-light identity, original value, attempted value and observed outcome."
+        },
+        {
+          "point": 3,
+          "text": "Inspects current state before choosing a bounded resume or restoration of verified prior values."
+        },
+        {
+          "point": 4,
+          "text": "Avoids overwriting unrelated concurrent changes by checking preconditions or coordinating access."
+        },
+        {
+          "point": 5,
+          "text": "Verifies all intended final values and unchanged out-of-scope objects, saves the result and reports any unresolved partial state."
         }
       ]
     },
