@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 268,
+  "count": 283,
   "chapters": {
     "foundations": "Foundations (probability and statistics for skeptics)",
     "1": "Chapter 1: The skeptic's toolkit",
@@ -10010,6 +10010,636 @@
           "text": "The runner's budget, which makes buying expensive shoes possible and also pays for coaching and race entries.",
           "correct": true,
           "explanation": "Budget influences both the treatment and the outcome, so it is a confounder."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.72",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A health researcher lists studies that have been done on the effect of a treatment. Check each study that uses observational data.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Researchers pull a hospital's past records and compare patients who were given an antibiotic by their doctors with patients who were not.",
+          "correct": true,
+          "explanation": "Doctors and circumstances, not the researchers, decided who got the antibiotic; the researchers only observed what happened, so the data are observational."
+        },
+        {
+          "label": "B",
+          "text": "A survey asks adults whether they take a daily vitamin and whether they had a fracture this year.",
+          "correct": true,
+          "explanation": "The researchers did not assign the vitamin; people chose for themselves, so the data are observational."
+        },
+        {
+          "label": "C",
+          "text": "An analyst compares test scores of students in schools that chose to adopt a new curriculum with schools that did not.",
+          "correct": true,
+          "explanation": "The schools chose the treatment; nobody assigned it for the purpose of the study, so the data are observational."
+        },
+        {
+          "label": "D",
+          "text": "A website randomly shows half of its visitors a new layout and then measures purchases.",
+          "correct": false,
+          "explanation": "The website assigns the layout by chance. Assigning the treatment at random is an experiment, not observation."
+        },
+        {
+          "label": "E",
+          "text": "A bank compares repayment of customers who chose to use its mobile app with customers who did not.",
+          "correct": true,
+          "explanation": "Customers chose whether to use the app, so the treatment was not assigned by the investigator."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.73",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A policy group collects the following studies of a workplace or school program. Check each description that is observational data.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Researchers draw names from a hat to decide which of 200 employees will be offered a four-day week, then track their output.",
+          "correct": false,
+          "explanation": "The researchers assign the treatment by chance, so this is an experiment."
+        },
+        {
+          "label": "B",
+          "text": "A transport agency compares commute times of people who chose to switch to a new train line with those of people who did not.",
+          "correct": true,
+          "explanation": "Commuters chose the treatment, so the data are observational."
+        },
+        {
+          "label": "C",
+          "text": "An online course randomly gives half of new learners a reminder email and measures completion.",
+          "correct": false,
+          "explanation": "The course assigns the email by chance, so this is an experiment."
+        },
+        {
+          "label": "D",
+          "text": "A bank analyses past loan records to compare repayment for customers whom loan officers did or did not offer a payment plan.",
+          "correct": true,
+          "explanation": "Loan officers, not the analysts, decided who was offered the plan, and the analysis looks back at records, so the data are observational."
+        },
+        {
+          "label": "E",
+          "text": "Researchers use a random number generator to decide which schools receive tutoring grants, then compare scores.",
+          "correct": false,
+          "explanation": "The researchers assign the grants by chance, so this is an experiment."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.74",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A health agency has the following sources. Check each source that provides observational data about whether a treatment works.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A trial in which a computer randomly assigns each patient to a drug or a placebo.",
+          "correct": false,
+          "explanation": "Random assignment by the investigators makes this experimental data."
+        },
+        {
+          "label": "B",
+          "text": "Insurance claims that show which patients filled a prescription and who was later hospitalised.",
+          "correct": true,
+          "explanation": "Patients and doctors decided who filled the prescription; the claims only record it."
+        },
+        {
+          "label": "C",
+          "text": "A national survey asking people whether they smoke and whether they have lung disease.",
+          "correct": true,
+          "explanation": "Nobody assigned smoking; people chose it, so the data are observational."
+        },
+        {
+          "label": "D",
+          "text": "Electronic health records of patients whose doctors chose which blood-pressure drug to prescribe.",
+          "correct": true,
+          "explanation": "The doctors chose the treatment, not an investigator, so the data are observational."
+        },
+        {
+          "label": "E",
+          "text": "Fitness-tracker records of users who decided on their own to join a walking challenge.",
+          "correct": true,
+          "explanation": "Users chose the treatment, so the data are observational."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.75",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "Check each statement that is true about observational data.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "In observational data the investigator did not assign the treatment; people or circumstances determined who received it.",
+          "correct": true,
+          "explanation": "That is what makes data observational."
+        },
+        {
+          "label": "B",
+          "text": "Any dataset taken from existing records is observational, even if the treatment in those records was assigned by chance.",
+          "correct": false,
+          "explanation": "What matters is how the treatment was assigned. Records of a trial in which the treatment was assigned by chance are experimental data."
+        },
+        {
+          "label": "C",
+          "text": "A dataset with millions of rows can still be observational.",
+          "correct": true,
+          "explanation": "Many rows do not change who chose the treatment."
+        },
+        {
+          "label": "D",
+          "text": "Observational data records the treatment but not the outcome.",
+          "correct": false,
+          "explanation": "Observational data usually records both; what is missing is the investigator's assignment of the treatment."
+        },
+        {
+          "label": "E",
+          "text": "Whether data is observational depends on how the treatment came about, not on how carefully the variables were measured.",
+          "correct": true,
+          "explanation": "Careful measurement does not turn chosen treatments into assigned ones."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.76",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A trial randomly assigns 2,000 patients to take a new drug or a placebo and compares recovery. Check each statement that is true about what randomization does in this trial.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "On average, factors such as age and prior health end up similar in the two groups.",
+          "correct": true,
+          "explanation": "Chance assignment spreads such factors across the groups in the same way on average."
+        },
+        {
+          "label": "B",
+          "text": "In a trial of ten patients, it ensures that the two groups match closely on age.",
+          "correct": false,
+          "explanation": "With very few patients, chance can leave the groups quite different; the balance holds on average and improves with size."
+        },
+        {
+          "label": "C",
+          "text": "It breaks the link between a patient's prior health and whether the patient receives the drug, so prior health is not a confounder here.",
+          "correct": true,
+          "explanation": "A confounder must affect the treatment as well as the outcome; chance assignment means prior health no longer affects who gets the drug."
+        },
+        {
+          "label": "D",
+          "text": "It makes the recovery measurements more accurate.",
+          "correct": false,
+          "explanation": "Randomization concerns who gets the treatment, not how well the outcome is measured."
+        },
+        {
+          "label": "E",
+          "text": "It lets researchers estimate the drug's effect without having measured every factor that affects recovery.",
+          "correct": true,
+          "explanation": "Because assignment is by chance, unmeasured factors are not tied to the treatment either."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.77",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A data scientist explains why most of her work uses observational data instead of randomized trials. Check each statement that is a reason she could give.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Randomly assigning a harmful exposure, such as smoking, to people would be unethical.",
+          "correct": true,
+          "explanation": "Some treatments cannot be assigned for ethical reasons, so they can only be observed."
+        },
+        {
+          "label": "B",
+          "text": "Many questions concern events that have already happened, so who received the treatment cannot be reassigned.",
+          "correct": true,
+          "explanation": "Past events can be studied only as they happened."
+        },
+        {
+          "label": "C",
+          "text": "Randomized trials usually give less reliable causal answers than observational data.",
+          "correct": false,
+          "explanation": "Randomization is what makes a trial a strong way to answer causal questions; its limits are cost, ethics and practicality."
+        },
+        {
+          "label": "D",
+          "text": "Running a randomized trial can be slow and expensive.",
+          "correct": true,
+          "explanation": "Cost and time often make a trial impractical."
+        },
+        {
+          "label": "E",
+          "text": "Records of what people chose already exist in many settings and can be studied without running a new trial.",
+          "correct": true,
+          "explanation": "Existing records are an available source of observational data."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.78",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A career site records whether 1,000 applicants had a personal website and whether they were interviewed. Experience is grouped as little, moderate or a lot, and more experience raises the chance of an interview. Among the 500 applicants with a website, 10% have little experience, 30% moderate and 60% a lot; among the 500 without a website, 60% have little, 30% moderate and 10% a lot. Interview rates for applicants with and without a website are: little experience 20% and 10%; moderate 40% and 30%; a lot 70% and 60%. Overall, 56% of applicants with a website and 21% of those without were interviewed. The treatment is having a website and the outcome is being interviewed. Check each statement that follows from these numbers.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The overall difference of 35 points shows that a website raises the chance of an interview by 35 points.",
+          "correct": false,
+          "explanation": "Applicants with websites are more experienced, and experience raises the chance of an interview, so the overall difference mixes the website's effect with the effect of experience."
+        },
+        {
+          "label": "B",
+          "text": "Within each experience group, having a website goes with an interview rate 10 points higher.",
+          "correct": true,
+          "explanation": "The rates are 20 against 10, 40 against 30, and 70 against 60: a 10-point difference in every group."
+        },
+        {
+          "label": "C",
+          "text": "Because experience raises the chance of an interview, the website has no effect.",
+          "correct": false,
+          "explanation": "Within each group, where experience is held about the same, applicants with websites still do better by 10 points."
+        },
+        {
+          "label": "D",
+          "text": "The overall difference of 35 points overstates the website's effect, because website owners tend to be more experienced.",
+          "correct": true,
+          "explanation": "Experience affects both whether someone has a website and whether they are interviewed, so it is a confounder and inflates the overall difference."
+        },
+        {
+          "label": "E",
+          "text": "Averaging the three within-group differences gives an effect of about 10 points.",
+          "correct": true,
+          "explanation": "Each group shows 10 points, so any average of the three is about 10 points."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.79",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "In records of 10,000 adults, people in poor health are more likely to get a flu shot and also more likely to have a serious case of flu. The treatment is getting the flu shot and the outcome is having a serious case of flu. Check each comparison that compares like with like on health status.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Comparing serious-flu rates of vaccinated and unvaccinated people who are all in poor health.",
+          "correct": true,
+          "explanation": "Everyone compared has the same health status, so health cannot explain the difference."
+        },
+        {
+          "label": "B",
+          "text": "Comparing serious-flu rates of all vaccinated people with all unvaccinated people, ignoring health.",
+          "correct": false,
+          "explanation": "Ignoring health mixes the shot's effect with the effect of health status."
+        },
+        {
+          "label": "C",
+          "text": "Doing the within-group comparison separately for people in poor health and for people in good health, then combining the two group results by weighting each group by its size.",
+          "correct": true,
+          "explanation": "Comparing within each health group and then averaging across groups is how the effect is controlled for health and combined."
+        },
+        {
+          "label": "D",
+          "text": "Comparing serious-flu rates of vaccinated and unvaccinated people who are all in good health.",
+          "correct": true,
+          "explanation": "Again everyone compared has the same health status, so the comparison controls for it."
+        },
+        {
+          "label": "E",
+          "text": "Comparing vaccinated people in poor health with unvaccinated people in good health.",
+          "correct": false,
+          "explanation": "The two groups differ in health status as well as in the shot, so health is not controlled for."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.80",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "Check each statement that is true about controlling for a variable, which is also called adjusting for it.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "It means deleting that variable's column from the dataset.",
+          "correct": false,
+          "explanation": "Controlling uses the variable to form comparison groups; deleting it would leave the confounding in place."
+        },
+        {
+          "label": "B",
+          "text": "It means comparing treated and untreated people who have the same value of that variable.",
+          "correct": true,
+          "explanation": "Comparing within groups of similar people is how the variable is held constant."
+        },
+        {
+          "label": "C",
+          "text": "\"Controlling for\" and \"adjusting for\" are two names for the same thing.",
+          "correct": true,
+          "explanation": "They are used interchangeably."
+        },
+        {
+          "label": "D",
+          "text": "It requires that the variable was measured.",
+          "correct": true,
+          "explanation": "Without a measurement there is no way to group people by it."
+        },
+        {
+          "label": "E",
+          "text": "It requires the investigator to assign the treatment at random.",
+          "correct": false,
+          "explanation": "Random assignment is a different way to handle confounders; controlling is done on the data after the fact."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.81",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "Imagine a hidden fair coin U flipped for each person. Think of U as qualification, X as a referral and Y as an interview. In both of two worlds, a person's referral X equals the coin. In world 1, whether the person is interviewed (Y) follows the referral X. In world 2, Y follows the coin U directly and ignores the referral. In the data from either world, X and Y agree for every person, half zeros and half ones. Check each step that would let us tell the two worlds apart.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Collecting ten times as many rows from each world.",
+          "correct": false,
+          "explanation": "More rows from either world show the same pattern, so they cannot separate the worlds."
+        },
+        {
+          "label": "B",
+          "text": "Measuring the coin value for each person without changing anything.",
+          "correct": false,
+          "explanation": "X already equals the coin, so measuring it adds no new information."
+        },
+        {
+          "label": "C",
+          "text": "Forcing everyone to receive a referral and then recording who is interviewed.",
+          "correct": true,
+          "explanation": "In world 1 everyone would be interviewed; in world 2 only those whose coin is 1 would be. Changing the treatment reveals how the outcome is generated."
+        },
+        {
+          "label": "D",
+          "text": "Checking whether X and Y agree in the data.",
+          "correct": false,
+          "explanation": "They agree for every person in both worlds."
+        },
+        {
+          "label": "E",
+          "text": "Recording the referral status of more people.",
+          "correct": false,
+          "explanation": "Referral status matches the coin in both worlds, so more of it looks the same in both."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.82",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A recruiter draws arrows between experience, having a website, and getting an interview to describe how these variables are related. Check each statement that is true about where the arrows come from.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "They can be read directly off a table of rows by any statistical program.",
+          "correct": false,
+          "explanation": "The same table can be produced by different arrow structures."
+        },
+        {
+          "label": "B",
+          "text": "They come from assumptions about how the variables are generated, such as that experience comes before making a website.",
+          "correct": true,
+          "explanation": "The arrows are assumptions about the setting, not findings from the table."
+        },
+        {
+          "label": "C",
+          "text": "Once enough rows are collected, a single set of arrows is consistent with the data.",
+          "correct": false,
+          "explanation": "More rows of the same kind do not rule out other arrow structures."
+        },
+        {
+          "label": "D",
+          "text": "Different assumptions about the arrows can fit the same table equally well.",
+          "correct": true,
+          "explanation": "That is why knowledge about how the data were generated is needed."
+        },
+        {
+          "label": "E",
+          "text": "They are estimated from the rows by the same method that estimates an average interview rate.",
+          "correct": false,
+          "explanation": "Averages are computed from rows, but the arrows are assumptions about how the variables are generated, which the rows alone do not contain."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.83",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "Imagine a hidden fair coin U flipped for each person. Think of U as qualification, X as a referral and Y as an interview. In both of two worlds, a person's referral X equals the coin. In world 1, whether the person is interviewed (Y) follows the referral X. In world 2, Y follows the coin U directly and ignores the referral. Check each statement that is true about the data from the two worlds.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "In the data from both worlds, X and Y agree for every person.",
+          "correct": true,
+          "explanation": "In world 1 Y equals X; in world 2 Y equals U, and X equals U, so Y equals X in both."
+        },
+        {
+          "label": "B",
+          "text": "The data alone show that the referral caused the interview.",
+          "correct": false,
+          "explanation": "World 2 produces the same data, and there the referral plays no role."
+        },
+        {
+          "label": "C",
+          "text": "The data alone show that qualification caused the interview.",
+          "correct": false,
+          "explanation": "World 1 produces the same data, and there qualification affects the interview only through the referral."
+        },
+        {
+          "label": "D",
+          "text": "Both worlds produce the same pattern: half zeros and half ones, matching in every row.",
+          "correct": true,
+          "explanation": "The coin is fair and X, Y and U coincide, so the pattern is identical."
+        },
+        {
+          "label": "E",
+          "text": "Enough rows would eventually make the data from the two worlds look different.",
+          "correct": false,
+          "explanation": "The worlds give the same data however many rows are collected."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.84",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "Suppose that, after controlling for experience, 32% of applicants without a website and 70% of applicants with one were interviewed, and the difference is the website's effect. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The website raised the chance of an interview by 38 percentage points.",
+          "correct": true,
+          "explanation": "70 minus 32 is 38 percentage points."
+        },
+        {
+          "label": "B",
+          "text": "Every applicant who made a website was interviewed.",
+          "correct": false,
+          "explanation": "The chance rose to 70%, not 100%; the website did not guarantee an interview."
+        },
+        {
+          "label": "C",
+          "text": "An applicant without a website had no chance of an interview.",
+          "correct": false,
+          "explanation": "Applicants without a website were interviewed at a rate of 32%."
+        },
+        {
+          "label": "D",
+          "text": "The effect is the number of interviews divided by the number of websites.",
+          "correct": false,
+          "explanation": "The effect is the change in the chance of an interview, not a count of interviews per website."
+        },
+        {
+          "label": "E",
+          "text": "The effect describes how much the chance changed, not whether any single applicant was interviewed.",
+          "correct": true,
+          "explanation": "The effect is a degree of change in the probability of the outcome."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.85",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "Two career sites each report the change in interview rate from having a personal website, after controlling for experience. Site A: 32% without a website, 70% with. Site B: 5% without, 12% with. Assume each difference is the website's effect. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Site B's website raised the interview chance by more percentage points than site A's.",
+          "correct": false,
+          "explanation": "Site B's change is 7 points and site A's is 38 points."
+        },
+        {
+          "label": "B",
+          "text": "Site A's website raised the interview chance by more percentage points than site B's.",
+          "correct": true,
+          "explanation": "38 points against 7 points."
+        },
+        {
+          "label": "C",
+          "text": "Site A's relative increase (70% compared with 32%) is larger than site B's (12% compared with 5%).",
+          "correct": false,
+          "explanation": "70 divided by 32 is about 2.2, and 12 divided by 5 is 2.4, so site B's relative increase is larger."
+        },
+        {
+          "label": "D",
+          "text": "Because site B's chances are low, its website had no effect.",
+          "correct": false,
+          "explanation": "The chance rose from 5% to 12%, which is an effect even though both numbers are low."
+        },
+        {
+          "label": "E",
+          "text": "The effect of site B's website cannot be expressed as a difference in percentage points.",
+          "correct": false,
+          "explanation": "It can: 12 minus 5 is 7 percentage points."
+        }
+      ]
+    },
+    {
+      "id": "MA-ch06.86",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": 6,
+      "group": "chapter",
+      "section": null,
+      "source": "Pearl's Ladder — Rungs 1 and 2",
+      "stem": "A recruiter notices that applicants with a personal website get more interviews, and wonders whether the website or the applicant's experience is responsible. Check each step that would help separate the two.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Collecting ten times as many applicants in the same way.",
+          "correct": false,
+          "explanation": "More of the same observational data keeps the website and experience tangled together."
+        },
+        {
+          "label": "B",
+          "text": "Randomly assigning websites to applicants and comparing interview rates.",
+          "correct": true,
+          "explanation": "Chance assignment breaks the link between experience and having a website."
+        },
+        {
+          "label": "C",
+          "text": "Computing the correlation between having a website and being interviewed more precisely.",
+          "correct": false,
+          "explanation": "A more precise association does not say whether experience or the website is responsible."
+        },
+        {
+          "label": "D",
+          "text": "Asking the applicants which of the two they think mattered.",
+          "correct": false,
+          "explanation": "Opinions are not a way of separating the effects in the data."
+        },
+        {
+          "label": "E",
+          "text": "Comparing applicants with and without websites within groups of similar experience.",
+          "correct": true,
+          "explanation": "Holding experience about the same controls for it."
         }
       ]
     },
