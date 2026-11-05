@@ -16,13 +16,13 @@ This is a pool to draw an exam from, not an exam. A midterm is a selection of qu
 | Ch 3 Data validation and provenance | 32 | 15 |
 | Ch 4 Robustness and distribution shift | 32 | 16 |
 | Ch 5 Model explainability | 32 | 15 |
-| Ch 6 Bias in the pipeline | 30 | 15 |
+| Ch 6 Bias in the pipeline | 50 | 15 |
 | Ch 7 Fairness metrics | 30 | 15 |
-| **Total** | **248** | **118** |
+| **Total** | **268** | **118** |
 
 ## Layout
 
-- `multiple-answer/00-foundations.md` plus `multiple-answer/ch01-...ch07-*.md`: one document per chapter, many questions each.
+- `multiple-answer/00-foundations.md` plus `multiple-answer/ch01-...ch07-*.md`: one document per chapter, many questions each. Chapter 6 also has `multiple-answer/ch06-confounders.md`: 20 questions (MA-ch06.52 to MA-ch06.71) that give a situation and ask which listed variables are confounders.
 - `essay/00-foundations.md` plus `essay/ch01-...ch07-*.md`: same.
 - `json/multiple-answer.json` and `json/essay.json`: every question with its answer data (below).
 - `scripts/check_format.py`: validates the markdown. `scripts/build_json.py`: rebuilds the JSON.
