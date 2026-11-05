@@ -13,16 +13,16 @@ This is a pool to draw an exam from, not an exam. A midterm is a selection of qu
 | Foundations (probability and statistics) | 27 | 12 |
 | Ch 1 The skeptic's toolkit | 31 | 15 |
 | Ch 2 Probability, uncertainty and the confidence illusion | 34 | 15 |
-| Ch 3 Data validation and provenance | 32 | 15 |
+| Ch 3 Data validation and provenance | 52 | 15 |
 | Ch 4 Robustness and distribution shift | 32 | 16 |
 | Ch 5 Model explainability | 32 | 15 |
 | Ch 6 Bias in the pipeline | 65 | 15 |
 | Ch 7 Fairness metrics | 30 | 15 |
-| **Total** | **283** | **118** |
+| **Total** | **303** | **118** |
 
 ## Layout
 
-- `multiple-answer/00-foundations.md` plus `multiple-answer/ch01-...ch07-*.md`: one document per chapter, many questions each. Chapter 6 also has `multiple-answer/ch06-confounders.md`: 20 questions (MA-ch06.52 to MA-ch06.71) that give a situation and ask which listed variables are confounders. `multiple-answer/ch06-observational-data-and-controls.md` adds 15 more (MA-ch06.72 to MA-ch06.86) on recognizing observational and experimental data, what randomization does, controlling for a confounder, why more rows cannot separate two causal stories, and effect size.
+- `multiple-answer/00-foundations.md` plus `multiple-answer/ch01-...ch07-*.md`: one document per chapter, many questions each. Chapter 6 also has `multiple-answer/ch06-confounders.md`: 20 questions (MA-ch06.52 to MA-ch06.71) that give a situation and ask which listed variables are confounders. Chapter 3 also has `multiple-answer/ch03-experiment-assumptions.md`: 20 questions (MA-ch03.33 to MA-ch03.52) that describe an experiment or study and ask which statements are assumptions behind the conclusion, which are possible problems, and what the evidence supports. `multiple-answer/ch06-observational-data-and-controls.md` adds 15 more (MA-ch06.72 to MA-ch06.86) on recognizing observational and experimental data, what randomization does, controlling for a confounder, why more rows cannot separate two causal stories, and effect size.
 - `essay/00-foundations.md` plus `essay/ch01-...ch07-*.md`: same.
 - `json/multiple-answer.json` and `json/essay.json`: every question with its answer data (below).
 - `scripts/check_format.py`: validates the markdown. `scripts/build_json.py`: rebuilds the JSON.
