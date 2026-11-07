@@ -2,669 +2,814 @@
 
 ## MA-ch07.1
 
-A binary classifier outputs a decision Ŷ (1 means the favorable decision) for people whose true outcome is Y (1 means the person actually qualifies). People belong to group a or group b. Check each statement that is true about standard group fairness criteria. Each statement is worth 1 point (5 points total).
+A reviewer needs the exact name for each group fairness criterion of a binary classifier. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Predictive parity requires the precision of favorable decisions, P(Y=1 | Ŷ=1, group), to be equal across groups.
-- [ ] B. Equalized odds requires both the true-positive rate and the false-positive rate to be equal across groups.
-- [ ] C. Equal opportunity requires the false-positive rate, P(Ŷ=1 | Y=0, group), to be equal across groups, with no condition on people who qualify.
-- [ ] D. Equalized odds implies equal opportunity, because equal true-positive rates are one of its two components.
-- [ ] E. Demographic (statistical) parity requires P(Ŷ=1 | group) to be equal across groups, without conditioning on Y.
+- [ ] A. Equal precision of favorable decisions across groups is equalized odds.
+- [ ] B. Equal true-positive and equal false-positive rates across groups is equalized odds.
+- [ ] C. Equal true-positive rates across groups is equal opportunity.
+- [ ] D. Statistical parity is another name for demographic parity.
+- [ ] E. Equal shares of favorable decisions across groups, whatever the true outcomes, is demographic parity.
 
-**Key:** A=T B=T C=F D=T E=T
+**Key:** A=F B=T C=T D=T E=T
 
 **Why:**
 
-- A: Predictive parity compares positive predictive value (precision) across groups.
-- B: Equalized odds is the conjunction of true-positive-rate parity and false-positive-rate parity.
-- C: Equal opportunity is parity of the true-positive rate, P(Ŷ=1 | Y=1, group); false-positive parity is a separate condition.
-- D: Equal opportunity asks only for the true-positive half, so anything that satisfies equalized odds satisfies it.
-- E: It constrains the rate of favorable decisions alone, whatever the people's true outcomes.
+- A: Equal precision is predictive parity; equalized odds concerns true-positive and false-positive rates.
+- B: Equalized odds is parity of both error-rate quantities conditional on the true outcome.
+- C: Equal opportunity is parity of the rate at which truly qualified people receive the favorable decision.
+- D: Both names describe equal selection rates across groups.
+- E: Demographic parity compares selection rates and ignores the true outcome.
 
-**Source:** Three definitions
+**Source:** Names of the group fairness criteria
 
 ## MA-ch07.2
 
-A lender's model approves (Ŷ=1) or declines loan applicants. On held-out data, Y=1 means the applicant would have repaid. Group P (1,000 applicants): 240 approved who would repay, 60 approved who would not repay, 160 declined who would repay, 540 declined who would not repay. Group Q (1,000 applicants): 120 approved who would repay, 160 approved who would not repay, 80 declined who would repay, 640 declined who would not repay. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The ratio of approval rates (Q over P) is about 0.93, above a 0.8 screening convention.
-- [ ] B. The true-positive rate is 0.60 in both groups, so equal opportunity holds.
-- [ ] C. Equalized odds holds in these data.
-- [ ] D. Because the true-positive rates match, approval precision also matches across groups.
-- [ ] E. Among applicants who would not repay, the approval rate in group Q is twice that in group P.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: Approval rates are 0.30 for P and 0.28 for Q, and 0.28/0.30 = 0.93.
-- B: 240/400 = 0.60 in P and 120/200 = 0.60 in Q.
-- C: Equal true-positive rates are only half of equalized odds, and the false-positive rates differ (0.10 versus 0.20).
-- D: Precision also depends on the base rate and the false-positive rate; it is 240/300 = 0.80 in P and 120/280, about 0.43, in Q.
-- E: False-positive rates are 160/800 = 0.20 for Q and 60/600 = 0.10 for P.
-
-**Source:** Three definitions
-
-## MA-ch07.3
-
-A recruiting model flags applicants (Ŷ=1) for an interview; Y=1 means the applicant was later rated qualified. Group M (500 applicants): 170 flagged and qualified, 30 flagged and not qualified, 80 not flagged but qualified, 220 not flagged and not qualified. Group N (500 applicants): 60 flagged and qualified, 140 flagged and not qualified, 40 not flagged but qualified, 260 not flagged and not qualified. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Because demographic parity holds, the groups must have similar false-positive rates.
-- [ ] B. Equal flag rates show the two groups contain the same share of qualified applicants.
-- [ ] C. The precision of flags is higher in group N than in group M.
-- [ ] D. The false-positive rate in group N (0.35) is nearly three times that in group M (0.12).
-- [ ] E. Both groups are flagged at the same rate, 0.40, so demographic parity holds exactly.
-
-**Key:** A=F B=F C=F D=T E=T
-
-**Why:**
-
-- A: Demographic parity ignores true outcomes, so error rates can differ freely; here they are 0.12 and 0.35.
-- B: Qualified shares are 250/500 = 0.50 in M and 100/500 = 0.20 in N; the flag rate also depends on the error rates.
-- C: Precision is 170/200 = 0.85 in M and 60/200 = 0.30 in N.
-- D: 140/400 = 0.35 and 30/250 = 0.12, a ratio of about 2.9.
-- E: 200/500 = 0.40 in each group.
-
-**Source:** Three definitions
-
-## MA-ch07.4
-
-A model predicts which patients need follow-up care (Ŷ=1); Y=1 means the patient actually needed it. Group A (1,000 patients): 400 flagged who needed it, 100 not flagged who needed it, 50 flagged who did not, 450 not flagged who did not. Group B (1,000 patients): 160 flagged who needed it, 40 not flagged who needed it, 80 flagged who did not, 720 not flagged who did not. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Equalized odds holds: the true-positive rate is 0.80 and the false-positive rate is 0.10 in both groups.
-- [ ] B. Demographic parity must also hold here, because equalized odds holds and the error rates are identical in the two groups.
-- [ ] C. Even if every group B patient who needed follow-up were flagged, lifting B's flag rate to 0.45 would require a false-positive rate of at least about 0.31 in B.
-- [ ] D. The gap in flag rates (0.45 versus 0.24) is explained by different shares of patients who needed follow-up, not by different error rates.
-- [ ] E. The precision of flags is the same in both groups, since the true-positive and false-positive rates match.
-
-**Key:** A=T B=F C=T D=T E=F
-
-**Why:**
-
-- A: 400/500 and 160/200 are both 0.80; 50/500 and 80/800 are both 0.10.
-- B: Flag rate is base rate × TPR + (1 − base rate) × FPR, so equal TPR and FPR still give different flag rates when base rates differ (0.50 versus 0.20).
-- C: B needs 450 flags, only 200 patients needed follow-up, so at least 250 of the other 800 must be flagged: 250/800 = 0.3125.
-- D: The error rates are identical across groups, so only the 50% versus 20% need rates can produce the gap.
-- E: Precision is 400/450, about 0.89, in A and 160/240, about 0.67, in B.
-
-**Source:** Three definitions
-
-## MA-ch07.5
-
-A resume-screening tool advanced 180 of 600 applicants in group X and 168 of 400 applicants in group Y. A reviewer computes the ratio of the lower group's advance rate to the higher group's advance rate and flags any ratio below 0.8 for further review (a screening convention, not a verdict). Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The ratio shows how many qualified applicants were missed in each group.
-- [ ] B. The ratio is about 0.71, so the screen is flagged under the convention.
-- [ ] C. Had group X's advance rate been 0.34 (a ratio of about 0.81), the screen would pass the convention, which would show the process is free of discrimination.
-- [ ] D. Being flagged under the convention shows that the screen is unlawful.
-- [ ] E. A gap of 12 percentage points with samples of 600 and 400 applicants is the sort of difference chance alone would plausibly produce between groups with identical true rates.
-
-**Key:** A=F B=T C=F D=F E=F
-
-**Why:**
-
-- A: The ratio compares selection rates only and uses no information about who was qualified.
-- B: 0.30/0.42 = 0.714, which is below 0.8.
-- C: Passing a ratio threshold does not rule out discrimination, which can exist above the threshold or act through other mechanisms.
-- D: A ratio below 0.8 is a heuristic that triggers further review; it does not itself establish a legal violation.
-- E: A two-proportion z-test gives z of about 3.9 (pooled rate 0.348), far beyond what chance produces at these sample sizes.
-
-**Source:** Each metric is a values claim
-
-## MA-ch07.6
-
-A bank's model flags transactions (Ŷ=1) for manual review, which delays the customer, so being flagged is the burden. Over a month, 12% of customers in group R were flagged and 20% in group S. An analyst computes a disparate-impact ratio (lower group rate divided by higher group rate) and compares it with a 0.8 convention that is meant to be applied to the rate of the favorable outcome. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Computed on the rates of not being flagged, the ratio is also 0.60, since the two framings describe the same gap.
-- [ ] B. Computed on flag rates, the ratio is 0.60.
-- [ ] C. The gap between the groups is 12 percentage points on the flag rate but only 8 points on the rate of not being flagged, because the two outcomes differ.
-- [ ] D. Because not being flagged is the favorable outcome here, the ratio that matches the convention is about 0.91.
-- [ ] E. The same data can pass or fail the 0.8 convention depending on which outcome is called favorable, so the analyst must state that choice.
-
-**Key:** A=F B=T C=F D=T E=T
-
-**Why:**
-
-- A: Not-flagged rates are 0.88 and 0.80, and 0.80/0.88 is about 0.91.
-- B: 0.12/0.20 = 0.60.
-- C: The two rates are complements, so the gap is 8 points either way (0.20 − 0.12 = 0.88 − 0.80).
-- D: The convention is stated on favorable-outcome rates, which here are the not-flagged rates.
-- E: A ratio of 0.60 fails and a ratio of 0.91 passes, so the verdict flips with the framing.
-
-**Source:** Each metric is a values claim
-
-## MA-ch07.7
-
-A risk model outputs a probability score, and people with a score of at least 0.5 are flagged. Among flagged people the score takes only two values, 0.6 and 0.9. Group A: 300 flagged people scored 0.6, of whom 180 had the positive outcome, and 100 scored 0.9, of whom 90 had it. Group B: 100 flagged people scored 0.6, of whom 40 had the positive outcome, and 300 scored 0.9, of whom 230 had it. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. In group B, people who scored 0.9 had the positive outcome about 77% of the time, so the score overstates their risk.
-- [ ] B. If a score were calibrated within each group, precision among flagged people would have to be equal across groups.
-- [ ] C. Among flagged people the positive-outcome rate is 0.675 in both groups, so predictive parity holds at this cutoff.
-- [ ] D. Because predictive parity holds at the cutoff, the score is calibrated within each group.
-- [ ] E. Calibration within groups requires that, at each score value, the observed positive rate matches the score in every group.
-
-**Key:** A=T B=F C=T D=F E=T
-
-**Why:**
-
-- A: 230/300 = 0.767, below the stated 0.9.
-- B: Under calibration, precision among flagged people equals their average score, which depends on each group's mix of scores and so can differ.
-- C: (180+90)/400 = 0.675 in A and (40+230)/400 = 0.675 in B.
-- D: Group B's observed rates (0.40 at score 0.6, about 0.77 at score 0.9) do not match its scores, although its overall precision equals A's.
-- E: That is the definition: among people given score s, a fraction s should have the positive outcome, in each group.
-
-**Source:** Three definitions
-
-## MA-ch07.8
-
-A model outputs probability scores that take one of three values: 0.2, 0.5 or 0.8. Expected calibration error (ECE) is the sum over score values of (share of people with that score) × |observed positive rate − score|. Group A (1,000 people): score 0.2, 500 people, 105 positive; score 0.5, 300 people, 147 positive; score 0.8, 200 people, 158 positive. Group B (1,000 people): score 0.2, 400 people, 120 positive; score 0.5, 300 people, 165 positive; score 0.8, 300 people, 225 positive. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Equal ECE in the two groups would imply equal true-positive rates.
-- [ ] B. Pooling both groups into one ECE calculation gives about 0.04, which hides that group B's calibration error is several times group A's.
-- [ ] C. With bins of 200 to 500 people, a gap of 0.01 in group A is within what sampling noise could produce.
-- [ ] D. ECE is about 0.01 for group A and about 0.07 for group B.
-- [ ] E. In group B, people with score 0.2 had a positive rate below 0.2, so the score overstates their risk and a decision-maker would be too cautious about them.
-
-**Key:** A=F B=T C=T D=T E=F
-
-**Why:**
-
-- A: ECE measures agreement between scores and outcome frequencies; true-positive rates depend on how scores are turned into decisions and on who actually has the outcome.
-- B: Pooled bins have observed rates 0.25, 0.52 and 0.766, giving ECE of about 0.037, while the group values are 0.01 and 0.07.
-- C: The standard error of an observed rate near 0.2 to 0.5 from 200 to 500 people is roughly 0.02 to 0.03.
-- D: A: (500×0.01 + 300×0.01 + 200×0.01)/1000 = 0.01. B: (400×0.10 + 300×0.05 + 300×0.05)/1000 = 0.07.
-- E: Their observed rate is 120/400 = 0.30, above 0.2, so the score understates their risk.
-
-**Source:** Three definitions
-
-## MA-ch07.9
-
-Group 1 has a base rate (share of people with the positive outcome) of 0.5 and group 2 has a base rate of 0.3. A binary classifier is reported to have precision (positive predictive value) of 0.75 and a false-positive rate of 0.10 in both groups. Take these as exact population values. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. If both groups instead had base rate 0.4, equal precision of 0.75 and equal false-positive rate of 0.10 would still require different true-positive rates.
-- [ ] B. The same precision and false-positive rate can be achieved in both groups with a true-positive rate of 0.50 in both.
-- [ ] C. Collecting more labeled data and training a more flexible model would bring the two true-positive rates together while holding precision and false-positive rate fixed.
-- [ ] D. In this example the group with the higher base rate has the higher true-positive rate.
-- [ ] E. Bayes' rule implies the true-positive rates must be about 0.30 in group 1 and 0.70 in group 2.
-
-**Key:** A=F B=F C=F D=F E=T
-
-**Why:**
-
-- A: With equal base rates the same relation gives equal true-positive rates, 0.10 × 3 × (0.6/0.4) = 0.45 in both.
-- B: A true-positive rate of 0.5 would give precision of about 0.83 in group 1 and 0.68 in group 2, not 0.75 in both.
-- C: The relation is arithmetic on population rates; with these precision and false-positive values the true-positive rates are pinned at 0.30 and 0.70 whatever the model.
-- D: Group 1, with base rate 0.5, has the lower true-positive rate (0.30 versus 0.70).
-- E: Precision odds equal base-rate odds × TPR/FPR, so TPR = 0.10 × 3 × (1−p)/p, which is 0.30 for p = 0.5 and 0.70 for p = 0.3.
-
-**Source:** The arithmetic — the actual proof, not a gesture
-
-## MA-ch07.10
-
-Two groups have base rates of 0.5 and 0.2. Consider two classifiers: (i) one that approves every person in both groups regardless of features, and (ii) a perfect classifier that approves exactly the people who have the positive outcome. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Classifier (i) satisfies predictive parity.
-- [ ] B. Classifier (ii) satisfies equalized odds and predictive parity but violates demographic parity.
-- [ ] C. Classifier (i) satisfies equalized odds, because its true-positive rate and its false-positive rate are both 1 in each group.
-- [ ] D. Because classifier (i) satisfies two of the three criteria, it is a useful way of resolving the conflict between them without giving up predictive value.
-- [ ] E. Classifier (i) satisfies demographic parity.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: Its precision equals each group's base rate, 0.5 versus 0.2.
-- B: Perfect prediction gives TPR 1, FPR 0 and precision 1 in both groups, but selection rates equal the unequal base rates.
-- C: Approving everyone gives TPR = FPR = 1 in every group, so the rates match.
-- D: It carries no information about individuals, so it avoids the conflict only by being useless as a predictor.
-- E: Both groups are approved at rate 1.
-
-**Source:** The arithmetic — the actual proof, not a gesture
-
-## MA-ch07.11
-
-A lender scores applicants and approves anyone whose score is at or above a cutoff. On held-out data, group G has 1,000 people who would repay and 1,000 who would not; group H has 400 who would repay and 1,600 who would not. The table gives, for each cutoff, how many of each kind score at or above it.
-
-| Cutoff | G would repay | G would not | H would repay | H would not |
-|---|---|---|---|---|
-| 0.4 | 900 | 500 | 340 | 720 |
-| 0.5 | 800 | 350 | 280 | 480 |
-| 0.6 | 700 | 250 | 220 | 320 |
-| 0.7 | 550 | 150 | 140 | 160 |
-
-Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. With a single cutoff of 0.6, the true-positive rate is 0.70 in G and 0.55 in H.
-- [ ] B. Using cutoff 0.6 for G and 0.5 for H makes both the true-positive rates and the false-positive rates equal across the two groups, so equalized odds holds.
-- [ ] C. Under cutoffs of 0.6 for G and 0.5 for H, an applicant in G and an applicant in H who both score 0.55 receive different decisions.
-- [ ] D. Even if both groups had identical true-positive rates and identical false-positive rates, their base rates (0.5 versus 0.2) would still leave the precision of approvals unequal.
-- [ ] E. Using cutoff 0.6 for G and 0.5 for H makes the precision of approvals about equal in the two groups, since the true-positive rates match.
-
-**Key:** A=T B=F C=T D=T E=F
-
-**Why:**
-
-- A: 700/1000 = 0.70 and 220/400 = 0.55.
-- B: True-positive rates are both 0.70, but false-positive rates are 250/1000 = 0.25 for G and 480/1600 = 0.30 for H.
-- C: The G applicant is declined (0.55 < 0.6) and the H applicant is approved (0.55 ≥ 0.5), the individual-level objection to group-specific cutoffs.
-- D: Precision odds equal base-rate odds × TPR/FPR, so identical rates with base-rate odds of 1 and 0.25 give unequal precision (for example TPR 0.70 and FPR 0.25 give about 0.74 versus 0.41); in the table the gap is wider (0.74 versus 0.37) partly because H's false-positive rate is also higher.
-- E: Precision is 700/950, about 0.74, for G and 280/760, about 0.37, for H.
-
-**Source:** The toolkit and what it cannot do
-
-## MA-ch07.12
-
-Two equal-sized groups have true base rates of 0.6 and 0.3, and the recorded labels are exactly correct. A perfect classifier predicts every label correctly. Here demographic parity means equal selection rates in the two groups. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Any classifier with equal selection rates in the two groups must have overall accuracy of at most 0.85.
-- [ ] B. Reaching demographic parity here means moving some decisions away from the true labels in one group or both.
-- [ ] C. The perfect classifier satisfies equalized odds but violates demographic parity.
-- [ ] D. The perfect classifier's selection rates are 0.6 and 0.3, a ratio (lower over higher) of 0.5.
-- [ ] E. Demographic parity can be reached here without adding misclassifications, since the recorded outcomes are correct.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: If both groups are selected at rate s, their error rates are at least |0.6 − s| and |0.3 − s|, which average at least 0.15, so accuracy is at most 0.85.
-- B: Closing the gap in selection rates means moving decisions away from the true labels in one or both groups.
-- C: It has TPR 1 and FPR 0 in both groups, while its selection rates equal the unequal base rates.
-- D: A perfect classifier selects exactly those with the positive outcome, and 0.3/0.6 = 0.5.
-- E: Any move toward equal selection rates departs from the true labels, so errors rise, to at least 0.15 of people.
-
-**Source:** Each metric is a values claim
-
-## MA-ch07.13
-
-A lender removes the field recording applicants' ethnicity from its model's inputs but keeps postal code, first name and school attended. The company concludes that outcomes cannot differ by ethnicity. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Without the field in the model, no one can measure group-level error rates.
-- [ ] B. A rule that never uses the protected attribute cannot be found to have disparate impact in legal frameworks that recognize it.
-- [ ] C. Dropping the field guarantees equal false-positive rates across ethnic groups.
-- [ ] D. Postal code and similar fields can correlate with ethnicity, so the model may still produce outcomes that differ by ethnic group.
-- [ ] E. Keeping the field in the evaluation data, while excluding it from the model's inputs, lets analysts audit outcomes by group.
-
-**Key:** A=F B=F C=F D=T E=T
-
-**Why:**
-
-- A: Group labels can be kept in the evaluation data, apart from the model's inputs, and used to compute rates by group.
-- B: Disparate-impact doctrine concerns facially neutral practices that burden a group, so a rule can be neutral on its face and still be challenged.
-- C: Removing an input guarantees nothing about error rates, which depend on how outcomes and the remaining features relate to group.
-- D: Proxies can carry much of the information in the removed attribute, so group-correlated outcomes can persist.
-- E: Auditing needs the attribute at evaluation time even when the model is not allowed to use it.
-
-**Source:** Fairness through awareness vs. unawareness
-
-## MA-ch07.14
-
-Individual fairness in its Lipschitz form requires that for any two people x and y, the distance between their outcome distributions is at most a task-specific distance d(x, y) between the people. A scoring system gives each person a probability of approval, so the distance between two people's outcome distributions is the absolute difference of their approval probabilities. Four people have approval probabilities M(x1) = 0.70, M(x2) = 0.55, M(x3) = 0.60 and M(x4) = 0.20, and pairwise distances d(x1,x2) = 0.10, d(x1,x3) = 0.30, d(x1,x4) = 0.50, d(x2,x3) = 0.35, d(x2,x4) = 0.40, d(x3,x4) = 0.45. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Whether the pair (x1, x2) counts as a violation depends on the similarity distance chosen, not only on the model's outputs.
-- [ ] B. The pair (x1, x4) violates the condition, because their outputs differ by as much as their distance.
-- [ ] C. The pair (x1, x2) violates the condition.
-- [ ] D. If x1 and x2 belong to different demographic groups, the violation shows a group-level disparity in approval rates.
-- [ ] E. Changing M(x1) to 0.62, with all other values unchanged, would remove the violation without creating a new one.
-
-**Key:** A=T B=F C=T D=F E=T
-
-**Why:**
-
-- A: With d(x1,x2) = 0.20 the same outputs satisfy the condition.
-- B: Their outputs differ by exactly 0.50, equal to d(x1,x4), and the condition allows equality.
-- C: Their outputs differ by 0.15, which exceeds d(x1,x2) = 0.10.
-- D: The condition compares individual pairs; one violating pair says nothing about the groups' overall approval rates.
-- E: The gaps become 0.07 (limit 0.10), 0.02 (limit 0.30) and 0.42 (limit 0.50).
-
-**Source:** Beyond group metrics: individual fairness
-
-## MA-ch07.15
-
-Check each statement that is true about individual fairness (similar individuals should be treated similarly) and its relation to group fairness criteria. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Checking all pairs of individuals becomes expensive for large populations, so audits often sample pairs.
-- [ ] B. A model can satisfy demographic parity while treating two near-identical people very differently.
-- [ ] C. A model can treat similar people alike under a chosen metric and still show different selection rates between groups.
-- [ ] D. Individual fairness can be evaluated from per-group confusion matrices alone, since they contain every person's outcome.
-- [ ] E. The choice of similarity metric is a technical detail that does not affect the fairness conclusion, since any reasonable metric agrees.
-
-**Key:** A=T B=T C=T D=F E=F
-
-**Why:**
-
-- A: The number of pairs grows quadratically with the population.
-- B: Parity constrains group rates; it does not limit which individuals within a group receive the favorable decision.
-- C: If the groups differ on features the metric counts as relevant, consistent treatment of similar people coexists with unequal group rates.
-- D: It needs a notion of which individuals are similar and a comparison of their treatment, which group-level matrices average away.
-- E: Different metrics give different verdicts on the same pair; deciding which differences between people are relevant is a substantive judgment.
-
-**Source:** Beyond group metrics: individual fairness
-
-## MA-ch07.16
-
-In a causal model of a loan decision, a protected attribute A influences an education credential E, and E is an input to a predictor Ŷ. Unobserved background factors U also influence E. A predictor is counterfactually fair for an individual if its prediction would have had the same distribution had A taken a different value, with that individual's background factors U held fixed. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A predictor that takes E as an input is in general not counterfactually fair here, because changing A changes E.
-- [ ] B. Judging counterfactual fairness requires assumptions about the causal structure; observed data alone does not settle it.
-- [ ] C. Counterfactual fairness implies equalized odds, because a predictor that ignores the protected attribute's effects must have equal error rates.
-- [ ] D. Which paths from A to the prediction are acceptable is a value judgment that the causal graph does not supply.
-- [ ] E. A predictor using only variables not causally downstream of A is counterfactually fair with respect to this model.
-
-**Key:** A=T B=T C=F D=T E=T
-
-**Why:**
-
-- A: With U fixed, a different A produces a different E, which moves the prediction.
-- B: Different causal structures can produce the same observed distribution while implying different counterfactuals.
-- C: It is an individual-level causal condition and places no constraint on error rates conditional on the true outcome.
-- D: The graph shows which paths exist; whether a path through a credential is legitimate is a normative question.
-- E: Its inputs do not change when A is changed counterfactually, so neither does its output.
-
-**Source:** Causal fairness: what the data cannot tell you
-
-## MA-ch07.17
-
-A system allocates a benefit b_i to each of eight people. Generalized entropy with parameter 2 is GE(2) = (1/N) Σ ½[(b_i/μ)² − 1], where μ is the mean benefit; this equals half the squared coefficient of variation (population standard deviation divided by the mean, squared). Group P has benefits 0.2, 0.8, 0.2, 0.8 and group Q has benefits 0.5, 0.5, 0.5, 0.5. The between-group component is GE(2) computed after replacing each person's benefit by their group's mean benefit; the within-group component is the remainder. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Most of GE(2) comes from the between-group component.
-- [ ] B. A comparison of the two groups' mean benefits would show no group-level disparity.
-- [ ] C. GE(2) for the eight people is 0.09.
-- [ ] D. Doubling every person's benefit would double GE(2).
-- [ ] E. Because the group means are equal, the benefits are distributed fairly and no further inequality analysis is needed.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: Both group means are 0.5, so the between-group component is 0 and all of GE(2) is within-group.
-- B: The means are 0.5 and 0.5.
-- C: The mean is 0.5 and the population variance is 0.045, so GE(2) = ½ × 0.045/0.25 = 0.09.
-- D: GE depends on b_i/μ, so multiplying all benefits by a constant leaves it unchanged.
-- E: Members of group P receive very unequal benefits (0.2 versus 0.8), a large within-group inequality that group means hide.
-
-**Source:** The Generalized Entropy Index
-
-## MA-ch07.18
-
-A risk tool assigns each person a score in [0, 1]. Assume the two groups have different base rates (0.4 and 0.2) and that the score is imperfect, meaning it does not separate all positives from all negatives. Three properties are of interest: (1) calibration within groups, meaning among people with a given score the positive rate equals the score in each group; (2) equal average score among actual positives in the two groups; (3) equal average score among actual negatives in the two groups. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The conflict is a property of the groups' base rates and the score's imperfection, not of any particular learning algorithm.
-- [ ] B. The result implies that calibration within groups cannot hold in any form, even for a single group considered alone.
-- [ ] C. Gathering more labeled data does not remove the conflict; it only makes the group rates better estimated.
-- [ ] D. If the two groups had equal base rates, a score with the same distribution in both groups could satisfy all three properties.
-- [ ] E. Under these assumptions, properties (1), (2) and (3) cannot all hold.
-
-**Key:** A=T B=F C=T D=T E=T
-
-**Why:**
-
-- A: The argument uses only population rates, so any scoring method with these properties is subject to it.
-- B: Calibration within groups can hold by itself; the result says it cannot be combined with both balance properties under these assumptions.
-- C: The impossibility concerns the population quantities themselves.
-- D: With equal base rates and identical joint distributions of score and outcome, calibration and both balance conditions hold together.
-- E: With unequal base rates and an imperfect score, calibration within groups forces the average scores among positives or among negatives to differ.
-
-**Source:** The arithmetic — the actual proof, not a gesture
-
-## MA-ch07.19
-
-A pretrial risk tool labels each person high-risk or low-risk. An analyst finds that among people who were not re-arrested, 45% of group X and 20% of group Y were labeled high-risk. The vendor replies that among people labeled high-risk, 60% of both groups were re-arrested, and that the groups' re-arrest base rates are 0.5 for X and 0.3 for Y. Take all figures as exact. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The analyst's finding by itself shows that the tool uses group membership as an input.
-- [ ] B. The analyst's figures and the vendor's figures can both be correct at the same time.
-- [ ] C. The disagreement is a factual one that more data would settle by showing which set of figures is correct.
-- [ ] D. If the tool were adjusted until the false-positive rates matched while precision stayed equal, the false-negative rates would have to differ.
-- [ ] E. Equal precision of the high-risk label means wrongly labeled people in the two groups bear the same burden.
-
-**Key:** A=F B=T C=F D=T E=F
-
-**Why:**
-
-- A: A tool that never sees group membership can still show different error rates through correlated features and differing base rates.
-- B: They measure different quantities, error rates conditional on the true outcome and precision conditional on the tool's output, and with unequal base rates they can differ in this way.
-- C: Both statements are already accurate; the dispute is over which criterion should take priority.
-- D: Equal precision and equal false-positive rate force the true-positive rates apart when base rates differ and the tool is imperfect.
-- E: The false-positive rates are 0.45 and 0.20, so non-re-arrested people in X are labeled high-risk far more often.
-
-**Source:** The COMPAS case — the theorem in public
-
-## MA-ch07.20
-
-An organization must choose which group fairness criterion to prioritize for two systems. System one is a cancer-screening aid: a missed case can be fatal, and a false alarm leads to an inexpensive follow-up test. System two flags benefit claims as suspected fraud: a flagged person's payments are frozen during review. Check each statement that is a sound argument about choosing criteria. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For the screening aid, comparing false-negative rates (equivalently, true-positive rates) across groups targets the main harm.
-- [ ] B. Demographic parity is the right criterion for both systems whenever base rates differ, since base rates are irrelevant to harm.
-- [ ] C. For the fraud flag, comparing false-positive rates across groups targets the harm that matters most.
-- [ ] D. Which criterion to prioritize can be derived from the confusion matrices alone, without knowing who bears the cost of each kind of error.
-- [ ] E. The criterion that gives the highest overall accuracy is the right one for both systems, since accuracy summarizes every error.
-
-**Key:** A=T B=F C=T D=F E=F
-
-**Why:**
-
-- A: The costliest error is a missed case, and equal true-positive rates ask that this error not fall more heavily on one group.
-- B: Equal selection rates ignore who is harmed by which error, and base-rate differences change what equal rates would mean.
-- C: A wrongly flagged person bears the cost, and the false-positive rate measures how often that happens to people who did nothing wrong.
-- D: The matrices give rates, but the choice depends on the cost of each error type to the people affected.
-- E: Overall accuracy weights all errors equally and says nothing about which group bears which error.
-
-**Source:** Each metric is a values claim
-
-## MA-ch07.21
-
-A team has built a loan-approval model by minimizing overall log loss and is now deciding how to report fairness. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Choosing which error rates to equalize trades one group's harms against another's, so accountable people should make and record the choice.
-- [ ] B. If a regulator requires a specific metric, decisions remain open, such as which groups to compare and what tolerance counts as equal.
-- [ ] C. A tool that computes every fairness metric can identify which metric is correct for the deployment, since the best one scores highest.
-- [ ] D. If the model passes the chosen metric, there is no need to document which other criteria were traded away, since the chosen one was met.
-- [ ] E. Because the loss function never mentions groups, minimizing overall log loss has no bearing on how errors are distributed across groups.
-
-**Key:** A=T B=T C=F D=F E=F
-
-**Why:**
-
-- A: A value-laden trade-off should be owned by someone with authority and accountability, with reasons on the record.
-- B: A named metric fixes the formula but not its application.
-- C: Metrics describe consequences; choosing among them depends on values and on who bears the costs.
-- D: Passing one criterion can mean others fail, and affected parties and reviewers need to know what was given up.
-- E: Minimizing an average loss over all examples weights every example equally, which determines which errors the model tolerates and so how error rates fall across groups, whether or not anyone chose it.
-
-**Source:** Who should have decided
-
-## MA-ch07.22
-
-A model predicts whether a person will be arrested within two years. An audit finds equal true-positive and false-positive rates across two neighborhoods, measured against arrest records. Suppose one neighborhood is patrolled much more heavily, so the same behavior is more likely to lead to an arrest there. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Using different cutoffs per neighborhood would correct the measurement problem by rebalancing who is flagged.
-- [ ] B. A metric on this label measures agreement with arrest patterns, which reflect enforcement as well as behavior.
-- [ ] C. The audit certifies that neither neighborhood is disadvantaged by the tool, since the error rates are equal.
-- [ ] D. Equal error rates against recorded arrests do not establish equal error rates against actual offending.
-- [ ] E. An independent measure of the behavior would let the team estimate how far the arrest label departs from it.
-
-**Key:** A=F B=T C=F D=T E=T
-
-**Why:**
-
-- A: Cutoffs change decisions, not how the recorded outcome relates to behavior; the measurement problem remains.
-- B: The model is scored on matching the recorded outcome, not on matching the behavior the outcome stands in for.
-- C: It certifies parity with respect to a label that may itself encode the disparity.
-- D: If arrest probability given behavior differs by neighborhood, the recorded outcome measures something different in each.
-- E: A second measure gives a check on the recorded outcome's validity.
-
-**Source:** The persistent limits
-
-## MA-ch07.23
-
-In an audit sample, 300 of 400 truly qualified applicants in group A were approved (true-positive rate 0.75) and 24 of 40 truly qualified applicants in group B were approved (true-positive rate 0.60). Approximate 95% intervals for the true-positive rate are 0.71 to 0.79 for A and 0.45 to 0.74 for B. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The interval for B is wider than A's because B's true-positive rate is lower.
-- [ ] B. A non-significant result for the small group shows that the two groups have equal true-positive rates, since no difference was detected.
-- [ ] C. Testing many small subgroups at the 5% level makes it likely some gap looks significant by chance.
-- [ ] D. A 15-point gap in the point estimates is enough to conclude with certainty that the true rates differ, since it is large.
-- [ ] E. The interval for B is wide, so B's true-positive rate is estimated imprecisely.
-
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: Width depends mainly on sample size (40 versus 400); a rate nearer 0.5 widens it only slightly.
-- B: Low power means a real gap can go undetected; absence of evidence of a gap is not evidence of equality.
-- C: With many comparisons, false positives accumulate unless the analysis accounts for multiple testing.
-- D: Sampling variation can produce a gap of this size, especially with 40 observations; the conclusion carries uncertainty.
-- E: With only 40 qualified applicants the standard error is large.
-
-**Source:** The persistent limits
-
-## MA-ch07.24
-
-A screening tool's selection rates, with 500 people in each of four cells, are: women in the north 0.50, women in the south 0.30, men in the north 0.30, men in the south 0.50. A reviewer flags any ratio of lowest rate to highest rate below 0.8. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Passing the check on gender and the check on region separately implies the check on gender-by-region will also pass.
-- [ ] B. The ratio of the lowest to the highest of the four cell rates is 0.6, which is flagged under the convention.
-- [ ] C. Women overall and men overall are both selected at 0.40, and the north and the south are both at 0.40.
-- [ ] D. Checking intersections as well as single attributes multiplies the number of groups, so cells become small and estimates noisy.
-- [ ] E. Since the single-attribute comparisons show no gap, no subgroup can be disadvantaged within either attribute's categories.
-
-**Key:** A=F B=T C=T D=T E=F
-
-**Why:**
-
-- A: This example passes both margins and fails the cells.
-- B: 0.30/0.50 = 0.60, below 0.8.
-- C: Each margin averages one 0.50 cell and one 0.30 cell.
-- D: The number of cells multiplies with each attribute while the sample is split among them.
-- E: Disparities can cancel in the margins and appear only in the combinations.
-
-**Source:** The persistent limits
-
-## MA-ch07.25
-
-Practitioners distinguish pre-processing, in-processing and post-processing methods for reducing group disparities in a classifier. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Reweighting training examples so that group-and-label combinations are balanced is a pre-processing method.
-- [ ] B. Group-specific cutoffs applied to a frozen model's scores require the group attribute at decision time.
-- [ ] C. Adversarial debiasing, where a second network tries to predict the group from the model's representation, is an in-processing method.
-- [ ] D. Any of the three families can remove bias built into the recorded labels without further information about how those labels were produced, because they adjust the data or the decisions.
-- [ ] E. Any method that leaves both the training data and the trained model unchanged and adjusts only the final decisions is a post-processing method.
-
-**Key:** A=T B=T C=T D=F E=T
-
-**Why:**
-
-- A: It changes the data the model is trained on, before training.
-- B: The cutoff to apply depends on which group the person is assigned to.
-- C: It alters the training objective rather than the data or the final decisions.
-- D: These methods act on data, objective or decisions; they cannot know that a label is mismeasured unless that is learned some other way.
-- E: Post-processing is defined by acting on the model's outputs after training, with the data and the model itself left as they were.
-
-**Source:** The toolkit and what it cannot do
-
-## MA-ch07.26
-
-A classifier has a true-positive rate of 0.80 and a false-positive rate of 0.10 in both group 1 and group 2. At validation both groups had base rate 0.30. After deployment, group 2's base rate rises to 0.50, while the classifier's true-positive and false-positive rates in each group stay the same. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. After the shift, precision of positive predictions is about 0.77 in group 1 and about 0.89 in group 2.
-- [ ] B. After the shift, the ratio of selection rates (group 1 over group 2) falls to about 0.69.
-- [ ] C. Equalized odds stops holding after the shift because the base rate changed.
-- [ ] D. Because true-positive and false-positive rates are unchanged, no group metric needs rechecking after the shift.
-- [ ] E. Precision parity was robust to the change in base rate.
-
-**Key:** A=T B=T C=F D=F E=F
-
-**Why:**
-
-- A: Group 1: 0.24/(0.24+0.07) = 0.77. Group 2: 0.40/(0.40+0.05) = 0.89.
-- B: Selection rates are 0.31 and 0.45, and 0.31/0.45 = 0.69.
-- C: Equalized odds is defined by rates conditional on the true outcome, and those are unchanged.
-- D: Selection rates and precision shifted, so other criteria must be re-measured on live data.
-- E: Precision depends on the base rate, and moved from equal (0.77 in both) to unequal.
-
-**Source:** The defense as deliverable
-
-## MA-ch07.27
-
-A score is perfectly calibrated within each of two groups. In group 1, 60% of people have score 0.2 and 40% have score 0.7. In group 2, 80% have score 0.2 and 20% have score 0.7. People with a score of at least 0.5 are flagged. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The base rates are 0.40 in group 1 and 0.30 in group 2.
-- [ ] B. The true-positive rates at the 0.5 cutoff are equal in the two groups, because calibration makes the scores mean the same.
-- [ ] C. The false-positive rates at the 0.5 cutoff are equal in the two groups, because the score is calibrated in both.
-- [ ] D. Among people who actually have the positive outcome, the average score is about 0.55 in group 1 and about 0.43 in group 2.
-- [ ] E. The two groups are flagged at equal rates, because the score is calibrated in both groups.
+An analyst is sorting out common rate names for a classifier that gives a favorable decision. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Positive predictive value is the share of favorable decisions that go to people who truly qualify.
+- [ ] B. Specificity names the same quantity as the true-positive rate.
+- [ ] C. Precision is another name for the false-positive rate.
+- [ ] D. True-positive rate is also called recall or sensitivity.
+- [ ] E. The false-positive rate is computed among people who received the favorable decision.
 
 **Key:** A=T B=F C=F D=T E=F
 
 **Why:**
 
-- A: Under calibration, the base rate is the average score: 0.6×0.2 + 0.4×0.7 = 0.40 and 0.8×0.2 + 0.2×0.7 = 0.30.
-- B: They are 0.28/0.40 = 0.70 in group 1 and 0.14/0.30 ≈ 0.47 in group 2.
-- C: They are 0.12/0.60 = 0.20 in group 1 and 0.06/0.70 ≈ 0.09 in group 2.
-- D: Weighting by outcome probability gives 0.22/0.40 ≈ 0.55 and 0.13/0.30 ≈ 0.43.
-- E: Flag rates are 0.40 in group 1 and 0.20 in group 2.
+- A: Positive predictive value is a synonym of precision.
+- B: Specificity is the true-negative rate, one minus the false-positive rate.
+- C: Precision is the share of favorable decisions that are correct; the false-positive rate is a different quantity.
+- D: Each of these names the share of truly qualified people who receive the favorable decision.
+- E: It is computed among people who truly do not qualify.
 
-**Source:** The arithmetic — the actual proof, not a gesture
+**Source:** Rate vocabulary: recall, precision, specificity
 
-## MA-ch07.28
+## MA-ch07.3
 
-A hospital tests a language-model assistant that triages patient messages as urgent or not and states its own confidence in words (for example, "I am 90% sure this is urgent"). The team wants to know whether the assistant's stated confidence means the same thing for patients writing in English and for patients writing in other languages. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A reviewer lists what each fairness quantity conditions on. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. If the assistant says "about 90% sure" equally often for both groups, that shows its stated confidence is calibrated in each group.
-- [ ] B. A calibration check by group can be done without any outcome labels, by comparing stated confidence across groups.
-- [ ] C. Hedged wording in the assistant's replies is good evidence that its stated numbers are calibrated.
-- [ ] D. A confidence a language model states in words is a claim to test against outcomes, not an established probability.
-- [ ] E. A calibration check done for one model version and prompt remains valid after either is changed.
+- [ ] A. A selection rate conditions on group membership and not on the true outcome.
+- [ ] B. Precision conditions on people who received the favorable decision.
+- [ ] C. A true-positive rate conditions on people who truly qualify.
+- [ ] D. A false-positive rate conditions on people who received the favorable decision.
+- [ ] E. Demographic parity conditions on the true outcome.
 
-**Key:** A=F B=F C=F D=T E=F
-
-**Why:**
-
-- A: Calibration compares stated confidence with observed outcomes; how often a number is stated says nothing about that.
-- B: The check needs the true outcome to compare against the stated confidence within each group.
-- C: Tone is not evidence of calibration; only agreement with observed frequencies is.
-- D: Fluent statements of confidence need not track how often the model is right.
-- E: Changing the model or the prompt can change the confidence statements, so the check must be repeated.
-
-**Source:** Three definitions
-
-## MA-ch07.29
-
-General legal and ethical frameworks for decisions made with algorithms distinguish different kinds of unequal treatment. Check each statement that is true in general terms. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Satisfying one statistical fairness metric establishes legal compliance, since the metric measures whether the system is fair.
-- [ ] B. A ratio of 0.8 between group selection rates is a bright-line legal test in every jurisdiction, not merely a rule of thumb.
-- [ ] C. Using different cutoffs for protected groups to reduce a disparity can itself raise disparate-treatment concerns in some jurisdictions.
-- [ ] D. In some legal regimes a practice with disparate impact can be justified by a legitimate need and is then checked for less discriminatory alternatives.
-- [ ] E. Disparate treatment concerns decisions that differ by protected attribute; disparate impact concerns neutral-looking practices with disproportionate effects.
-
-**Key:** A=F B=F C=T D=T E=T
+**Key:** A=T B=T C=T D=F E=F
 
 **Why:**
 
-- A: Legal compliance depends on the applicable law and its facts, not on any single metric.
-- B: It is a rule of thumb used in some settings, not a universal legal standard.
-- C: Explicit group-based decision rules can be restricted even when the aim is to reduce a disparity.
-- D: Disparate impact is not automatically unlawful; justification and the availability of alternatives enter the analysis.
-- E: That is the standard distinction between the two doctrines.
+- A: It is the share of a group's members receiving the favorable decision.
+- B: It asks what share of favorable decisions are correct.
+- C: It is measured within the set of true positives plus false negatives.
+- D: It conditions on the true outcome being negative.
+- E: It compares decisions across groups without reference to the true outcome.
 
-**Source:** Causal fairness: what the data cannot tell you
+**Source:** What each rate conditions on
 
-## MA-ch07.30
+## MA-ch07.4
 
-A risk model flags people (Ŷ=1) for an intervention; Y=1 means the person truly needed it. Group A (1,000 people): 400 flagged who needed it, 100 flagged who did not, 0 not flagged who needed it, 500 not flagged who did not. Group B (1,000 people): 300 flagged who needed it, 0 flagged who did not, 100 not flagged who needed it, 600 not flagged who did not. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An analyst tells an AI assistant, "Check that the model is fair by making sure accuracy is the same for men and women." Check each statement that is true. Each statement is worth 1 point (5 points total). about this prompt.
 
-- [ ] A. Equal accuracy means the two groups bear the same cost from the model's mistakes.
-- [ ] B. Group B's true-positive rate is 1.0 and group A's is 0.75.
-- [ ] C. Accuracy is 0.90 in both groups, so accuracy parity holds.
-- [ ] D. Equalized odds holds, since the groups have equal accuracy and equal numbers of errors.
-- [ ] E. Every error in group A is a false positive and every error in group B is a false negative.
+- [ ] A. Accuracy parity is another name for predictive parity.
+- [ ] B. The prompt asks for accuracy parity, a different criterion from equalized odds.
+- [ ] C. Replacing "accuracy" with "demographic parity" would keep the same meaning.
+- [ ] D. Equal accuracy shows that the true-positive rates match across the two groups.
+- [ ] E. Equal accuracy can hide false positives in one group and false negatives in the other.
+
+**Key:** A=F B=T C=F D=F E=T
+
+**Why:**
+
+- A: Predictive parity equalizes precision, not overall accuracy.
+- B: Accuracy parity equalizes the share of correct decisions, while equalized odds equalizes two error rates.
+- C: Demographic parity compares selection rates and does not use correctness.
+- D: Accuracy blends both kinds of correct decision and can match while true-positive rates differ.
+- E: Two groups can have the same count of errors of different types.
+
+**Source:** Imprecise word in a fairness prompt
+
+## MA-ch07.5
+
+A reviewer computes the ratio of the lower group's selection rate to the higher group's selection rate and compares it with 0.8, a screening convention often called the four-fifths rule. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The quantity is called the disparate impact ratio.
+- [ ] B. The ratio compares the true-positive rates of the two groups.
+- [ ] C. The ratio is built from the same quantities as demographic parity.
+- [ ] D. Which outcome is called favorable changes the value of the ratio.
+- [ ] E. A ratio below 0.8 is a legal finding of discrimination.
+
+**Key:** A=T B=F C=T D=T E=F
+
+**Why:**
+
+- A: It is the ratio of selection rates between groups.
+- B: It uses selection rates and ignores who truly qualified.
+- C: Both use group selection rates.
+- D: The ratio of favorable rates differs from the ratio of adverse rates for the same data.
+- E: It is a screening heuristic that prompts further review.
+
+**Source:** Disparate impact ratio and four-fifths rule
+
+## MA-ch07.6
+
+A bank flags transactions for manual review, so being flagged is the adverse outcome. An analyst compares group flag rates and then compares group not-flagged rates. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A difference in selection rates is a ratio.
+- [ ] B. The disparate impact ratio and the difference in selection rates are two names for one quantity.
+- [ ] C. The difference in percentage points is the same whether computed on flag rates or on not-flagged rates.
+- [ ] D. The four-fifths convention is defined on the rate of the adverse outcome.
+- [ ] E. The ratio of flag rates and the ratio of not-flagged rates generally differ for the same data.
 
 **Key:** A=F B=F C=T D=F E=T
 
 **Why:**
 
-- A: An unneeded intervention and a missed need can differ greatly in cost, so equal error counts do not mean equal burden.
-- B: The values are swapped: group A's is 400/400 = 1.0 and group B's is 300/400 = 0.75.
-- C: (400+500)/1000 = 0.90 and (300+600)/1000 = 0.90.
-- D: True-positive rates are 1.0 and 0.75, and false-positive rates are about 0.17 and 0.
-- E: Group A has 100 false positives and 0 false negatives; group B has 0 false positives and 100 false negatives.
+- A: A difference is a subtraction; a ratio is a division.
+- B: One is a ratio and the other is a difference, and they can lead to different verdicts.
+- C: A difference in complementary rates has the same size.
+- D: It is defined on the rate of the favorable outcome.
+- E: The two rates are complements, so their ratios are not equal.
 
-**Source:** Three definitions
+**Source:** Choosing which outcome is favorable
+
+## MA-ch07.7
+
+A risk score between 0 and 1 is checked separately for each group. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Calibration is the same property as discrimination, the ability to separate positives from negatives.
+- [ ] B. Calibration within groups means that among people given score s, about a fraction s have the positive outcome, in each group.
+- [ ] C. Calibration is the share of correct decisions at a chosen cutoff.
+- [ ] D. Predictive parity concerns precision at a cutoff, while calibration concerns outcome rates at each score value.
+- [ ] E. A score can be well calibrated and weak at discrimination.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: Calibration is about whether scores match outcome frequencies; discrimination is about ranking.
+- B: This is the definition of calibration of a probability score.
+- C: That share is accuracy.
+- D: The two criteria use different conditioning events.
+- E: Giving every person the group's base rate is calibrated but separates no one.
+
+**Source:** Calibration versus accuracy and discrimination
+
+## MA-ch07.8
+
+A team reports the expected calibration error (ECE) of a probability score. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. ECE is the weighted average gap between score and observed positive rate across score bins.
+- [ ] B. A low ECE means the true-positive rate is high.
+- [ ] C. A single pooled ECE for both groups is a calibration check by group.
+- [ ] D. ECE can be computed without outcome labels.
+- [ ] E. ECE measures the difference in true-positive rates between two groups.
+
+**Key:** A=T B=F C=F D=F E=F
+
+**Why:**
+
+- A: Each bin's gap is weighted by the share of people in the bin.
+- B: ECE says nothing about the true-positive rate.
+- C: Pooling can hide that one group is more miscalibrated than the other.
+- D: The observed positive rate in each bin needs the true outcomes.
+- E: It measures score-versus-outcome agreement, not a between-group difference in error rates.
+
+**Source:** Expected calibration error
+
+## MA-ch07.9
+
+In a calibration check, people in group B who were given a score of 0.2 turn out to have a positive-outcome rate of 0.30. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Recalibrating the score separately within each group is a way to address it.
+- [ ] B. The score overstates the risk of these people.
+- [ ] C. The score understates the risk of these people.
+- [ ] D. Detecting it needs outcome labels recorded by group.
+- [ ] E. This is a calibration failure for group B at that score value.
+
+**Key:** A=T B=F C=T D=T E=T
+
+**Why:**
+
+- A: Group-wise recalibration maps scores to observed outcome frequencies in that group.
+- B: Overstating would mean the observed rate is below the score.
+- C: The observed rate is above the stated score.
+- D: The observed rate by group is computed from true outcomes.
+- E: Calibration requires the observed rate to match the score.
+
+**Source:** Reading a calibration gap
+
+## MA-ch07.10
+
+A risk model flags people at or above a cutoff. Analysts compare two criteria: predictive parity at the cutoff and calibration within groups. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Calibration within groups requires the observed positive rate to match the score at each score value in each group.
+- [ ] B. Predictive parity compares the precision of flagged people across groups.
+- [ ] C. Calibration within groups at each score value implies equal precision across groups at a cutoff.
+- [ ] D. Predictive parity is defined using the people who were not flagged.
+- [ ] E. Predictive parity at a cutoff guarantees calibration within groups.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: This is the definition of group-wise calibration.
+- B: Precision of favorable decisions is the compared quantity.
+- C: Precision depends on each group's mix of scores, which can differ.
+- D: It uses the people who were flagged.
+- E: Equal overall precision can coexist with scores that match outcomes poorly in each group.
+
+**Source:** Predictive parity versus calibration
+
+## MA-ch07.11
+
+Two groups have different base rates and a classifier that is imperfect. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Collecting more labeled data resolves the incompatibility.
+- [ ] B. It is a defect of the learning algorithm that a more flexible model removes.
+- [ ] C. This incompatibility is a result about the criteria themselves, often called an impossibility result.
+- [ ] D. The incompatibility arises when the model uses group membership as an input, and disappears if the attribute is dropped.
+- [ ] E. Equal precision together with equal true-positive and false-positive rates generally fails to hold.
+
+**Key:** A=F B=F C=T D=F E=T
+
+**Why:**
+
+- A: More data estimates the rates more precisely but does not change the arithmetic.
+- B: It concerns population rates, so a better learner does not remove it.
+- C: It follows from Bayes' rule applied to population rates.
+- D: It holds for models that never see group membership.
+- E: With different base rates, precision moves with the base rate when the error rates are equal.
+
+**Source:** Impossibility of combining criteria
+
+## MA-ch07.12
+
+Two groups have different base rates. A reviewer compares a perfect classifier with a classifier that gives the favorable decision to each person. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The perfect classifier satisfies demographic parity.
+- [ ] B. Giving the favorable decision to everyone satisfies demographic parity.
+- [ ] C. Giving the favorable decision to everyone is a useful resolution of the conflict because it meets several criteria.
+- [ ] D. When base rates are equal, the conflict between equal precision and equal error rates goes away.
+- [ ] E. The perfect classifier satisfies equalized odds and predictive parity.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: Its selection rates equal the unequal base rates.
+- B: Both groups then have selection rate 1.
+- C: It carries no information about individuals and so has no predictive value.
+- D: Equal error rates and equal base rates give equal precision.
+- E: It has true-positive rate 1, false-positive rate 0 and precision 1 in each group.
+
+**Source:** Perfect and trivial classifiers
+
+## MA-ch07.13
+
+Two groups have different base rates and the recorded labels are correct. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A perfect classifier violates demographic parity.
+- [ ] B. Maximizing overall accuracy treats a false positive and a false negative as equally costly.
+- [ ] C. A perfect classifier satisfies equalized odds.
+- [ ] D. Forcing equal selection rates moves some decisions away from the true labels.
+- [ ] E. A trade-off between demographic parity and accuracy appears when base rates are equal.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Its selection rates equal the different base rates.
+- B: Accuracy counts both kinds of error the same.
+- C: It has the same true-positive and false-positive rates in both groups.
+- D: That adds misclassifications relative to the recorded outcomes.
+- E: With equal base rates and correct labels, a perfect classifier already meets parity.
+
+**Source:** Fairness-accuracy trade-off
+
+## MA-ch07.14
+
+A product manager asks an analyst to show the trade-off between a fairness metric and accuracy. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Plotting a fairness gap against accuracy at several cutoffs displays a trade-off frontier.
+- [ ] B. A Pareto-optimal option is one where improving one objective means worsening another.
+- [ ] C. Raising the cutoff increases both the true-positive rate and the false-positive rate.
+- [ ] D. A cutoff, also called a threshold, is a parameter of the training data.
+- [ ] E. Choosing the most accurate model is a neutral choice that makes no decision about who bears errors.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Each cutoff gives a point, and the set of points shows what is gained and lost.
+- B: No option dominates it on both objectives.
+- C: A higher cutoff lowers both rates.
+- D: A cutoff is applied to the model's scores to turn them into decisions.
+- E: Accuracy weights all errors equally and lets error rates fall unevenly across groups.
+
+**Source:** Trade-off frontier, cutoff and Pareto
+
+## MA-ch07.15
+
+A lender compares a single cutoff for all applicants with a separate cutoff for each group. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Group-specific cutoffs are an in-processing method.
+- [ ] B. Group-specific cutoffs chosen to equalize true-positive rates achieve demographic parity.
+- [ ] C. Group-specific cutoffs require the group attribute at decision time.
+- [ ] D. A single cutoff for everyone does not use the group attribute when deciding.
+- [ ] E. With group-specific cutoffs, two people with the same score can receive different decisions, an individual fairness objection.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: They adjust decisions after training, so they are post-processing.
+- B: Equalizing true-positive rates is equal opportunity, a different criterion.
+- C: The cutoff to apply depends on the person's group.
+- D: The same rule is applied to each person's score.
+- E: Treating equal scores differently conflicts with treating similar people alike.
+
+**Source:** Group-specific cutoffs
+
+## MA-ch07.16
+
+Practitioners sort bias-reduction methods into pre-processing, in-processing and post-processing. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Adjusting the cutoff of a frozen model is post-processing.
+- [ ] B. Resampling the training data to balance groups is pre-processing.
+- [ ] C. Reweighting training examples to balance group and label combinations is pre-processing.
+- [ ] D. Adding a fairness penalty term to the training loss is post-processing.
+- [ ] E. Adversarial debiasing, where a second network tries to predict the group from the model's representation, is in-processing.
+
+**Key:** A=T B=T C=T D=F E=T
+
+**Why:**
+
+- A: It acts on the outputs after training.
+- B: It changes the data before the model is trained.
+- C: It changes the data before training.
+- D: A penalty in the loss alters training, which is in-processing.
+- E: It changes the training objective.
+
+**Source:** Pre-, in- and post-processing
+
+## MA-ch07.17
+
+A company says its hiring model is fair because the gender field was removed from its inputs. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A proxy is a feature correlated with the protected attribute that carries some of its information.
+- [ ] B. Fairness through unawareness guarantees equal error rates across groups.
+- [ ] C. Fairness through unawareness means leaving the protected attribute out of the model's inputs.
+- [ ] D. Features such as career gaps or postal code can let a model reconstruct the removed attribute.
+- [ ] E. Auditing by group needs the protected attribute in the evaluation data even when the model does not use it.
+
+**Key:** A=T B=F C=T D=T E=T
+
+**Why:**
+
+- A: Postal code standing in for ethnicity is a common example.
+- B: Removing an input says nothing about error rates.
+- C: That is the definition of the approach.
+- D: Correlated features act as proxies.
+- E: Group rates cannot be computed without group labels.
+
+**Source:** Fairness through unawareness and proxies
+
+## MA-ch07.18
+
+A legal and ethical review distinguishes kinds of unequal treatment by an algorithm. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Disparate treatment concerns decisions that differ by protected attribute.
+- [ ] B. Disparate impact concerns a neutral-looking practice with disproportionate effects on a group.
+- [ ] C. Disparate impact requires evidence that the designer intended to discriminate.
+- [ ] D. Group-specific cutoffs can raise disparate-treatment concerns in some jurisdictions.
+- [ ] E. Disparate treatment and disparate impact are two names for the same doctrine.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: Explicit use of the attribute in deciding is the core case.
+- B: The practice is facially neutral but burdens one group more.
+- C: It concerns effects, so intent is not required.
+- D: Decision rules that depend on group membership can be restricted.
+- E: They are distinct doctrines.
+
+**Source:** Disparate treatment versus disparate impact
+
+## MA-ch07.19
+
+A practice with disparate impact is reviewed. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A fairness metric is a legal standard.
+- [ ] B. A less discriminatory alternative is a practice that increases the disparity.
+- [ ] C. Satisfying equalized odds establishes legal compliance.
+- [ ] D. A selection-rate ratio of 0.9 is the usual trigger for review.
+- [ ] E. Business necessity is the kind of justification offered for a practice with disparate impact.
+
+**Key:** A=F B=F C=F D=F E=T
+
+**Why:**
+
+- A: A metric is a measurement; legal standards come from law.
+- B: It is a practice that serves the same goal with a smaller disparity.
+- C: Compliance depends on the applicable law and facts, not on one metric.
+- D: The usual screening convention uses 0.8.
+- E: The practice may be defended as needed for a legitimate goal.
+
+**Source:** Business necessity and alternatives
+
+## MA-ch07.20
+
+An auditor reviews a model against the principle that similar individuals should be treated similarly. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. It can be evaluated from per-group confusion matrices alone.
+- [ ] B. The Lipschitz form bounds the difference in two people's outcomes by a distance between the people.
+- [ ] C. This principle is called individual fairness.
+- [ ] D. Applying it requires a similarity metric chosen for the task.
+- [ ] E. Individual fairness implies demographic parity.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: Confusion matrices average over individuals and lose pairwise comparisons.
+- B: Similar people must receive similar outcome distributions.
+- C: It compares how individuals are treated rather than group averages.
+- D: Someone must say which differences between people are relevant.
+- E: Similar treatment of similar people can coexist with different group selection rates.
+
+**Source:** Individual fairness and the similarity metric
+
+## MA-ch07.21
+
+A reviewer contrasts group fairness with individual fairness. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A model that treats similar people alike under a chosen metric can still show different group selection rates.
+- [ ] B. Equal opportunity is an individual fairness criterion.
+- [ ] C. Group fairness compares individuals pair by pair, while individual fairness compares group averages.
+- [ ] D. A model can satisfy demographic parity and still treat two near-identical people very differently.
+- [ ] E. The choice of similarity metric is a technical detail without a value judgment.
+
+**Key:** A=T B=F C=F D=T E=F
+
+**Why:**
+
+- A: The groups may differ on features the metric counts as relevant.
+- B: Equal opportunity compares true-positive rates across groups.
+- C: The two descriptions are swapped.
+- D: Parity limits group rates, not which individuals receive the favorable decision.
+- E: Deciding which differences are relevant is a substantive judgment.
+
+**Source:** Group versus individual fairness
+
+## MA-ch07.22
+
+In a causal model of a loan decision, a protected attribute A affects an education credential E, which is an input to a predictor. Unobserved background factors U also affect E. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The causal graph tells which paths from A to the prediction are acceptable.
+- [ ] B. A predictor whose inputs are variables that are not downstream of A is counterfactually fair in this model.
+- [ ] C. Counterfactual fairness asks whether an individual's prediction would be the same had the attribute taken a different value, with the individual's background factors held fixed.
+- [ ] D. Counterfactual fairness is another name for equalized odds.
+- [ ] E. Judging counterfactual fairness requires assumptions about the causal structure.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: The graph shows which paths exist; accepting a path is a value judgment.
+- B: Its inputs do not change when A is changed.
+- C: It is an individual-level causal question.
+- D: Equalized odds is about error rates by group, not a causal question.
+- E: Observed data alone cannot distinguish structures that imply different counterfactuals.
+
+**Source:** Counterfactual fairness
+
+## MA-ch07.23
+
+In a causal graph, a protected attribute A affects a credential E, which feeds a predictor, and unobserved background factors U affect E. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Path-specific fairness allows some paths from the attribute to the prediction and blocks others.
+- [ ] B. A counterfactual evaluation holds the background factors U fixed.
+- [ ] C. A counterfactual is a quantity observed directly in the data.
+- [ ] D. E is a confounder of A and the prediction.
+- [ ] E. E is a mediator on the path from A to the prediction.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: It treats paths differently according to a judgment about which are acceptable.
+- B: The same individual is considered under a different attribute value.
+- C: It concerns a hypothetical alternative that is not observed.
+- D: A confounder is a common cause of two variables, which E is not here.
+- E: A mediator lies on a path between a cause and an outcome.
+
+**Source:** Causal graph vocabulary
+
+## MA-ch07.24
+
+A system gives a benefit to each person, and an analyst computes a generalized entropy index of the benefits, decomposed by group. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A large within-group component with a zero between-group component means individuals receive equal benefits.
+- [ ] B. When two groups have equal mean benefits, the between-group component is positive.
+- [ ] C. The index splits into a between-group component and a within-group component.
+- [ ] D. The generalized entropy index measures inequality in how benefits are distributed across individuals.
+- [ ] E. The between-group component measures inequality between the groups' mean benefits.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: It means benefits are unequal inside groups even though group means match.
+- B: Equal means give a between-group component of zero.
+- C: The decomposition separates group-mean inequality from inequality inside groups.
+- D: Larger values mean more inequality.
+- E: It is computed after replacing each person's benefit by the group mean.
+
+**Source:** Generalized entropy index and decomposition
+
+## MA-ch07.25
+
+An audit scores a model on whether it predicts re-arrest. One neighborhood is patrolled much more heavily than another. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Selection bias and measurement bias are two names for the same problem.
+- [ ] B. Using group-specific cutoffs removes label bias.
+- [ ] C. A proxy label is a recorded outcome standing in for the quantity of interest.
+- [ ] D. A recorded outcome that measures something other than the target quantity, such as arrests instead of offending, is a measurement bias problem.
+- [ ] E. Equal error rates against recorded arrests establish equal error rates against actual offending.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: Selection bias concerns who is included in the data; measurement bias concerns how outcomes are recorded.
+- B: Cutoffs change decisions, not how the label relates to the behavior.
+- C: Arrest records stand in for behavior.
+- D: The label differs systematically from the quantity of interest.
+- E: The recorded label may encode enforcement differences.
+
+**Source:** Measurement bias and proxy labels
+
+## MA-ch07.26
+
+A lender's model decides which applicants to approve, and repayment is recorded for approved applicants. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Selective labels make error rates for the full applicant population uncertain.
+- [ ] B. Reject inference is the attempt to estimate outcomes for declined applicants.
+- [ ] C. Selective labels means the outcome is recorded for people who received the favorable decision and is missing for the rest.
+- [ ] D. Selective labels is another name for overfitting.
+- [ ] E. Repayment outcomes are observed for declined applicants as well as approved ones.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: Rates for declined applicants must be estimated.
+- B: The term names methods for filling in missing outcomes of rejected cases.
+- C: Declined applicants have no repayment record.
+- D: Overfitting concerns a model fitted too closely to training data.
+- E: Declined applicants did not receive a loan, so no repayment is observed.
+
+**Source:** Selective labels
+
+## MA-ch07.27
+
+An audit reports true-positive rates of 0.75 (400 qualified people) in one group and 0.60 (40 qualified people) in another. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A 95% confidence interval for the smaller group's rate is wider than the larger group's.
+- [ ] B. Low statistical power means a real gap can go undetected.
+- [ ] C. The multiple comparisons problem is that testing many subgroups makes a chance significant gap less likely.
+- [ ] D. A non-significant difference shows that the two groups have equal rates.
+- [ ] E. A p-value is the probability that the two groups have equal rates.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Interval width shrinks as the sample grows.
+- B: Small samples give tests little ability to detect real differences.
+- C: Testing many subgroups makes a chance significant gap more likely.
+- D: Failing to detect a gap is not evidence of equality.
+- E: A p-value is the probability of data this extreme if the rates were equal.
+
+**Source:** Confidence interval, power, multiple comparisons
+
+## MA-ch07.28
+
+A reviewer checks selection rates by gender, by region and by gender-by-region combination. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Passing the check on each attribute separately implies passing on the combinations.
+- [ ] B. Single-attribute selection rates can look equal while some combination cells differ.
+- [ ] C. Checking combinations multiplies the number of subgroups, so samples per cell shrink and intervals widen.
+- [ ] D. Intersectional analysis examines combinations of attributes such as gender and region together.
+- [ ] E. A gender-by-region cell is an example of an intersectional subgroup.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: Disparities can cancel in the margins.
+- B: Opposite gaps in different cells can offset each other in the margins.
+- C: Each added attribute splits the sample further.
+- D: Disparities can exist in combinations.
+- E: It is defined by more than one attribute.
+
+**Source:** Intersectional subgroups
+
+## MA-ch07.29
+
+A classifier keeps the same true-positive and false-positive rates in each group after deployment, but one group's base rate rises. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Concept drift is a change in the input distribution alone.
+- [ ] B. Label shift changes the true-positive and false-positive rates by definition.
+- [ ] C. Precision is stable under a change in base rate.
+- [ ] D. Covariate shift is a change in the relationship between the inputs and the outcome.
+- [ ] E. A change in base rate with the class-conditional feature distributions unchanged is called label shift, also known as prior probability shift.
+
+**Key:** A=F B=F C=F D=F E=T
+
+**Why:**
+
+- A: Concept drift is a change in the relationship between inputs and outcome.
+- B: Those rates are conditional on the class and stay the same.
+- C: Precision depends on the base rate.
+- D: Covariate shift is a change in the input distribution.
+- E: The share of positives changes while the features within each class stay the same.
+
+**Source:** Label shift, covariate shift and concept drift
+
+## MA-ch07.30
+
+A hospital tests an assistant that states its own confidence in words for urgent-versus-not triage of messages in different languages. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A calibration check by group needs no outcome labels.
+- [ ] B. Stating the same confidence level equally often in two groups shows it is calibrated in each.
+- [ ] C. A calibration check on one model version and prompt stays valid after either is changed.
+- [ ] D. A confidence stated in words by a language model is a claim to test against outcomes.
+- [ ] E. Hedged wording is evidence that the stated confidence is calibrated.
+
+**Key:** A=F B=F C=F D=T E=F
+
+**Why:**
+
+- A: It compares stated confidence with observed outcomes.
+- B: Calibration needs agreement with observed outcomes.
+- C: A change can alter the confidence statements, so the check is repeated.
+- D: Fluent confidence need not match how often the model is right.
+- E: Tone is not evidence of calibration.
+
+**Source:** Calibration of stated confidence
+
+## MA-ch07.31
+
+An organization chooses which group criterion to prioritize for a cancer-screening aid, where a missed case is costly, and for a fraud flag that freezes payments. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. False-positive-rate parity targets wrongful flags, the main harm for the fraud flag.
+- [ ] B. The false-negative rate equals one minus the true-positive rate.
+- [ ] C. Equal opportunity targets unequal rates of missed cases across groups.
+- [ ] D. Demographic parity is the criterion that targets the cost of each error type.
+- [ ] E. The choice among criteria follows from the confusion matrices alone.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: It compares how often people who did nothing wrong are flagged.
+- B: The two rates split the truly qualified people.
+- C: Equal true-positive rates mean equal false-negative rates.
+- D: Demographic parity ignores which errors occur.
+- E: It depends on who bears the cost of each error type.
+
+**Source:** Choosing a criterion by harm
+
+## MA-ch07.32
+
+A team has built a loan-approval model and must report fairness. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Passing the chosen metric means the other criteria are also satisfied.
+- [ ] B. A model card is a plot of calibration.
+- [ ] C. Minimizing average loss has no effect on how errors fall across groups.
+- [ ] D. A regulator naming a metric fixes the formula and leaves open the groups, cutoff and tolerance.
+- [ ] E. A tolerance states how close two rates have to be to count as equal.
+
+**Key:** A=F B=F C=F D=T E=T
+
+**Why:**
+
+- A: Meeting one criterion can mean others fail.
+- B: A model card is documentation of a model's use, data and limits.
+- C: Average loss weights examples equally, which shapes the distribution of errors.
+- D: Applying a named metric still requires decisions.
+- E: Equality of estimated rates is judged within a stated margin.
+
+**Source:** Metric, tolerance and documentation
+
+## MA-ch07.33
+
+Group A has 400 true positives, 100 false positives, 0 false negatives and 500 true negatives. Group B has 300 true positives, 0 false positives, 100 false negatives and 600 true negatives. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Accuracy parity holds between the two groups.
+- [ ] B. Group B has the higher true-positive rate.
+- [ ] C. The errors in group A are false positives and the errors in group B are false negatives.
+- [ ] D. Equalized odds holds between the two groups.
+- [ ] E. Equal accuracy means the two groups bear the same cost from errors.
+
+**Key:** A=T B=F C=T D=F E=F
+
+**Why:**
+
+- A: Both groups have accuracy 0.90.
+- B: Group A's is 1.0 and group B's is 0.75.
+- C: Group A has only false positives and group B only false negatives.
+- D: The true-positive rates are 1.0 and 0.75, and the false-positive rates differ too.
+- E: Different error types can carry different costs.
+
+**Source:** Confusion matrix terms
+
+## MA-ch07.34
+
+An analyst studies why precision changes with base rate for a classifier. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. By Bayes' rule, the odds of a positive outcome given a positive prediction equal the prior odds times the likelihood ratio.
+- [ ] B. Base rate is another word for the prevalence of the positive outcome in a group.
+- [ ] C. Precision and the true-positive rate are two names for the same quantity.
+- [ ] D. The likelihood ratio of a positive prediction is the true-positive rate divided by the false-positive rate.
+- [ ] E. The posterior probability of the positive outcome given a positive prediction is the true-positive rate.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: This is the odds form of Bayes' rule applied to precision.
+- B: Both name the share of the group with the positive outcome.
+- C: They condition on different events.
+- D: It compares how likely a positive prediction is for positives versus negatives.
+- E: That posterior is the precision.
+
+**Source:** Bayes' rule, base rate and likelihood ratio
+
+## MA-ch07.35
+
+A manager asks an AI assistant, "Check whether our hiring model is unbiased and fix it so everyone is treated the same." Check each statement that is true. Each statement is worth 1 point (5 points total). about writing a precise prompt.
+
+- [ ] A. A precise prompt names the groups, the favorable outcome, the metric and the tolerance.
+- [ ] B. Bias in the statistical sense is the same thing as unfairness.
+- [ ] C. "Unbiased" is vague, and naming a criterion such as equalized odds fixes its meaning.
+- [ ] D. "Treated the same" can mean demographic parity, equal error rates or individual fairness, which are distinct.
+- [ ] E. Asking for post-processing names a family of methods that adjust decisions after training.
+
+**Key:** A=T B=F C=T D=T E=T
+
+**Why:**
+
+- A: Each of these is needed to define the check.
+- B: Statistical bias is systematic error, while fairness is a normative judgment.
+- C: Each criterion is a specific, checkable condition.
+- D: The phrase does not choose among distinct criteria.
+- E: It specifies where in the pipeline the fix is applied.
+
+**Source:** Rewriting a vague fairness prompt
+
+## MA-ch07.36
+
+A health system flags patients for a limited care program. The base rate of high need is higher in group X than in group Y, partly because group X has had less access to primary care. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Predictive parity holds automatically when error rates are equal.
+- [ ] B. A group's base rate can partly reflect unequal access to care.
+- [ ] C. Equal opportunity and demographic parity coincide when base rates differ.
+- [ ] D. Equalized odds is another name for equal opportunity.
+- [ ] E. With equal true-positive and false-positive rates in both groups, the selection rates differ when base rates differ.
+
+**Key:** A=F B=T C=F D=F E=T
+
+**Why:**
+
+- A: Precision also depends on the base rate.
+- B: Observed prevalence can come from how people were treated, not only from underlying need.
+- C: They constrain different quantities and generally conflict then.
+- D: Equal opportunity constrains only the true-positive rate.
+- E: Selection rate depends on base rate and the two error rates.
+
+**Source:** Base rates and choice of criterion
+
+## MA-ch07.37
+
+A reviewer compares equal opportunity with equalized odds. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Predictive parity follows from equalized odds.
+- [ ] B. Equalized odds implies equal opportunity.
+- [ ] C. Equalized odds adds false-positive-rate parity to equal opportunity.
+- [ ] D. Equal opportunity implies equalized odds.
+- [ ] E. Equal opportunity concerns people who truly qualify.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: Precision depends on base rates as well as the error rates.
+- B: Equal true-positive rates are one of its two components.
+- C: It requires both error rates to match.
+- D: False-positive rates can still differ.
+- E: It compares true-positive rates.
+
+**Source:** Equal opportunity versus equalized odds

@@ -75,8 +75,8 @@ def parse_ma(path, text):
             "type": "multiple-answer",
             "points": 5,
             "chapter": chapter,
-            "group": "chapter" if chapter else "foundations",
-            "section": (None if chapter else section) or None,
+            "group": "chapter" if chapter is not None else "foundations",
+            "section": (None if chapter is not None else section) or None,
             "source": source_of(body),
             "stem": stem,
             "statements": [
@@ -99,8 +99,8 @@ def parse_es(path, text):
             "type": "essay",
             "points": 5,
             "chapter": chapter,
-            "group": "chapter" if chapter else "foundations",
-            "section": (None if chapter else section) or None,
+            "group": "chapter" if chapter is not None else "foundations",
+            "section": (None if chapter is not None else section) or None,
             "source": source_of(body),
             "prompt": prompt,
             "rubric": [{"point": int(n), "text": t} for n, t in items],
@@ -112,13 +112,15 @@ def build():
     out_dir = ROOT / "json"
     out_dir.mkdir(exist_ok=True)
     result = {}
-    for kind, prefix, parser in (("multiple-answer", "MA", parse_ma), ("essay", "ES", parse_es)):
+    for kind, prefix, parser in (("multiple-answer", "MA", parse_ma),):  # essays retired; old ones are in archive-pre-jargon/
         qs = []
         chapters = {}
         for path in sorted((ROOT / kind).glob("*.md"), key=file_order):
             text = path.read_text()
             ch = chapter_of(path)
-            chapters[str(ch) if ch else "foundations"] = parse_title(text)
+            # Several non-chapter sets share this group. Keep the original
+            # vocabulary heading; each question retains its own section title.
+            chapters.setdefault(str(ch) if ch is not None else "foundations", parse_title(text))
             qs += parser(path, text)
         doc = {"course": COURSE, "type": kind, "scoring": SCORING[kind], "count": len(qs),
                "chapters": chapters, "questions": qs}

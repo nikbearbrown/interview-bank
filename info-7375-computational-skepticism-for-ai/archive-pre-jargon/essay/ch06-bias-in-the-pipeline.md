@@ -239,3 +239,147 @@ A company deploys a customer-support assistant built on a language model that it
 5. Says the company should pin the model version where the provider offers that, re-run the audit when the provider changes the model, and keep records of tests and decisions so the assignment of responsibility can be checked later.
 
 **Source:** A limit case: when the leverage is upstream of your pipeline — and who owns it then
+
+## ES-ch06.16
+
+A retailer wants to know whether giving customers a discount coupon (yes or no) keeps them from leaving (stays or leaves). Use this question to explain the three rungs of Pearl's ladder (association, intervention, counterfactual), giving one binary-outcome question the retailer could ask at each rung. Then explain why most machine learning sits on the first rung and what that means for how a model's output should be used.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Defines rung 1 as association, the probability of an outcome given an observation, P(leaves | coupon), and gives a coupon example such as "do customers with coupons leave less often?"
+2. Defines rung 2 as intervention, P(leaves | do(coupon)), what happens if the retailer sets the coupon rather than observes it, and distinguishes it from conditioning: observing a coupon holder can be entangled with why they received it, while setting it cuts those ties.
+3. Defines rung 3 as a counterfactual about one specific case, such as "would this customer, who received no coupon and left, have stayed with one?", and notes that it requires reasoning about an outcome that was not observed.
+4. Explains that most machine learning fits conditional probabilities from observed data, which is rung 1, and that this is enough for prediction when new cases resemble the training cases.
+5. States the consequence: a predictive feature is not a lever, so acting on a model's output (changing a feature, setting a policy) needs experimental or causal evidence and a check that the population has not shifted; the model alone does not say what would happen if the retailer intervened.
+
+**Source:** Pearl's Ladder — Rungs 1 and 2
+
+## ES-ch06.17
+
+A bank has 100,000 customers: 20,000 are engaged (active in its app in the last month) and 80,000 are not. It emailed 28,000 customers about a new credit card, 18,000 engaged and 10,000 not engaged. Among the engaged, 11.5% of the emailed and 10% of the non-emailed signed up. Among the non-engaged, 3.5% of the emailed and 2% of the non-emailed signed up. A manager reports that emailed customers signed up at 8.6% against 2.2% for the rest and concludes that the email works. Compute and explain the rung 1 comparison, draw the causal diagram that explains why it is misleading, show the rung 2 estimate, and describe the experiment that would give the same answer without any adjustment.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Computes the raw comparison: 2,420 sign-ups out of 28,000 emailed (about 8.6%) against 1,600 out of 72,000 not emailed (about 2.2%), a difference of about 6.4 points, and identifies it as an association (rung 1).
+2. Draws or describes the causal diagram: engagement points to both the email (the bank targeted engaged customers) and to sign-up, in addition to any arrow from the email to sign-up, so engagement is a common cause that confounds the raw gap.
+3. Computes the stratified estimate: 11.5% against 10% among the engaged and 3.5% against 2% among the non-engaged, a 1.5-point effect in each group and 1.5 points overall when weighted by group size, and notes that the raw gap overstates the effect about fourfold.
+4. Describes a randomized test: a coin flip decides who is emailed, which cuts the arrow from engagement to the email, and would be expected to give about 5.1% against 3.6% sign-up (a 1.5-point lift) in a population like this one.
+5. States the assumptions behind the adjustment: engagement is the only common cause, it is measured, and emailed and non-emailed customers within each group are otherwise equivalent; unmeasured causes would remain a problem for adjustment but not for randomization.
+
+**Source:** Pearl's Ladder — Rungs 1 and 2
+
+## ES-ch06.18
+
+A hospital wants to know whether a follow-up phone call after discharge (yes or no) reduces 30-day readmission (yes or no). It asks: "For the patients who were called, what would have happened if they had not been called?" Explain why this counterfactual question is at heart a data problem, how a comparison group is used to answer it, what makes a comparison group valid, and what remains uncertain even with a good one.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that each patient is observed under only one condition, called or not called, so the outcome without the call is missing for every called patient and cannot be measured directly.
+2. Explains that the missing outcome is estimated from other patients who were not called, which stand in for the called patients, so the quality of the answer depends on how well the comparison group matches.
+3. Describes ways to build a valid comparison: randomized assignment of calls, or matching, stratifying or weighting on measured variables (age, diagnosis, prior admissions) so the groups are equivalent on them.
+4. States the key assumption: the groups must be equivalent on everything that affects readmission, including variables not measured (such as understanding of discharge instructions); matching on measured variables does not guarantee this, and the data alone cannot confirm it; randomization is stronger because it balances unmeasured factors in expectation.
+5. Notes what remains uncertain: the result is an average for a group, not a certain statement about one patient, and requires overlap (called and uncalled patients of every kind), and further assumptions about how individuals respond are needed to say anything about a single patient.
+
+**Source:** Pearl's Ladder — Rung 3, opened
+
+## ES-ch06.19
+
+Of 800 students who used a tutoring app, 600 passed a course (75%); of 1,200 who did not, 700 passed (about 58%). A university wants to know whether the app helps students pass. Describe three different causal stories that could produce this association, say what each predicts if the university set app use by force for a group of students, and explain how an experiment would tell the stories apart.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Identifies the association (75% against about 58%, a gap of about 17 points) as a rung 1 finding that does not by itself show cause.
+2. Describes three stories: the app helps students pass (X causes Y); students who are already doing well are more likely to use the app (Y causes X, or prior success causes use); a third factor such as motivation or study habits causes both app use and passing.
+3. States what each predicts under an intervention: if the app helps, assigning students to use it raises pass rates; if the arrow runs the other way, or a common cause drives both, assigning use leaves the pass rate unchanged.
+4. Explains that setting use by force, ideally by random assignment, cuts the arrows into app use, so the difference in pass rates between the assigned groups reflects the app and not who chose it.
+5. Notes practical limits: the experiment estimates an average effect for the students and conditions tested, possible non-compliance (assigned students not using the app), and that if an experiment is impossible, adjustment for measured common causes needs the explicit assumption that none are missing.
+
+**Source:** Pearl's Ladder — Rungs 1 and 2
+
+## ES-ch06.20
+
+A company screened 200 applicants from each of two groups. It advanced 30 of the group A applicants (15%) and 60 of the group B applicants (30%). An analyst says the screening is biased against group A. Using Pearl's three rungs, explain what this finding does and does not show, describe a test that would answer a rung 2 question about the screening step, describe the counterfactual question a fairness claim about one applicant would raise, and explain what data would be needed to answer it.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Computes the rung 1 gap: 15% against 30%, a difference of 15 points and a ratio of 0.5, and explains that this is an association; it does not show why the rates differ.
+2. Lists several explanations consistent with the gap, such as differences in the applicant pools or qualifications, in how information was recorded, in the model or the reviewers, or in the cutoff, so that the gap alone does not locate the cause.
+3. Describes a rung 2 test: an audit in which matched applications that are identical except for the group signal (such as the name) are submitted, or the screening rule is run on records with that input changed; differences in outcomes then reflect the screening step's response to that input.
+4. States the rung 3 question for one applicant: would this person, who was not advanced, have been advanced had she been in the other group, with everything else about her held the same, and notes that it concerns an outcome that did not occur.
+5. Explains that answering it requires comparison cases believed to be equivalent in every way that matters other than group, which is an assumption that cannot be fully verified; group often cannot be changed alone, so the answer depends on what is held fixed, and results should be reported as estimates with limits.
+
+**Source:** Pearl's Ladder — Rungs 1 and 2
+
+## ES-ch06.21
+
+A coin lands heads with probability 0.7. A tiger beats a mouse in about 99% of fights. Two groups of people differ in how often they work in a certain occupation. Use these three cases to explain two different meanings of the word bias: a tilt in a process, and the bias of an estimator. Then explain how the definition a person should use depends on the problem, using three questions: describing the world, judging a number, and deciding about a person.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Defines bias as a tilt in the world: a process whose probabilities depart from a symmetric or reference value, such as P(heads) = 0.7 against 0.5, P(tiger wins) near 0.99, or P(occupation | group A) differing from P(occupation | group B); notes that this is descriptive and neutral, not harmful by definition.
+2. Defines the bias of an estimator as E[estimate] - true value, a property of a measurement process relative to a target, and shows that an estimate of 0.7 for the coin has bias zero while a constant estimate of 0.5 has bias -0.2.
+3. Explains how the two connect: the world's tilt is the target (the true value), so an accurate estimate of a strong tilt is unbiased, and a skewed sample can give a biased estimate of a real tilt; a tilt in the world is not an estimator bias.
+4. Maps the three questions to definitions: describing the world uses the tilt, such as P(A | B) against P(A | not B); judging a number uses estimator bias; deciding about a person asks whether the tilt is relevant and causally linked to the decision.
+5. Gives a reason why the same tilt can be fine for one question and a problem for another, such as a size advantage in a fight being relevant to who wins a fight but not to who should be hired, or a group gap that arises from a past process versus one that arises from a rule.
+
+**Source:** What "bias" actually means
+
+## ES-ch06.22
+
+A researcher builds a map of startups from a public directory. Of 3,167 startups on the map, 2,123 are in Region R (67%). The researcher expected Region R to have more startups than any other region but not this large a share, and suspects the data. Describe how to investigate: how an expectation differs from a check, which equation describes how the directory could skew the share, how to trace the source, what independent evidence would help, and what the fix would be.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States that the map shows P(Region R | listed), which equals P(Region R | is a startup) only if being listed is independent of region, and that an expectation is a hypothesis to check, not a standard: an expectation can itself be biased.
+2. Gives the selection relationship: with S = 1 for listed and Y = 1 for in Region R, E[Y | S = 1] - E[Y] = Cov(S, Y) / E[S]; no association between listing and region means no skew, and the covariance sets the size of the skew.
+3. Describes tracing the source: count rows by where they came from (for example accelerator lists located in Region R), compute the Region R share within each source and outside the suspect source, and look for how listing rules favor some startups.
+4. Describes independent evidence: a sample from a source not built from the same lists (such as business registrations or a random sample), compared on the Region R share, with the caveat that each source has its own coverage gaps.
+5. Describes the fix: weighting works only on recorded variables and only if every kind of startup had some chance of being listed; where the source never recorded some startups, the fix is upstream in collection, and the result should be reported as the share among listed startups with the skew stated.
+
+**Source:** Ten mechanisms, distinguished
+
+## ES-ch06.23
+
+A poll of 1,000 likely voters, treated as a simple random sample, finds candidate A at 48% and candidate B at 47%. A headline says "A leads." Compute the margin of error on a share, explain why the margin on the lead is larger, say how likely it is that A is truly ahead, state how many respondents would be needed to resolve a one-point lead with 80% power at 5% significance, and explain what the margin of error does not cover.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Computes the margin on a share: 1.96 x sqrt(0.25 / 1,000), about 3.1 percentage points.
+2. Explains that the standard error of the lead is sqrt((p1 + p2 - d squared) / n), about 3.1 points, so its 95% margin is about 6 points, roughly double, because one candidate's gain is the other's loss.
+3. States that a one-point lead is well inside that margin, and that the chance A is truly ahead is about 63% (z = 0.32), close to a coin flip, so the headline overstates the evidence.
+4. Gives the sample size for 80% power: about (1.96 + 0.84) squared x 0.95 / 0.01 squared, roughly 75,000 respondents, and notes that halving the margin takes four times the sample.
+5. Explains that the margin covers random sampling error only: not who is left out of the frame, non-response, question wording, or weighting that cuts the effective sample size, so a poll with a tiny margin can still be wrong.
+
+**Source:** Ten mechanisms, distinguished
+
+## ES-ch06.24
+
+In a population of 500,000 women and 500,000 men, 600 women and 1,400 men are data scientists. A separate professional league, by its rules, has only male players. A manager says: "The gap in data science is bias, and so is the gap in the league." Using conditional probabilities, explain what the numbers show, what the equations can and cannot tell us, where each gap enters, and which fairness checks apply.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Computes and reads the conditional probabilities: P(data scientist | woman) = 0.12% and P(data scientist | man) = 0.28%, a ratio of about 0.43; P(woman | data scientist) = 30% is a different quantity; and for the league the rates are 0 and a small positive number, a ratio of 0.
+2. Explains that these are tilts in the world and in the data, descriptive of how the groups differ, and that the equations do not say whether a gap is legitimate or caused by group membership.
+3. Contrasts where each gap enters: the league's gap is created by a rule, so a model predicting membership can be accurate and the question belongs to the rule's owner; the occupation gap passes through several stages (who enters the field, how people are hired and titled, history), and a model trained on past outcomes can carry it forward.
+4. Applies the rungs: P(Y | group) is a rung 1 association; whether group causes the outcome through a review step is a rung 2 question that can be tested by changing what the reviewer sees; whether one person would have been hired had she been in the other group is a rung 3 question.
+5. States the fairness checks and their conflict: demographic parity compares selection rates; equalized odds compares error rates among the qualified and unqualified; calibration compares score meaning; when base rates differ, a perfect predictor satisfies equalized odds and calibration but not demographic parity, so the choice of criterion depends on the decision and its harms.
+
+**Source:** Pearl's Ladder — Rungs 1 and 2

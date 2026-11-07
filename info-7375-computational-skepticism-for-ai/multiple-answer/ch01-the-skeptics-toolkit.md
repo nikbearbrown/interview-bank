@@ -2,682 +2,836 @@
 
 ## MA-ch01.1
 
-A launch review for a deployed fraud-detection model hears five sentences from the team, each offered in support of the claim that the model "works in production," meaning that it meets its operating requirements for both scoring speed and fraud detection. A checkable falsifier states an observation, possible to make, that would count against the claim. Check each statement that is a checkable falsifier. Each statement is worth 1 point (5 points total).
+A reviewer rewrites the vague claim "the assistant is reliable" so that it can be tested, and asks for the exact terms for each part. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. "Median scoring latency at the gateway stays under 150 ms across 30 days of production traffic; a 7-day median above 150 ms means the claim has failed."
-- [ ] B. "Over 30 days, recall on confirmed fraud in a weekly random audit of 400 labelled transactions stays at or above 0.85; any week below 0.80 counts as failure."
-- [ ] C. "The model performs well across the situations that matter, and the team has high confidence in it going forward based on its experience in the pilot deployment."
-- [ ] D. "The model stays robust to the many unexpected shifts that production traffic, user behavior and upstream data are likely to bring in the months after launch."
-- [ ] E. "If anything looks wrong in production, the team will look into it promptly and take whatever action seems appropriate, escalating to the vendor if the cause is not found within a few days."
+- [ ] A. An assumption is a result observed after the test has been run.
+- [ ] B. A falsifier is a statement of how confident the team is that the claim will hold.
+- [ ] C. A claim that no possible observation could contradict is called unfalsifiable.
+- [ ] D. A falsifier names an observation, with a threshold and a time window, that would count against the claim.
+- [ ] E. "The assistant performs well in the situations that matter" is a falsifier because it names the goal.
 
-**Key:** A=T B=T C=F D=F E=F
+**Key:** A=F B=F C=T D=T E=F
 
 **Why:**
 
-- A: Speed is one of the stated operating requirements, and a latency measurement over a defined window with a stated failure threshold can be checked and can fail.
-- B: It names a metric, a sample, a threshold and a window, so a specific audit result can contradict it.
-- C: "Performs well" and "high confidence" are compatible with any outcome, so nothing could show them wrong.
-- D: "Robust" and "unexpected" fix no metric, threshold or window, so no observation could count against the statement.
-- E: A promise to investigate names no observation that would refute the model's claimed performance.
+- A: An assumption is a condition taken as given, and stated beforehand, for the claim to hold.
+- B: A falsifier is an observation that would count against the claim, not a statement of confidence.
+- C: Unfalsifiable claims are compatible with every outcome, so they carry no testable content.
+- D: A checkable falsifier says in advance which result would show the claim to be wrong.
+- E: Naming a goal without a metric or threshold leaves no observation that could contradict the statement.
 
-**Source:** What I mean by skepticism
+**Source:** Falsifier and unfalsifiable claim
 
 ## MA-ch01.2
 
-A team says: "Adding a retrieval step makes our assistant hallucinate less." A reviewer asks them to restate the claim as an explicit prediction, with assumptions and a falsifier, to be tested on a set of 500 held-out questions. Check each statement that would be a sound part of the restatement. Each statement is worth 1 point (5 points total).
+A team says that adding a retrieval step makes its assistant hallucinate less, and a reviewer asks for the claim in testable form on a held-out question set. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Assumption: the assistant's fluent phrasing shows its answers are supported, so annotators can save time by not checking each answer against the documents.
-- [ ] B. Falsifier, fixed before the run: if the unsupported-claim share with retrieval is not lower than without it on those 500 questions, judged by a significance test or margin stated in advance, the claim counts as refuted for this setup.
-- [ ] C. Success criterion: the claim counts as supported if no user complains about invented facts during the first week after release, since complaints are the clearest sign of a problem.
-- [ ] D. Prediction: on the same 500 held-out questions, the share of answers with a claim unsupported by the supplied documents, as judged by two annotators, will be lower with retrieval than without it.
-- [ ] E. Assumption, stated so it can be inspected: the 500 questions resemble real user traffic, and the annotators' judgments of whether a claim is supported are accurate.
-
-**Key:** A=F B=T C=F D=T E=T
-
-**Why:**
-
-- A: Whether answers are supported is exactly what the test measures, so assuming it from phrasing removes the test.
-- B: An outcome that is declared in advance to count against the claim is what makes the test capable of failing.
-- C: A quiet week is an unmeasured, weak signal that would occur whether or not hallucination fell.
-- D: It specifies the quantity, the data, the raters and the direction of change, so it can come out wrong.
-- E: Writing down representativeness and rater accuracy turns hidden premises into items someone can check.
-
-**Source:** What I mean by skepticism
-
-## MA-ch01.3
-
-A vendor says its content filter "never lets through step-by-step instructions for making the listed hazardous compounds." As evidence it reports that 10,000 test prompts, written by its own staff to resemble ordinary user requests, produced no such instructions. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The 10,000 clean results establish that no prompt exists, written by anyone, that would get such instructions through the filter.
-- [ ] B. A smaller set of prompts written by testers who are actively trying to evade the filter would likely be more informative about the claim than 10,000 ordinary-looking requests.
-- [ ] C. The vendor's claim is a real, testable claim because it rules out a specific observable outcome.
-- [ ] D. One failure among the 10,000 test prompts would not by itself refute a different claim, that the filter lets through fewer than 1 in 1,000 such attempts.
-- [ ] E. A single prompt that gets such instructions through would refute the vendor's claim.
-
-**Key:** A=F B=T C=T D=T E=T
-
-**Why:**
-
-- A: Any number of non-failures leaves open that some untried input fails, so confirming instances cannot prove a universal claim.
-- B: Evidence is strongest when it comes from attempts designed to find the failure, since easy cases pass anyway.
-- C: Because the claim forbids an observable outcome, a counterexample could in principle be found, whatever the present evidence.
-- D: A rate claim is about frequency, so a single failure among many trials can be consistent with a rate under the stated bound.
-- E: A universal claim of the form "never" is contradicted by one counterexample.
-
-**Source:** What I mean by skepticism
-
-## MA-ch01.4
-
-An engineering manager wants her team to treat AI outputs with methodical skepticism rather than with a general attitude of suspicion. Check each practice that fits methodical skepticism, meaning a procedure that can be performed on a particular claim and whose use can be seen. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Accepting an output when it agrees with the reviewer's own recent judgments on similar cases, because that agreement shows the output is sound.
-- [ ] B. Recording how a belief about the system was formed and what conditions it depends on, so that a change in those conditions can be noticed.
-- [ ] C. Before reading an output, writing down what a wrong answer would look like, so that the output is judged against a criterion fixed beforehand.
-- [ ] D. Declining to rely on any AI output on principle, whatever its track record, the stakes involved or the checks that have been run on it.
-- [ ] E. Examining only the outputs that look strange or implausible, since fluent and polished outputs have already passed an informal quality filter.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: Agreement with one's own earlier judgments is not independent of them and can repeat their mistakes.
-- B: Knowing what a belief rests on is what lets its holder notice when those conditions have changed.
-- C: A criterion set before the output arrives cannot be bent to fit whatever the output happens to say.
-- D: Blanket rejection is a disposition, not a procedure; it ignores evidence and cannot tell good outputs from bad ones.
-- E: Polish says little about correctness, and errors that look right are exactly what a strangeness filter would miss.
-
-**Source:** What I mean by skepticism
-
-## MA-ch01.5
-
-A loan-scoring system outputs "default risk 0.82, decline" for an applicant. A reviewer asks what would have to be true for that score to be wrong about this applicant, intending to produce a list of conditions that can be inspected. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. If the applicants now arriving come from a different population than the sample used to validate the model, the validation result may not apply to this applicant.
-- [ ] B. If very few applicants in the training data resemble this one, the score is an extrapolation and deserves less trust.
-- [ ] C. The reviewer submitted the same application a second time and received the same score, so the score is probably right for this applicant.
-- [ ] D. Writing the list of conditions settles which of them actually hold for this applicant, so no further inspection is needed once the list exists.
-- [ ] E. If the income field was entered in thousands in one source system and in single units in another, the model may have seen a value 1,000 times too small.
+- [ ] A. An assumption is a condition taken as given, such as that the held-out questions resemble real use.
+- [ ] B. A falsifier could be a hallucination rate with retrieval that is no lower than the rate without it, at a stated threshold.
+- [ ] C. A falsifier is the prediction repeated in different words.
+- [ ] D. A held-out set is data used to train the retrieval step.
+- [ ] E. The prediction states a measurable direction of change, such as a lower hallucination rate, on a named held-out set.
 
 **Key:** A=T B=T C=F D=F E=T
 
 **Why:**
 
-- A: Validation results carry over to new inputs only to the extent that those inputs resemble the validated sample.
-- B: Predictions in thinly covered regions of the input space are unreliable, and whether this applicant lies in one can be checked.
-- C: Reproducing a number shows the system is consistent, not that the number matches the applicant's actual risk.
-- D: The list names suspects; each condition still needs its own inspection or test to learn whether it holds.
-- E: A unit or data-entry error is a checkable input fault that would make the score describe the wrong applicant.
+- A: Assumptions are the conditions under which the prediction is expected to hold.
+- B: It names a result that would count as failure of the claim.
+- C: A falsifier is the result that would refute the prediction, not a restatement of it.
+- D: A held-out set is data withheld from training and tuning so it can test the claim.
+- E: A prediction is a specific, measurable statement made before the test.
 
-**Source:** What I mean by skepticism
+**Source:** Prediction, assumption, falsifier, held-out set
 
-## MA-ch01.6
+## MA-ch01.3
 
-Before running an experiment, a researcher writes in a dated file: "The new prompt will raise exact-match accuracy on the 1,000-item test set by at least 2 points. A gain below 0.5 points, or any drop, means the claim has failed." The run shows a gain of 1.2 points. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A vendor says its content filter lets through no step-by-step instructions for listed hazardous compounds. As evidence it reports that 10,000 prompts written by its own staff to look like ordinary requests produced none. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The 1.2-point result lies between the stated success and failure thresholds, which shows the prediction left that case undefined.
-- [ ] B. Editing the file after the run to say "at least 1 point" would preserve the evidential value of the original prediction.
-- [ ] C. The 1.2-point gain satisfies the prediction, since it is above the failure threshold of 0.5 points and the direction of the effect is positive.
-- [ ] D. Stating the thresholds before the run is what allows the result to count against the claim.
-- [ ] E. Leaving the original entry unchanged and appending the observed result as a separate dated entry preserves what was expected beforehand.
+- [ ] A. Zero failures in a test prove that the true failure rate is zero.
+- [ ] B. Prompts written to resemble ordinary requests are a non-adversarial sample and say little about deliberate attempts to get past the filter.
+- [ ] C. A universal claim of this kind is refuted by a single counterexample.
+- [ ] D. The 10,000 passing prompts verify the universal claim.
+- [ ] E. Red teaming means repeating the vendor's ordinary prompts at larger volume.
 
-**Key:** A=T B=F C=F D=T E=T
-
-**Why:**
-
-- A: Gains between 0.5 and 2 points were assigned no meaning, so the honest report is that the outcome was neither predicted nor ruled out.
-- B: Revising a threshold after seeing the result turns a test into a description of what happened.
-- C: The prediction was a gain of at least 2 points; clearing the failure threshold is not the same as meeting the prediction.
-- D: A criterion fixed beforehand cannot be adjusted to fit the outcome, so the outcome is able to contradict it.
-- E: An append-only record separates prediction from observation and lets others check the order of events.
-
-**Source:** What I mean by skepticism
-
-## MA-ch01.7
-
-A team ships a prompt change and sees no overall gain. After looking at the results, an analyst compares 20 customer segments and reports that segment 14 improved with p = 0.03, concluding that "the change works for segment 14 because that segment uses shorter queries." Assume the 20 comparisons are independent and that, in truth, the change has no effect in any segment. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A stronger test is to state the segment 14 hypothesis and a threshold in advance and then check it on new data collected after the hypothesis was written.
-- [ ] B. Because p = 0.03 is below 0.05, the segment 14 result is unlikely to be chance, regardless of how many segments were examined.
-- [ ] C. A Bonferroni correction for 20 comparisons would still count p = 0.03 as significant at the 5% family-wise level, because 0.03 is below 0.05.
-- [ ] D. The probability that at least one of the 20 segments shows p < 0.05 by chance alone is about 64%.
-- [ ] E. The shorter-queries explanation was constructed after seeing the result, so it has not been tested against any outcome that could have contradicted it.
-
-**Key:** A=T B=F C=F D=T E=T
+**Key:** A=F B=T C=T D=F E=F
 
 **Why:**
 
-- A: A prediction made before fresh data arrive can fail, so its success is real evidence.
-- B: A p-value computed for one comparison does not account for choosing the best of 20 after the fact.
-- C: The corrected per-segment threshold is 0.05 / 20 = 0.0025, which 0.03 does not meet.
-- D: The chance of at least one hit is 1 - 0.95^20, which is about 0.64.
-- E: An account fitted to a result already seen would have been adjusted to whatever segment looked good, so agreement is guaranteed.
+- A: Zero observed failures gives an upper bound on the rate that is above zero.
+- B: The test inputs differ in kind from the inputs the claim is about.
+- C: One observed instance of the forbidden output is enough to contradict a claim stated as a universal.
+- D: A finite set of passing cases supports the claim to a limited degree and does not verify it.
+- E: Red teaming is deliberate, adversarial effort to make the system fail.
 
-**Source:** What I mean by skepticism
+**Source:** Universal claim, counterexample, red teaming
 
-## MA-ch01.8
+## MA-ch01.4
 
-An LLM assistant with no access to a company's systems is asked why a database query is slow. It replies with a well-organized, confident explanation that names a specific table and a specific configuration setting as the cause. The engineer has not looked at the database. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A manager wants her team to practise methodical skepticism, and asks which words describe what she wants and what she wants to avoid. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The clarity of the explanation is not evidence that its diagnosis matches this database.
-- [ ] B. Naming a specific table and a specific setting is evidence that the assistant inspected the database, since a vague answer would not name them.
-- [ ] C. Treating the explanation as a hypothesis and testing a prediction that could contradict it, such as whether rebuilding the index speeds up the query, is more informative than rereading it.
-- [ ] D. A longer and more confident version of the same explanation would reduce the need to measure, because extra detail makes a wrong diagnosis less likely.
-- [ ] E. Checking the query plan and the table's fragmentation statistics on the real system supplies evidence that the explanation's wording cannot.
+- [ ] A. Methodical skepticism is a procedure applied to a specific claim, whose use can be seen.
+- [ ] B. Confirmation bias is the tendency to favour evidence that agrees with what one already believes.
+- [ ] C. Cynicism is a procedure that can be performed on one particular claim.
+- [ ] D. Writing down what a wrong answer would look like before reading the output fixes the criterion in advance.
+- [ ] E. Agreement between an output and the reviewer's own earlier judgments is independent evidence that the output is right.
 
-**Key:** A=T B=F C=T D=F E=T
+**Key:** A=T B=T C=F D=T E=F
 
 **Why:**
 
-- A: Well-formed prose is produced by a process that does not depend on being right, so form and correctness are separate properties.
-- B: With no access to the system the specifics cannot come from inspection; specificity is as easy to generate as vagueness.
-- C: A hypothesis becomes evidence only when a test could have shown it wrong.
-- D: More detail and more confidence change the presentation, not the evidence.
-- E: A measurement on the real system is a direct observation of the thing the explanation makes a claim about.
+- A: Methodical skepticism is a repeatable method, such as writing the failure criterion first.
+- B: It makes a reviewer accept outputs that match prior judgment.
+- C: Cynicism is a general attitude of distrust, not a procedure applied to a claim.
+- D: A criterion set beforehand cannot be bent to fit whatever the output says.
+- E: That agreement is not independent of the reviewer, and can repeat the reviewer's mistakes.
 
-**Source:** The fluency trap
+**Source:** Methodical skepticism, cynicism, confirmation bias
 
-## MA-ch01.9
+## MA-ch01.5
 
-An LLM is given only a table of weekly revenue and asked why revenue fell 8% last month. It writes a fluent, specific account blaming a competitor's price cut. The table would fit several other accounts equally well, such as a shift in billing dates or a holiday moved into the following month. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A loan-scoring system outputs "default risk 0.82, decline" for an applicant, and a reviewer lists the conditions under which that score would be wrong for this person. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A coherent account that fits the data is a hypothesis, because other accounts fit the same data equally well.
-- [ ] B. The mention of a particular competitor shows that the model had access to that competitor's pricing data.
-- [ ] C. Obtaining the same price-cut explanation in ten of ten samples from the same model shows that the explanation is true.
-- [ ] D. An account that no conceivable observation could contradict is better supported than one that makes risky predictions.
-- [ ] E. Comparing the date of the competitor's price change with the date the decline began is a check that could contradict the account.
+- [ ] A. If few training examples resemble this applicant, the score is an extrapolation and deserves less trust.
+- [ ] B. Submitting the same application twice and receiving the same score shows that the score is accurate.
+- [ ] C. Writing the list of conditions is itself the test that shows which conditions hold.
+- [ ] D. A unit mismatch between two source systems is a modelling error, not an input data fault.
+- [ ] E. If applicants now arriving come from a different population than the validation sample, the validation result may not carry over; this is distribution shift.
 
 **Key:** A=T B=F C=F D=F E=T
 
 **Why:**
 
-- A: Fit to the data does not discriminate among accounts that all fit; only evidence favoring one over the others does.
-- B: The model was given only revenue figures, so the competitor detail came from the model's generation habits, not from data it saw.
-- C: Repetition from one source measures the stability of the model's output, not whether it matches the world.
-- D: Support comes from surviving attempts at refutation, and an unrefutable account has not been tested.
-- E: If the decline began before the price cut, the account fails, so the comparison is a test.
+- A: Extrapolation means predicting in a region the training data covers thinly.
+- B: Reproducibility shows consistency, not accuracy.
+- C: The list names suspects; each condition still needs its own inspection.
+- D: Entering income in thousands in one system and in units in another is a data-quality fault in the input.
+- E: Distribution shift is a change between the data a model was validated on and the data it now sees.
 
-**Source:** The fluency trap
+**Source:** Distribution shift, extrapolation, reproducibility versus accuracy
 
-## MA-ch01.10
+## MA-ch01.6
 
-An LLM assistant attaches a stated confidence to each answer. An independent audit of 200 answers for which it stated confidence of at least 90% finds that 150 were correct. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Before an experiment a researcher writes in a dated file: the new prompt will raise exact-match accuracy by at least 2 points, and a gain below 0.5 points or any drop means the claim has failed. The run shows a gain of 1.2 points. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A 95% confidence interval for the accuracy of those 200 answers runs from roughly 69% to 81%, so a true accuracy of 90% is not plausible for this group.
-- [ ] B. If the underlying model or the mix of questions changes, an earlier calibration audit may no longer describe the assistant.
-- [ ] C. The observed accuracy of those answers is 75%, which is below the stated confidence.
-- [ ] D. A phrase such as "I am 95% sure" from a language model is a calibrated probability by construction, because the model computes it from its own uncertainty.
-- [ ] E. A calibration check compares stated confidence levels with how often the answers at those levels turn out to be correct across many answers.
-
-**Key:** A=T B=T C=T D=F E=T
-
-**Why:**
-
-- A: The normal-approximation interval is 0.75 plus or minus about 0.06, roughly 0.69 to 0.81, which excludes 0.90.
-- B: Calibration is a property of a system on a population of questions, so it can change when either one does.
-- C: 150 / 200 = 0.75.
-- D: Verbal confidence is generated text; whether it tracks the frequency of being right has to be measured, not assumed.
-- E: Calibration means that among answers given at a stated level, about that fraction are correct, which can only be seen over many answers.
-
-**Source:** The fluency trap
-
-## MA-ch01.11
-
-An analyst wants to confirm a model-written answer to "What was Company X's 2022 revenue?" and considers several second checks. Check each statement that is true about whether a second check adds independent evidence. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Looking the figure up in the company's audited annual filing is a check whose errors are unlikely to be tied to the model's errors.
-- [ ] B. Two checks are independent to the extent that whatever could make one of them wrong would not also make the other wrong.
-- [ ] C. Asking a different model that was trained on largely overlapping text is fully independent of the first, because the two systems come from different vendors.
-- [ ] D. Asking the model "Are you sure?" and receiving "Yes" is a second check, since the confirmation was produced after the original answer.
-- [ ] E. Asking the same model the question again in a fresh session and getting the same figure adds little, because repeated samples from one model can repeat the same error.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: A primary document produced by a different process has its own error sources, mostly unrelated to the model's.
-- B: Independence is about whether the errors of two checks are correlated, not about how many checks were run.
-- C: Models trained on overlapping data and with similar methods can share the same gaps and the same mistakes.
-- D: The model is reading its own answer, so its confirmation shares every assumption of the original.
-- E: Resampling one system tests its consistency, and a consistent system can be consistently wrong.
-
-**Source:** The solve-verify asymmetry
-
-## MA-ch01.12
-
-Two reviewers inspect the same batch for a certain defect. Each reviewer catches any given defect with probability 0.8. Consider one defect in the batch. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. If the two reviewers miss independently, the probability that at least one of them catches the defect is 0.84.
-- [ ] B. With three reviewers whose misses are independent, the probability that all three miss the defect is 0.016.
-- [ ] C. If the two reviewers miss defects independently of each other, the probability that both miss this defect is 0.04.
-- [ ] D. If the two reviewers have identical blind spots, so that each misses exactly the defects the other misses, the probability that at least one of them catches the defect is 0.96.
-- [ ] E. The probability that at least one of the two reviewers catches the defect can be found as 0.96 from the 0.8 detection rate alone, whatever the relationship between their misses.
-
-**Key:** A=F B=F C=T D=F E=F
-
-**Why:**
-
-- A: The probability that at least one catches it is 1 - 0.04 = 0.96, not 0.84.
-- B: 0.2 x 0.2 x 0.2 = 0.008, so 0.016 is wrong.
-- C: For independent misses, 0.2 x 0.2 = 0.04.
-- D: With identical blind spots the second reviewer adds nothing, so the probability stays at 0.8.
-- E: The benefit of a second reviewer depends on how correlated the two reviewers' errors are, not just on each one's detection rate.
-
-**Source:** The solve-verify asymmetry
-
-## MA-ch01.13
-
-A team generates answers to 500 customer-support questions with a language model M and then grades each answer pass or fail by prompting the same model M as a judge. They report a 94% pass rate. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The 94% figure is a measurement of how many of the answers are correct.
-- [ ] B. A judge that shares the generator's blind spots can accept an answer for the same mistaken reason the generator produced it.
-- [ ] C. Language-model judges have been reported to favor outputs that resemble their own, so a self-graded score may be inflated.
-- [ ] D. Replacing M with a larger model as judge removes the shared-error problem.
-- [ ] E. Having a second run of M grade the same 500 answers and finding that its grades match the first run's would show that the 94% pass rate is accurate.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: It is the rate at which the judge says pass; how well that tracks correctness has to be measured against independent labels.
-- B: Errors that come from the same knowledge gaps or the same misreading are not caught by a checker with those gaps.
-- C: Self-preference in model-based grading has been observed, which biases self-graded results upward.
-- D: A larger model may be better, but it can still share training data, framing and failure modes with the generator.
-- E: Agreement between two runs of the same system measures consistency, which a consistently wrong judge also shows.
-
-**Source:** The solve-verify asymmetry
-
-## MA-ch01.14
-
-A reporter finds the statistic "62% of firms have adopted technology X" in five news articles, each citing a different outlet. Tracing the citations back, all five come from a single press release by a vendor that sells X; the release gives no sample size, sampling method or question wording. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The more outlets repeat the figure, the more likely it is to be accurate, since each outlet decided independently to publish it.
-- [ ] B. A survey whose methods are published can be trusted without further checks on how it was designed or carried out.
-- [ ] C. The five articles amount to one piece of evidence, not five, because they share a single origin.
-- [ ] D. Independent confirmation would require a source that collected its own data by a separate process.
-- [ ] E. The vendor's commercial interest in the result is enough, by itself, to show that the figure is false.
-
-**Key:** A=F B=F C=T D=T E=F
-
-**Why:**
-
-- A: Repetition spreads a claim without testing it.
-- B: Published methods make checking possible; they do not show the survey was well designed or carried out.
-- C: Copies of one claim are not separate observations; their errors are perfectly correlated.
-- D: A separate sample, collected and analyzed separately, is what can corroborate or contradict the original figure.
-- E: A motive to inflate is a reason to look harder, but whether the figure is true depends on how it was produced.
-
-**Source:** The solve-verify asymmetry
-
-## MA-ch01.15
-
-A data-migration job writes "Migrated 12,000 rows to the new table: SUCCESS" to its log and exits with status code 0. An engineer then runs a row count directly on the destination table and gets 11,400. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The exit status of 0 establishes that the destination table is complete, since the job would otherwise have reported an error.
-- [ ] B. Even if the destination count had been 12,000, matching counts would not by themselves show that the row contents were copied correctly.
-- [ ] C. The log line is a statement produced by the process under review, while the destination count is a direct observation of the resulting state.
-- [ ] D. The destination holds 5% fewer rows than the log reports.
-- [ ] E. Because the job exited with status 0, the discrepancy can be set aside without looking at the missing rows.
+- [ ] A. Moving the failure line to 1 point after seeing the result keeps the test a pre-registered test.
+- [ ] B. Shifting a threshold after seeing the result is called moving the goalposts.
+- [ ] C. A gain between the failure line and the predicted size leaves the claim neither confirmed nor refuted, which is an inconclusive result.
+- [ ] D. Recording the prediction and failure rule in a dated file before the run is pre-registration.
+- [ ] E. A gain of 1.2 points meets the stated prediction.
 
 **Key:** A=F B=T C=T D=T E=F
 
 **Why:**
 
-- A: A zero exit status means the process did not signal an error; it does not describe the state of the data.
-- B: Rows can be duplicated, truncated or altered while the total stays the same, so a count checks one property only.
-- C: A report generated by the system being checked is a claim about the world, not an observation of it.
-- D: 12,000 - 11,400 = 600, and 600 / 12,000 = 5%.
-- E: A direct observation that contradicts the report calls for investigating the difference, not explaining it away.
+- A: Changing the rule after the result removes the protection pre-registration gives.
+- B: The criterion is adjusted to fit the outcome instead of the outcome being judged against the criterion.
+- C: The pre-set rule marks the claim as failed or supported only outside this middle band.
+- D: Pre-registration fixes the prediction and decision rule before the data are seen.
+- E: The prediction was a gain of at least 2 points, so the result falls short of it.
 
-**Source:** The slice
+**Source:** Pre-registration, inconclusive result, moving the goalposts
 
-## MA-ch01.16
+## MA-ch01.7
 
-A nightly backup job has written "backup completed" to its log and exited with status 0 on each of the last 400 nights. The goal is that the data can be restored after a loss. Check each statement that is true. Each statement is worth 1 point (5 points total).
+After a prompt change shows no overall gain, an analyst compares 20 customer segments, finds one with p = 0.03, and says the change works there because that segment uses shorter queries. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A restore test that passed once, when the system was set up, shows that every later backup is restorable.
-- [ ] B. A steadily growing backup file size shows that the backups can be restored, since the files hold more data each night.
-- [ ] C. Restoring a recent backup into a scratch environment and comparing it with the source is a direct check of the property that matters.
-- [ ] D. Exit status 0 on 400 consecutive nights shows that the backups are restorable, since errors would have changed the status.
-- [ ] E. The "backup completed" line is independent confirmation, since it was written after the backup files were created.
+- [ ] A. The explanation about shorter queries, written after the result, is a prediction.
+- [ ] B. The chance of at least one false positive across a set of tests is the familywise error rate, and it rises with the number of comparisons.
+- [ ] C. A correction for multiple comparisons makes the per-test threshold looser.
+- [ ] D. A p-value of 0.03 means there is a 3% probability that the change has no effect in that segment.
+- [ ] E. Reporting the one significant segment out of 20 comparisons is an example of multiple comparisons, and of p-hacking when the others are not reported.
 
-**Key:** A=F B=F C=T D=F E=F
+**Key:** A=F B=T C=F D=F E=T
 
 **Why:**
 
-- A: Configuration, data and software change over time, so a past test says nothing certain about later backups.
-- B: Size can grow while the data are corrupted, incomplete or unreadable.
-- C: A restore into a clean environment tests the outcome that matters rather than a report about the process.
-- D: Exit status describes whether the job raised an error, not whether the files can be restored.
-- E: The line is written by the same job whose correctness is in question, so it reports the job's own belief.
+- A: An explanation written after the result is post hoc, since it can be fitted to the data.
+- B: Each added test adds another chance of a spurious result.
+- C: A correction makes the per-test threshold stricter.
+- D: A p-value is the probability of data this extreme if there is no effect, not the probability that there is no effect.
+- E: Many tests inflate the chance of at least one small p-value arising by chance.
 
-**Source:** The slice
+**Source:** Multiple comparisons, p-value, post hoc explanation
 
-## MA-ch01.17
+## MA-ch01.8
 
-A developer says her patch fixes a bug in which exporting a customer record crashes when the customer's name contains an apostrophe. She adds a test that exports a record for "Olivia Smith" and shows that it passes after the patch. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An LLM assistant with no access to a company's systems is asked why a query is slow, and replies with a confident, well-organised account naming a specific table and setting. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Her explanation of why the patch should work is evidence that it does work, since she wrote the code and understands it best.
-- [ ] B. A test that uses a name with an apostrophe, fails on the old code and passes on the patched code would be evidence that the patch addresses this bug.
-- [ ] C. A passing result on her own machine shows that the deployed build is fixed, since it runs the same source code.
-- [ ] D. The test would also have passed before the patch, so it cannot tell a patched build from an unpatched one.
-- [ ] E. Seeing no new crash reports for a day after release establishes that the fix is correct, because the bug would otherwise recur.
+- [ ] A. A confident tone is a measure of calibration.
+- [ ] B. Naming a specific table is evidence that the model had access to the system.
+- [ ] C. An explanation not grounded in access to the system is a hallucination, sometimes called confabulation.
+- [ ] D. The right status for the account is a hypothesis that still needs a test.
+- [ ] E. Fluency describes the style of the text and not the evidence behind it.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: Calibration is agreement between stated confidence and the observed fraction correct, and tone does not measure it.
+- B: Specific detail is easy to generate and does not show access.
+- C: The model produces plausible text without evidence about this database.
+- D: A hypothesis becomes a finding only after an observation that could have contradicted it.
+- E: A well-written answer can be unsupported.
+
+**Source:** Fluency, hallucination, hypothesis
+
+## MA-ch01.9
+
+An LLM given only a table of weekly revenue writes a specific account blaming a competitor's price cut for an 8% fall, though a shifted billing date or a moved holiday fits the table equally well. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The account the model wrote should be chosen because it is the most fluent.
+- [ ] B. When several accounts fit the same data equally well, the data underdetermine the cause.
+- [ ] C. Restating the same table in more detail in the prompt breaks the tie.
+- [ ] D. Telling the accounts apart takes a discriminating observation, such as billing-date records, that the rival accounts predict differently.
+- [ ] E. Rival accounts that fit the data equally well are called confounders.
 
 **Key:** A=F B=T C=F D=T E=F
 
 **Why:**
 
-- A: A reason to expect success is a prediction, not an observation of success.
-- B: A test that fails before and passes after is the kind of observation that distinguishes a fix from no fix.
-- C: Her machine and the deployed system can differ, so the check must be made against the thing that actually runs.
-- D: A test that cannot fail on the broken version does not discriminate between broken and fixed.
-- E: A day without reports is weak evidence, since rare inputs may not have occurred in that time.
+- A: Fluency is not evidence and does not break a tie between accounts.
+- B: Underdetermination means the evidence does not single out one explanation.
+- C: More detail of the same data does not separate accounts that already fit it equally.
+- D: A discriminating observation is one whose outcome differs under the rival accounts.
+- E: They are rival or alternative hypotheses; a confounder is a variable linked to both cause and outcome.
 
-**Source:** What I mean by skepticism
+**Source:** Underdetermination, rival hypotheses
 
-## MA-ch01.18
+## MA-ch01.10
 
-A safety evaluation runs a chatbot on 100 prompts drawn at random from expected production traffic and records 0 harmful responses. Treat the prompts as independent trials with a fixed probability of a harmful response. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An LLM assistant states at least 90% confidence on 200 answers, and an audit finds 150 of them correct. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Roughly 3,000 clean trials would be needed to bring the 95% upper bound on the harm rate down to about 0.1%.
-- [ ] B. If the true harm rate were 2%, observing 0 harmful responses in 100 prompts would still happen about 13% of the time.
-- [ ] C. The result describes prompts like those that were sampled and says little about prompts written specifically to provoke harm.
-- [ ] D. The result shows that the true harm rate is below 1%, since no harmful response was observed in the sample.
-- [ ] E. A one-sided 95% upper confidence bound on the harm rate is about 3%.
+- [ ] A. The audit measures discrimination, the ability to rank correct answers above incorrect ones.
+- [ ] B. Stating the same confidence on each answer is required for a model to count as calibrated.
+- [ ] C. Accuracy and calibration are different properties.
+- [ ] D. Calibration is agreement between stated confidence and the fraction of answers that are correct.
+- [ ] E. Stated confidence above the observed fraction correct is overconfidence.
 
-**Key:** A=T B=T C=T D=F E=T
+**Key:** A=F B=F C=T D=T E=T
 
 **Why:**
 
-- A: The rule of three gives an upper bound of 3 / 3,000 = 0.1%.
-- B: 0.98^100 is about 0.13, so a clean run is quite possible at a 2% rate.
-- C: A bound holds for the population that was sampled; adversarial inputs come from a different distribution.
-- D: At a true rate of 1% the chance of 0 harms in 100 trials is about 37%, so the data do not rule it out.
-- E: With zero events in n trials the 95% upper bound is about 3 / n (the "rule of three"), here 3 / 100.
+- A: Comparing stated confidence with hit rate measures calibration.
+- B: A model can vary its confidence and still be calibrated.
+- C: A model can be accurate overall and still state confidence that is too high or too low.
+- D: A calibrated 90% statement is right about 90% of the time.
+- E: The model's confidence statements are higher than its hit rate.
 
-**Source:** What I mean by skepticism
+**Source:** Calibration, overconfidence, accuracy
 
-## MA-ch01.19
+## MA-ch01.11
 
-A static-analysis tool finds each instance of a certain class of vulnerability independently with probability 0.6 and raises no false alarms. Of modules like the one under review, 20% contain exactly one instance and 80% contain none. The tool reports nothing for this module. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An analyst wants a second check on a model-written answer to a question about a company's revenue in a given year. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Given the clean report, the probability that the module contains the vulnerability is about 9%.
-- [ ] B. The clean report shows that the module is free of this vulnerability class, because the tool raises no false alarms.
-- [ ] C. If the module contains one instance, the chance of a clean report is 0.4.
-- [ ] D. If the tool were unable to detect this vulnerability class at all, a clean report would carry no information about it.
-- [ ] E. A module with two separate instances, each found independently with probability 0.6, would produce a clean report with probability 0.16.
+- [ ] A. Looking up the figure in the company's filed annual report is a check independent of the model's recall.
+- [ ] B. A check is independent when its errors do not move together with the errors of the first check.
+- [ ] C. A second model trained on largely the same data gives errors that are uncorrelated with the first model's.
+- [ ] D. Asking the same model the same question again and getting the same answer is an independent check.
+- [ ] E. Agreement among checks that copy the same source strengthens the evidence in proportion to the number of checks.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: A primary source has errors unrelated to the model's errors.
+- B: Independence of errors is what makes a second check add evidence.
+- C: Shared training data makes the two models' errors move together.
+- D: Repeating a source gives a correlated answer, not independent evidence.
+- E: Copies of one source count as one source.
+
+**Source:** Independent evidence, correlated errors
+
+## MA-ch01.12
+
+Two reviewers inspect the same batch for a defect, and a manager asks how redundancy helps and what terms describe the reviewers' performance. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. If the reviewers' misses are independent, the chance that both miss a defect is lower than for either alone.
+- [ ] B. Correlated errors reduce the benefit of adding a second reviewer.
+- [ ] C. Redundancy improves detection whatever the correlation between reviewers.
+- [ ] D. Two reviewers who use the same checklist and the same examples have independent errors.
+- [ ] E. Precision is the share of real defects that a reviewer finds.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Independent failures combine so that joint failure is rarer.
+- B: If both tend to miss the same defects, the second adds little.
+- C: The gain from redundancy shrinks as errors become more correlated.
+- D: Shared method and training make errors correlated.
+- E: The share of real defects found is recall, also called sensitivity.
+
+**Source:** Redundancy, correlated errors, recall versus precision
+
+## MA-ch01.13
+
+A team has a language model answer 500 support questions and then grades each answer pass or fail by prompting the same model as a judge, reporting a 94% pass rate. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Using the same model to generate and to grade creates circularity, because the two share blind spots.
+- [ ] B. A 94% pass rate from the judge is an estimate of accuracy against ground truth.
+- [ ] C. A model judge's verdicts are ground truth labels.
+- [ ] D. Self-preference bias is a judge's tendency to prefer outputs from other models.
+- [ ] E. Comparing the judge's verdicts with human labels on a sample checks the judge against an independent reference.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: A judge with the same weaknesses as the generator tends to approve its mistakes.
+- B: It measures agreement with the judge, which is not ground truth.
+- C: Ground truth comes from an independent, trusted source, not from another model's opinion.
+- D: Self-preference bias is the tendency to prefer its own outputs.
+- E: Human labels from a domain expert supply a reference the judge did not produce.
+
+**Source:** LLM-as-judge, circularity, ground truth
+
+## MA-ch01.14
+
+A reporter finds the statistic "62% of firms have adopted technology X" in five articles that cite different outlets, but all five trace to one press release from a vendor that sells X, with no sample size or method given. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The number of articles that repeat a statistic is a measure of its reliability.
+- [ ] B. Provenance is the record of where a claim or dataset originated.
+- [ ] C. Five articles repeating one release is circular reporting, which is one source and not five.
+- [ ] D. A vendor that sells the technology has no conflict of interest in reporting its adoption.
+- [ ] E. Lineage names the original source of a claim, while provenance records the transformations applied to it.
+
+**Key:** A=F B=T C=T D=F E=F
+
+**Why:**
+
+- A: Repetition measures spread, not accuracy.
+- B: Provenance answers the question of origin.
+- C: Circular reporting is repetition of a single origin that looks like several.
+- D: A source with a stake in the result has a conflict of interest, which is a reason to seek the primary data.
+- E: Provenance records where a claim or dataset came from, and lineage records the chain of transformations it went through.
+
+**Source:** Circular reporting, provenance versus lineage
+
+## MA-ch01.15
+
+A migration job logs "Migrated 12,000 rows: SUCCESS" and exits with status 0, but a row count run directly on the destination table returns 11,400. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Comparing the destination count with the source count is validation, meaning a check that the right system was built.
+- [ ] B. A claim of success is evidence of the same kind as an observed outcome.
+- [ ] C. Exit status 0 shows that the output is correct.
+- [ ] D. The log line is a report about the job, while the row count is a direct observation of the destination state.
+- [ ] E. Verification checks the artifact itself instead of relying on the process's own account.
+
+**Key:** A=F B=F C=F D=T E=T
+
+**Why:**
+
+- A: Comparing against the specification or source is verification; validation asks whether the system meets the real need.
+- B: A claim reports an outcome and an observation shows it.
+- C: It shows only that the process ended without reporting an error.
+- D: A report and an observation are different kinds of evidence.
+- E: Direct inspection of the output is what makes a check independent of the job's claim.
+
+**Source:** Report versus state, verification
+
+## MA-ch01.16
+
+A nightly backup job has written "backup completed" and exited with status 0 on 400 nights in a row, and the goal is that data can be restored after a loss. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A restore test checks the goal, that data can be recovered, directly.
+- [ ] B. 400 completion log lines are 400 independent verifications of recoverability.
+- [ ] C. The "backup completed" log line is a proxy for recoverability.
+- [ ] D. A proxy is a measure that stands in for the goal without being the goal.
+- [ ] E. A restore test can still miss conditions it did not exercise, such as a partial loss.
 
 **Key:** A=T B=F C=T D=T E=T
 
 **Why:**
 
-- A: By Bayes' rule, 0.2 x 0.4 / (0.2 x 0.4 + 0.8 x 1) = 0.08 / 0.88, about 0.091.
-- B: A clean report lowers the probability of a flaw from 20% but does not reduce it to zero.
-- C: The instance is missed with probability 1 - 0.6 = 0.4.
-- D: A tool that cannot see a class of flaw returns the same clean report whether or not the flaw is present.
-- E: Both instances must be missed, giving 0.4 x 0.4 = 0.16.
+- A: Restoring from a backup is the observation that matches the goal.
+- B: Each line is a report from the same job and says nothing about whether a restore works.
+- C: A proxy is a measurable stand-in for the quantity that matters.
+- D: Proxies can come apart from the goal they represent.
+- E: A check covers only the cases it actually exercised.
 
-**Source:** What I mean by skepticism
+**Source:** Proxy versus goal, restore test
 
-## MA-ch01.20
+## MA-ch01.17
 
-A team's test suite passes on its code. To learn what a pass means, they inject 50 small deliberate faults into the code, one at a time, each confirmed to change the program's behavior on some input that can occur, and rerun the suite for each. The suite fails (detects the fault) for 31 of the 50. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer says her patch fixes a crash when a customer's name contains an apostrophe. Her test exports a record for "Olivia Smith" and passes after the patch. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Injecting known faults is a way to measure whether a checking method can detect faults at all.
-- [ ] B. The pass on the unmodified code shows that the code contains no faults.
-- [ ] C. The suite detected 62% of the injected faults.
-- [ ] D. The 19 undetected faults point to behavior that the suite does not check.
-- [ ] E. A detection rate of 62% on injected faults means that 62% of real defects would be caught.
-
-**Key:** A=T B=F C=T D=T E=F
-
-**Why:**
-
-- A: Seeding faults of known type lets one count how many the checker catches, which a clean run cannot reveal.
-- B: A suite passes whenever the faults present are ones it does not test for.
-- C: 31 / 50 = 0.62.
-- D: A fault that changes behavior without failing any test marks behavior the tests do not examine.
-- E: Real defects may differ in kind from the injected ones, so the rate transfers only roughly.
-
-**Source:** What I mean by skepticism
-
-## MA-ch01.21
-
-Consider the general relationship between the effort needed to produce an answer and the effort needed to check it. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For some problems, such as factoring a large integer, checking a proposed answer by multiplication is much cheaper than finding the factors by any known classical method.
-- [ ] B. Because a language model produces an output in milliseconds, checking that output must take longer than producing it.
-- [ ] C. For a claim such as "this long summary faithfully reflects the source record," a short mechanical certificate that settles correctness generally exists.
-- [ ] D. How costly it is to verify an AI output depends on whether a cheap check, such as a test, a lookup or an independent ground truth, is available for that kind of output.
-- [ ] E. If a workflow budgets no effort for checking, unchecked outputs accumulate and, absent other signals, look like successes.
+- [ ] A. An input at the boundary of normal variation, such as a name with an apostrophe, is an edge case.
+- [ ] B. The "Olivia Smith" test is a regression test for the apostrophe bug.
+- [ ] C. A passing test suite proves that the bug is fixed.
+- [ ] D. A test that passes both before and after the patch does not discriminate between fixed and unfixed code.
+- [ ] E. A test that fails on the unpatched code and passes on the patched code is a discriminating test.
 
 **Key:** A=T B=F C=F D=T E=T
 
 **Why:**
 
-- A: Verifying a factorization takes one multiplication, while no efficient classical method for finding factors is known.
-- B: How fast something is produced does not determine how hard it is to check; some outputs are cheap to verify.
-- C: Faithfulness to a long record usually needs a knowledgeable reader, not a quick mechanical test.
-- D: The cost of checking is a property of the task and of what reference is available, so it varies from one output type to another.
-- E: An output that nobody examined has no visible defects, so it passes by default.
+- A: Edge cases are where defects tend to hide.
+- B: It does not exercise the failing condition, so it cannot catch a return of the bug.
+- C: A pass shows only that the tested inputs behave correctly.
+- D: A useful test is one whose result differs between the two states.
+- E: Fail-before, pass-after shows the test responds to the fault.
 
-**Source:** The solve-verify asymmetry
+**Source:** Discriminating test, regression test, edge case
 
-## MA-ch01.22
+## MA-ch01.18
 
-A model drafts 2,000 contract summaries a day at negligible cost. A lawyer needs 10 minutes to check one summary against its contract. Suppose 2% of summaries contain a material error, errors occur independently across summaries, and a lawyer who checks a summary always spots a material error in it. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A safety evaluation runs a chatbot on 100 prompts drawn at random from expected traffic and records 0 harmful responses. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A random sample of 150 summaries has at least a 95% chance of containing at least one erroneous summary.
-- [ ] B. Checking a random 5% sample would take about 33 lawyer-hours per day.
-- [ ] C. Checking every summary would take about 333 lawyer-hours per day.
-- [ ] D. A random sample of 100 summaries has at least a 95% chance of containing at least one erroneous summary.
-- [ ] E. A random sample of 150 summaries in which no error is found proves, with certainty, that the error rate is below 2%.
+- [ ] A. The observed rate of zero in the sample is the population parameter.
+- [ ] B. Random sampling from expected traffic lets the result describe adversarial traffic.
+- [ ] C. Zero events in 100 trials gives an upper confidence bound on the harmful-response rate that is above zero.
+- [ ] D. A confidence interval around an observed rate of zero is a single point at zero.
+- [ ] E. Zero observed harmful responses means the true rate is zero.
 
-**Key:** A=T B=F C=T D=F E=F
-
-**Why:**
-
-- A: 1 - 0.98^150 is about 0.952, just above 95%.
-- B: 5% of 2,000 is 100 summaries, which is 1,000 minutes, about 17 hours.
-- C: 2,000 x 10 minutes = 20,000 minutes, which is about 333 hours.
-- D: The chance of at least one error is 1 - 0.98^100, about 0.87, below 95%.
-- E: A clean sample of 150 is evidence against a high rate but cannot rule out a 2% rate with certainty, since a 2% rate would give no errors in 150 about 5% of the time (0.98^150 is about 0.048).
-
-**Source:** The solve-verify asymmetry
-
-## MA-ch01.23
-
-A support team rewards agents, and the AI assistant that drafts their replies, for average handle time. After six months, average handle time has fallen from 11 minutes to 7, while the share of customers who contact support again within a week about the same issue has risen from 14% to 26%. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The pattern illustrates Goodhart's law: when a measure becomes a target, it tends to stop being a good measure.
-- [ ] B. Because handle time and resolution moved together before the incentive was introduced, they must still move together now.
-- [ ] C. The fall in handle time is itself good evidence that more customers are getting their problems solved, since each call is resolved faster.
-- [ ] D. The repeat-contact rate is a more direct indicator of the outcome the team cares about than handle time is.
-- [ ] E. Handle time was adopted as a stand-in for "customers get their problem solved," and once the stand-in is rewarded the relationship between the two can break.
-
-**Key:** A=T B=F C=F D=T E=T
+**Key:** A=F B=F C=T D=F E=F
 
 **Why:**
 
-- A: Once the measure is rewarded, behavior changes in ways that separate it from what it was meant to indicate.
-- B: A past correlation is not a guarantee, especially when the incentive itself changes behavior.
-- C: Faster closure can come from ending conversations early, which would also raise repeat contacts, as the data show.
-- D: A returning customer with the same issue is closer to an unresolved problem than a short call is to a solved one.
-- E: Optimizing a proxy puts pressure on the parts of it that are unrelated to the underlying aim.
+- A: A sample statistic estimates the population parameter and can differ from it.
+- B: A random sample describes the traffic it was drawn from.
+- C: A small sample cannot rule out a modest rate; the rule of three gives roughly 3 divided by the number of trials.
+- D: The interval has an upper end above zero when the sample is finite.
+- E: The observed frequency is an estimate and has uncertainty.
 
-**Source:** What you measure and what you care about
+**Source:** Zero events, confidence bound, statistic versus parameter
 
-## MA-ch01.24
+## MA-ch01.19
 
-Two teams report models that score well on their validation metrics but fail the goal the metric was meant to serve. Team 1 trained a model to predict each patient's past healthcare spending as a stand-in for medical need. Team 2 built a demand forecaster whose error was low for two years; a new competitor then changed customers' buying habits, and its error has been rising since. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A static-analysis tool finds each instance of a vulnerability class with probability 0.6 and raises no false alarms. It reports nothing for a module. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Team 1's problem would disappear if the model were retrained more often on newer data with the same stand-in label, because the newer data reflect current patients.
-- [ ] B. In Team 2, the metric tracked the goal when it was validated, so a one-time review at launch would have found nothing wrong with the measure.
-- [ ] C. In Team 1, the metric and the goal were mismatched from the start, and comparing the stand-in with direct measures of need before deployment could have revealed it.
-- [ ] D. Team 2's problem can be avoided by validating more thoroughly on the original historical data before launch, using more folds and more years.
-- [ ] E. A strong validation result at launch is enough to show that the metric will still track the goal a year later, provided the model is unchanged.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: More recent data with the same flawed label reproduces the same gap between label and goal.
-- B: A relationship that held at launch and later changed cannot be detected by examining launch-time data.
-- C: A label that never tracked the goal is a design-time flaw that a direct comparison with the goal can expose.
-- D: The failure arose from a change in the world after launch, which the original data cannot contain.
-- E: A measure's link to the goal can erode as conditions or behavior change, so it has to be checked again.
-
-**Source:** What you measure and what you care about
-
-## MA-ch01.25
-
-A delivery-time predictor was within its stated margin on 98% of 50,000 orders during a year of normal operation. The company then opens a new region with a different road network, and the model's inputs now come from that region. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. No number of past correct predictions logically guarantees that the next prediction will be right.
-- [ ] B. Comparing the input distribution in the new region with the training data can flag a shift, but only comparing predictions with realized delivery times shows whether accuracy fell.
-- [ ] C. The year of correct predictions is evidence about future accuracy to the extent that future cases resemble the past ones.
-- [ ] D. The model's own output confidence will necessarily fall when it meets inputs from the new region, signaling that its predictions are less reliable.
-- [ ] E. Accuracy is a property of a model together with the cases it is applied to, not of the model alone.
-
-**Key:** A=T B=T C=T D=F E=T
-
-**Why:**
-
-- A: Induction from past cases is probabilistic support, never a guarantee.
-- B: A changed input distribution is a warning sign; whether outputs have become wrong is settled by comparing predictions with outcomes.
-- C: Inductive support depends on the future being like the sample from which the track record came.
-- D: A model has no built-in mechanism to notice that its inputs have moved, and can stay confident on unfamiliar data.
-- E: The same model can be highly accurate on one population and poor on another.
-
-**Source:** What I mean by skepticism
-
-## MA-ch01.26
-
-A pneumonia classifier is trained and tested on a pooled set of chest X-rays from two hospitals. Hospital A contributed 1,000 images, of which 800 show pneumonia; hospital B contributed 1,000 images, of which 100 show pneumonia. Each image carries a scanner tag identifying its hospital, and the tag is visible to the model. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An accuracy of 85% on the pooled set shows that the model is reading features of the lungs and not just the scanner tag.
-- [ ] B. Testing on a third hospital whose scanners and patients were absent from training is a stronger check for reliance on the tag than the pooled held-out set.
-- [ ] C. Predicting "pneumonia" for every image from hospital A and "no pneumonia" for every image from hospital B would score 85% accuracy on this pooled set.
-- [ ] D. Within hospital A alone, a rule that predicts pneumonia for every image would be correct on only 20% of images, since it ignores everything about the patients.
-- [ ] E. Randomly splitting the pooled images into training and test sets removes the hospital confound from the evaluation.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: A shortcut that uses the scanner tag, which correlates with disease prevalence, produces the same score without any reading of the lungs.
-- B: A new site breaks the correlation between tag and disease that the model may have exploited.
-- C: The rule is right on 800 of 1,000 from A and 900 of 1,000 from B, so 1,700 of 2,000, which is 85%.
-- D: Within A the rule predicts pneumonia for all images, and 800 of 1,000 do show pneumonia, so it is right on 80%.
-- E: Both halves of a random split share the same tag-to-prevalence relationship, so the confound remains in the test set.
-
-**Source:** The slice
-
-## MA-ch01.27
-
-A company's release pipeline lets an AI reviewer approve routine configuration changes proposed by an AI agent. The approval record reads "Approved by ReviewBot." One of the approved changes causes an outage. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A person who approves several hundred AI-proposed changes a day, a few seconds each, is exercising meaningful review of each change.
-- [ ] B. A record of who approved what, and when, supports later review of decisions even though it does not prevent errors.
-- [ ] C. Responsibility for the decision shifts to the AI reviewer because it performed the review.
-- [ ] D. An approval attributed only to a software component leaves no identifiable person who accepted the risk and can explain the decision.
-- [ ] E. Naming a human approver adds oversight when that person can see what will change and has the practical ability to stop the change.
-
-**Key:** A=F B=T C=F D=T E=T
-
-**Why:**
-
-- A: At that volume and speed the approver cannot examine each change, so the approval is nominal.
-- B: Audit trails make it possible to reconstruct what happened and to learn from it.
-- C: A software component cannot be held answerable, so responsibility stays with the people who deployed and relied on it.
-- D: Accountability needs someone who can answer for the decision and who had the authority to make it.
-- E: An approver who cannot see the effect or cannot say no is not providing a check.
-
-**Source:** The Five Supervisory Capacities
-
-## MA-ch01.28
-
-Reviewers must approve or reject each of 5,000 AI recommendations before it takes effect. They approve 4,850 (97%) and reject 150, spending a median of 4 seconds per item. An independent audit of all 5,000 recommendations finds that 400 (8%) were wrong. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Requiring a human click on every item guarantees that each recommendation received independent verification.
-- [ ] B. Had the reviewers rejected 400 recommendations (8%), they would have caught every wrong one, since the rejection count would match the error count.
-- [ ] C. At least 250 of the 400 wrong recommendations were approved.
-- [ ] D. A high approval rate combined with very short review times is consistent with approvals that do not reflect examination, though the two facts do not prove it.
-- [ ] E. The 97% approval rate shows that 97% of the recommendations were correct, since reviewers approve only what they have judged sound.
-
-**Key:** A=F B=F C=T D=T E=F
-
-**Why:**
-
-- A: A click records a decision; it does not show that anything was independently checked.
-- B: Rejecting the right number of items says nothing about whether the rejected ones were the wrong ones.
-- C: Only 150 items were rejected in total; even if all were correct catches, 400 - 150 = 250 wrong items passed.
-- D: Over-reliance on automated suggestions is a documented tendency, and speed plus agreement is a pattern it produces, though other explanations exist.
-- E: Reviewers approving an item is not evidence that it is correct, as the audit shows.
-
-**Source:** The Five Supervisory Capacities
-
-## MA-ch01.29
-
-A test report reads: "Tested 40 of 40 sample invoices: all processed correctly. Not tested: handwritten scans, invoices in languages other than English, behavior under production load." Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Because every sampled invoice passed, the report may state that the failure rate on all invoice types is zero.
-- [ ] B. The 40-of-40 result supports claims about invoices like those sampled and does not extend to the untested categories.
-- [ ] C. Since the tool has not failed on handwritten scans, they can be recorded as passing.
-- [ ] D. Listing what was not tested is part of an honest account, since it marks the limits of what the passing result supports.
-- [ ] E. A record that allows "unknown" as a status, separate from "pass" and "fail", preserves information that a two-state record would lose.
-
-**Key:** A=F B=T C=F D=T E=T
-
-**Why:**
-
-- A: Zero failures in a finite sample of one kind of input does not establish a zero rate, still less for other kinds.
-- B: A sample supports conclusions about the population it was drawn from, not about different kinds of input.
-- C: A tool cannot fail on inputs it was never run on, so no failure there is not evidence of success.
-- D: Readers rely on a report to decide what to trust, and a stated scope lets them judge whether it applies to their case.
-- E: "Not examined" and "examined and fine" call for different actions, and merging them hides which is which.
-
-**Source:** Skepticism as a team practice
-
-## MA-ch01.30
-
-A vendor reports that its fine-tuned model reached 91% accuracy on a benchmark test set. Behind that number are eight training runs that differ only in random seed, with test accuracies of 91, 84, 85, 86, 85, 83, 87 and 84 percent. The vendor reported the best run, chosen by looking at test accuracy. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Choosing the best run by its test score means the number was selected using the test set, which biases it upward as an estimate for new data.
-- [ ] B. The reported 91% is a fair estimate of the accuracy a new training run with a different seed would reach.
-- [ ] C. The spread of accuracies across seeds is noise that a buyer can ignore, since the mean already summarizes the runs.
-- [ ] D. The mean accuracy of the eight runs is about 85.6%.
-- [ ] E. Reporting the best seed is honest as long as the 91% figure was actually observed on the benchmark test set.
+- [ ] A. Failing to report a real vulnerability is a false negative.
+- [ ] B. Precision is the share of real instances that the tool finds.
+- [ ] C. Raising no false alarms corresponds to a specificity of 0.
+- [ ] D. The 0.6 chance of finding a real instance is the tool's sensitivity, also called recall.
+- [ ] E. A silent report establishes that the module contains no instance.
 
 **Key:** A=T B=F C=F D=T E=F
 
 **Why:**
 
-- A: Selecting the maximum of several noisy estimates on the same data overstates what to expect on fresh data.
-- B: A typical new run would land near the mean of the runs, not at the maximum.
-- C: The spread, about 2.5 points in standard deviation, shows how much results depend on chance and is part of what the evidence says.
-- D: The eight values sum to 685, and 685 / 8 is about 85.6.
-- E: A figure can be literally observed and still misrepresent expected performance when the selection is not disclosed.
+- A: A false negative is a real case that the test misses.
+- B: Precision is the share of reported instances that are real; the share found is recall.
+- C: No false alarms corresponds to a specificity of 1.
+- D: Sensitivity is the share of real instances the tool detects.
+- E: With sensitivity below 1, a silent report leaves some chance that an instance is present.
 
-**Source:** Skepticism as a team practice
+**Source:** Sensitivity, specificity, false negative, precision
 
-## MA-ch01.31
+## MA-ch01.20
 
-A deployment team wants its skeptical checks to happen reliably rather than depend on whether an individual engineer remembers to be careful that day. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A team injects 50 small deliberate faults into its code, one at a time, and reruns its passing test suite for each. The suite detects 31 of the 50. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Adding a checklist item such as "are live inputs represented in the data the model was validated on?" turns a general worry into something that can be inspected.
-- [ ] B. Setting the failure condition and metric threshold in a monitoring alert before launch removes the need for someone to remember to ask the question later.
-- [ ] C. Once checks are written into the process, no one needs to understand what they are for, since the process will apply them correctly.
-- [ ] D. A check is more useful when a named person has the authority to hold a release if it fails.
-- [ ] E. Even with checks in the process, someone still has to review whether the checks continue to test the right thing as the system and its use change.
+- [ ] A. Injecting deliberate faults to see whether tests catch them is mutation testing.
+- [ ] B. A passing suite means less when its mutation score is low.
+- [ ] C. The share of injected faults detected is the suite's false positive rate.
+- [ ] D. The share of injected faults that the suite detects is called the mutation score.
+- [ ] E. A mutant that changes behavior on no possible input is an equivalent mutant, and it does not show a gap in the tests.
 
 **Key:** A=T B=T C=F D=T E=T
 
 **Why:**
 
-- A: A specific question with a yes or no answer can be assigned, answered and audited.
-- B: A pre-set alert applies the criterion automatically, whether or not anyone is thinking about it.
-- C: Checks applied without understanding go stale or are satisfied in form while missing their purpose.
-- D: A check that cannot stop or delay anything records a problem without anyone being able to act on it.
-- E: A check that was well aimed at launch can drift away from the real risk as conditions change.
+- A: Mutation testing measures the strength of a test suite.
+- B: A suite that misses many injected faults could also miss real ones.
+- C: It is the mutation score, also called the kill rate.
+- D: A higher score means the suite responds to more kinds of faults.
+- E: No test could detect it, since the program's behavior is unchanged.
 
-**Source:** Skepticism as a team practice
+**Source:** Mutation testing, mutation score
+
+## MA-ch01.21
+
+A discussion compares the effort needed to produce an answer with the effort needed to check it. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Solve-verify asymmetry names a gap between the effort to produce an answer and the effort to check it.
+- [ ] B. For open-ended text such as summaries, verifying is cheaper than generating.
+- [ ] C. Checking a proposed factorisation by multiplying is a case where verifying is cheaper than solving.
+- [ ] D. When the cost of generating falls toward zero, the cost of verifying falls with it.
+- [ ] E. The gap between solving and checking runs in one direction across task types.
+
+**Key:** A=T B=F C=T D=F E=F
+
+**Why:**
+
+- A: The gap can be large in either direction, depending on the task.
+- B: Checking a summary against its source can cost as much as writing it.
+- C: Some tasks are hard to solve and easy to check.
+- D: Cheap generation does not make checking cheaper.
+- E: The direction varies with the task.
+
+**Source:** Solve-verify asymmetry
+
+## MA-ch01.22
+
+A model drafts 2,000 contract summaries a day at negligible cost, and a lawyer needs 10 minutes to check one summary against its contract. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Outputs that were not checked are unverified, not verified-correct, even if no error was reported.
+- [ ] B. A random-sample audit catches each material error in the batch.
+- [ ] C. Auditing a random sample estimates the error rate of the batch without checking each item.
+- [ ] D. Directing more checking effort toward higher-risk items is risk-based sampling.
+- [ ] E. When generation is cheap and checking is expensive, verification becomes the bottleneck.
+
+**Key:** A=T B=F C=T D=T E=T
+
+**Why:**
+
+- A: Lack of a reported error is not evidence of correctness.
+- B: A sample finds only the errors that fall inside it.
+- C: Sampling trades coverage for cost while keeping an estimate of the rate.
+- D: Risk-based sampling spends scarce review effort where errors cost the most.
+- E: Throughput is limited by the slowest step, which here is checking.
+
+**Source:** Verification bottleneck, sampling, unverified
+
+## MA-ch01.23
+
+A support team rewards agents, and its AI drafting assistant, for average handle time. Handle time falls from 11 to 7 minutes while repeat contacts about the same issue rise from 14% to 26%. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reward hacking means an agent improves the true goal beyond what the metric asked.
+- [ ] B. Average handle time is a proxy for service quality.
+- [ ] C. The rise in repeat contacts is evidence that handle time measures resolution well.
+- [ ] D. A proxy validated once still tracks the goal after the incentives change.
+- [ ] E. When a measure becomes a target, it stops being a good measure; this is Goodhart's law.
+
+**Key:** A=F B=T C=F D=F E=T
+
+**Why:**
+
+- A: Reward hacking is scoring high on the specified metric without achieving the intended goal.
+- B: It stands in for quality without being quality.
+- C: Rising repeats show that handle time and resolution have come apart.
+- D: Incentives can change behavior and break a relationship that held before.
+- E: Optimising a proxy directly breaks its link to the goal.
+
+**Source:** Goodhart's law, proxy, reward hacking
+
+## MA-ch01.24
+
+Team 1 trains a model on past healthcare spending as a stand-in for medical need. Team 2's demand forecaster had low error for two years, until a new competitor changed customers' buying habits and the error began to rise. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Team 1 used a proxy label, and the proxy was not the target to begin with.
+- [ ] B. Concept drift is a change in the distribution of inputs while the relation of outcome to inputs stays fixed.
+- [ ] C. Team 2's rising error after the competitor appeared is concept drift, since the relation between inputs and outcome changed.
+- [ ] D. Label shift is a change in the proportion of outcome classes between training and use.
+- [ ] E. Retraining Team 1's model on newer data with the same proxy label closes the gap between label and need.
+
+**Key:** A=T B=F C=T D=T E=F
+
+**Why:**
+
+- A: A proxy label is a measured stand-in for the quantity that matters.
+- B: That description fits covariate shift.
+- C: Concept drift is a change in how inputs relate to the outcome.
+- D: It is also called prior probability shift.
+- E: The same flawed label reproduces the same gap.
+
+**Source:** Proxy label, concept drift, covariate shift, label shift
+
+## MA-ch01.25
+
+A delivery-time predictor was within its stated margin on 98% of 50,000 orders in a year of normal operation. The company opens a new region with a different road network. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. External validity is whether a result carries over to settings other than the one tested.
+- [ ] B. Covariate shift means that the relation of the outputs to the inputs changes.
+- [ ] C. Accuracy on held-out data from the same period is an in-distribution estimate.
+- [ ] D. Inputs from the new region differ from the earlier inputs, which is distribution shift, specifically covariate shift if the relation of outcome to inputs holds.
+- [ ] E. The 98% figure is an out-of-distribution estimate for the new region.
+
+**Key:** A=T B=F C=T D=T E=F
+
+**Why:**
+
+- A: The new region is a setting outside the tested one.
+- B: That describes concept drift; covariate shift changes the input distribution.
+- C: It describes performance on data like the data it was tested on.
+- D: Covariate shift changes the input distribution while the outcome relation stays the same.
+- E: It was measured on the old region and does not describe the new one.
+
+**Source:** Covariate shift, in-distribution versus out-of-distribution, external validity
+
+## MA-ch01.26
+
+A pneumonia classifier is trained and tested on pooled images from two hospitals with very different pneumonia rates, and each image carries a visible scanner tag that identifies its hospital. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The hospital is a confounder, since it is linked to both the tag and the pneumonia rate.
+- [ ] B. Pooling the data from two hospitals does not remove the confounding.
+- [ ] C. High accuracy on the pooled test set shows that the model generalises to a third hospital.
+- [ ] D. A spurious correlation is a link in the training data, here between tag and label, that does not reflect the disease.
+- [ ] E. A model that relies on the hospital tag as a cue instead of the lung image is shortcut learning.
+
+**Key:** A=T B=T C=F D=T E=T
+
+**Why:**
+
+- A: A confounder is related to both the cue and the outcome.
+- B: The hospital remains linked to both the tag and the label.
+- C: The pooled test set shares the same shortcut, so it does not show generalisation.
+- D: The association comes from how the data were pooled.
+- E: Shortcut learning means using an easy cue that happens to predict the label.
+
+**Source:** Spurious correlation, shortcut learning, confounder
+
+## MA-ch01.27
+
+A pipeline lets an AI reviewer approve routine configuration changes proposed by an AI agent, and the record reads "Approved by ReviewBot." One approved change causes an outage. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Responsibility transfers to the AI model because it performed the review.
+- [ ] B. Rubber-stamping is a meaningful review carried out at speed.
+- [ ] C. An approval attributed to a software component assigns accountability.
+- [ ] D. An audit trail records who decided what and when.
+- [ ] E. Accountability needs a person who accepted the risk, can explain the decision, and had the authority to make it.
+
+**Key:** A=F B=F C=F D=T E=T
+
+**Why:**
+
+- A: A software component cannot be held answerable, so responsibility stays with the people who deployed it.
+- B: Rubber-stamping is approval given without real examination.
+- C: Accountability needs an identifiable person who can answer for the decision.
+- D: An audit trail supports later review even though it does not prevent errors.
+- E: Without such a person nobody answers for the outcome.
+
+**Source:** Accountability, audit trail, rubber-stamping
+
+## MA-ch01.28
+
+Reviewers approve 4,850 of 5,000 AI recommendations, at a median of 4 seconds each. An independent audit finds that 400 of the 5,000 were wrong. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The approval rate measures how many of the recommendations were correct.
+- [ ] B. Automation bias is the tendency to over-rely on suggestions from an automated system.
+- [ ] C. A human-in-the-loop step is meaningful when the person has the time, the information and the authority to reject.
+- [ ] D. Rejecting 150 items when 400 were wrong means the reviewers' sensitivity to errors was below 100%.
+- [ ] E. Approvals given without examination are called rubber-stamping.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: The approval rate describes reviewers' decisions, which the audit shows can differ from correctness.
+- B: It can lead reviewers to approve without examining.
+- C: A reviewer lacking any of these cannot provide a real check.
+- D: At most 150 of the 400 wrong items could have been caught.
+- E: A very high approval rate with very short review times is consistent with it.
+
+**Source:** Automation bias, human-in-the-loop, sensitivity
+
+## MA-ch01.29
+
+A test report reads: "Tested 40 of 40 sample invoices: all processed correctly. Not tested: handwritten scans, invoices in languages other than English, behavior under production load." Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The scope of a claim is the set of conditions under which it was tested.
+- [ ] B. The 40 correct invoices support the claim that the system handles handwritten scans.
+- [ ] C. A sample of 40 clean invoices is representative of behavior under production load.
+- [ ] D. Absence of a failure in untested conditions counts as a pass.
+- [ ] E. Conditions that were not tested should be labelled unverified.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: The claim extends only as far as the conditions that were exercised.
+- B: Handwritten scans are outside the scope that was tested.
+- C: The sample differs in kind from the load conditions it is meant to stand for.
+- D: No test was run there, so there is no result either way.
+- E: Unverified means unknown, which differs from tested and passed.
+
+**Source:** Scope of a claim, unverified status
+
+## MA-ch01.30
+
+A vendor reports 91% accuracy for its model on a benchmark. Eight training runs that differ only in random seed scored between 83% and 91%, and the vendor reported the best run, picked by looking at test accuracy. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reporting the best of several runs, chosen using the test score, is cherry-picking.
+- [ ] B. Reporting the mean and spread across seeds, with selection done on a validation set, is p-hacking.
+- [ ] C. The spread of results across random seeds is called bias.
+- [ ] D. The best of eight runs is an upward-biased estimate of the expected accuracy of a fresh run, an effect called the winner's curse.
+- [ ] E. Choosing a run by test accuracy uses the test set for model selection, which is a form of leakage.
+
+**Key:** A=T B=F C=F D=T E=T
+
+**Why:**
+
+- A: The reported number is selected for being high.
+- B: That reporting separates selection from testing and shows the variability.
+- C: The spread across seeds is variance.
+- D: Selecting the maximum of noisy results overstates the typical result.
+- E: The test set no longer gives an unbiased estimate once it guides choices.
+
+**Source:** Cherry-picking, leakage, variance across seeds
+
+## MA-ch01.31
+
+A deployment team wants its skeptical checks to happen reliably instead of depending on whether one engineer remembers to be careful. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A checklist item phrased as a yes-or-no question makes a general worry something that can be inspected.
+- [ ] B. Setting a threshold in a monitoring alert before launch applies the criterion without relying on memory.
+- [ ] C. A named person with authority to hold a release gives a failed check consequences.
+- [ ] D. Once a check is written into the process, the check does not need review.
+- [ ] E. A check is a gate when its failure can halt or delay a release.
+
+**Key:** A=T B=T C=T D=F E=T
+
+**Why:**
+
+- A: A specific question can be assigned, answered and audited.
+- B: A pre-set alert runs whether or not anyone is thinking about it.
+- C: Authority to act is what makes the check effective.
+- D: Checks drift away from the real risk as the system and its use change.
+- E: A check that cannot stop anything only records a problem.
+
+**Source:** Checks as team practice, gate
+
+## MA-ch01.32
+
+A data scientist trains several variants, looks at validation results, and then writes a plausible explanation of why one variant won. A colleague writes a prediction and a decision rule before running the same comparison. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Comparing many variants on the validation set and picking the best leaves the validation estimate unbiased.
+- [ ] B. A decision rule fixed before the comparison keeps the analyst from choosing the criterion after seeing results.
+- [ ] C. An explanation written after seeing results is post hoc, since it can be fitted to whatever the data showed.
+- [ ] D. HARKing means forming the hypothesis before the results are known.
+- [ ] E. A prediction written before the run is weaker evidence because the data had not been seen.
+
+**Key:** A=F B=T C=T D=F E=F
+
+**Why:**
+
+- A: Repeated selection on the validation set makes its estimate optimistic, a form of overfitting to it.
+- B: The rule is set without knowledge of the outcome.
+- C: Post hoc accounts are easy to produce for any outcome.
+- D: HARKing is hypothesizing after the results are known.
+- E: A prediction that could have failed is stronger evidence when it succeeds.
+
+**Source:** Post hoc explanation, HARKing, decision rule
+
+## MA-ch01.33
+
+A credit-risk model has been accurate for two years, and the team is designing post-deployment monitoring. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Past accuracy is inductive evidence and does not guarantee future accuracy when conditions change.
+- [ ] B. Data drift monitoring compares the distribution of live inputs with the distribution of the training inputs.
+- [ ] C. Concept drift can be detected from the input distribution alone.
+- [ ] D. A drift alert tells the team the cause of a drop in performance.
+- [ ] E. Monitoring performance needs ground-truth outcomes, which often arrive late; this is label delay.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: Conditions that held in the past can stop holding, which is nonstationarity.
+- B: It flags changes in the inputs before outcomes are known.
+- C: Concept drift is a change in the relation of outcome to inputs, which inputs alone can miss.
+- D: An alert signals that something changed, not why.
+- E: Loan defaults appear long after the decision.
+
+**Source:** Data drift, concept drift, label delay, nonstationarity
+
+## MA-ch01.34
+
+People relabel a random sample of 50 answers from a model judge. In the sample the judge passed 45 answers and the humans passed 38; the judge failed 5 answers, of which 4 the humans also failed. The team wants terms for how well the judge matches the humans. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The share of judge-pass answers that humans also pass is the judge's recall.
+- [ ] B. A judge that passes answers humans fail is lenient, producing false passes.
+- [ ] C. Agreement between two raters corrected for chance agreement is measured by Cohen's kappa.
+- [ ] D. Raw percent agreement already adjusts for chance agreement.
+- [ ] E. The share of answers that humans fail and the judge also fails is the judge's sensitivity, or recall, for failures.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: That share is the precision of the judge's pass verdicts.
+- B: A false pass is a judge pass where the reference says fail.
+- C: Kappa discounts the agreement expected from chance.
+- D: Raw agreement ignores chance, which is why kappa is used.
+- E: Sensitivity for a target class is the share of true members of that class that are detected.
+
+**Source:** Judge agreement, recall, precision, Cohen's kappa
+
+## MA-ch01.35
+
+A vendor claims its meeting-summary assistant "saves managers time", and an evaluator turns this into a measurable test. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. "Saves time" is already an operational definition.
+- [ ] B. A control group is the group that receives the tool.
+- [ ] C. Operationalising a claim means choosing a measurable quantity that stands for it, such as minutes spent on meeting follow-up.
+- [ ] D. Counting how many managers say they like the tool measures time saved.
+- [ ] E. A baseline is the number reported after the tool has been introduced.
+
+**Key:** A=F B=F C=T D=F E=F
+
+**Why:**
+
+- A: It names no measurable quantity or unit.
+- B: A control group is the comparison group that does not receive the tool.
+- C: An operational definition makes a vague term measurable.
+- D: A satisfaction rating measures a different construct than minutes saved.
+- E: A baseline is a measurement taken before the change, or in a comparison group without it.
+
+**Source:** Operational definition, baseline, control group
+
+## MA-ch01.36
+
+An AI reviewer scans 400 pull requests for security flaws, reports none, and a manager concludes that the code base is secure. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Seeding known flaws and counting how many the reviewer flags estimates its sensitivity, or recall.
+- [ ] B. Reporting no findings establishes that the code is secure.
+- [ ] C. A reviewer with high specificity has high sensitivity as a result.
+- [ ] D. A true negative is a flaw that the reviewer missed.
+- [ ] E. The prevalence of flaws is a property of the reviewer.
+
+**Key:** A=T B=F C=F D=F E=F
+
+**Why:**
+
+- A: Seeded flaws give the denominator needed to measure detection.
+- B: No findings is consistent with a reviewer that misses flaws.
+- C: Specificity and sensitivity are separate properties.
+- D: A missed flaw is a false negative; a true negative is a clean item correctly passed.
+- E: Prevalence is a property of the code being reviewed.
+
+**Source:** Negative finding, sensitivity, false negative, prevalence
+
+## MA-ch01.37
+
+A company plans for an AI agent to prepare production price changes, with one Approve button for a person beside the agent's own summary of the change. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Approval by a person with no ability to reject the change is meaningful oversight.
+- [ ] B. A named approver whose identity is recorded makes the decision attributable to a person.
+- [ ] C. Segregation of duties means that the same agent proposes and approves a change.
+- [ ] D. Showing the agent's own summary alone has the approver review the agent's account instead of the change itself.
+- [ ] E. Showing the actual difference and its expected impact lets the approver judge the change on independent evidence.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: Oversight needs the practical ability to stop the action.
+- B: Attribution to a person is a precondition of accountability.
+- C: Segregation of duties means that different parties propose and approve.
+- D: The summary is a report, and the diff of the change is the observation.
+- E: Independent evidence is what makes the approval a check.
+
+**Source:** Approval design, segregation of duties, accountability
+
+## MA-ch01.38
+
+A reviewer picks words for three requests to an analyst: confirm the build matches its specification, confirm the system serves the real need, and look for a result that would refute the claim. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Falsification means collecting more cases that agree with the claim.
+- [ ] B. Verification asks whether the system was built to its specification.
+- [ ] C. Validation asks whether the system meets the real need it was built for.
+- [ ] D. Verification and validation are interchangeable words for this purpose.
+- [ ] E. A test designed to falsify looks for cases expected to agree with the claim.
+
+**Key:** A=F B=T C=T D=F E=F
+
+**Why:**
+
+- A: Falsification seeks an observation that would contradict the claim.
+- B: Verification compares the artifact with its specification.
+- C: A system can pass verification and still fail validation.
+- D: They answer different questions: built right versus right thing built.
+- E: A falsifying test targets cases where the claim could fail.
+
+**Source:** Verification, validation, falsification

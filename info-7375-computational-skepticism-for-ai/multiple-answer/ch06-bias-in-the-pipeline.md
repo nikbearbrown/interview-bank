@@ -2,660 +2,1276 @@
 
 ## MA-ch06.1
 
-A city wants to know what share of its residents support a transit levy. The true share is 54%: 40% of residents have a landline and 75% of them support the levy, while the other 60% have no landline and 40% of them support it. A survey firm draws a simple random sample of landline numbers only and reports the sample proportion. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A survey firm estimates citywide support for a measure by sampling landline numbers only, and residents without a landline support it less often than residents with one. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Adding a random sample of residents without landlines and weighting the two groups 40% and 60% would give an estimate centred on 54%.
-- [ ] B. The sample proportion has an expected value of 75%, so its bias is about +21 percentage points whatever the sample size.
-- [ ] C. Giving the landline respondents a weight so that they count as 40% of the total repairs the estimate, because the weighted sample then matches the population's landline share.
-- [ ] D. Raising the sample from 1,000 to 100,000 respondents cuts the standard error about tenfold (1.4 points to 0.14) but leaves the expected estimate at 75%.
-- [ ] E. With 100,000 respondents the estimate will very likely land within one point of the true 54%, because sampling error becomes tiny.
-
-**Key:** A=T B=T C=F D=T E=F
-
-**Why:**
-
-- A: The weights 0.4 x 75% + 0.6 x 40% give 54%, and this works only because both strata now have respondents.
-- B: Only landline households can be sampled, so the expected value is their 75% support, 21 points above the 54% truth, and that offset belongs to the procedure rather than to n.
-- C: With no non-landline respondents there is only one stratum to weight, so the weights cancel and the estimate stays at 75%.
-- D: Standard error scales with 1/sqrt(n), so a hundredfold larger sample shrinks it tenfold, while the systematic offset is untouched.
-- E: The estimate concentrates ever more tightly around 75%, not around 54%.
-
-**Source:** What "bias" actually means
-
-## MA-ch06.2
-
-A hospital builds a sepsis alert from 10,000 admissions. At triage 2,000 patients are classed unstable (30% develop sepsis) and 8,000 stable (5% develop sepsis), so overall prevalence is 10%. The training data keep only patients who had a lab panel in the first six hours, which happened for 90% of stable and 20% of unstable patients. The triage class is recorded for every patient. Within each triage class, whether a patient had a lab panel does not depend on whether that patient develops sepsis. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Weighting each retained patient by 1 divided by the probability of being retained given triage class recovers a prevalence of 10%.
-- [ ] B. The same weighting would still work if, instead, retention depended on an unrecorded clinician hunch that is related to sepsis.
-- [ ] C. Collecting ten times as many admissions under the same lab rule would bring the training prevalence close to 10%.
-- [ ] D. The 6.3% training prevalence is the right baseline for calibrating risk scores for all admitted patients.
-- [ ] E. Sepsis prevalence in the training data is about 6.3%, well below the true 10%.
-
-**Key:** A=T B=F C=F D=F E=T
-
-**Why:**
-
-- A: Weights of 1/0.9 and 1/0.2 restore each class to its population size, giving (400 + 600) / (8,000 + 2,000) = 10%.
-- B: Weighting needs a recorded variable that explains who was kept; an unrecorded hunch related to sepsis gives nothing to weight on, so retained patients would stay unrepresentative within each triage class.
-- C: The same retention rule yields the same skewed mix at any volume, so more data reproduces 6.3% with a smaller standard error.
-- D: Deployment sees all admissions, whose true prevalence is 10%, so a baseline taken from the filtered sample is miscalibrated for them.
-- E: The sample has 480 sepsis cases among 7,600 patients, which is 6.3%, because unstable patients are retained at a much lower rate.
-
-**Source:** Ten mechanisms, distinguished
-
-## MA-ch06.3
-
-A lender deletes the column "group" (a protected attribute) from its training table but keeps "neighbourhood". The table covers 1,000 applicants, half living in neighbourhood N1 and half in N2. In N1, 90% of applicants belong to group B; in N2, 10% do. A manager says the model "cannot treat the groups differently, because it never sees group". Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A feature that predicts group is, for that reason alone, being used unfairly, whatever else it tells the model about the outcome.
-- [ ] B. Dropping neighbourhood as well guarantees that no remaining column carries information about group, since the model has nothing left to infer it from.
-- [ ] C. Because the model never sees group, any difference between groups in its approval rates must reflect differences in applicants' true creditworthiness.
-- [ ] D. Guessing group from neighbourhood alone would be right for 90% of applicants, against 50% for a coin flip.
-- [ ] E. Auditing outcomes by group requires group labels in the audit data even though the model does not take them as input.
-
-**Key:** A=F B=F C=F D=T E=T
-
-**Why:**
-
-- A: A feature can predict group and also carry legitimate information about the outcome, so unfair use has to be shown by its effects rather than inferred from correlation.
-- B: Other columns such as employer, school, purchase history or name can also correlate with group, so removing one proxy does not remove the signal.
-- C: The model can recover much of group from neighbourhood, and the outcomes it learns from can carry group-linked patterns, so outcome differences need not reflect creditworthiness.
-- D: Of 1,000 applicants, 450 + 450 are classified correctly, so neighbourhood alone recovers most of the group signal.
-- E: Without recorded group membership there is no way to compute outcome rates by group, so deleting the field also removes the ability to detect disparities.
-
-**Source:** Leverage analysis — finding the high-leverage intervention point
-
-## MA-ch06.4
-
-A screening model advances 240 of 400 applicants from group A (60%) and 120 of 300 applicants from group B (40%). A reviewer divides the lower selection rate by the higher one and compares the result with 0.8, the benchmark in a common US employment-selection screening heuristic known as the four-fifths rule. A two-proportion z-test on these counts gives z of about 5.2. For reference, if group B had only 20 applicants with 8 advanced (also 40%), the same test would give z of about 1.8, below the 1.96 needed for significance at the 5% level. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A ratio below 0.8 proves that the model uses group membership in its decisions, since the benchmark exists to detect that.
-- [ ] B. A z of about 5.2 means chance variation in who happened to apply is an unlikely explanation for a gap this large.
-- [ ] C. The ratio of the selection rates is about 0.67, which falls below the 0.8 benchmark.
-- [ ] D. A ratio above 0.8 would show that the screening process is free of group-related disadvantage for every subgroup of applicants.
-- [ ] E. With 20 group B applicants and the same 40% rate, the ratio stays 0.67 but is much weaker evidence of a real gap.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: The ratio is descriptive; a gap can arise from differences between applicant pools, proxies or other causes, and says nothing by itself about whether group is used.
-- B: The two-sided p-value is on the order of 10^-7, so sampling noise alone rarely produces such a gap if the underlying rates were equal.
-- C: 40% divided by 60% is 0.667.
-- D: The benchmark is a screening heuristic on aggregate rates; a ratio above it can coexist with disadvantage hidden in subgroups.
-- E: Fewer applicants widen sampling variability, so the same ratio can fall within chance.
-
-**Source:** Ten mechanisms, distinguished
-
-## MA-ch06.5
-
-An audit finds that a loan model approves 62% of group X applicants and 48% of group Y applicants. The auditors want to learn which part of the pipeline produced the 14-point gap. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Matching applicants on every observed covariate removes the influence of unobserved differences between the groups.
-- [ ] B. Comparing approval rates among applicants with similar income and credit history shows whether the gap persists among comparable applicants.
-- [ ] C. Re-running the model with one input held constant and measuring the change in the gap shows how much of it depends on that input.
-- [ ] D. A statistically significant 14-point gap is enough on its own to identify which stage of the pipeline produced it.
-- [ ] E. If the gap disappears after conditioning on a variable such as job tenure, the decision process must have treated the groups equally.
+- [ ] A. Enlarging the sample shrinks the bias along with the standard error.
+- [ ] B. The gap is a coverage error, because part of the population is missing from the sampling frame.
+- [ ] C. The estimate is biased in the statistical sense: its expected value differs from the population value.
+- [ ] D. Reweighting the landline respondents to match the population's landline share repairs the estimate without sampling anyone else.
+- [ ] E. Sampling error is a systematic offset that does not shrink as the sample grows.
 
 **Key:** A=F B=T C=T D=F E=F
 
 **Why:**
 
-- A: Matching balances only what was measured, and unmeasured factors can still differ and drive the gap.
-- B: Stratifying on legitimate covariates is the standard first test of whether differences in qualifications account for a gap.
-- C: An ablation intervenes on one component and attributes the change in the output gap to it, which narrows the candidate causes.
-- D: Significance says the gap is unlikely to be noise; it does not say whether data, labels, features, model, cutoff or review produced it.
-- E: The conditioning variable may itself be shaped by group, for example through earlier unequal treatment, so the gap vanishing shows only that it runs through that variable.
+- A: A larger sample reduces random sampling error but leaves the systematic offset where it was.
+- B: Coverage error arises when the frame omits people the survey is meant to describe.
+- C: Estimator bias is the gap between an estimator's average over repeated samples and the true value.
+- D: Weighting adjusts the mix of people sampled, and a group with no respondents has nothing to weight up.
+- E: Sampling error is chance variation that shrinks with sample size, and a systematic offset is bias.
 
-**Source:** Pearl's Ladder — Rungs 1 and 2
+**Source:** Estimator bias versus sampling error
 
-## MA-ch06.6
+## MA-ch06.2
 
-A company advanced candidates from two groups into interviews for two roles. For role X, group A had 20 of 100 candidates advance and group B had 100 of 400. For role Y, group A had 240 of 400 advance and group B had 70 of 100. Overall, 260 of 500 group A candidates (52%) and 170 of 500 group B candidates (34%) advanced. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A model is trained on patients who had a lab panel in the first hours of admission. Patients who looked unstable were less likely to get the panel, so the retained patients do not represent all admissions. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The reversal arises because most group B candidates applied to the low-rate role while most group A candidates applied to the high-rate role.
-- [ ] B. Applying the same 50/50 role mix to both groups gives about 47.5% for group B and 40% for group A.
-- [ ] C. The overall rates are the correct basis for comparing the groups, since they include every candidate.
-- [ ] D. The pattern cannot occur with correct counts, because a group that leads in every role must also lead overall.
-- [ ] E. Group B has the higher advance rate in each role, yet group A has the higher rate overall.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: Group B has 400 of its 500 candidates in role X (a 25% rate) while group A has 400 of its 500 in role Y (60%), and the overall rate is a mix-weighted average.
-- B: Standardizing gives B = 0.5 x 25% + 0.5 x 70% = 47.5% and A = 0.5 x 20% + 0.5 x 60% = 40%.
-- C: Which comparison is appropriate depends on the causal question, and the overall figure mixes the groups' different role choices with the process's treatment of them.
-- D: A reversal is arithmetically routine when groups apply to roles in different proportions; here B leads 25% to 20% in role X and 70% to 60% in role Y.
-- E: Role X is 25% against 20%, role Y is 70% against 60%, and overall it is 34% against 52%.
-
-**Source:** How bias types compound
-
-## MA-ch06.7
-
-In hospital records, patients given a new drug recovered at a lower overall rate than untreated patients (66% against 76%), yet the drug group did better within each severity level: mild 90% against 85%, severe 60% against 40%. Of the 200 mild patients, 40 received the drug; of the 200 severe patients, 160 did. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Standardizing both groups to a 50/50 severity mix gives 75% recovery with the drug and 62.5% without.
-- [ ] B. Stratifying on blood pressure measured after dosing would remove part of the drug's effect if the drug works partly by lowering it.
-- [ ] C. Assigning the drug at random would break the link between severity and treatment, removing that distortion from the overall comparison.
-- [ ] D. Whenever a reversal like this appears, the stratified table is the correct one, whatever the causal relationships among the variables.
-- [ ] E. Severity influences both who receives the drug and who recovers, which makes it a confounder of the overall comparison.
-
-**Key:** A=T B=T C=T D=F E=T
-
-**Why:**
-
-- A: Drug: 0.5 x 90% + 0.5 x 60% = 75%; no drug: 0.5 x 85% + 0.5 x 40% = 62.5%.
-- B: Conditioning on a post-treatment mediator blocks a path along which the treatment effect travels.
-- C: Randomization makes treatment independent of severity and of other prior factors, measured or not, in expectation.
-- D: A variable that is a consequence of the treatment (a mediator) or a collider can distort a stratified comparison, so the right table depends on the causal structure.
-- E: Doctors gave the drug mostly to severe patients, who recover less often, so the drug group's overall rate is dragged down.
-
-**Source:** Pearl's Ladder — Rungs 1 and 2
-
-## MA-ch06.8
-
-A classifier is tested on 10,000 images: 9,500 from group A, on which accuracy is 95%, and 500 from group B, on which accuracy is 70%. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Pooled accuracy equals the simple average of the two group accuracies, 82.5%.
-- [ ] B. Group B's error rate is about three times group A's.
-- [ ] C. Pooled accuracy on the test set is 93.75%.
-- [ ] D. A pooled accuracy of 93.75% implies that every group's accuracy is at least 93.75%.
-- [ ] E. Pooled accuracy would still exceed 90% if the classifier were wrong on every group B image.
-
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: It is an average weighted by group size, so the large group dominates.
-- B: 30% against 5% is a factor of six.
-- C: (9,500 x 0.95 + 500 x 0.70) / 10,000 = 9,375 / 10,000.
-- D: A pooled figure is an average, so one group can sit well below it when another sits above it.
-- E: 9,025 correct out of 10,000 is 90.25%.
-
-**Source:** How bias types compound
-
-## MA-ch06.9
-
-On a test set, group A has 2,000 examples with 160 errors (8.0%) and group B has 40 examples with 6 errors (15.0%). A 95% Wilson interval for group B's error rate runs from about 7.1% to 29.1%, and a Fisher exact test of the difference between the two error rates gives p = 0.13. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Because 15% is higher than 8%, the model is worse on group B than on group A.
-- [ ] B. The non-significant test shows that the two groups have the same error rate.
-- [ ] C. Group B's interval includes group A's observed 8.0%, so these data do not rule out equal error rates.
-- [ ] D. Collecting 160 group B examples that also show a 15% error rate would leave the interval about as wide as it is now.
-- [ ] E. Merging group B into one pool with group A and reporting a single error rate of about 8.1% settles the uncertainty about group B.
-
-**Key:** A=F B=F C=T D=F E=F
-
-**Why:**
-
-- A: With only 40 examples the observed difference is compatible with chance, so the point estimate alone does not establish a higher error rate.
-- B: Failing to reject is not evidence of equality; with 40 examples the test has little power to detect even sizeable differences.
-- C: 8.0% lies between 7.1% and 29.1%.
-- D: Quadrupling n roughly halves the width of an interval for a proportion.
-- E: Pooling averages group B into a figure dominated by group A and hides exactly the subgroup in question.
-
-**Source:** How bias types compound
-
-## MA-ch06.10
-
-An auditor tests a model for an error-rate gap in each of 20 independent subgroups, using a 5% significance level for every test. Suppose the model truly performs identically in all 20 subgroups. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. If no subgroup is flagged, the model is shown to perform equally well in all of them.
-- [ ] B. The expected number of subgroups flagged by chance is 1.
-- [ ] C. A subgroup found by searching through many possible splits after seeing the data is weaker evidence of a real gap than one chosen in advance.
-- [ ] D. The probability that at least one subgroup is flagged by chance is 5%, since each test has a 5% false-flag rate.
-- [ ] E. The probability that at least one subgroup is flagged by chance is about 64%.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: A null result may reflect low power in small subgroups, which is not evidence of equality.
-- B: Twenty tests at a 5% rate give 20 x 0.05 = 1.
-- C: Post hoc searching multiplies the number of implicit tests and inflates false findings.
-- D: The 5% applies per test; across 20 independent tests the chance of at least one false flag is much larger.
-- E: One minus 0.95 raised to the 20th power is 0.64.
-
-**Source:** How bias types compound
-
-## MA-ch06.11
-
-A face-attribute classifier is tested on 2,000 images, with 500 images in each combination of gender (men, women) and skin tone (lighter, darker). The error counts out of 500 are: lighter-skinned men 5, darker-skinned men 105, lighter-skinned women 55, darker-skinned women 55. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An audit by gender alone would report an 11% error rate for men and 11% for women.
-- [ ] B. The error rate for darker-skinned men is 21%, which is 21 times the 1% rate for lighter-skinned men.
-- [ ] C. With 10 binary attributes there are about 100 intersectional subgroups to evaluate.
-- [ ] D. Because error rates are equal across men and across women, error rates must also be equal across the four combinations.
-- [ ] E. When an intersectional cell has too few examples to estimate error precisely, that cell should be dropped from the audit.
-
-**Key:** A=T B=T C=F D=F E=F
-
-**Why:**
-
-- A: Men have 110 errors in 1,000 images and women have 110 errors in 1,000 images.
-- B: 105/500 = 21% and 5/500 = 1%.
-- C: There are 2^10 = 1,024 combinations, and the number grows multiplicatively with each added attribute.
-- D: The marginal equality masks wide cell-level differences, from 1% to 21%.
-- E: Dropping it hides subgroups that may be most affected; the right response is to report the wide uncertainty or to collect more data.
-
-**Source:** How bias types compound
-
-## MA-ch06.12
-
-Two neighbourhoods, X and Y, each have 10,000 residents, and in each of them 10% commit an offence in a given year. Police patrol X heavily, so 60% of offences there lead to an arrest; in Y only 30% do. A team trains a model to predict "arrested in the next year" from past records. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Recorded arrest rates are 6% in X and 3% in Y even though offending rates are equal.
-- [ ] B. A model that is calibrated to the arrest label within each neighbourhood will, if next year's arrest rates match those above, give residents of X an average score about twice that of residents of Y.
-- [ ] C. Adding more years of arrest records produced by the same patrol pattern would shrink the gap between X and Y.
-- [ ] D. High accuracy at predicting arrests shows that the model identifies offenders equally well in both neighbourhoods.
-- [ ] E. Using victim-reported offences as the outcome, which depends less on patrol patterns, could reduce the distortion but has its own reporting biases.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: 10% x 60% = 6% and 10% x 30% = 3%.
-- B: A model calibrated within a neighbourhood has an average score equal to that neighbourhood's arrest rate, 6% in X against 3% in Y, a ratio of two.
-- C: More records from the same process estimate the same distorted rates more precisely; the offset remains.
-- D: Accuracy is measured against the arrest label, and that label's relationship to offending differs by neighbourhood.
-- E: Changing the label to a measure less tied to enforcement intensity reduces dependence on patrol patterns.
-
-**Source:** The dataset as epistemic artifact
-
-## MA-ch06.13
-
-A hospital program enrols patients whose predicted annual cost is at least 7 units, as a stand-in for health need. Need is spread evenly across levels 1 to 10 in two groups of equal size. Group A faces no access barriers, so cost equals need; group B faces barriers, so cost is 0.7 times need. The model predicts cost perfectly for everyone. "High need" means level 7 or above. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. All of group A's high-need patients are enrolled, compared with a quarter of group B's.
-- [ ] B. The disparity arises because the model predicts cost less accurately for group B than for group A.
-- [ ] C. Deleting the group indicator from the model's features would equalize enrolment of high-need patients.
-- [ ] D. Replacing the label with a direct clinical measure of need would target the intended construct, though it may carry its own distortions.
-- [ ] E. Because cost is predicted accurately, it is a valid measure of health need for both groups.
-
-**Key:** A=T B=F C=F D=T E=F
-
-**Why:**
-
-- A: Group A levels 7 to 10 cost 7 to 10 and are all enrolled; in group B only level 10 reaches a cost of 7.
-- B: The model is assumed perfect; the problem is that cost measures need differently in the two groups.
-- C: Enrolment follows predicted cost, and cost itself understates group B's need, so removing the group column does not change what the label measures.
-- D: The mismatch is between the label and the construct, and a measure closer to the construct reduces it.
-- E: Predictive accuracy for a label says nothing about whether the label measures the construct of interest.
-
-**Source:** Three flavors of bias, mapped to the ten types
-
-## MA-ch06.14
-
-A lender approved 4,000 of 10,000 applicants under its scoring policy; 200 of the approved applicants defaulted (5.0%). As an experiment, it approved a random sample of 200 of the 6,000 denied applicants, and 24 of them defaulted (12.0%, with a margin of about 4.5 points either side). Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Under the original policy the default outcome of a denied applicant is never observed, because no loan is issued.
-- [ ] B. Training a new model on approved applicants only and testing it on held-out approved applicants gives an unbiased estimate of its performance on the full pool.
-- [ ] C. The 5.0% default rate among approved applicants is the default rate for the whole applicant pool.
-- [ ] D. Because the denied applicants were chosen by the old policy, a random sample of them cannot be representative of the denied group.
-- [ ] E. Combining the approved group's rate with the experimental estimate for denied applicants suggests that about 9.2% of the whole pool would default.
+- [ ] A. A baseline risk learned from the retained patients is miscalibrated for the full admitted population.
+- [ ] B. Weighting retained patients by the inverse of their retention probability corrects the skew even when retention depends on an unrecorded variable.
+- [ ] C. Collecting more records under the same retention rule removes the bias.
+- [ ] D. This is measurement bias, because the lab values are recorded with error.
+- [ ] E. This is selection bias, because inclusion in the data depends on a variable related to the outcome.
 
 **Key:** A=T B=F C=F D=F E=T
 
 **Why:**
 
-- A: Outcomes exist only for those who receive the favourable decision, so labels are selectively observed.
-- B: Training and test data both come from the selected subgroup, so the estimate says nothing reliable about the denied region.
-- C: The approved group was selected by the score and contains the applicants least likely to default.
-- D: A random draw from the denied group represents that group, whatever process put its members there.
-- E: (200 + 0.12 x 6,000) / 10,000 = 9.2%.
+- A: Calibration means predicted risks match observed frequencies, and a skewed sample breaks that match.
+- B: Weighting needs a recorded variable that explains who was kept.
+- C: More data from the same filter reproduces the same skewed mix with less noise.
+- D: Measurement bias concerns how values are recorded, whereas here the issue is who is recorded.
+- E: Selection bias arises when the rule that decides who enters the data is tied to what is being predicted.
 
-**Source:** Ten mechanisms, distinguished
+**Source:** Selection bias and inverse probability weighting
 
-## MA-ch06.15
+## MA-ch06.3
 
-Two districts have the same true incident rate. Each cycle, 1,000 patrol hours are divided between them, and the number of incidents recorded in a district is proportional to the patrol hours it receives. The first cycle splits hours 600 and 400 between districts 1 and 2. In every later cycle hours are split in proportion to the incidents recorded in the previous cycle. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A lender deletes the protected attribute from its training table but keeps neighbourhood, which closely tracks group membership. A manager says the model treats groups equally because it never sees group. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Each district's recorded count is an unbiased estimate of its true incident rate, because the counts come from real events.
-- [ ] B. Setting aside some patrol hours for randomly chosen districts, or measuring incidents independently of patrol presence, would let the data reveal the equal rates.
-- [ ] C. If all hours instead go to the district with more recorded incidents each cycle, district 2 records zero incidents from the second cycle on.
-- [ ] D. Under this rule the split stays at 600 and 400 in every cycle, although the true rates are equal.
-- [ ] E. Given enough cycles, the recorded counts will converge to equal as the system accumulates more and more data.
+- [ ] A. Deleting the attribute from the records leaves the lender able to compute outcome rates by group.
+- [ ] B. Redundant encoding means group membership can be predicted from the remaining features.
+- [ ] C. Fairness through unawareness is the practice of withholding the protected attribute, and it guarantees equal outcomes across groups.
+- [ ] D. Neighbourhood acts as a proxy for the protected attribute.
+- [ ] E. A feature that correlates with group is, by itself, proof of disparate treatment.
 
-**Key:** A=F B=T C=T D=T E=F
-
-**Why:**
-
-- A: The counts depend on how many incidents are observed, which depends on patrol hours, so they favour the heavily patrolled district.
-- B: Random or independent measurement breaks the link between past records and where observation happens.
-- C: With no patrol hours no incidents are recorded there, and the data then appear to confirm that district 2 has none.
-- D: Recorded incidents are proportional to patrol hours, so allocating in proportion to records reproduces the same shares.
-- E: The records reflect where patrols went rather than where incidents occur, so the 60/40 split is a fixed point that never corrects.
-
-**Source:** Leverage analysis — finding the high-leverage intervention point
-
-## MA-ch06.16
-
-A training set has 1,000 examples: group A has 360 positive and 240 negative labels, and group B has 120 positive and 280 negative labels. A reweighing scheme gives each combination of group and label the weight P(group) x P(label) / P(group and label), where each P is the share of the training set. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Training on the reweighted data guarantees equal selection rates for the two groups on new data.
-- [ ] B. Group B's positive examples each count 1.6 times as much as an average example.
-- [ ] C. After weighting, the positive-label rate is 48% in both groups.
-- [ ] D. Reweighing addresses the association between group and label in the training sample, not whether each individual's label is accurate.
-- [ ] E. Computing the weights requires knowing each training example's group, even if the group is never given to the model as an input.
-
-**Key:** A=F B=T C=T D=T E=T
+**Key:** A=F B=T C=F D=T E=F
 
 **Why:**
 
-- A: Weights make group and label independent in the training sample; the learned model's predictions on new data can still differ by group.
-- B: P(B) x P(positive) / P(B and positive) = 0.4 x 0.48 / 0.12 = 1.6.
-- C: Group A gives 288 / (288 + 312) = 0.48 and group B gives 192 / (192 + 208) = 0.48.
-- D: Weights change how much each row counts, while the label on each row remains as recorded.
-- E: The weights depend on P(group), so group membership must be recorded for the training rows even when the model never uses it as a feature.
+- A: Without a recorded attribute, outcome rates by group cannot be computed.
+- B: When other columns carry the same information, dropping one column does not remove the signal.
+- C: Unawareness describes the withholding, but it does not guarantee equal outcomes.
+- D: A proxy is a feature that stands in for another variable because the two are correlated.
+- E: Correlation with group does not show improper use, since the feature may also carry legitimate information.
 
-**Source:** Ten mechanisms, distinguished
+**Source:** Proxy and fairness through unawareness
 
-## MA-ch06.17
+## MA-ch06.4
 
-Two groups of 1,000 applicants each receive integer scores from 1 to 5 from a model. Counts at scores 1 to 5 are 100, 200, 300, 250, 150 for group A and 300, 300, 200, 150, 50 for group B. Under a single cutoff, applicants scoring 4 or 5 are selected. A proposal would instead select scores 4 and 5 in group A and scores 3, 4 and 5 in group B. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A reviewer divides the lower group's selection rate by the higher group's selection rate, gets 0.67, and compares it with 0.8. A separate two-proportion test on the same counts gives a very small p-value. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. If group B's lower scores reflect biased labels, the proposal equalizes selection rates without making the scores a valid measure.
-- [ ] B. The proposal changes the scores the model assigns to each applicant, because the cutoffs are part of the scoring.
-- [ ] C. Under the proposal both groups have a 40% selection rate, yet a group B applicant scoring 3 is selected and a group A applicant scoring 3 is not.
-- [ ] D. Under the single cutoff, 40% of group A and 20% of group B are selected.
-- [ ] E. The proposal can be carried out without knowing an applicant's group at decision time, since the scores already encode it.
-
-**Key:** A=T B=F C=T D=T E=F
-
-**Why:**
-
-- A: Post-processing acts on outputs and leaves the learned score relationships, and any bias in them, in place.
-- B: Only the cutoff applied to the scores changes; the scores themselves are untouched.
-- C: Group B selects 200 + 150 + 50 = 400, and group A at score 3 falls below its cutoff.
-- D: Group A has 250 + 150 = 400 selected and group B has 150 + 50 = 200.
-- E: A different cutoff for each group requires knowing which group an applicant belongs to when deciding.
-
-**Source:** The dataset as epistemic artifact
-
-## MA-ch06.18
-
-A résumé-ranking model trained on a firm's past hiring decisions selects group B candidates less often than group A candidates with the same measured experience. The team considers reweighing the training data, adding a fairness penalty to the training loss, setting score cutoffs separately by group, and changing how human reviewers use the ranking. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Reweighing the training data guarantees equal selection rates in the final decisions, whatever happens after training.
-- [ ] B. If most of the disparity arises when reviewers override the model's rankings, changes to the training data will remove most of it.
-- [ ] C. A drop in agreement with the historical hiring decisions after mitigation shows that the mitigated model has become worse at identifying strong candidates.
-- [ ] D. Setting cutoffs by group leaves what the model learned from past decisions unchanged and changes only how scores are acted on.
-- [ ] E. A mitigation applied at one stage of the pipeline makes checks at the later stages unnecessary once it has been validated.
-
-**Key:** A=F B=F C=F D=T E=F
-
-**Why:**
-
-- A: It adjusts the training sample only; cutoffs, reviewers and the learner's behaviour can still produce unequal rates.
-- B: A disparity created at review lies outside the reach of the training data.
-- C: The historical decisions are the thing under suspicion, so lower agreement with them can reflect less copying of past skew rather than lower quality.
-- D: Post-processing modifies decisions, not the learned scores.
-- E: Disparity can enter or return at later stages such as cutoffs and review, so each stage needs its own check.
-
-**Source:** Leverage analysis — finding the high-leverage intervention point
-
-## MA-ch06.19
-
-A bank buys a credit-risk model from a vendor. The vendor trained it on records bought from a data broker, with "repaid" and "defaulted" labels taken from another lender's earlier approval history. The bank chooses the approval cutoff and sends borderline cases to loan officers. An audit finds a large approval gap between two groups. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Buying the model from a vendor moves responsibility for the outcomes of the bank's lending decisions to the vendor.
-- [ ] B. Tracing the largest source of disparity to its step and naming who controls it lets the fix be directed to someone able to make it.
-- [ ] C. The vendor should be held accountable for documenting what the training data contain and what the model has and has not been validated for.
-- [ ] D. The bank is accountable for its choice of cutoff and for how loan officers use the model's output, because it controls those steps.
-- [ ] E. Assigning accountability for a disparity requires identifying an individual engineer who intended harm or acted negligently.
-
-**Key:** A=F B=T C=T D=T E=F
-
-**Why:**
-
-- A: The bank makes the lending decisions and cannot contract away accountability for them.
-- B: Remedies fail when aimed at a party with no control over the step where the disparity is created.
-- C: A deployer cannot judge fitness for use without this information from the party that built the model.
-- D: Accountability tracks control: the party that can change a decision point owns the consequences of how it is set.
-- E: Accountability can be assigned to roles and organizations that control a step in the pipeline, with no finding of intent.
-
-**Source:** A limit case: when the leverage is upstream of your pipeline — and who owns it then
-
-## MA-ch06.20
-
-A datasheet for a dataset records how and why data were collected, who is and is not represented, how labels were produced, and recommended uses. A model card states a model's intended uses, its evaluation data, and its performance broken down by relevant subgroups. An external audit is an evaluation by a party independent of the developer. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A datasheet's account of how labels were produced lets a team judge whether they measure what the model is meant to predict.
-- [ ] B. Publishing a model card that lists the model's metrics shows that the model is fair to the groups it will affect.
-- [ ] C. A model card reporting subgroup performance with confidence intervals shows where the model is weaker and how well that is known.
-- [ ] D. An external audit is more informative when the auditor can access the model and data and reproduce the reported numbers.
-- [ ] E. Stating which uses are out of scope lets reviewers judge whether a deployment went beyond what the developer evaluated.
+- [ ] A. The four-fifths rule is a heuristic applied to aggregate selection rates, not a significance test.
+- [ ] B. Subtracting the two selection rates gives the disparate impact ratio.
+- [ ] C. The ratio of selection rates is called the disparate impact ratio, also known as the adverse impact ratio.
+- [ ] D. Statistical significance says a gap is unlikely to be sampling noise, which is a different question from whether it is large enough to matter.
+- [ ] E. A ratio of selection rates close to 1 indicates similar selection rates in the two groups.
 
 **Key:** A=T B=F C=T D=T E=T
 
 **Why:**
 
-- A: Label provenance is key evidence on whether the target is a valid measure.
-- B: A model card is a disclosure; it can report poor subgroup performance and does not by itself make the model fair or its contents correct.
-- C: Disaggregated metrics and their uncertainty make weaknesses and data limits inspectable.
-- D: Independence plus reproducibility lets an audit check claims instead of accepting them.
-- E: An explicit scope statement turns a vague expectation into something a deployment can be checked against.
+- A: It is a rule of thumb for flagging adverse impact and carries no test statistic.
+- B: A subtraction gives a difference in rates, and the impact ratio is a quotient.
+- C: It is the standard name for the lower selection rate divided by the higher.
+- D: Statistical significance and practical significance answer different questions.
+- E: A disparate impact ratio of 1 means equal selection rates, and lower values mean a larger relative gap.
 
-**Source:** A limit case: when the leverage is upstream of your pipeline — and who owns it then
+**Source:** Disparate impact ratio and significance
 
-## MA-ch06.21
+## MA-ch06.5
 
-A model is evaluated on a benchmark that is 90% group A and 10% group B, with accuracy of 95% on group A and 75% on group B. It will be deployed on a population that is 50% group A and 50% group B. Assume each group's accuracy in deployment equals its benchmark accuracy. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An audit finds a large approval gap between two groups and wants to locate the pipeline stage that produced it. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Accuracy on the benchmark is 93%.
-- [ ] B. Expected accuracy in deployment is also 93%, because each group's accuracy is unchanged.
-- [ ] C. Weighting each group's benchmark accuracy by its deployment share predicts about 85% accuracy without any new data.
-- [ ] D. Doubling the benchmark's size while keeping its 90/10 composition would reveal the mismatch with deployment.
-- [ ] E. A reported accuracy figure is a property of the model alone and does not depend on who is tested.
+- [ ] A. A statistically significant gap names the pipeline stage that produced it.
+- [ ] B. Stratifying on legitimate covariates compares applicants with similar qualifications.
+- [ ] C. An ablation reports the correlation between a component and the gap without changing the component.
+- [ ] D. If the gap disappears after conditioning on a variable, that variable is a legitimate explanation of the gap.
+- [ ] E. Matching balances the measured covariates but leaves unmeasured ones free to differ.
 
-**Key:** A=T B=F C=T D=F E=F
-
-**Why:**
-
-- A: 0.9 x 95% + 0.1 x 75% = 93%.
-- B: Overall accuracy depends on the mix of groups tested, and the mix changed.
-- C: 0.5 x 95% + 0.5 x 75% = 85%.
-- D: A larger sample of the same composition narrows noise but cannot show how the model does on a different mix.
-- E: It describes the model's performance on a particular population.
-
-**Source:** How bias types compound
-
-## MA-ch06.22
-
-Outcome y depends on a feature x differently in two groups. In group A, y = 2x. In group B, y = 2x + 6. Each group has 11 points, with x = 0, 1, ..., 10. A single least-squares line is fitted to all 22 points; it comes out as y = 2x + 3, with R-squared of about 0.82. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A misfit of this kind arises only when one group is much larger than the other.
-- [ ] B. Collecting many more points from the same two groups will move the pooled intercept to the correct value for both.
-- [ ] C. An R-squared of 0.82 shows that the pooled line fits each group well.
-- [ ] D. Because the mean residual over all 22 points is zero, residual diagnostics on the pooled data cannot reveal a group-specific misfit.
-- [ ] E. The pooled line overpredicts every group A case by 3 and underpredicts every group B case by 3.
-
-**Key:** A=F B=F C=F D=F E=T
+**Key:** A=F B=T C=F D=F E=T
 
 **Why:**
 
-- A: Here the groups are equal in size and the pooled line still misfits both.
-- B: More data from the same groups estimates the same compromise line more precisely; no single intercept fits both.
-- C: R-squared summarizes the pooled fit; every point here misses by 3, and the shared slope hides the group-specific offset.
-- D: Residuals split by group show a consistent -3 for group A and +3 for group B.
-- E: At any x the line gives 2x + 3, while group A's true value is 2x and group B's is 2x + 6.
+- A: Significance says the gap is not noise but not where it arose.
+- B: Stratification splits the data by a variable so groups are compared within levels.
+- C: An ablation intervenes on a component, and a correlation does not.
+- D: The conditioning variable may itself be shaped by group, so the gap running through it is not justified by that fact.
+- E: Matching can only equalise the variables that were recorded.
 
-**Source:** How bias types compound
+**Source:** Stratification, ablation, matching
 
-## MA-ch06.23
+## MA-ch06.6
 
-A screening device reads each person's true value plus Gaussian noise. True values are 6 for people who have a condition and 4 for people who do not; half of each group has the condition. A reading above 5 is classified as positive. The noise standard deviation is 1 for group A and 2 for group B. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A company advanced candidates for two roles. Group B has the higher advancement rate within each role, yet group A has the higher advancement rate overall, because the two groups apply to the roles in different proportions. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The gap shows that the classifier learned a group-specific decision rule from the training examples.
-- [ ] B. Applying the same cutoff to both groups is consistent with unequal error rates, so identical rules need not mean identical error burdens.
-- [ ] C. Accuracy is about 84% for group A and about 69% for group B, although the same rule classifies both.
-- [ ] D. Collecting more labelled training rows measured with the same device would be expected to remove the gap.
-- [ ] E. The false-negative rate is about 16% for group A and about 31% for group B.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: A single cutoff is applied to everyone; the difference comes from measurement noise.
-- B: The cutoff is the same but the noisier measurement makes errors more frequent in group B.
-- C: Accuracy is one minus the error rate, 1 - 0.159 and 1 - 0.309.
-- D: More rows from the same noisy instrument leave each reading just as noisy; improving the measurement or accounting for the noise is what helps.
-- E: A positive person is missed when the noise pushes the reading to 5 or below, which has probability 0.159 for sd 1 and 0.309 for sd 2.
-
-**Source:** Three flavors of bias, mapped to the ten types
-
-## MA-ch06.24
-
-A classifier has a true positive rate of 80% and a false positive rate of 20% in each of two groups. The share of truly positive people (the base rate) is 30% in group 1 and 50% in group 2. Positive predictive value (PPV) is the share of flagged people who are truly positive. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. PPV is about 63% in group 1 and 80% in group 2.
-- [ ] B. If both groups had the same 40% base rate, the same error rates would give both groups a PPV of about 73%.
-- [ ] C. For a classifier with the same true positive rate and the same nonzero false positive rate in two groups, PPV is higher in the group with the higher base rate.
-- [ ] D. The PPV gap shows that the classifier is being applied incorrectly in the group with the lower base rate.
-- [ ] E. Group 1's flagging rule could be changed so that its PPV rises to group 2's 80% while its true and false positive rates stay equal to group 2's.
-
-**Key:** A=T B=T C=T D=F E=F
-
-**Why:**
-
-- A: Group 1 gives 0.24 / (0.24 + 0.14) = 0.63 and group 2 gives 0.40 / (0.40 + 0.10) = 0.80.
-- B: 0.32 / (0.32 + 0.12) = 0.727.
-- C: PPV = p x TPR / (p x TPR + (1 - p) x FPR), which increases with the base rate p when TPR and FPR are fixed and positive.
-- D: The gap follows arithmetically from equal error rates and unequal base rates; no misapplication is needed.
-- E: With rates held at 80% and 20%, group 1's PPV is fixed at 63% by its 30% base rate, so reaching 80% requires different error rates.
-
-**Source:** The dataset as epistemic artifact
-
-## MA-ch06.25
-
-A model approves 30% of group A applicants and 18% of group B applicants, a 12-point gap. The same applicants are scored again with the postcode input replaced by a single constant value, and approval rates become 29% and 26%, a 3-point gap. Group membership is not an input to the model. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Because group membership is not an input, the remaining 3-point gap must come from the model using group directly.
-- [ ] B. Since the gap shrank, the original 12-point gap can be disregarded as an artifact of one feature and left out of the audit.
-- [ ] C. The result shows that postcode causes group differences in approval outcomes in the real world, which is why the gap closed.
-- [ ] D. Replacing postcode removed 9 of the 12 points, so most of the model's output disparity depends on that input.
-- [ ] E. The test intervenes on a model input rather than on applicants' lives, so it speaks to how the model uses information.
-
-**Key:** A=F B=F C=F D=T E=T
-
-**Why:**
-
-- A: Other inputs that correlate with group can carry the remaining gap.
-- B: The gap is a real property of the model's decisions, and a feature that contributes to it is part of what needs explaining.
-- C: The test intervenes on a model input; it shows how the model works and says nothing about why applicants in different groups differ.
-- D: Three quarters of the gap, (12 - 3) / 12, vanished when the input was neutralized.
-- E: It tests whether the output depends on one input, which is a statement about the model.
-
-**Source:** Pearl's Ladder — Rungs 1 and 2
-
-## MA-ch06.26
-
-Group A makes up 90% of the data and group B 10%. Three candidate models have error rates (group A, group B) of M1: 5%, 30%; M2: 6%, 20%; M3: 3%, 45%. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Switching from M3 to M2 would raise the average error by more than one percentage point.
-- [ ] B. Average error weights the two groups equally, whatever their share of the data.
-- [ ] C. An objective that minimizes average error is neutral between the groups, because it applies one formula to everyone.
-- [ ] D. Choosing the model with the lowest average error selects M3, which has the highest group B error rate of the three.
-- [ ] E. M2 has both the lowest average error and the lowest worst-group error of the three models.
-
-**Key:** A=F B=F C=F D=T E=F
-
-**Why:**
-
-- A: The increase is 0.2 points, from 7.2% to 7.4%.
-- B: It weights each group by its share of the data, 90% and 10%.
-- C: Errors on the larger group count nine times as much, so the objective favours performance there.
-- D: Average errors are 7.5% for M1, 7.4% for M2 and 7.2% for M3.
-- E: M2's worst-group error (20%) is the lowest, but its average (7.4%) is higher than M3's (7.2%).
-
-**Source:** Leverage analysis — finding the high-leverage intervention point
-
-## MA-ch06.27
-
-A model flags 20% of applicants in each of two groups for adverse action, and a human reviewer then upholds 50% of the flags in group A and 80% in group B. The final adverse-action rate is the share of all applicants whose flag is upheld. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The gap in upheld rates may partly reflect real differences between the flagged cases, which should be examined before judging reviewers.
-- [ ] B. The different upheld rates alone establish that reviewers are prejudiced against group B.
-- [ ] C. Final adverse-action rates are 10% for group A and 16% for group B.
-- [ ] D. Comparing the flag rate, upheld rate and final rate by group at each stage shows where the disparity arises.
-- [ ] E. Equal flag rates for the two groups guarantee equal final outcomes for the two groups.
-
-**Key:** A=T B=F C=T D=T E=F
-
-**Why:**
-
-- A: Without comparing like cases, rate differences cannot be attributed to reviewer behaviour.
-- B: The flagged cases may differ in true risk, so the rates call for investigation but do not establish motive.
-- C: 20% x 50% = 10% and 20% x 80% = 16%.
-- D: A stage-by-stage breakdown localizes the step at which rates diverge.
-- E: The review step can create or remove disparity after the model has produced equal flag rates.
-
-**Source:** Leverage analysis — finding the high-leverage intervention point
-
-## MA-ch06.28
-
-A text-generating model screens résumés and answers "shortlist" or "reject" for each. Auditors build 200 pairs of résumés that are identical except for a first name signalling group A or group B. Each résumé was submitted once with the model's sampling randomness switched on, so repeating a submission could give a different answer. Results: shortlisted in both résumés of the pair, 90; in neither, 68; only the group A name, 30; only the group B name, 12. Shortlisting rates are 60% for group A names and 51% for group B names. An exact sign test on the 30 against 12 discordant pairs gives p of about 0.008. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The test result shows that the model was trained on discriminatory hiring data and learned to copy it.
-- [ ] B. The 90 pairs shortlisted for both names and the 68 rejected for both play no part in the exact sign test.
-- [ ] C. Because each pair differs only in the name, differences in qualifications cannot explain the 30-to-12 split.
-- [ ] D. Run-to-run randomness in the model's answers makes the 30-to-12 split uninterpretable as evidence.
-- [ ] E. Because outputs vary between runs, repeating each pair several times would better estimate each name's shortlisting probability.
-
-**Key:** A=F B=T C=T D=F E=T
-
-**Why:**
-
-- A: The test shows that outputs depend on the name; the origin of that dependence in training data, tuning or prompt is a separate question.
-- B: The exact sign test uses only the pairs on which the two names were treated differently, the 30 and the 12, so the concordant pairs do not enter it (they would matter for other quantities, such as the size of the rate difference).
-- C: Matching by construction removes the qualification confounder within the tested résumés.
-- D: Randomness is already part of the null distribution: with no name effect the 42 discordant pairs would split about evenly, and the test gives p of about 0.008.
-- E: Repetitions average out sampling randomness within each pair.
-
-**Source:** Pearl's Ladder — Rungs 1 and 2
-
-## MA-ch06.29
-
-Two annotators label 100 clinical notes as positive or negative for a condition. Both say positive for 85 notes and both say negative for 5; each is alone in saying positive for 5 notes. Each annotator labels 90% of notes positive. Cohen's kappa is (observed agreement - chance agreement) / (1 - chance agreement). Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Chance agreement is about 82%, which gives a kappa of about 0.44.
-- [ ] B. Raw agreement is the better statistic here, because chance agreement is irrelevant when one category dominates.
-- [ ] C. A high kappa shows that the labels measure the condition accurately, since the annotators agree on them.
-- [ ] D. If kappa falls sharply once annotators are blinded to a patient's earlier diagnosis, the unblinded labels were probably shaped by it.
-- [ ] E. Kappa is about 0.90, the same as the raw agreement, since kappa simply restates the share of matching labels.
-
-**Key:** A=T B=F C=F D=T E=F
-
-**Why:**
-
-- A: Chance agreement is 0.9 x 0.9 + 0.1 x 0.1 = 0.82, so kappa = (0.90 - 0.82) / 0.18 = 0.44.
-- B: Chance agreement is largest exactly when one category dominates, which is when raw agreement misleads.
-- C: Annotators can agree with each other and still share the same systematic error, so agreement shows consistency rather than validity.
-- D: Agreement that depends on seeing a cue indicates annotators are following the cue rather than assessing the note independently.
-- E: Kappa corrects raw agreement for agreement expected by chance, and here that correction is large.
-
-**Source:** Ten mechanisms, distinguished
-
-## MA-ch06.30
-
-A skin-lesion classifier has a 12% error rate on images of darker skin and 4% on lighter skin in a held-out test set labelled by the same process as the training data. Darker-skin images are 8% of the training set. A balanced audit set, labelled by an independent expert panel using biopsy results, shows the same 12% against 4% gap. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Because the audit labels came from an independent process, the gap is not an artifact of how the original test labels were made.
-- [ ] B. Adding many more darker-skin images to the training set is certain to close the gap, as those images are the scarce input.
-- [ ] C. The 8% share of darker-skin images establishes that under-representation is the cause of the gap.
-- [ ] D. Because the audit labels were independent, differences in image quality between skin tones are ruled out as a cause.
-- [ ] E. The persistence of the gap shows that the training labels were accurate for both skin tones.
+- [ ] A. This reversal between subgroup and aggregate comparisons is Simpson's paradox.
+- [ ] B. The aggregate comparison is the right one to report because it uses the most data.
+- [ ] C. Choosing between the stratified and the pooled table is settled by whichever has the larger sample.
+- [ ] D. A reversal like this indicates an arithmetic error in the counts.
+- [ ] E. Group is the stratifying variable whose different mix across roles produces the reversal.
 
 **Key:** A=T B=F C=F D=F E=F
 
 **Why:**
 
-- A: The original test labels shared a source with the training labels and could share its errors, whereas independent labels remove that explanation for the measured gap.
-- B: The gap may come from label quality or measurement differences that more images of the same kind would not change.
-- C: Under-representation is consistent with the gap but has not been tested; label quality, image quality and lesion appearance could also contribute.
-- D: Independent labelling does not control for how the images were captured, which can still differ by group.
-- E: A model trained on skewed labels would also show a gap against correct labels, so the audit cannot distinguish that case from under-representation.
+- A: Simpson's paradox is a trend within strata that reverses or vanishes after pooling.
+- B: Using more data does not make the pooled table the answer to the causal question.
+- C: Sample size does not decide which table answers the causal question.
+- D: A reversal is routine when group composition differs across strata.
+- E: Role is the stratifying variable, and the groups differ in how they spread across roles.
 
-**Source:** Three flavors of bias, mapped to the ten types
+**Source:** Simpson's paradox in selection
+
+## MA-ch06.7
+
+In hospital records, the drug group recovered less often overall than the untreated group, but did better within each severity level, because doctors gave the drug mostly to severe patients. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Giving a treatment on the basis of a prognostic factor such as severity confounds the raw comparison.
+- [ ] B. Randomised assignment breaks the link between severity and treatment, measured or not.
+- [ ] C. Severity is a confounder because it influences both who gets the drug and how likely recovery is.
+- [ ] D. Confounding by indication names the situation where sicker patients are the ones given the treatment.
+- [ ] E. Adjusting for a mediator, a variable on the path from treatment to outcome, is the standard way to remove confounding.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: A factor that drives both treatment and outcome confounds the comparison.
+- B: Randomisation makes treatment independent of prior factors in expectation.
+- C: A confounder is a common cause of treatment and outcome.
+- D: The reason for treatment is itself related to the outcome.
+- E: Adjusting for a mediator blocks part of the effect, while confounders are the variables to adjust for.
+
+**Source:** Confounding by indication
+
+## MA-ch06.8
+
+A classifier has 90% overall accuracy, made of 95% on a large group A and 70% on a small group B. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Representation bias describes a model that predicts poorly for the majority group.
+- [ ] B. Disaggregation means averaging the group metrics into one fair number.
+- [ ] C. Disaggregated evaluation reports metrics separately for each subgroup.
+- [ ] D. Pooled accuracy is an average weighted by group size, so the large group dominates it.
+- [ ] E. A high overall accuracy implies that each subgroup's accuracy is near the overall figure.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: Representation bias concerns a group being thinly represented in the data.
+- B: That would be aggregation, the opposite of reporting the groups separately.
+- C: Disaggregation splits a metric by group rather than averaging over them.
+- D: A pooled metric reflects the biggest group most.
+- E: A pooled average can hide a subgroup far below it.
+
+**Source:** Pooled versus disaggregated metrics
+
+## MA-ch06.9
+
+Group B has 40 test examples with 15% error and group A has 2,000 test examples with 8% error. A 95% interval for group B's error rate is wide, and a significance test on the difference gives p = 0.13. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A Wilson interval is a credible interval computed from a posterior distribution.
+- [ ] B. A non-significant result from a small sample is inconclusive rather than evidence of equal error rates.
+- [ ] C. A wide confidence interval signals that the estimate for the small group is imprecise.
+- [ ] D. Low statistical power means a test often fails to detect a real difference.
+- [ ] E. Reporting just the pooled error rate hides the subgroup of interest.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: A Wilson interval is a frequentist confidence interval for a proportion.
+- B: Failing to reject a null hypothesis is not evidence that it is true.
+- C: Interval width reflects estimation uncertainty, which is large for small samples.
+- D: Power is the chance of detecting a true effect, and it is low for small samples.
+- E: Pooling averages the small group into a figure dominated by the large one.
+
+**Source:** Confidence interval, p-value, power
+
+## MA-ch06.10
+
+An auditor tests 20 independent subgroups for an error-rate gap at the 5% significance level for each test, and the model performs identically in the subgroups. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Choosing which subgroup to report after seeing the results is p-hacking, also called data dredging.
+- [ ] B. A non-significant result in a small subgroup shows the model performs equally well there.
+- [ ] C. A Bonferroni correction multiplies the significance level by the number of tests.
+- [ ] D. The 5% significance level applies to the group of 20 tests taken together.
+- [ ] E. Testing many subgroups raises the family-wise error rate, the chance of at least one false positive.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: Searching for a significant result after the fact inflates false findings.
+- B: A null result may reflect low power rather than equality.
+- C: It divides the significance level by the number of tests.
+- D: The level is set per test, so the combined false-positive chance is much higher.
+- E: The per-test rate applies to a single test, and errors accumulate across a family.
+
+**Source:** Multiple comparisons and p-hacking
+
+## MA-ch06.11
+
+A face-attribute classifier is evaluated by gender and, separately, by skin tone, and the marginal error rates look equal. Evaluating the four gender-by-skin-tone cells shows error rates from 1% to 21%. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Equal marginal error rates imply equal error rates in each gender-by-skin-tone cell.
+- [ ] B. Intersectional evaluation means evaluating each attribute separately and comparing the results.
+- [ ] C. Intersectional evaluation reports metrics for combinations of attributes.
+- [ ] D. The number of cells grows multiplicatively with each attribute added, so cells become small and noisy.
+- [ ] E. Dropping a thin cell from the report is more honest than showing a wide interval.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: Marginal equality can mask large differences between cells.
+- B: Separate evaluation produces marginal results, not joint ones.
+- C: It looks at joint subgroups rather than one attribute at a time.
+- D: Combining attributes multiplies subgroups and thins out the data in each.
+- E: Dropping a cell hides the subgroup, and a wide interval shows the uncertainty.
+
+**Source:** Intersectional evaluation
+
+## MA-ch06.12
+
+A model predicts arrest in the next year as a proxy for offending. Two neighbourhoods have the same offence rate, but the more heavily patrolled one has a higher arrest rate per offence. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Label bias is the same thing as sampling bias.
+- [ ] B. The label is recorded with different accuracy in different neighbourhoods, which is differential measurement bias.
+- [ ] C. Collecting more arrest records fixes the label problem.
+- [ ] D. A model that is highly accurate on the arrest label measures offending correctly.
+- [ ] E. Arrest is a proxy label for offending, so the label is measured with error.
+
+**Key:** A=F B=T C=F D=F E=T
+
+**Why:**
+
+- A: Label bias concerns how the outcome is recorded, and sampling bias concerns who is included.
+- B: Differential measurement bias means measurement quality varies by group.
+- C: More records from the same process estimate the same distorted rates more precisely.
+- D: Accuracy is judged against the label and says nothing about whether the label tracks offending.
+- E: A proxy label stands in for the outcome of interest and may track it imperfectly.
+
+**Source:** Proxy label and measurement bias
+
+## MA-ch06.13
+
+A hospital enrols patients by predicted annual cost, as a stand-in for health need. One group faces access barriers, so its cost understates its need, and the model predicts cost perfectly. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Replacing the label with a measure closer to need addresses the mismatch.
+- [ ] B. A model that predicts the label accurately shows that the label is valid.
+- [ ] C. Accuracy in predicting a label is a different question from whether the label has construct validity.
+- [ ] D. Cost is a proxy label for need.
+- [ ] E. Construct validity is the question of whether the label measures the quantity of interest.
+
+**Key:** A=T B=F C=T D=T E=T
+
+**Why:**
+
+- A: Moving the label toward the construct reduces label bias.
+- B: Accuracy against a label says nothing about whether the label measures the construct.
+- C: Predictive accuracy and construct validity answer different questions.
+- D: A proxy label is a measurable quantity used in place of the one that matters.
+- E: A valid construct measure tracks the concept it claims to capture.
+
+**Source:** Construct validity and proxy labels
+
+## MA-ch06.14
+
+A lender sees repayment outcomes only for applicants it approved. It then trains a new model on those outcomes and wants to estimate how denied applicants would have performed. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reject inference is the name for estimating outcomes for denied applicants.
+- [ ] B. Outcomes are observed for just those who received the favourable decision, which is the selective labels problem.
+- [ ] C. Selective labels are the same problem as class imbalance.
+- [ ] D. Approving a random sample of denied applicants gives outcome data that do not represent the denied group.
+- [ ] E. Test accuracy computed on approved applicants is an unbiased estimate of performance on denied applicants.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: It is the term for inferring performance of applicants who were declined.
+- B: Selective labels arise when the decision determines whether the outcome is recorded.
+- C: Class imbalance is about unequal class frequencies, not about which outcomes get observed.
+- D: A random draw from the denied group does represent that group.
+- E: The approved group was selected by the earlier score, so it differs from the denied group.
+
+**Source:** Selective labels and reject inference
+
+## MA-ch06.15
+
+Two districts have the same true incident rate. Patrol hours are allocated in proportion to incidents recorded in the previous cycle, and recorded incidents are proportional to patrol hours. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Proportional allocation drives the two districts toward their true rates over repeated cycles.
+- [ ] B. Allocating more patrol hours to the district with more records breaks the loop.
+- [ ] C. This is a runaway feedback loop, in which the system's decisions determine the data it later learns from.
+- [ ] D. A feedback loop is random sampling error that averages out over time.
+- [ ] E. Recorded incidents reflect observation effort as well as the true rate.
+
+**Key:** A=F B=F C=T D=F E=T
+
+**Why:**
+
+- A: The initial split reproduces itself, because records mirror patrol hours.
+- B: That allocation rule is the loop, so it reinforces the existing split.
+- C: A feedback loop occurs when model outputs shape future training data.
+- D: A feedback loop is systematic and reinforces itself rather than averaging out.
+- E: Counts depend on where observers look, which is a measurement bias.
+
+**Source:** Feedback loops
+
+## MA-ch06.16
+
+A reweighing scheme gives each combination of group and label a weight so that group and label are statistically independent in the weighted training data. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reweighing leaves the recorded labels unchanged and alters how much each row counts.
+- [ ] B. Reweighing is a pre-processing method, because it changes the training data rather than the learner.
+- [ ] C. Reweighing guarantees equal selection rates in the model's predictions on new data.
+- [ ] D. After reweighing, group and label are independent in the weighted training sample.
+- [ ] E. Reweighing requires group membership to be recorded for the training rows, even when it is not a model input.
+
+**Key:** A=T B=T C=F D=T E=T
+
+**Why:**
+
+- A: The weights change the influence of each row while the labels stay as recorded.
+- B: Pre-processing methods adjust the data before training.
+- C: Independence in the training sample does not carry over to predictions on new data.
+- D: That independence is the purpose of the weights.
+- E: The weights are computed from group, so it has to be recorded.
+
+**Source:** Pre-processing: reweighing
+
+## MA-ch06.17
+
+A lender proposes setting a different score cutoff for each group after the model has produced its scores, to narrow a selection gap. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Group-specific cutoffs can be applied without recording group membership at decision time.
+- [ ] B. Adding a fairness penalty to the training loss is an in-processing method.
+- [ ] C. Adjusting cutoffs by group is an in-processing method.
+- [ ] D. Group-specific thresholds are a post-processing method.
+- [ ] E. Post-processing retrains the model's scores separately for each group.
+
+**Key:** A=F B=T C=F D=T E=F
+
+**Why:**
+
+- A: A cutoff that depends on group needs the group to be known when deciding.
+- B: In-processing builds the fairness criterion into the learning objective.
+- C: In-processing alters the training procedure, and cutoffs act after training.
+- D: Post-processing acts on a model's outputs after training.
+- E: Post-processing leaves the learned scores in place and changes the decision rule.
+
+**Source:** Post-processing and in-processing
+
+## MA-ch06.18
+
+A résumé-ranking model trained on past hiring decisions selects group B less often than group A at the same measured experience. The team considers reweighing, a fairness penalty, separate cutoffs, and changes to how reviewers use the ranking. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reweighing the training data also repairs disparity introduced by human reviewers.
+- [ ] B. Pre-processing, in-processing and post-processing act on the outputs, the training and the data respectively.
+- [ ] C. Historical bias means the data reflect earlier decisions that encoded disparities, even when the records are accurate.
+- [ ] D. A human review stage after the model is outside the pipeline, so it adds no disparity.
+- [ ] E. Lower agreement with past decisions shows the model is of lower quality.
+
+**Key:** A=F B=F C=T D=F E=F
+
+**Why:**
+
+- A: Reweighing changes the training sample, so a disparity created at review is outside its reach.
+- B: The order is data, training and outputs, so the stages are listed backwards here.
+- C: Historical bias arises from the world that produced the data, not from recording errors.
+- D: Review is part of deployment and can introduce disparity.
+- E: The past decisions are suspect, so less agreement can mean less copying of earlier skew.
+
+**Source:** Mitigation stages and historical bias
+
+## MA-ch06.19
+
+A bank buys a credit-risk model from a vendor, which trained it on records bought from a data broker with labels taken from another lender's approvals. The bank sets the approval cutoff and routes borderline cases to officers. An audit finds a large approval gap between groups. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The approval cutoff is a decision point that the bank owns.
+- [ ] B. Buying a model from a vendor transfers accountability for the lending decisions to the vendor.
+- [ ] C. Data provenance means the statistical distribution of the model's scores across groups.
+- [ ] D. Assigning accountability for a disparity requires showing that someone intended it.
+- [ ] E. Accountability can be assigned according to which party controls a decision point in the pipeline.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: The party that sets a threshold owns its consequences.
+- B: The bank makes the decisions and keeps accountability for them.
+- C: Provenance is the origin and history of the data.
+- D: Accountability attaches to roles that control a step and does not depend on a finding of intent.
+- E: Control over a step is the usual basis for assigning responsibility for it.
+
+**Source:** Accountability and provenance
+
+## MA-ch06.20
+
+A dataset's documentation records how and why the data were collected, who is represented, and how labels were produced. A separate document for the model states its intended uses, evaluation data and subgroup performance. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. An audit is called external when a party independent of the developer performs it.
+- [ ] B. A model card is a disclosure and does not by itself make a model fair.
+- [ ] C. A model card reports intended uses and performance broken down by subgroup.
+- [ ] D. A datasheet documents the origin, composition and collection of a dataset.
+- [ ] E. A model card describes the collection process and label provenance of the training data.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Independence from the developer is what makes an audit external.
+- B: A card can report poor performance without correcting it.
+- C: Disaggregated performance and scope are standard model card contents.
+- D: A datasheet is a disclosure document for data.
+- E: That content belongs in a datasheet, and a model card describes the model.
+
+**Source:** Datasheet, model card, audit
+
+## MA-ch06.21
+
+A model is benchmarked on data that is 90% group A and 10% group B, then deployed on a population that is half group A and half group B. Each group's accuracy stays the same in deployment. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A change in group mix between benchmark and deployment is a change in the input distribution, a form of covariate shift.
+- [ ] B. A larger benchmark sample with the same composition removes the mismatch.
+- [ ] C. Overall accuracy is a property of the model alone and does not depend on the population.
+- [ ] D. Group-conditional accuracy has no use for predicting overall accuracy on a new mix.
+- [ ] E. Reporting accuracy by group transfers to a new mix better than a single pooled figure.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: Covariate shift is a change in the input distribution while the relationship to the outcome stays put.
+- B: More data of the same mix cannot show how the model behaves on a different mix.
+- C: Overall accuracy depends on the mix of groups it is measured over.
+- D: Per-group figures combine with the new shares to give the deployment figure.
+- E: Disaggregated figures remain usable when the composition changes.
+
+**Source:** Covariate shift in group mix
+
+## MA-ch06.22
+
+In group A the outcome follows y = 2x and in group B it follows y = 2x + 6. A single line fitted to both groups together misses both of them. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A high R-squared on the pooled fit shows that the model fits each group.
+- [ ] B. Residuals split by group reveal consistent over- and under-prediction.
+- [ ] C. Including a group indicator in the model lets the fit capture the offset between groups.
+- [ ] D. Omitting a group indicator from the model is an omitted variable problem here.
+- [ ] E. Fitting one model to heterogeneous groups can fit neither well, which is aggregation bias.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: R-squared summarises the pooled fit and can hide systematic misfit within groups.
+- B: Disaggregated residuals expose a group-specific pattern that the pooled line hides.
+- C: An indicator variable absorbs the group-specific intercept.
+- D: The missing variable explains the offset between the groups.
+- E: Aggregation bias arises when a pooled model assumes one relationship for different groups.
+
+**Source:** Aggregation bias and omitted variable
+
+## MA-ch06.23
+
+A screening device reads a person's true value plus noise, and the noise is larger for group B than for group A. The same cutoff is applied to everyone. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Raising the cutoff for group B removes the effect of its larger noise.
+- [ ] B. More rows of readings from the same instrument reduce the noise in each reading.
+- [ ] C. Measurement quality that differs by group is differential measurement error.
+- [ ] D. Larger measurement noise for group B produces more misclassification for group B at the same cutoff.
+- [ ] E. The disparity comes from applying a different cutoff to each group.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: A different cutoff does not reduce the noise in the readings.
+- B: The noise belongs to the instrument, so each reading stays equally noisy.
+- C: It is measurement error whose size depends on group.
+- D: Noise pushes readings across the cutoff more often for the noisier group.
+- E: The cutoff is common to both groups, and the difference comes from the measurement.
+
+**Source:** Differential measurement error
+
+## MA-ch06.24
+
+A classifier has the same true positive rate and the same false positive rate in two groups, but the share of truly positive people differs between the groups. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Predictive parity means equal positive predictive value across groups.
+- [ ] B. Equalized odds means equal true positive and false positive rates across groups.
+- [ ] C. Demographic parity means equal true positive rates across groups.
+- [ ] D. With equal error rates and unequal base rates, the positive predictive values are also equal.
+- [ ] E. With unequal base rates and an imperfect classifier, equalized odds and predictive parity hold together in general.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Positive predictive value is the share of flagged people who are truly positive.
+- B: It constrains both error rates to match between groups.
+- C: Demographic parity means equal selection rates, which is a different quantity.
+- D: Positive predictive value depends on the base rate, so it differs.
+- E: The two criteria conflict when base rates differ.
+
+**Source:** Fairness criteria and base rate
+
+## MA-ch06.25
+
+A model approves 30% of group A and 18% of group B. Re-scoring the same applicants with the postcode input replaced by a constant leaves a smaller gap. Group is not an input. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The test shows how the model depends on postcode and not why the groups differ in postcode.
+- [ ] B. A gap that remains after postcode is neutralised shows the model uses group directly.
+- [ ] C. Neutralising an input and re-scoring is an ablation of that input.
+- [ ] D. If group is not an input, no other input can carry group information.
+- [ ] E. A smaller gap after neutralising postcode shows postcode causes differences in repayment.
+
+**Key:** A=T B=F C=T D=F E=F
+
+**Why:**
+
+- A: It is a statement about the model, not about the applicants.
+- B: Other correlated inputs can carry the remaining gap without group being used.
+- C: Ablation removes a component to see how outputs change.
+- D: Correlated inputs can act as proxies that carry group information.
+- E: The test intervenes on the model's input, so it says nothing about causes in the applicants.
+
+**Source:** Ablation and proxy chains
+
+## MA-ch06.26
+
+Three candidate models have group A error rates of 5%, 6% and 3% and group B error rates of 30%, 20% and 45%, and group A is 90% of the data. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Balanced accuracy gives groups weight in proportion to their size, so it equals pooled accuracy.
+- [ ] B. Worst-group error is a different criterion from average error.
+- [ ] C. Empirical risk minimisation optimises average loss, which weights each group by its share of the data.
+- [ ] D. Two models can rank differently by average error and by worst-group error.
+- [ ] E. Choosing the model with the lowest worst-group error is a minimax criterion.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: Balanced accuracy weights each group equally, regardless of its size.
+- B: It reports the group with the highest error rather than the weighted mean.
+- C: The average loss follows the data mix, so the large group dominates.
+- D: Average error and worst-group error are different criteria and can disagree.
+- E: Minimax minimises the maximum loss across groups.
+
+**Source:** Average versus worst-group error
+
+## MA-ch06.27
+
+A model flags the same share of applicants in two groups. A human reviewer then upholds flags in one group more often than in the other. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A funnel analysis combines the stages into one overall rate.
+- [ ] B. Comparing reviewer decisions on like cases is needed to attribute the gap to reviewer behaviour.
+- [ ] C. Different upheld rates establish that the reviewer is biased.
+- [ ] D. A review stage that follows an equal flagging step leaves the selection rates equal between groups.
+- [ ] E. Automation bias means reviewers ignore the model's flags.
+
+**Key:** A=F B=T C=F D=F E=F
+
+**Why:**
+
+- A: A funnel analysis reports each stage separately so the step where rates diverge can be found.
+- B: Comparable cases separate case mix from reviewer treatment.
+- C: The flagged cases may differ in true risk, so rates call for investigation but do not show bias.
+- D: The review step can create or remove disparity after equal flag rates.
+- E: Automation bias is over-reliance on an automated output.
+
+**Source:** Pipeline stages and human review
+
+## MA-ch06.28
+
+Auditors submit paired résumés to a text-generating model, identical except for a first name signalling group A or group B, and count the pairs where the model's answers differ. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Submitting paired inputs that differ in one signal is a correspondence test, also called a paired audit.
+- [ ] B. Finding that outputs depend on the name identifies the training data as the source.
+- [ ] C. A sign test counts the concordant pairs and ignores the discordant pairs.
+- [ ] D. Because outputs are sampled randomly, pairs with differing answers carry no information.
+- [ ] E. Matching by construction controls for qualifications within each pair.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: It isolates dependence of the output on the varied signal.
+- B: Dependence could come from training data, tuning or the prompt, which is a separate question.
+- C: A sign test uses the discordant pairs, those treated differently.
+- D: Randomness is part of the null distribution, and a test on differing pairs accounts for it.
+- E: Identical content removes qualifications as an explanation inside the pair.
+
+**Source:** Correspondence test and sign test
+
+## MA-ch06.29
+
+Two annotators label 100 clinical notes. They agree on 90, and each calls 90% of the notes positive. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Cohen's kappa corrects observed agreement for the agreement expected by chance.
+- [ ] B. Kappa can be low even when raw agreement is high.
+- [ ] C. Inter-annotator agreement measures consistency of labelling, not validity.
+- [ ] D. Chance agreement is high when one category dominates, so kappa falls below raw agreement.
+- [ ] E. Agreement between annotators is a measure of label validity.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Kappa is observed agreement minus chance agreement, scaled by the maximum possible improvement over chance.
+- B: A dominant category inflates chance agreement, which lowers kappa.
+- C: Annotators can agree with each other and share the same systematic error.
+- D: A skewed class balance inflates the chance term.
+- E: Validity asks whether labels capture the true condition, which agreement does not show.
+
+**Source:** Cohen's kappa and label validity
+
+## MA-ch06.30
+
+A skin-lesion classifier has a higher error rate on darker skin. A test set labelled by the same process as the training data and a separate audit set labelled by independent experts using biopsy results show the same gap. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The audit set shows that the gap comes from under-representation in the training data.
+- [ ] B. Collecting more images of the same kind removes a label-quality problem.
+- [ ] C. Biopsy results serve as a reference standard, also called ground truth, for the lesion labels.
+- [ ] D. An independent labelling source addresses the possibility that test and training labels share errors.
+- [ ] E. Image capture conditions can still differ by group, even with independent labels.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: Under-representation is consistent with the gap but untested, and other causes remain.
+- B: Label quality does not improve with more images produced by the same labelling process.
+- C: A reference standard is the best available measure of the true condition.
+- D: Independent labels remove shared label error as an explanation of the gap.
+- E: Independent labelling does not control for how images were produced.
+
+**Source:** Reference standard and label error
+
+## MA-ch06.31
+
+A causal framework describes three rungs: association (seeing), intervention (doing) and counterfactual (imagining). Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A counterfactual question is a rung 2 question about an average effect.
+- [ ] B. A counterfactual question asks what happens on average when X is set by force.
+- [ ] C. Observing a conditional probability and setting a variable by force give the same quantity in general.
+- [ ] D. A rung 1 question concerns the conditional probability of an outcome given an observed value, P(Y given X).
+- [ ] E. A rung 2 question concerns the probability of an outcome under an intervention, written P(Y given do(X)).
+
+**Key:** A=F B=F C=F D=T E=T
+
+**Why:**
+
+- A: Counterfactuals sit on rung 3 and concern a specific case.
+- B: That describes an intervention at rung 2, while a counterfactual concerns a specific case.
+- C: Confounding makes the observed and interventional quantities differ.
+- D: Association asks what goes with what in observed data.
+- E: The do operator marks setting X by force rather than observing it.
+
+**Source:** Ladder of causation, rungs 1 to 3
+
+## MA-ch06.32
+
+A lender trains a model on past loans to predict default from 30 recorded features, and it ranks risk well on new applicants who resemble past borrowers. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Feature importance is a different thing from causal effect.
+- [ ] B. The model estimates conditional probabilities, which is association at rung 1.
+- [ ] C. A feature that is a consequence of the label can inflate accuracy, which is leakage.
+- [ ] D. A large weight on a feature shows that the feature causes default.
+- [ ] E. Good prediction on similar cases shows what would happen if the lender changed a feature.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: Importance describes use by the model, and causal effect describes the result of an intervention.
+- B: Prediction fits observed relationships between features and outcome.
+- C: Leakage lets the model use information that would not be available at prediction time.
+- D: A feature can carry weight as a proxy, an effect of default, or a shared cause.
+- E: A prediction describes what goes with a value, not what follows from changing it.
+
+**Source:** Prediction versus causation, leakage
+
+## MA-ch06.33
+
+Customers who received a marketing email signed up at a higher rate than customers who did not. The email went mostly to customers who were already engaged with the app, and engaged customers sign up more often regardless. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The raw difference in sign-up rates is an association, a rung 1 quantity.
+- [ ] B. Random assignment of the email makes the two groups equivalent in expectation.
+- [ ] C. Confounding is the same thing as measurement bias.
+- [ ] D. A larger sample removes the confounding.
+- [ ] E. Engagement is a confounder, because it influences both who is emailed and who signs up.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: It describes how rates differ across observed groups.
+- B: Randomisation removes confounding by making treatment independent of prior factors.
+- C: Confounding is a shared cause of treatment and outcome, and measurement bias is an error in recording.
+- D: More data shrinks random error but leaves the offset caused by who was emailed.
+- E: A confounder is a common cause of treatment and outcome.
+
+**Source:** Confounding and association
+
+## MA-ch06.34
+
+Engaged customers sign up at 10% without the email, and the email raises everyone's sign-up probability by 1.5 points. The email was sent to most engaged customers and few others, and engaged customers sign up more often anyway. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The raw difference between emailed and non-emailed customers is an unbiased estimate of the average treatment effect.
+- [ ] B. An average treatment effect describes one named customer's response.
+- [ ] C. Stratifying by engagement and comparing within strata removes confounding by engagement, if no other confounder remains.
+- [ ] D. Standardisation weights each stratum's effect by that stratum's share of the population.
+- [ ] E. The raw comparison overstates the effect, because engagement pushes the treated group's rate up.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: Confounding makes the raw difference biased as an estimate of the effect.
+- B: An average treatment effect is a population average, not an individual effect.
+- C: Within a stratum, treated and untreated customers have the same engagement.
+- D: Standardisation averages stratum effects over a reference population mix.
+- E: A positive confounder inflates the observed difference.
+
+**Source:** Stratification and standardisation
+
+## MA-ch06.35
+
+A dataset records two yes-or-no variables, coffee each day (X) and high resting heart rate (Y), which are associated. One story says coffee raises heart rate, another says a high heart rate leads people to drink coffee, and a third says anxiety raises both. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Randomly assigning coffee and comparing heart rates would separate them.
+- [ ] B. The story in which heart rate leads to coffee is reverse causation.
+- [ ] C. Under the confounder story, coffee and heart rate are not associated.
+- [ ] D. The story in which anxiety raises both variables involves a confounder.
+- [ ] E. Different causal graphs can imply the same joint distribution of X and Y, so the stories are observationally equivalent.
+
+**Key:** A=T B=T C=F D=T E=T
+
+**Why:**
+
+- A: An intervention on X removes arrows into X and tests the direct effect.
+- B: Reverse causation means the outcome influences the supposed cause.
+- C: A common cause creates association even when X has no effect on Y.
+- D: A common cause produces association without a direct effect.
+- E: Observational equivalence means data on X and Y alone cannot choose between the graphs.
+
+**Source:** Reverse causation and confounding
+
+## MA-ch06.36
+
+An analyst adjusts a comparison for a variable that is influenced by both the treatment and the outcome, and separately for a variable lying on the path from treatment to outcome. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Conditioning on a collider can create a spurious association between its causes.
+- [ ] B. Adding more adjustment variables reduces bias whatever their causal role.
+- [ ] C. A variable with arrows pointing into it from two other variables is a collider.
+- [ ] D. A mediator lies on the path from treatment to outcome, so adjusting for it blocks part of the effect.
+- [ ] E. A confounder is a variable caused by the treatment.
+
+**Key:** A=T B=F C=T D=T E=F
+
+**Why:**
+
+- A: Adjusting for a common effect opens a path that was closed.
+- B: Adjusting for colliders or mediators can introduce or block real paths.
+- C: A collider is a common effect of two variables.
+- D: Mediators carry the effect, and conditioning on them removes that part.
+- E: A confounder is a cause of both treatment and outcome, and a variable caused by treatment is a mediator or descendant.
+
+**Source:** Collider, mediator and adjustment
+
+## MA-ch06.37
+
+A hospital wants to know what would have happened to patients who got a follow-up call had they not been called, and it compares them with patients who were not called. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The comparison group stands in for the missing outcomes if it is exchangeable with the called group.
+- [ ] B. Each patient is observed under one condition, so the other potential outcome is missing, which is the fundamental problem of causal inference.
+- [ ] C. An average treatment effect is a group-average quantity, whereas an individual treatment effect is unobserved.
+- [ ] D. The counterfactual outcome is observed directly by looking at the same patient twice.
+- [ ] E. Matching on measured variables guarantees exchangeability on unmeasured variables.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: Exchangeability means the groups would have had the same outcomes absent treatment.
+- B: A unit cannot be observed under both the treated and untreated condition.
+- C: Group comparisons estimate averages, not what happened to one patient.
+- D: The same patient cannot be both called and not called at the same time.
+- E: Matching balances only the variables used.
+
+**Source:** Potential outcomes and exchangeability
+
+## MA-ch06.38
+
+Among engaged customers, 11.5% sign up if emailed and 10% if not. One emailed engaged customer signed up, and the question is whether the email caused it. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Group rates alone identify the individual-level probability without further assumptions.
+- [ ] B. Without monotonicity, the data give bounds rather than a single value, which is partial identification.
+- [ ] C. Probability of necessity is a rung 2 quantity.
+- [ ] D. Under monotonicity and equivalent groups, the probability of necessity for an emailed sign-up is one minus the ratio of the two group rates.
+- [ ] E. Monotonicity is the assumption that the email does not make an individual less likely to sign up.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: Many individual patterns are compatible with the same group rates.
+- B: Partial identification yields a range of values consistent with the data.
+- C: It concerns a specific case and a contrary-to-fact action, so it sits on rung 3.
+- D: Probability of necessity is the chance the outcome would not have occurred without the treatment, given that both occurred.
+- E: Monotonicity rules out individuals who respond negatively to the treatment.
+
+**Source:** Probability of necessity and monotonicity
+
+## MA-ch06.39
+
+A retailer studies whether a discount coupon keeps customers from leaving. It considers four questions: which customers who got coupons stayed, whether this customer will stay given her usage, how many would stay if coupons went to everyone, and whether this particular customer would have stayed without her coupon. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Comparing the stay rate of coupon recipients with non-recipients is a rung 1 question.
+- [ ] B. How many would stay if coupons went to everyone is a counterfactual, rung 3 question.
+- [ ] C. A rung 2 question can be answered from association alone without extra assumptions.
+- [ ] D. Predicting whether a customer will stay from her usage is a rung 2 question.
+- [ ] E. Whether this customer would have stayed without the coupon is a rung 3 question.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: It describes how outcomes differ across observed groups.
+- B: It asks about an intervention on the whole population, which is rung 2.
+- C: Going from observed data to a causal claim needs assumptions or an intervention.
+- D: Prediction from observed features is association, which is rung 1.
+- E: It concerns a specific unit under a contrary-to-fact action.
+
+**Source:** Ladder of causation, coupon example
+
+## MA-ch06.40
+
+A bank assigns a reminder to customers by coin flip and compares the share who pay on time between the reminded and the not-reminded. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Randomisation balances measured confounders but leaves unmeasured ones uncontrolled.
+- [ ] B. The comparison identifies an average effect, not each customer's effect.
+- [ ] C. Self-selection into the reminder reintroduces confounding.
+- [ ] D. Random assignment makes the groups exchangeable in expectation, measured or not.
+- [ ] E. Randomisation guarantees the two groups are balanced in each sample.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: Its advantage over adjustment is that it handles unmeasured factors as well.
+- B: Individual effects are not observed under randomisation either.
+- C: People who opt in differ from those who do not, mixing the reminder with the drivers of opting in.
+- D: Randomisation balances prior factors on average, including unmeasured ones.
+- E: Chance leaves some imbalance in a finite sample, so equivalence holds only in expectation.
+
+**Source:** Randomisation
+
+## MA-ch06.41
+
+A bank emailed every customer with income above a threshold and no customer below it, and recorded who signed up. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Without untreated customers at the same income level, a larger sample under the same rule still lacks a comparison group.
+- [ ] B. Positivity, also called overlap, requires both treated and untreated units at each kind of customer.
+- [ ] C. Assigning treatment by a threshold on income is a randomised design.
+- [ ] D. Extrapolating the effect to low incomes rests on modelling assumptions rather than on data.
+- [ ] E. Income is a confounder here, because it likely affects both who is emailed and who signs up.
+
+**Key:** A=T B=T C=F D=T E=T
+
+**Why:**
+
+- A: The missing comparison group is a design problem, not a sample size problem.
+- B: Without overlap there is no comparison group at the same covariate values.
+- C: A deterministic threshold on a covariate is not random assignment.
+- D: No observations exist in that range to support the estimate.
+- E: A variable that determines treatment and also affects the outcome confounds the comparison.
+
+**Source:** Positivity and overlap
+
+## MA-ch06.42
+
+A coin lands heads with probability 0.7. A student estimates the heads probability from 20 flips and gets 0.65. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Calling the coin biased uses bias in the everyday sense of a process tilted away from a symmetric reference.
+- [ ] B. Estimator bias is the expected value of an estimator minus the true value.
+- [ ] C. An unbiased estimator can still miss the truth in a single sample.
+- [ ] D. The sample proportion is a biased estimator of the heads probability.
+- [ ] E. Sampling error and estimator bias are the same thing.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: The process itself departs from 0.5.
+- B: It is a property of the estimator's average behaviour over repeated samples.
+- C: Unbiased means correct on average, not correct each time.
+- D: Its expected value equals the true probability, so its bias is zero.
+- E: Sampling error is the miss in a single sample, and bias is the average miss.
+
+**Source:** Two meanings of bias
+
+## MA-ch06.43
+
+In a population of 500,000 women and 500,000 men, 600 women and 1,400 men are data scientists. A separate league has a rule that only men may play. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. An absolute difference and a ratio of rates carry the same information when the rates are small.
+- [ ] B. A gap created by an explicit rule and a gap in occupational choice have the same cause.
+- [ ] C. A ratio of rates hides exclusion that a small absolute difference shows.
+- [ ] D. The probability of being a woman given being a data scientist differs from the probability of being a data scientist given being a woman.
+- [ ] E. The event before the vertical bar supplies the denominator in a conditional probability.
+
+**Key:** A=F B=F C=F D=T E=F
+
+**Why:**
+
+- A: Small rates can give a small difference alongside a large ratio.
+- B: A rule that excludes a group is a different mechanism from differing rates of entry.
+- C: A ratio exposes exclusion that a small absolute difference can hide.
+- D: Transposing the conditional changes the denominator, which is a common error.
+- E: The event after the bar is the condition and supplies the denominator.
+
+**Source:** Conditional probability and rate comparisons
+
+## MA-ch06.44
+
+An analyst estimates a population variance using the sum of squared deviations from the sample mean divided by n, instead of n minus 1. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. An unbiased estimator has the lowest mean squared error of the available estimators.
+- [ ] B. The bias of the divide-by-n estimator grows as the sample size grows.
+- [ ] C. Dividing by n gives a biased estimator that underestimates the variance on average.
+- [ ] D. Mean squared error equals variance plus squared bias.
+- [ ] E. Accepting a little bias for a large drop in variance is the bias-variance trade-off, which shrinkage estimators exploit.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: A biased estimator with lower variance can have a smaller mean squared error.
+- B: The bias shrinks in proportion to one over n.
+- C: Deviations from the sample mean are smaller than deviations from the true mean.
+- D: This decomposition holds for any estimator.
+- E: Shrinkage lowers variance at the cost of some bias.
+
+**Source:** Estimator bias and mean squared error
+
+## MA-ch06.45
+
+In a survey, every actual voter says they voted, and some non-voters also say they voted. Respondents were chosen by simple random sampling. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Nonresponse bias, meaning selected people declining to answer, is the cause here.
+- [ ] B. Misreporting of this kind is response bias, a form of measurement bias.
+- [ ] C. A gold standard on a validation subset lets analysts estimate the size of the recording error.
+- [ ] D. Interviewing more respondents removes the misreporting offset.
+- [ ] E. Selection bias is absent, because each resident had an equal chance of being sampled.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: Respondents answered, so the issue is accuracy of answers and not refusal.
+- B: Response bias arises when answers differ from the truth.
+- C: The error cannot be seen from reported values alone.
+- D: More respondents shrink random error around the distorted centre.
+- E: The distortion is in what respondents report, not in who was chosen.
+
+**Source:** Response bias and measurement bias
+
+## MA-ch06.46
+
+A researcher builds a map of startups from an online directory. The directory lists a startup more often if it is in Region R, and the researcher finds Region R holds a larger share than expected. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The listing probability is the inclusion probability, and it differs between regions here.
+- [ ] B. A larger directory under the same listing rule corrects the distortion.
+- [ ] C. A prior expectation that Region R should lead is a validation of the dataset.
+- [ ] D. Inclusion that depends on the attribute being studied is selection bias.
+- [ ] E. Selection bias disappears when inclusion is independent of the quantity being measured.
+
+**Key:** A=T B=F C=F D=T E=T
+
+**Why:**
+
+- A: Unequal inclusion probabilities distort the shares in the data.
+- B: The same rule reproduces the same skew with less noise.
+- C: An expectation is a hypothesis, and a check compares the data against an independent source.
+- D: The rule for entering the data is tied to the region.
+- E: Without a link between inclusion and the outcome, the sample is not distorted by it.
+
+**Source:** Selection bias from inclusion rules
+
+## MA-ch06.47
+
+A poll draws 2,400,000 responses from a frame of telephone and car owners, in a period when owning those things is linked to voting intention, and reports a margin of error of 0.06 percentage points. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A very large sample cancels the bias.
+- [ ] B. The margin of error quantifies sampling error and not bias.
+- [ ] C. Excluding people without telephones or cars is nonresponse bias.
+- [ ] D. A tiny margin around a skewed centre describes an accurate but imprecise estimate.
+- [ ] E. Weighting repairs the gap for people the frame did not reach.
+
+**Key:** A=F B=T C=F D=F E=F
+
+**Why:**
+
+- A: Sample size shrinks variance but leaves the offset.
+- B: It describes random variation under the sampling design.
+- C: The frame never reached them, so it is coverage bias, not people declining to answer.
+- D: It describes a precise but inaccurate estimate.
+- E: People with no chance of selection have no respondents to weight up.
+
+**Source:** Coverage bias, precision versus accuracy
+
+## MA-ch06.48
+
+X takes the values minus 1, 0 and 1 with equal probability, and Y equals 1 when X is not 0 and equals 0 when X is 0. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Zero correlation between X and Y does not imply that X and Y are independent.
+- [ ] B. Independent variables can have a non-zero correlation.
+- [ ] C. Correlation is a measure of association, which sits on rung 1.
+- [ ] D. X and Y are statistically dependent, because knowing X changes the distribution of Y.
+- [ ] E. A correlation of zero demonstrates that X has no causal effect on Y.
+
+**Key:** A=T B=F C=T D=T E=F
+
+**Why:**
+
+- A: Correlation captures linear association, and other dependence can remain.
+- B: Independence implies zero covariance and so zero correlation.
+- C: It describes co-movement in observed data.
+- D: Y is a function of X, which is the strongest dependence.
+- E: Correlation is an association measure and does not speak to interventions.
+
+**Source:** Correlation versus independence
+
+## MA-ch06.49
+
+A poll of 1,000 likely voters treated as a simple random sample finds candidate A at 48% and candidate B at 47%, and a headline reads that A leads. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The margin of error shrinks in proportion to one over the square root of the sample size.
+- [ ] B. The margin of error includes the effect of nonresponse bias.
+- [ ] C. The margin of error on the lead is larger than the margin of error on a single share.
+- [ ] D. A lead smaller than the margin of error on a single share is evidence that the leader is ahead.
+- [ ] E. The two shares are negatively related, because they come from the same respondents.
+
+**Key:** A=T B=F C=T D=F E=T
+
+**Why:**
+
+- A: Quadrupling the sample halves the margin.
+- B: It reflects random sampling error only under the stated design.
+- C: The lead is a difference of two shares and has more variability.
+- D: A lead that small is well within the variability of the estimate.
+- E: More support for one candidate means fewer respondents left for the other.
+
+**Source:** Margin of error on a lead
+
+## MA-ch06.50
+
+A forecaster gives three races win probabilities of 0.9, 0.8 and 0.6 and treats the races as independent, although a shared polling error could move all three together. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A forecast probability of 0.9 means the party wins 90% of the seats in a race.
+- [ ] B. For independent events, the joint probability is the product of the individual probabilities.
+- [ ] C. Treating the races as independent understates the chance of extreme results when errors are correlated.
+- [ ] D. The expected number of wins equals the sum of the probabilities if the races are independent, and differs if they are correlated.
+- [ ] E. A systematic polling error shared by the races produces correlated outcomes.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: It is a probability of winning, not a vote share.
+- B: Independence means one outcome gives no information about another.
+- C: Correlation fattens the tails of the joint distribution.
+- D: Expectation is additive regardless of dependence.
+- E: A common error source links the races beyond their individual probabilities.
+
+**Source:** Independence and correlated errors
+
+## MA-ch06.51
+
+A team tests 20 unrelated hypotheses at the 5% significance level, and every null hypothesis is true. It writes up only the significant results. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Conditioning on significance keeps large estimates, so reported effects are inflated, a pattern called the winner's curse.
+- [ ] B. Unreported tests leave no trace in the paper, which is how publication bias hides.
+- [ ] C. A Type I error means failing to detect a real effect.
+- [ ] D. Reporting just the significant results out of many tests is selective reporting.
+- [ ] E. A significant result among 20 true nulls shows a real effect.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: Selecting on significance favours overestimates.
+- B: Publication bias arises when results are filtered before they are seen.
+- C: A Type I error is rejecting a true null hypothesis.
+- D: Filtering by outcome distorts the evidence shown.
+- E: At a 5% rate, some false positives are expected among many tests.
+
+**Source:** Publication bias and winner's curse
+
+## MA-ch06.52
+
+A classifier predicts whether each applicant is qualified. The qualified share is 30% in group A and 10% in group B, and the classifier is perfect. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Demographic parity means equal accuracy across groups.
+- [ ] B. A perfect classifier satisfies demographic parity whatever the base rates.
+- [ ] C. Satisfying demographic parity here would require misclassifying some applicants.
+- [ ] D. A perfect classifier satisfies equalized odds.
+- [ ] E. With unequal base rates, a perfect classifier has unequal selection rates, which violates demographic parity.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: It means equal selection rates, which differs from equal accuracy.
+- B: Perfect predictions mirror the base rates, so parity fails when they differ.
+- C: Equal selection rates need some qualified people rejected or some unqualified ones accepted.
+- D: The true positive rate is one and the false positive rate is zero in both groups.
+- E: Selection rates equal the base rates when predictions are perfect.
+
+**Source:** Perfect classifier and fairness criteria
+
+## MA-ch06.53
+
+A company trains a ranking model on ten years of its own hiring records. Disparities can enter at different stages: past hiring decisions, who appears in the data, how features and labels are measured, how the model is evaluated, and how the ranking is used afterwards. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Applicants screened out earlier have no outcomes in the data, which is a form of selection bias.
+- [ ] B. Noisier or distorted features and labels for some groups are measurement bias.
+- [ ] C. Past decisions that reflect earlier practices are historical bias.
+- [ ] D. Disparity created when reviewers act on the ranking is called representation bias.
+- [ ] E. Using a pooled metric that hides weak subgroups is called deployment bias.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: Who has recorded outcomes depends on earlier decisions.
+- B: Measurement bias concerns how variables are recorded.
+- C: Historical bias comes from the world that produced the data.
+- D: That arises at use and belongs to deployment, whereas representation bias concerns thin coverage in the data.
+- E: Hiding subgroups in a pooled metric is aggregation or evaluation bias.
+
+**Source:** Bias types mapped to pipeline stages
+
+## MA-ch06.54
+
+An audit finds that a triage model refers 24% of patients from group X and 15% of patients from group Y to a specialist programme, and the difference is far too large to be chance. A manager concludes the model is biased against group Y. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Clinical need can differ between the groups, so the disparity does not by itself show bias in the model.
+- [ ] B. The gap is a disparity, a descriptive difference in outcomes between groups.
+- [ ] C. A rung 1 comparison of referral rates answers whether the model would refer more group Y patients if group membership were changed.
+- [ ] D. Statistical significance of the gap shows which pipeline stage caused it.
+- [ ] E. Comparing patients of similar severity separates need from other causes, with the limit that unmeasured factors remain.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: Differences in need, data, labels, cutoffs or review can each produce a gap.
+- B: A disparity records that outcomes differ without saying why.
+- C: That is an interventional question, which a descriptive comparison cannot answer.
+- D: Significance rules out chance and does not locate a cause.
+- E: Stratifying on legitimate covariates narrows the explanations.
+
+**Source:** Disparity versus bias
+
+## MA-ch06.55
+
+A firm trains a model to predict promotion from ten years of its own records and finds it highly accurate on held-out records. In those years promotion went to one group more often than to others at comparable measured performance. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Accuracy on held-out records from the same process measures how fair the labels are.
+- [ ] B. A model that reproduces a biased label accurately is evidence that the label is fair.
+- [ ] C. A held-out split drawn from the same process is an out-of-distribution evaluation.
+- [ ] D. This situation is label bias carried through historical bias.
+- [ ] E. Evaluating on records from the same pipeline detects bias in the labels.
+
+**Key:** A=F B=F C=F D=T E=F
+
+**Why:**
+
+- A: Accuracy measures agreement with the labels and says nothing about their fairness.
+- B: High accuracy can mean the model copied the bias.
+- C: A split from the same process is an in-distribution evaluation.
+- D: The labels encode past decisions that favoured one group.
+- E: Test labels share the source of the training labels and carry the same bias.
+
+**Source:** Accuracy against biased labels
+
+## MA-ch06.56
+
+A vendor claims its hiring model is not biased because it trained on 20 million records, that it has 94% accuracy for each group on held-out data from its own pipeline, and that it passes the one fairness metric tested. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A large training set shrinks variance but leaves bias from the data collection process.
+- [ ] B. Held-out data from the same pipeline is an in-distribution test, which can miss problems that appear elsewhere.
+- [ ] C. Passing one fairness metric shows that the model satisfies the other fairness criteria.
+- [ ] D. External validity concerns whether results hold in the population where the model will be used.
+- [ ] E. Equal accuracy across groups implies equal selection rates and equal error rates of each type.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: Volume does not correct a skewed process.
+- B: In-distribution results may not transfer to a different population.
+- C: Fairness criteria can conflict, so passing one does not imply the rest.
+- D: Generalising beyond the test pipeline is a separate question from internal accuracy.
+- E: Accuracy hides how errors are split between false positives and false negatives.
+
+**Source:** Evaluating vendor claims
+
+## MA-ch06.57
+
+A salary-recommendation model predicts salaries for women that are on average 8% lower than for men. Among employees at the same job level, the gap is 2%. Job level was assigned by earlier promotion decisions. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A smaller adjusted gap shows the model does not discriminate.
+- [ ] B. Job level can be a mediator, because group may influence promotion, which then influences salary.
+- [ ] C. The 8% figure is an unadjusted gap, and the 2% figure is a gap adjusted for job level.
+- [ ] D. The adjusted gap is the better figure because job level is a legitimate explanation of pay.
+- [ ] E. Adjusting for job level removes the part of the gap that runs through promotion.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: The remaining gap and the part running through job level are each open to question.
+- B: A mediator lies on a path from group to outcome.
+- C: Adjusting for a variable compares people within its levels.
+- D: Job level was itself shaped by earlier decisions, so it may carry the bias being studied.
+- E: Conditioning on a mediator blocks the effect that travels through it.
+
+**Source:** Adjusted versus unadjusted gap and mediation
+
+## MA-ch06.58
+
+A company deploys a support assistant built on a language model licensed from a provider. Testers find that answer quality and tone differ across customer groups in ways that the company's own prompts, data and code do not explain. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The company can show where the disparity entered without information from the provider.
+- [ ] B. Using a licensed model transfers accountability for the assistant's behaviour to the provider.
+- [ ] C. Behavioural testing with paired prompts can probe the model without access to its training data.
+- [ ] D. A model card or system documentation from the provider is useful evidence for the investigation.
+- [ ] E. The licensed model is an upstream component, and the company's prompts and code are downstream.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: Locating the source in training data or tuning needs documentation from the provider.
+- B: The company deploys the system and keeps accountability for its use.
+- C: Black-box testing relies on inputs and outputs.
+- D: Documentation of intended use and subgroup performance helps the deployer judge fitness for use.
+- E: Upstream and downstream describe position in the supply chain of a system.
+
+**Source:** Upstream models and accountability
