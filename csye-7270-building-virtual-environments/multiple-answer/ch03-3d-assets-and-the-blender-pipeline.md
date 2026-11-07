@@ -2,418 +2,594 @@
 
 ## MA-ch03.1
 
-A modeller makes a simple box in a 3D tool: 8 corner points, 12 straight lines joining them and 6 flat four-sided surfaces. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A modeller and a coding agent need to talk about the parts of a polygon mesh. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The 8 points are vertices, the 12 lines are edges and the 6 surfaces are faces.
-- [ ] B. A five-sided face is split into 3 triangles for drawing.
-- [ ] C. A face is the same thing as a vertex that carries a position and a colour.
-- [ ] D. Each four-sided face is drawn as two triangles, so the box has 12 triangles.
-- [ ] E. The box has 6 triangles because it has 6 faces.
+- [ ] A. A quad is a face with four sides.
+- [ ] B. An n-gon is a face with more than four sides.
+- [ ] C. Triangulation is the step that merges two separate meshes into one object.
+- [ ] D. A vertex is a single point with a position in 3D space.
+- [ ] E. A face is a straight line that joins two vertices.
 
 **Key:** A=T B=T C=F D=T E=F
 
 **Why:**
 
-- A: These are the three basic parts of a polygon mesh.
-- B: An n-sided face triangulates into n - 2 triangles, and 5 - 2 = 3.
-- C: A vertex is a point; a face is a surface bounded by edges between vertices.
-- D: GPUs draw triangles; a quad is split into two, and 6 x 2 = 12.
-- E: Each quad face becomes two triangles, so the box has 12.
+- A: Quad is the name for a four-sided face.
+- B: N-gon is the term for a face with five or more sides.
+- C: Triangulation splits faces into triangles; it does not merge meshes.
+- D: A vertex is a point; edges and faces are built from vertices.
+- E: A straight line joining two vertices is an edge; a face is the surface bounded by edges.
 
 **Source:** Mesh anatomy
 
 ## MA-ch03.2
 
-A low-poly post is an eight-sided cylinder: 8 rectangular side faces plus a single eight-sided face at each end, with no extra cuts. Triangulation splits an n-sided face into n - 2 triangles. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A modelling tool shows a face count and an engine profiler shows a triangle count for the same mesh. Check each statement that is true about the two measures. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Removing both end caps leaves 8 triangles.
-- [ ] B. The post has 24 triangles in total.
-- [ ] C. The two eight-sided end caps give 12 triangles between them.
-- [ ] D. Triangle count has no effect on performance, because GPUs process faces rather than triangles.
-- [ ] E. The 8 side faces give 16 triangles between them.
-
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: The 8 side faces still give 16 triangles.
-- B: 16 + 12 = 28.
-- C: Each cap is 8 - 2 = 6 triangles, so two caps give 12.
-- D: GPUs draw triangles, and more of them means more vertex and rasterisation work.
-- E: Each rectangle is two triangles, and 8 x 2 = 16.
-
-**Source:** Triangle count
-
-## MA-ch03.3
-
-An interviewer says: 'My modelling tool reports 8 vertices for a hard-edged cube, yet the engine's profiler reports 24 vertices for the same cube.' Check each statement that is true as an explanation. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The profiler must be wrong, because a cube has 8 vertices and engines do not add more.
-- [ ] B. The 24 vertices mean the cube has 24 faces, each drawn separately by the engine.
-- [ ] C. A vertex is also split where adjacent faces have different UV coordinates, such as along a UV seam.
-- [ ] D. A smooth mesh whose faces share normals and UVs at a corner can share one vertex there.
-- [ ] E. Three faces meet at each corner with different normals, so the GPU keeps a vertex per face: 8 x 3 = 24.
-
-**Key:** A=F B=F C=T D=T E=T
-
-**Why:**
-
-- A: 8 is the count of corner positions; GPU vertex data duplicates them when attributes differ.
-- B: The cube still has 6 faces; the extra vertices come from duplicated corners.
-- C: Different UVs at the same position require separate GPU vertices.
-- D: Shared attributes allow shared vertices.
-- E: A GPU vertex bundles position, normal and UV, so a corner with three normals needs three vertices.
-
-**Source:** Vertex count in the tool versus on the GPU
-
-## MA-ch03.4
-
-An imported crate has several faces that look black or vanish when viewed from outside. Another crate looks flat although a normal map texture is assigned to it. The developer must name each problem correctly to a coding agent. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A normal map is a texture of per-texel directions that fakes fine detail; it is not the mesh's own normals.
-- [ ] B. Recalculating normals to point outward repairs inside-out faces and adds no surface detail from any texture.
-- [ ] C. 'Fix the normals' and 'fix the normal map' are the same instruction, because a normal map is the mesh's own normals saved as an image.
-- [ ] D. A normal is a direction perpendicular to a surface, used for lighting; inward-pointing normals can make faces dark or culled.
-- [ ] E. Applying a normal map adds real triangles and vertices to the mesh, which is why the surface looks bumpy.
-
-**Key:** A=T B=T C=F D=T E=F
-
-**Why:**
-
-- A: The mesh normals are geometry data; the normal map is image data.
-- B: It corrects direction only; detail from a texture is a separate matter.
-- C: One recalculates face directions on the mesh, the other repairs or replaces a texture.
-- D: Lighting and culling depend on which way the face points.
-- E: A normal map changes lighting per pixel and leaves the geometry unchanged.
-
-**Source:** Normals versus normal maps
-
-## MA-ch03.5
-
-A coding agent builds a crate mesh and a wood texture. In the engine the texture is missing on one object that was created without unwrapping, and the wood grain looks stretched on another. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A mesh with no UV map still shows an image texture correctly, because the engine computes coordinates from the vertex positions.
-- [ ] B. UV coordinates are stored inside the texture image file, next to the pixels they refer to.
-- [ ] C. Stretched wood grain proves the texture image itself has too low a resolution, so a larger file is needed.
-- [ ] D. Unwrapping paints the texture image onto the model; the 2D layout it produces is a by-product that can be ignored.
-- [ ] E. A UV map gives each vertex a 2D (u, v) coordinate in the texture, saying which part of the image lands where on the surface.
-
-**Key:** A=F B=F C=F D=F E=T
-
-**Why:**
-
-- A: Without UVs the renderer has no mapping from surface to image.
-- B: They are stored on the mesh, as a per-vertex attribute.
-- C: Stretching comes from a mismatch between UV layout and surface shape, not from the image's pixel count.
-- D: Unwrapping produces the 2D layout (the UV map) itself; painting or choosing the image is a separate step.
-- E: UVs are the link between a 3D surface and a 2D image.
-
-**Source:** UV maps
-
-## MA-ch03.6
-
-A modeller creates a post with a metal pole and a red cloth pennant. The object has two material slots, one holding a metal material and one holding a cloth material, and every face is assigned to one of the slots. The model is exported to glTF and imported into an engine. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Renaming a slot changes nothing about how its faces look; the material it holds decides that.
-- [ ] B. A material slot is a numbered position on an object that holds a material; each face uses one slot.
-- [ ] C. Each extra material typically adds at least one draw call, so ten cost more to draw than one.
-- [ ] D. After import, the metal and cloth faces typically become separate surfaces with their own materials.
-- [ ] E. A texture and a material are the same thing, since a material is an image applied to faces.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: A slot name is a label.
-- B: Faces point at slots, and slots point at materials.
-- C: Surfaces with different materials generally cannot be drawn in a single call.
-- D: glTF keeps one primitive per material, and engines import them as separate surfaces.
-- E: A material defines how a surface is shaded and may use textures as inputs.
-
-**Source:** Material slots
-
-## MA-ch03.7
-
-A developer asks a coding agent for 'a door' model. When the door is placed in a level and rotated by script, it swings about its middle instead of its edge. A crate model, 1 m tall, that the agent also built sinks halfway into the floor when placed at floor height, y = 0. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The crate sinks because its origin is at its centre: at y = 0, half of its 1 m height is below the floor.
-- [ ] B. 'Make a door' already specifies where the origin goes, so the agent will place it at the hinge.
-- [ ] C. The origin (pivot) is the point an object's position and rotation refer to; a swinging door needs it on the hinge edge.
-- [ ] D. Moving an object's origin to a new point moves its visible geometry along with it, since the two are one thing.
-- [ ] E. A door whose origin is at its centre will swing about its hinge once the script rotates the node by 90 degrees.
+- [ ] A. A quad contributes two triangles to the triangle count.
+- [ ] B. Face count and triangle count are two names for the same number.
+- [ ] C. Triangle count is the number of triangles left once the faces have been triangulated.
+- [ ] D. Vertex count and triangle count measure the same thing.
+- [ ] E. A five-sided face triangulates into five triangles.
 
 **Key:** A=T B=F C=T D=F E=F
 
 **Why:**
 
-- A: A 1 m crate centred on the origin extends 0.5 m below it.
-- B: The phrase names the object, not its pivot, so the agent can choose any origin.
-- C: Rotation happens about the origin.
-- D: Tools can reposition the origin while the geometry stays where it is.
-- E: Rotation about the centre keeps the centre fixed; it cannot make a door swing about its edge, whatever the angle.
+- A: A quad is split along a diagonal into two triangles.
+- B: A quad is one face but two triangles, so the numbers differ.
+- C: GPUs draw triangles, so the triangle count is taken after triangulation.
+- D: Vertices are points; triangles are surfaces made from three of them.
+- E: An n-sided face gives n minus 2 triangles, so five sides give three.
 
-**Source:** Say it to the agent: origin and pivot
+**Source:** Triangle count versus face count
 
-## MA-ch03.8
+## MA-ch03.3
 
-An engine treats 1 unit as 1 metre, and its player character is 1.8 units tall. A modeller who was thinking in centimetres builds a tree 540 units tall, and the file is exported and imported with no conversion. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An interviewer says: 'My modelling tool reports 8 vertices for a hard-edged cube, yet the engine's profiler reports 24.' Check each statement that is true as an explanation. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The quickest correct fix is to make the player character 300 times taller so the proportions match.
-- [ ] B. Scaling the tree node to 0.01 in the engine is as good as fixing the mesh, because collision and physics ignore node scale.
-- [ ] C. glTF stores distances in centimetres, so the engine converts the tree down on import.
-- [ ] D. Units are only labels, so physics settings such as gravity behave the same for large and small models alike.
-- [ ] E. The tree appears 540 m tall in the engine, which is 300 times the player's height of 1.8 m.
-
-**Key:** A=F B=F C=F D=F E=T
-
-**Why:**
-
-- A: That would break every other object sized in metres.
-- B: Scaled nodes carry their scale into collision and anything built from them, which engines advise avoiding.
-- C: glTF specifies metres for all linear distances, so nothing is converted.
-- D: Physics is tuned for metre-scale objects, so wrongly sized objects behave wrongly.
-- E: 540 / 1.8 = 300, and 1 unit is 1 m.
-
-**Source:** Scale and units
-
-## MA-ch03.9
-
-In a modelling tool, a modeller adds a cube whose mesh is 2 m on each side and scales the object to (0.1, 0.1, 0.9) to make a pole that looks 0.2 x 0.2 x 1.8 m. The object is exported without applying transforms. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Applying transforms can only be done on the engine side, because exporters cannot bake them.
-- [ ] B. The mesh data still describes a 2 m cube; only the object's scale makes it look like a pole.
-- [ ] C. After applying the scale, the object's scale is (1, 1, 1) and the vertices themselves are 0.2 x 0.2 x 1.8 m apart.
-- [ ] D. In the engine the node carries a non-unit scale, which anything built from it, such as a collider, inherits.
-- [ ] E. Applying the scale changes how the pole looks in the viewport, since the vertices move.
+- [ ] A. A profiler that reports more vertices than the modelling tool has miscounted.
+- [ ] B. A UV seam forces the GPU to split a vertex because the two sides have different UV coordinates.
+- [ ] C. A hard edge gives the corner a different normal on each face, so the GPU keeps a separate vertex per normal.
+- [ ] D. A GPU vertex carries attributes such as a normal and UV coordinates in addition to a position.
+- [ ] E. Smooth shading raises the vertex count by giving each face its own normal at a corner.
 
 **Key:** A=F B=T C=T D=T E=F
 
 **Why:**
 
-- A: The step belongs in the modelling tool before export.
-- B: Scale lives on the object and the vertices are unchanged.
-- C: Apply bakes the object's scale into the vertex positions.
-- D: The exporter writes the object scale onto the node.
-- E: Apply keeps the appearance identical and changes only where the numbers are stored.
+- A: The two tools count different things: corner positions versus full GPU vertices.
+- B: The same position with two UV values is two GPU vertices.
+- C: A different normal at the same position needs a duplicated GPU vertex.
+- D: A GPU vertex bundles position, normal and UV, so differing attributes mean a new vertex.
+- E: Smooth shading shares one normal at a corner; separate normals per face describe flat shading.
 
-**Source:** Applying transforms
+**Source:** Vertex count in the tool versus on the GPU
 
-## MA-ch03.10
+## MA-ch03.4
 
-A modelling tool treats +Z as up, while glTF and Godot treat +Y as up. A person 1.8 m tall is modelled standing along Z. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An imported crate has a normal map assigned, yet a teammate asks the agent to 'fix the normals'. Check each statement that is true about the two terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. With the exporter's up-axis conversion on, the 1.8 m height arrives along Y.
-- [ ] B. Unreal Engine's editor is also Y-up, so no conversion is needed for it.
-- [ ] C. Rotating each imported node by 90 degrees in the level scripts fixes the orientation at the source, so any other tool that opens the asset will also see it upright.
-- [ ] D. Up axis and handedness are the same property, so fixing one fixes the other.
-- [ ] E. If the exporter does no axis conversion, the person arrives lying on their side in Godot, with the 1.8 m extent along Z.
+- [ ] A. A normal is a direction perpendicular to a surface, used for lighting.
+- [ ] B. A normal map changes how light is worked out for each pixel and leaves the geometry unchanged.
+- [ ] C. A normal map adds real triangles to the mesh to make the surface bumpy.
+- [ ] D. A normal map is a texture that stores a direction per texel to fake fine surface detail.
+- [ ] E. 'Recalculate the normals' and 'replace the normal map' are the same instruction.
 
-**Key:** A=T B=F C=F D=F E=T
-
-**Why:**
-
-- A: The conversion maps the tool's Z extent onto Y.
-- B: Epic's documentation says the Unreal Editor uses a Z-up axis.
-- C: The node rotation only hides the problem on that instance: it must be repeated wherever the model is used, and the asset's own axes, pivot and child nodes stay in the wrong frame.
-- D: Handedness describes how the axes are arranged (right- or left-handed); the up axis is a separate choice.
-- E: The height stays on the Z axis, which is not up in Godot.
-
-**Source:** Up axis and handedness
-
-## MA-ch03.11
-
-A developer asks a coding agent to 'export the model for the engine'. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. glTF 2.0 is an open interchange format: .glb is one binary file, while .gltf is a text description plus separate data files.
-- [ ] B. A single glTF 2.0 asset can describe meshes, materials, textures, a skeleton and animations together, which is why it suits rigged and textured props.
-- [ ] C. 'Export the model for the engine' already fixes format, up axis, scale and what to include.
-- [ ] D. The OBJ format carries skeletal skinning and animation as well as geometry, which is why studios favour it.
-- [ ] E. glTF carries a modelling tool's custom shader node graphs into the engine unchanged, so the looks match.
-
-**Key:** A=T B=T C=F D=F E=F
+**Key:** A=T B=T C=F D=T E=F
 
 **Why:**
 
-- A: GLB is the single-file form and glTF the text-plus-files form.
-- B: glTF's scene description covers geometry, materials, textures, skins and animations, so one export can carry a whole prop.
-- C: The phrase names none of them, so each is left to the agent's defaults.
-- D: Godot's documentation says OBJ does not support skinning, animation, UV2 or PBR materials.
-- E: glTF carries a metallic-roughness material model; tool-specific node graphs do not cross.
+- A: Normals are the geometry directions that lighting uses.
+- B: The detail is a lighting effect, not new geometry.
+- C: A normal map is image data and leaves the triangle count alone.
+- D: The map holds per-texel directions that bend the lighting.
+- E: One edits the mesh's face directions, the other edits or swaps an image.
 
-**Source:** glTF and GLB
+**Source:** Normals versus normal maps
 
-## MA-ch03.12
+## MA-ch03.5
 
-A level contains a stone archway the player must walk through and a loose boulder the player can push. The developer asks a coding agent to give both 'accurate mesh collision'. Check each statement that is true. Each statement is worth 1 point (5 points total).
+Some faces of an imported crate look black or vanish when viewed from outside. A developer tells the agent 'fix the shading'. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Concave shapes are the most accurate and also the cheapest for the physics engine to process.
-- [ ] B. In Godot, concave shapes are only usable on static bodies, so a pushable boulder needs a convex or primitive shape.
-- [ ] C. A concave (trimesh) shape can follow the arch's opening, so the player can walk through it.
-- [ ] D. A convex hull of the archway is the smallest convex shape around it, so it fills the opening and blocks the player.
-- [ ] E. A roughly round boulder is usually well served by a primitive sphere or a convex hull, which cost less than a trimesh.
-
-**Key:** A=F B=T C=T D=T E=T
-
-**Why:**
-
-- A: Godot's documentation calls them the slowest option.
-- B: Godot's documentation says concave shapes work within static bodies only.
-- C: Concave shapes follow the mesh's triangles exactly.
-- D: A convex shape cannot have a hole or dent, so the opening disappears.
-- E: Simple shapes are cheaper and adequate for a nearly convex object.
-
-**Source:** Convex versus concave collision
-
-## MA-ch03.13
-
-A character model has 30,000 triangles, including a cape, a sword and a hat plume. A developer tells a coding agent: 'use the model's mesh as its collider'. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. In Godot, a trimesh collider is a poor fit for a moving character: concave shapes are slow and work only on static bodies.
-- [ ] B. A collider should match the visible silhouette, so the cape and sword block the player as they look.
-- [ ] C. A collider is sized from what should feel solid, such as a capsule around the body, even if the cape extends outside it.
-- [ ] D. 'A capsule collider 0.4 m in radius and 1.8 m tall' is more precise because it states shape and size.
-- [ ] E. The collision shape is a separate thing from the visible mesh and may be far simpler than it.
-
-**Key:** A=T B=F C=T D=T E=T
-
-**Why:**
-
-- A: Godot's documentation restricts concave shapes to static bodies and calls them the slowest.
-- B: Matching every protrusion makes the character catch on scenery and costs more.
-- C: Collision is about gameplay fairness, not the visible outline.
-- D: It names the shape and its dimensions, removing the guess.
-- E: Collision geometry is authored or chosen separately from the visual mesh, and simple shapes are the norm.
-
-**Source:** Collider is not the visual mesh
-
-## MA-ch03.14
-
-A scene shows 50 identical trees of 12,000 triangles each (600,000 triangles in all). Up close the detail matters; far away the trees are small on the screen. A developer asks a coding agent to add levels of detail (LOD), with a 1,500-triangle version for distant trees. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. If 40 trees are far enough to use the 1,500-triangle version, they cost 60,000 triangles instead of 480,000.
-- [ ] B. LOD keeps several versions of a mesh with decreasing triangle counts; the engine picks one by distance or screen size.
-- [ ] C. The lower-detail meshes are free: they add nothing to the project's storage or load time.
-- [ ] D. Switching between LOD versions is not noticeable to the player, because the versions are built to match.
-- [ ] E. LOD cuts the triangles processed per tree but does not by itself reduce the number of trees drawn.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: 40 x 1,500 = 60,000 and 40 x 12,000 = 480,000.
-- B: That is the definition of level of detail.
-- C: Each extra version is more data that has to be stored and loaded.
-- D: A visible pop can occur when the engine switches versions.
-- E: Each visible tree is still drawn once, just with a smaller mesh.
-
-**Source:** Level of detail
-
-## MA-ch03.15
-
-A developer wants a coding agent to produce a crate model reproducibly. The agent writes a Python file that uses Blender's built-in Python API, bpy, and runs Blender with no window (background mode) to execute it as one step of an automated build. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An automated build step can judge whether the script step succeeded from the error text in the log; the process's exit status adds nothing to that.
-- [ ] B. If the script finishes without an error, the exported model is correct, since the script produced it.
-- [ ] C. bpy is Blender's Python interface, so a script can build, modify and export scenes without anyone clicking.
-- [ ] D. A script can be reviewed, diffed and rerun to regenerate the asset; live clicks leave no such record.
-- [ ] E. Background mode means the script cannot read the mesh or write files, because there is no window.
+- [ ] A. Smooth shading and flipped normals are the same problem.
+- [ ] B. Backface culling means deleting the rear faces of an object from the file.
+- [ ] C. Faces whose normals point into the object are described as having flipped normals.
+- [ ] D. Backface culling skips drawing a face when it is seen from the side its normal points away from.
+- [ ] E. 'Fix the shading' is as precise as 'recalculate the normals so they point outward'.
 
 **Key:** A=F B=F C=T D=T E=F
 
 **Why:**
 
-- A: The log text and the process's exit status are two separate signals; an automated step reads the exit status as its machine-checkable verdict, and a program can print an error and still exit with status 0, so the status has to be checked as well.
-- B: A script can run cleanly and still encode a wrong assumption about size, axes or scale.
-- C: Scripts call the same operations the interface does.
-- D: A script is a reproducible, reviewable recipe.
-- E: Background mode runs the same data operations and exports without an interface.
+- A: Smooth shading is how normals are shared across faces; flipped normals are a wrong direction.
+- B: Culling is a drawing-time skip and leaves the file unchanged.
+- C: Flipped normals are inside-out faces.
+- D: The renderer discards faces seen from behind, which is why inward faces vanish.
+- E: The first phrase does not name the cause; the second names both the term and the direction.
 
-**Source:** Scripting Blender with bpy
+**Source:** Flipped normals and culling
 
-## MA-ch03.16
+## MA-ch03.6
 
-A developer connects a coding agent to Blender through an MCP server and a Blender add-on, so the agent can act on a Blender window that is open. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A coding agent builds a crate mesh and a wood texture. The texture is missing on one object and looks stretched on another. Check each statement that is true about the terms involved. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A conversation of MCP tool calls is as easy to regenerate and review as a script file, since each call is logged.
-- [ ] B. The server relays tool calls to Blender, which carries them out and returns results; the model does not run inside Blender.
-- [ ] C. MCP gives the agent modelling skill that the underlying model did not already have, by teaching it Blender.
-- [ ] D. MCP is a standard way for an agent to discover and call tools that a separate program exposes.
-- [ ] E. An unguarded run-code tool lets anything that reaches the connection run code as the user, so keep it local and trusted.
+- [ ] A. Unwrapping lays the 3D surface out flat in 2D to produce the UV map.
+- [ ] B. A UV map gives each vertex a 2D coordinate in the texture.
+- [ ] C. Stretched wood grain points to a poor UV layout rather than a low-resolution image.
+- [ ] D. U and V name the axes of texture space, which keeps them distinct from the X, Y and Z of 3D space.
+- [ ] E. A texel is one corner of a mesh face.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Unwrapping produces the flat layout that the UV map stores.
+- B: UVs link surface points to image points.
+- C: Stretching comes from layout versus surface shape, not the pixel count of the image.
+- D: Texture space has its own axes, named U and V.
+- E: A texel is one pixel of a texture.
+
+**Source:** UV maps and unwrapping
+
+## MA-ch03.7
+
+A post has a metal pole and a red cloth pennant, held in two material slots on one object. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A material slot is a position on an object that holds a material, and faces are assigned to a slot.
+- [ ] B. A material and a texture are two words for the same image.
+- [ ] C. A texture is an image; a material describes how a surface is shaded and may use textures as inputs.
+- [ ] D. Extra materials on one object add triangles to the mesh.
+- [ ] E. A draw call is the count of triangles in a mesh.
+
+**Key:** A=T B=F C=T D=F E=F
+
+**Why:**
+
+- A: Faces point at slots and slots hold materials.
+- B: A material is a shading description; a texture is one possible input to it.
+- C: Textures feed materials; they are different things.
+- D: Materials change draw cost, not the number of triangles.
+- E: A draw call is a request to the GPU to draw a batch; it is not a triangle count.
+
+**Source:** Material slots and materials
+
+## MA-ch03.8
+
+A door model rotated by script swings about its middle instead of its edge, and a 1 m crate sinks halfway into the floor placed at y = 0. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The origin, also called the pivot, is the point an object's position and rotation refer to.
+- [ ] B. A 1 m crate with its origin at the centre sits exactly on the floor when placed at y = 0.
+- [ ] C. Moving the origin in the modelling tool drags the visible mesh along with it.
+- [ ] D. The phrase 'make a door' already tells the agent where to put the pivot.
+- [ ] E. A swinging door needs its pivot on the hinge edge.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: Origin and pivot are the reference point for transforms.
+- B: A centred origin puts half the crate's height below y = 0.
+- C: The origin can be moved while the geometry stays where it is.
+- D: The phrase names the object, not its pivot.
+- E: Rotation happens about the origin, so it belongs at the hinge.
+
+**Source:** Origin and pivot
+
+## MA-ch03.9
+
+A modeller thinks in centimetres and builds a tree 540 units tall; the engine treats one unit as one metre. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Scale and size mean the same thing.
+- [ ] B. Scaling the tree node down repairs the mesh data itself.
+- [ ] C. A model built in centimetres and imported as metres appears one hundred times too large.
+- [ ] D. Unit and scale are two names for one property.
+- [ ] E. In Godot a unit is conventionally read as one metre.
+
+**Key:** A=F B=F C=T D=F E=T
+
+**Why:**
+
+- A: Size is the extent of the mesh; scale is a multiplier carried by the object or node.
+- B: A node scale hides the problem on that node while the mesh stays the wrong size.
+- C: The numbers are kept but read in larger units.
+- D: A unit is a measure of distance; scale is a multiplier.
+- E: The engine's convention is one unit equals one metre.
+
+**Source:** Units and scale
+
+## MA-ch03.10
+
+A cube mesh is 2 m across. The modeller scales the object to (0.1, 0.1, 0.9) to make a pole and exports without applying transforms. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Applying transforms is a step done in the engine after import.
+- [ ] B. A non-unit scale on the imported node is inherited by anything built from it, such as a collider.
+- [ ] C. Applying the scale changes how the pole looks in the viewport.
+- [ ] D. Applying the scale bakes it into the vertex positions and resets the object's scale to 1.
+- [ ] E. Before applying, the mesh data can describe a different size from the size the object appears.
 
 **Key:** A=F B=T C=F D=T E=T
 
 **Why:**
 
-- A: Live tool calls leave a transcript, while a script is a single artifact that can be diffed and rerun.
-- B: The model stays in the agent; Blender executes the requested actions.
-- C: MCP supplies access to actions and results, not new capability in the model.
-- D: MCP defines how tools are listed and invoked.
-- E: Executing generated code without checks is a real exposure.
+- A: The step belongs in the modelling tool before export.
+- B: A node scale propagates to its children.
+- C: Apply keeps the look and changes only where the numbers are stored.
+- D: Apply moves the scale into the vertices.
+- E: The vertices still describe a 2 m cube; the object scale makes it look like a pole.
 
-**Source:** What an MCP server lets an agent do
+**Source:** Applying transforms
+
+## MA-ch03.11
+
+A modelling tool treats +Z as up, while glTF and Godot treat +Y as up. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Blender uses +Z as up, while glTF and Godot use +Y as up.
+- [ ] B. Unreal's editor treats +Z as up, as Blender does.
+- [ ] C. Up axis names which axis points up; handedness names whether the axes follow a right-hand or left-hand rule.
+- [ ] D. A model that lies on its side after import suggests the up axis was not converted on export.
+- [ ] E. Up axis and handedness are two names for the same setting.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: That is why a conversion is needed between Blender and Godot.
+- B: Unreal's editor is Z-up.
+- C: They are two separate properties of a coordinate system.
+- D: The height stays on the old up axis, so the model appears tipped.
+- E: Fixing one leaves the other unchanged.
+
+**Source:** Up axis and handedness
+
+## MA-ch03.12
+
+A developer asks a coding agent to 'export the model for the engine'. Check each statement that is true about the formats named. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A .gltf file is the single binary form, and .glb is the text form.
+- [ ] B. A .glb file packs a glTF asset into one binary file.
+- [ ] C. OBJ carries skeletal skinning and animation along with geometry.
+- [ ] D. glTF is an open interchange format for 3D assets.
+- [ ] E. One glTF asset can describe meshes, materials, textures, skins and animations together.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: The roles are swapped: .gltf is text plus separate data files.
+- B: GLB is the single-file form.
+- C: OBJ lacks skinning and animation.
+- D: glTF is an open standard for moving 3D assets between tools.
+- E: glTF's scene description covers a whole rigged, textured prop.
+
+**Source:** glTF, GLB and OBJ
+
+## MA-ch03.13
+
+A level has a stone archway the player walks through. A developer asks the agent for 'accurate collision'. Check each statement that is true about the shape terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A convex hull is the smallest convex shape that encloses the mesh, so on an archway it fills the opening.
+- [ ] B. A concave (trimesh) shape follows the mesh triangles, so it can keep the archway opening passable.
+- [ ] C. A convex shape has no dents or holes.
+- [ ] D. Primitive shapes, such as box, sphere and capsule, are made of the mesh's own triangles.
+- [ ] E. In Godot a concave shape works on moving bodies as well as static ones.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: A hull cannot have a hole, so it blocks the doorway.
+- B: A trimesh follows the triangles exactly, holes included.
+- C: Convex means any line between two inside points stays inside.
+- D: Primitives are simple analytic shapes and not built from the mesh.
+- E: Godot restricts concave shapes to static bodies.
+
+**Source:** Convex versus concave collision
+
+## MA-ch03.14
+
+A character model has 30,000 triangles including a cape and a sword. A developer says to the agent: 'use the model's mesh as its collider'. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. 'Add a collider' already names the shape and size.
+- [ ] B. A collider should copy the cape and the sword so they block the player as they look.
+- [ ] C. A collision shape is authored separately from the visual mesh and can be much simpler.
+- [ ] D. A capsule is a common primitive shape for a character body.
+- [ ] E. 'Use the mesh as the collider' asks for a concave (trimesh) shape, which is a poor fit for a moving character.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: The phrase leaves shape and size open.
+- B: Copying protrusions makes the character catch on scenery.
+- C: Collision geometry is a separate design choice from the visible mesh.
+- D: A capsule slides smoothly past edges and is cheap to test.
+- E: A trimesh is the slowest option and works on static bodies only in Godot.
+
+**Source:** Collision shape is not the visual mesh
+
+## MA-ch03.15
+
+A stone archway is fixed in the level, a large rock is fixed in the level, and a crate is pushed by the player. The developer picks collision shapes in Godot. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A single convex hull on the archway keeps the opening passable.
+- [ ] B. The pushable crate should use a trimesh shape in Godot.
+- [ ] C. The archway is a static body.
+- [ ] D. A concave shape suits the archway because the opening stays passable.
+- [ ] E. The pushable crate is a moving body, and a box primitive suits it.
+
+**Key:** A=F B=F C=T D=T E=T
+
+**Why:**
+
+- A: A convex hull fills the opening.
+- B: Godot allows concave shapes on static bodies only.
+- C: A fixed object that other bodies collide with is a static body.
+- D: A concave shape can follow the hole.
+- E: A body moved by the simulation is a moving body, and a primitive is cheap.
+
+**Source:** Collision shape choice by body type
+
+## MA-ch03.16
+
+A scene has 50 identical trees. A developer asks the agent to add levels of detail (LOD). Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A visible jump when the engine switches versions is called aliasing.
+- [ ] B. Extra LOD meshes add no storage or load time.
+- [ ] C. The engine picks the LOD version by distance or screen size.
+- [ ] D. LOD reduces the number of trees that are drawn.
+- [ ] E. LOD keeps several versions of a mesh with decreasing triangle counts.
+
+**Key:** A=F B=F C=T D=F E=T
+
+**Why:**
+
+- A: The visible switch is called popping; aliasing is jagged edges.
+- B: Each version is more data to store and load.
+- C: Smaller on screen means a cheaper version.
+- D: LOD lowers the triangles per tree and leaves the tree count alone.
+- E: That is the definition of level of detail.
+
+**Source:** Level of detail
 
 ## MA-ch03.17
 
-An agent reports that an exported prop 'looks right'. The developer wants numbers a headless test can check after the model is imported into the engine. The prop should be 0.2 x 1.8 x 0.2 m (width, height, depth, with Y up), sit on the floor when placed at y = 0, be at unit scale, and have two materials named PostMetal and PennantRed. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer asks a coding agent to build a crate with a Python file that uses bpy and runs Blender in background mode. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The lowest point of the mesh should sit at y = 0 relative to the node when the origin was set at the base.
-- [ ] B. The node's scale should be (1, 1, 1); a 2 m cube wearing scale (0.1, 0.9, 0.1) would look right yet fail.
-- [ ] C. The mesh's bounding box should measure (0.2, 1.8, 0.2) m; (0.2, 0.2, 1.8) would mean it lies on its side.
-- [ ] D. Passing all of these checks shows the prop looks good under the game's lighting and reads as a post.
-- [ ] E. The names of the imported surfaces' materials can be listed and compared with the two expected names.
+- [ ] A. A script that ends without an error has produced a verified asset.
+- [ ] B. bpy is the name of Blender's Python API.
+- [ ] C. A script is a reproducible recipe that can be reviewed, diffed and rerun.
+- [ ] D. A script run in background mode is unable to read the mesh or export a file.
+- [ ] E. Background mode runs Blender with no window.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: A clean run can still encode a wrong size, axis or scale.
+- B: bpy gives scripts access to Blender's data and operators.
+- C: A file is an artifact that can be versioned and rerun.
+- D: The same data operations and exports run without a window.
+- E: Background mode is also called headless: no interface is shown.
+
+**Source:** Scripting Blender with bpy
+
+## MA-ch03.18
+
+A developer connects a coding agent to Blender through an MCP server and an add-on. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The model itself runs inside the Blender process.
+- [ ] B. MCP is a standard way for an agent to discover and call tools that another program exposes.
+- [ ] C. The add-on receives the tool calls and carries them out in Blender.
+- [ ] D. MCP is a file format for storing meshes.
+- [ ] E. A run-code tool without guards lets whoever can reach the connection run code as the user.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: The model stays in the agent; Blender only executes the calls.
+- B: It defines how tools are listed and called.
+- C: The add-on is the Blender side of the connection.
+- D: MCP is a protocol for tools and has nothing to do with mesh storage.
+- E: Unchecked code execution is a real exposure, so keep it local and trusted.
+
+**Source:** What an MCP server is
+
+## MA-ch03.19
+
+A developer wants numbers a headless test can check after import: a post meant to be 0.2 x 1.8 x 0.2 m with Y up, standing on the floor at y = 0, at unit scale. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A bounding box lists the names of the materials on the mesh.
+- [ ] B. A bounding box of (0.2, 0.2, 1.8) in a Y-up engine suggests the post lies on its side.
+- [ ] C. A lowest point at y = 0 relative to the origin shows the pivot is at the base.
+- [ ] D. A node scale of (1, 1, 1) suggests the transforms were applied.
+- [ ] E. A bounding box is the smallest box that encloses the mesh, and its extents give width, height and depth.
+
+**Key:** A=F B=T C=T D=T E=T
+
+**Why:**
+
+- A: Materials are read from the surfaces, not from the bounding box.
+- B: The 1.8 m height sits on Z instead of Y.
+- C: The base touching the origin height means the object stands on the floor.
+- D: An unapplied scale would show as a non-unit value.
+- E: Extents are the box's size along each axis.
+
+**Source:** Verifying an asset by measuring
+
+## MA-ch03.20
+
+A developer compares phrases for a crate request to a coding agent. Check each statement that is true about which phrase names a term precisely. Each statement is worth 1 point (5 points total).
+
+- [ ] A. 'Add a collision shape' names the shape and its size.
+- [ ] B. 'Origin at base centre' names the pivot.
+- [ ] C. 'As a .glb' names the export format.
+- [ ] D. 'Export it with the usual settings' names the up axis and scale.
+- [ ] E. 'Under 200 triangles' names a budget that can be checked.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: It leaves the shape and size to the agent.
+- B: It states where the origin goes.
+- C: GLB is a specific format.
+- D: The phrase names no axis or scale; defaults vary.
+- E: A triangle count is a number a test can read.
+
+**Source:** Precise asset request wording
+
+## MA-ch03.21
+
+A developer moves between engines and wants the collision terms straight. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Godot's concave shape corresponds roughly to Unreal's complex collision.
+- [ ] B. Simple and complex collision are the same shape in Unreal.
+- [ ] C. In Unreal, simple collision is made of primitives and convex hulls.
+- [ ] D. In Unreal, complex collision is the per-triangle mesh.
+- [ ] E. A simulated Unreal object should use complex collision for its movement.
+
+**Key:** A=T B=F C=T D=T E=F
+
+**Why:**
+
+- A: Both mean exact triangle collision.
+- B: They are two different shapes used for different jobs.
+- C: Simple collision uses cheap shapes.
+- D: Complex collision tests the exact triangles.
+- E: Simulated bodies rely on simple shapes.
+
+**Source:** Collision vocabulary across engines
+
+## MA-ch03.22
+
+A developer tells an agent: 'Make me a barrel in Blender and put it in my game so the player can bump into it.' Check each statement that is true about which term the vague phrase hides. Each statement is worth 1 point (5 points total).
+
+- [ ] A. 'Bump into it' leaves open whether a solid collider or a trigger is meant.
+- [ ] B. 'Not lying on its side' is a statement about the up axis.
+- [ ] C. 'Standing on the floor' is a statement about the pivot or origin.
+- [ ] D. 'The right size' is a statement about the pivot.
+- [ ] E. 'Cheap to draw' is stated with a triangle budget and a material count.
 
 **Key:** A=T B=T C=T D=F E=T
 
 **Why:**
 
-- A: That is what makes the prop stand on the floor when placed at y = 0.
-- B: Looking right and carrying the right numbers are different things.
-- C: The extents reveal which axis the height ended up on.
-- D: These checks measure geometry and names; appearance needs a person looking at a render.
-- E: Material names cross in glTF and can be asserted.
+- A: Collision can mean blocking or only reporting.
+- B: Orientation depends on which axis is up.
+- C: Where the origin sits decides whether the barrel rests on y = 0.
+- D: Size is stated in metres, and the unit convention decides it.
+- E: Triangle count and material count are the measurable budgets.
+
+**Source:** Say it to the agent: prop request wording
+
+## MA-ch03.23
+
+An imported model arrives with a problem. Check each statement that pairs the symptom with the term that most likely explains it. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A prop that sinks halfway into the floor points to the up axis.
+- [ ] B. A prop that lies on its side points to handedness.
+- [ ] C. A prop about one hundred times too large points to a unit mismatch.
+- [ ] D. A prop with an odd non-unit node scale points to backface culling.
+- [ ] E. A prop that rotates about the wrong point points to the material slots.
+
+**Key:** A=F B=F C=T D=F E=F
+
+**Why:**
+
+- A: Sinking points to the origin sitting at the prop's centre.
+- B: Lying on its side points to the up axis, not handedness.
+- C: Centimetres read as metres give a factor of one hundred.
+- D: An odd node scale points to a scale that was not applied.
+- E: Rotating about the wrong point points to the origin.
+
+**Source:** Why imported models arrive wrong
+
+## MA-ch03.24
+
+A coding agent can drive Blender through an MCP session or through a bpy script. Check each statement that is true when comparing them. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A script and an MCP session are the same artifact.
+- [ ] B. MCP suits exploring an open scene or making a one-off fix.
+- [ ] C. An MCP session leaves a transcript of tool calls.
+- [ ] D. A bpy script is a file that can be rerun to regenerate the asset.
+- [ ] E. For a prop that has to be regenerated later, an MCP session is a better record than a script.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: One is a file, the other a conversation of calls.
+- B: Live calls fit exploration and quick edits.
+- C: Each call and result appears in the conversation.
+- D: A script is a recipe that gives the same asset when rerun.
+- E: A single file is easier to diff and rerun than a transcript.
+
+**Source:** MCP versus scripting
+
+## MA-ch03.25
+
+A team is cutting rendering cost for a scene of trees with two materials each. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A trimesh collision shape adds draw calls.
+- [ ] B. Triangle count and draw call count measure the same cost.
+- [ ] C. Merging two materials that share a look reduces draw calls.
+- [ ] D. A draw call is the count of triangles in a mesh.
+- [ ] E. Merging materials changes the triangle count.
+
+**Key:** A=F B=F C=T D=F E=F
+
+**Why:**
+
+- A: Collision shapes are not drawn.
+- B: Triangles are surface work; draw calls are batch requests.
+- C: Fewer materials usually mean fewer batches.
+- D: A draw call is one request to draw a batch.
+- E: Merging materials leaves the geometry alone.
+
+**Source:** Mesh cost and materials
+
+## MA-ch03.26
+
+Three symptoms appear on imported models. Check each statement that matches the symptom to the term that explains it and the phrase that fixes it. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Many draw calls on one object point to many material slots.
+- [ ] B. 'Reduce the object to two materials, merging slots that share a look' is a precise fix for the slot problem.
+- [ ] C. A missing or stretched texture points to absent or poorly laid-out UVs.
+- [ ] D. A stretched texture points to inward normals.
+- [ ] E. Black or invisible faces point to inward normals.
+
+**Key:** A=T B=T C=T D=F E=T
+
+**Why:**
+
+- A: Each material typically adds a draw call.
+- B: It states a number and what to merge.
+- C: UVs link the surface to the image.
+- D: Normals affect lighting, not how an image is laid on the surface.
+- E: Lighting and culling depend on the direction a face points.
+
+**Source:** Normals, UVs and material slots
+
+## MA-ch03.27
+
+An agent reports that an exported prop 'looks right'. Check each statement that is true about what a headless check and a person can each establish. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Whether a collider feels fair is for a person to judge.
+- [ ] B. A headless test can judge whether the prop looks good under the game's lighting.
+- [ ] C. Reading the lowest point against the origin catches a prop that sinks or floats.
+- [ ] D. A headless test can assert the bounding box, the node scale and the material names.
+- [ ] E. 'Looks right' and 'measures right' mean the same thing.
+
+**Key:** A=T B=F C=T D=T E=F
+
+**Why:**
+
+- A: Feel is a human judgement.
+- B: Appearance under lighting needs a person looking at a render.
+- C: The lowest point relative to the pivot shows resting height.
+- D: These are numbers that can be read and compared.
+- E: A model can look right on screen while a number is wrong.
 
 **Source:** Verifying an asset by measuring
-
-## MA-ch03.18
-
-A developer needs a crate and compares several requests to a coding agent. Check each statement that is true about how clearly the request specifies the asset. Each statement is worth 1 point (5 points total).
-
-- [ ] A. 'Make the crate about the right size' is as precise as the full request, because the engine works in metres.
-- [ ] B. 'Low-poly crate, 1 x 1 x 1 m, origin at base centre, under 200 triangles, scale applied, one material, .glb, +Y up' settles what the agent would guess.
-- [ ] C. 'Export it with the usual settings' is precise, since exporters share the same defaults for axes, scale and included data.
-- [ ] D. 'Keep the triangle count under 200' is checkable by reading the exported mesh's triangle count.
-- [ ] E. 'Add a collision shape' is enough, because the agent will pick a cheap convex or primitive shape.
-
-**Key:** A=F B=T C=F D=T E=F
-
-**Why:**
-
-- A: The phrase gives no number, so the engine's units do not settle the size.
-- B: Each phrase removes a decision the agent would otherwise make.
-- C: Defaults differ between tools and versions, so the phrase leaves them open.
-- D: It names a number that a test can read.
-- E: It could just as well add an expensive trimesh or none that suits.
-
-**Source:** Say it to the agent: a precise asset request
-
-## MA-ch03.19
-
-A developer moves between engines and wants the collision vocabulary straight. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. In Unreal, simple collision uses primitives and convex hulls, while complex collision is the object's per-triangle trimesh.
-- [ ] B. An Unreal object that must be physically simulated should use complex collision so that it matches its visible shape exactly.
-- [ ] C. Unreal's simple collision corresponds roughly to primitive or convex shapes, and complex to concave (trimesh).
-- [ ] D. In Unreal, the simple and complex collision of an object are the same shape, because both are taken from the visible mesh.
-- [ ] E. In Unreal and in Godot alike, exact per-triangle collision is the costly kind and primitives or convex hulls are the cheap kind.
-
-**Key:** A=T B=F C=T D=F E=T
-
-**Why:**
-
-- A: This is how Epic's documentation divides the two.
-- B: Simulated bodies rely on simple collision shapes (primitives or convex hulls), not on the exact triangle mesh.
-- C: The mapping holds: shapes without dents versus the exact triangle mesh.
-- D: Simple collision is made of primitives or convex hulls, while complex collision is the per-triangle mesh; they usually differ.
-- E: Testing against every triangle costs more than testing against a primitive or hull; Godot's documentation calls concave shapes the slowest option, and Unreal pairs cheap simple shapes with the exact complex mesh.
-
-**Source:** Collision vocabulary across engines

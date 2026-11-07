@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 159,
+  "count": 175,
   "chapters": {
     "foundations": "Engine vocabulary (Godot, Unity, Unreal)",
     "0": "Chapter 0: The toolchain",
@@ -5110,6 +5110,518 @@
         {
           "point": 5,
           "text": "Explains why it is hard to guarantee: outcomes are sensitive to parameters and conditions and cannot be predicted without simulation, so they need testing, measurement and playtesting, and can include unwanted cases such as jams or deadlocks."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.1",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "Rewrite a vague camera prompt",
+      "prompt": "A producer types this to a coding agent: \"Make the camera swoop in on the boss, then pan back out to show the arena.\" Explain what is imprecise or wrong in the wording. Then rewrite the instruction using exact camera terms for two readings: one where the camera body moves, and one where only the lens changes. Say what the viewer would see differently between the two.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies that \"pan\" is the wrong word for moving back out, since a pan is a rotation on the spot and does not change position."
+        },
+        {
+          "point": 2,
+          "text": "Names \"swoop in\" as vague and replaces it with an exact move: a dolly in (camera body moves forward along its view direction), possibly with an orbit or a curved path."
+        },
+        {
+          "point": 3,
+          "text": "Gives a rewrite for the camera-body reading using dolly in and dolly out, with a duration and easing."
+        },
+        {
+          "point": 4,
+          "text": "Gives a rewrite for the lens reading using a zoom (field of view or focal length narrows and then widens) with the camera position unchanged."
+        },
+        {
+          "point": 5,
+          "text": "Explains the difference seen: a dolly changes parallax between near and far objects, while a zoom magnifies the same view without that shift."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "Camera framing vocabulary",
+      "prompt": "Define each of these terms in one or two sentences, and give one example of when a game camera would use it: deadzone, look-ahead, screen shake, camera limits.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines a deadzone as a screen region where the target can move without the camera moving, and gives a use such as avoiding camera motion on small player movements."
+        },
+        {
+          "point": 2,
+          "text": "Defines look-ahead as shifting the framing toward the direction of travel, and gives a use such as showing more of the level ahead of a fast runner."
+        },
+        {
+          "point": 3,
+          "text": "Defines screen shake as a brief, decaying random offset of camera position or rotation, and gives a use such as an explosion or hit."
+        },
+        {
+          "point": 4,
+          "text": "Defines camera limits (bounds) as clamps that keep the camera from showing space outside the level, and gives a use such as level edges."
+        },
+        {
+          "point": 5,
+          "text": "Uses each term in its own sense without mixing them up (for example, does not describe the deadzone as shake or limits as smoothing)."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.3",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "Zoom versus dolly",
+      "prompt": "A student says, \"A zoom and a dolly are the same: both make the subject bigger.\" Correct this using exact terms. Explain what each changes on the camera, what the viewer sees in each case, and name one situation where each is the better choice.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "States that a zoom changes the lens (field of view or focal length) and the camera does not move."
+        },
+        {
+          "point": 2,
+          "text": "States that a dolly moves the camera body along its view direction and changes the field of view not at all."
+        },
+        {
+          "point": 3,
+          "text": "Explains that a dolly changes perspective and parallax between near and far objects, while a zoom keeps the same viewpoint and only magnifies."
+        },
+        {
+          "point": 4,
+          "text": "Names a situation where a zoom suits (for example a fast scope or sniper view, or a UI-style punch-in) and one where a dolly suits (for example moving through a space so depth is felt)."
+        },
+        {
+          "point": 5,
+          "text": "Uses the terms consistently throughout, including \"field of view\" for the lens angle."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.4",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "Follow-camera tuning words",
+      "prompt": "Write the exact words you would give a coding agent to build a 2D platformer follow camera that feels smooth. Use at least five precise camera terms (for example follow, smoothing or damping, deadzone, look-ahead, camera limits, screen shake) and say what value or behaviour you want for each.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Names a follow camera that tracks the player and states the target."
+        },
+        {
+          "point": 2,
+          "text": "Sets smoothing (damping) with a value or behaviour, such as trailing slightly and catching up in a fraction of a second."
+        },
+        {
+          "point": 3,
+          "text": "Sets a deadzone with a size or behaviour, so small movements do not move the camera."
+        },
+        {
+          "point": 4,
+          "text": "Sets look-ahead with a distance or direction rule, and camera limits at the level bounds."
+        },
+        {
+          "point": 5,
+          "text": "Uses the terms correctly and adds a way to check the result, such as stating the observable behaviour (no jitter, no view outside the level)."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.5",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "Keyframe, interpolation, easing and tween",
+      "prompt": "Explain the difference between a keyframe, interpolation, easing and a tween, using a door that opens from 0 to 90 degrees in one second as the example. Then say when you would author a clip and when you would write a tween in code.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines a keyframe as a stored value at a specific time, such as 0 degrees at 0 seconds and 90 degrees at 1 second."
+        },
+        {
+          "point": 2,
+          "text": "Defines interpolation as computing the in-between values between keyframes."
+        },
+        {
+          "point": 3,
+          "text": "Defines easing as the shape of the speed over time (for example slow start, fast finish), without changing the end values."
+        },
+        {
+          "point": 4,
+          "text": "Defines a tween as a code-driven interpolation of a property over a duration, usually with an easing setting."
+        },
+        {
+          "point": 5,
+          "text": "Says when each tool fits: authored clips for designed, reusable motion on a rig or sprite, and tweens for quick procedural effects such as a UI pop-up."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.6",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "Spot the wrong word in an animation prompt",
+      "prompt": "A student writes: \"Animate the sprite sheet with bones and use IK to cut it into frames.\" Identify the wrong words and explain each. Then write a correct instruction for a sprite-sheet character and a correct instruction for a rigged 3D character, each with exact terms.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies that bones do not belong to a sprite sheet, which is a grid of image frames."
+        },
+        {
+          "point": 2,
+          "text": "Identifies that IK is a technique that solves joint angles to reach a target, and does not cut anything into frames."
+        },
+        {
+          "point": 3,
+          "text": "Gives a correct sprite-sheet instruction naming the grid (columns and rows or cell size), which frames and in what order, frame rate, and loop."
+        },
+        {
+          "point": 4,
+          "text": "Gives a correct rigged-character instruction naming the rig or skeleton, the clip, loop mode, and in-place versus root motion."
+        },
+        {
+          "point": 5,
+          "text": "Notes that mixing the two methods in a prompt can make the agent guess, and says how to state the method up front."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.7",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "Root motion diagnosis",
+      "prompt": "Explain root motion and in-place animation. A student's walking character slides over the floor and also travels twice as far as expected. Diagnose the problem with exact terms and write the instruction that fixes it.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines root motion as movement baked into the clip that drives the character's root through the world."
+        },
+        {
+          "point": 2,
+          "text": "Defines in-place animation as a clip that keeps the root still while script code supplies the travel."
+        },
+        {
+          "point": 3,
+          "text": "Diagnoses double movement: the clip uses root motion while the script also moves the body at walking speed."
+        },
+        {
+          "point": 4,
+          "text": "Diagnoses sliding as a mismatch between the travel speed and the speed of the feet in the clip."
+        },
+        {
+          "point": 5,
+          "text": "Writes a precise fix, such as use an in-place clip and let the script move the body, or use root motion and remove the script movement, and match speed to the clip."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.8",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: camera and animation (essay)",
+      "source": "State machine versus blend tree",
+      "prompt": "Compare a state machine and a blend tree for a 3D character who idles, walks, runs, jumps and lands. Say which tool handles which job, define a transition and a parameter, and write one sentence each that you would give an agent to build the locomotion blend and the jump logic.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines a state machine as named states with transitions between them, one active at a time."
+        },
+        {
+          "point": 2,
+          "text": "Defines a blend tree as a weighted mix of clips driven by a parameter such as speed."
+        },
+        {
+          "point": 3,
+          "text": "Assigns the idle, walk and run mix to a blend tree on speed, and jump and land to states with transitions."
+        },
+        {
+          "point": 4,
+          "text": "Defines a transition as a rule with a condition (for example \"on the ground changes to false\") and a parameter as a named value the logic reads."
+        },
+        {
+          "point": 5,
+          "text": "Gives two precise agent instructions that name the parameter, the clips and the transition conditions."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.9",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Coyote time and jump buffer",
+      "prompt": "A designer says, \"The jump feels unfair.\" Explain coyote time and a jump buffer: what each remembers, which player mistake each forgives, and how each is measured. Then write one exact instruction to an agent that adds both to a platformer with sensible values.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines coyote time as a short grace window after leaving a ledge during which a jump is still allowed."
+        },
+        {
+          "point": 2,
+          "text": "Defines a jump buffer as remembering a jump press just before landing and performing the jump on landing."
+        },
+        {
+          "point": 3,
+          "text": "Matches mistakes: coyote time forgives a late press, the jump buffer forgives an early press."
+        },
+        {
+          "point": 4,
+          "text": "States that both are measured as short durations (seconds or frames) and gives plausible values."
+        },
+        {
+          "point": 5,
+          "text": "Writes an exact instruction naming both features, their durations, and the condition to reset them."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.10",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Delta time and frame-rate independence",
+      "prompt": "Explain velocity, speed, acceleration and delta time. A character runs faster on a 144 frames per second monitor than on a 30 frames per second laptop. Diagnose the cause and write the corrected movement rule in words.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines velocity as speed plus direction (a vector) and speed as its size."
+        },
+        {
+          "point": 2,
+          "text": "Defines acceleration as the rate at which velocity changes."
+        },
+        {
+          "point": 3,
+          "text": "Defines delta time as the time since the previous frame."
+        },
+        {
+          "point": 4,
+          "text": "Diagnoses the bug: movement adds a fixed amount per frame, so more frames per second means more distance per second."
+        },
+        {
+          "point": 5,
+          "text": "States the fix: scale per-second speed or acceleration by delta time, and run physics in a fixed timestep step."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.11",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Body types and triggers",
+      "prompt": "Distinguish a collider, a trigger, a rigid body, a kinematic body and a static body. For a coin, a moving platform, a tumbling crate, a wall and the player character, name the best choice and say why.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines a collider as the shape used for contact tests and a trigger as a volume that detects overlap without blocking."
+        },
+        {
+          "point": 2,
+          "text": "Defines a rigid body as simulated by physics, a kinematic body as moved by code or animation, and a static body as not moving."
+        },
+        {
+          "point": 3,
+          "text": "Chooses a trigger for the coin and gives the reason (detect, not block)."
+        },
+        {
+          "point": 4,
+          "text": "Chooses kinematic for the moving platform and the player (script controlled), rigid for the crate, and static for the wall, with reasons."
+        },
+        {
+          "point": 5,
+          "text": "Uses the terms correctly without mixing them (for example does not say a trigger blocks)."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.12",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Rewrite a vague movement prompt",
+      "prompt": "Rewrite this vague prompt using exact game-movement terms: \"Make the player move nicely and the platforms work.\" Your rewrite should name the body type for the player and for a moving platform, the movement rules (velocity, acceleration, friction, gravity, delta time), the collision shapes, and what you would check afterward.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Names a body type for the player (for example kinematic character body) and for the platform (kinematic or animatable)."
+        },
+        {
+          "point": 2,
+          "text": "States movement rules with velocity, acceleration or friction, and gravity."
+        },
+        {
+          "point": 3,
+          "text": "Says the changes are scaled by delta time or run in the fixed timestep."
+        },
+        {
+          "point": 4,
+          "text": "Names collider shapes and, where needed, a trigger area (for example a hurtbox or a pickup zone)."
+        },
+        {
+          "point": 5,
+          "text": "Adds checks that can be observed, such as speed at two frame rates and standing on the platform."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.13",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Shader stages and inputs",
+      "prompt": "Compare a vertex shader and a fragment shader, and define uniform, varying and UV. Give one effect for each stage and say how a script would change the effect while the game runs.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines the vertex shader as running per vertex and setting positions, and the fragment shader as running per pixel and setting colour."
+        },
+        {
+          "point": 2,
+          "text": "Defines a uniform as a value from game code that is the same across a draw call."
+        },
+        {
+          "point": 3,
+          "text": "Defines a varying as a value passed from the vertex stage to the fragment stage and interpolated."
+        },
+        {
+          "point": 4,
+          "text": "Defines UV as 2D coordinates that map a surface to a texture."
+        },
+        {
+          "point": 5,
+          "text": "Gives a vertex example (wave or displacement) and a fragment example (tint or glint), and says a script sets a uniform each frame to change them."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.14",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Material vocabulary",
+      "prompt": "Explain albedo, normal map, roughness, metallic, emission and PBR to an artist who has never written a shader. Then describe a worn metal door with glowing warning lights using those terms.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Defines albedo as base colour without lighting."
+        },
+        {
+          "point": 2,
+          "text": "Defines a normal map as a per-pixel surface direction that fakes small bumps in lighting without moving geometry."
+        },
+        {
+          "point": 3,
+          "text": "Defines roughness (sharp or blurry highlights) and metallic (how much it behaves like a metal)."
+        },
+        {
+          "point": 4,
+          "text": "Defines emission as self-lit colour, and PBR as a physically based set-up that behaves consistently under different lights."
+        },
+        {
+          "point": 5,
+          "text": "Describes the door correctly: high metallic, medium roughness with worn spots, a normal map for dents and an emission colour for the lights."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.15",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Spot the wrong word in a shader prompt",
+      "prompt": "A student writes: \"Use a normal map to make the lava glow and the fragment shader to move the vertices.\" Identify each wrong word, say what the correct term is, and rewrite the instruction. Also name which blend mode you would pick for a rising smoke effect and for a glow, and why.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Identifies that glow is emission, not a normal map."
+        },
+        {
+          "point": 2,
+          "text": "Identifies that moving vertices is vertex shader work, not fragment shader work."
+        },
+        {
+          "point": 3,
+          "text": "Writes a corrected instruction using emission for the glow and a vertex shader for the movement."
+        },
+        {
+          "point": 4,
+          "text": "Chooses alpha blending for smoke because it mixes by opacity."
+        },
+        {
+          "point": 5,
+          "text": "Chooses additive blending for a glow because it adds light to what is behind it, and explains that it brightens where layers overlap."
+        }
+      ]
+    },
+    {
+      "id": "ES-jargon.16",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: movement, shaders and physics (essay)",
+      "source": "Say it to the agent: enemy behaviour",
+      "prompt": "Write a short \"say it to the agent\" paragraph that asks for an enemy that patrols, chases, and attacks. Use at least five exact terms from state machines, collision and animation, and explain how each term keeps the agent from guessing.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Names a state machine with patrol, chase and attack states and the transitions between them."
+        },
+        {
+          "point": 2,
+          "text": "Gives conditions for transitions, such as a sight trigger area and an attack range."
+        },
+        {
+          "point": 3,
+          "text": "Names collision pieces, such as a hitbox for the attack and a hurtbox for taking damage, as triggers."
+        },
+        {
+          "point": 4,
+          "text": "Names animation pieces, such as clips per state and a blend or transition between them."
+        },
+        {
+          "point": 5,
+          "text": "Explains for at least three terms what the agent would have to guess without them."
         }
       ]
     }

@@ -2,418 +2,572 @@
 
 ## MA-ch02.1
 
-A game developer wants the vocabulary for 2D art straight before instructing a coding agent. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer wants the vocabulary for 2D art straight before instructing a coding agent. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A texture is image data applied to a surface or drawn; a sprite uses a texture, but the words are not synonyms.
-- [ ] B. A sprite is a 2D image, or one frame of one, drawn as an object in the game scene.
-- [ ] C. A 32 x 48 pixel image has a resolution of 32 by 48 pixels, which is 1,536 pixels in all.
-- [ ] D. The same 32 x 32 sprite appears larger when the viewport is scaled up, so file pixels and on-screen size differ.
-- [ ] E. Resolution is the shape of an image, such as 16:9, while aspect ratio is its total pixel count in millions.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: Texture names the image data, sprite names the thing drawn from it.
-- B: A sprite is the drawn 2D object; its pixels come from a texture.
-- C: 32 x 48 = 1,536.
-- D: On-screen size depends on the scale applied at display time, not on the file's pixel dimensions alone.
-- E: The two are swapped: resolution is the pixel dimensions, aspect ratio is the width-to-height proportion.
-
-**Source:** Sprite, texture, resolution
-
-## MA-ch02.2
-
-An image generator returns a reference picture of 1,024 x 873 pixels. The game is drawn in a 640 x 360 viewport (a 16:9 shape, ratio about 1.78). The developer wants to place the picture in the game. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Stretching it to exactly 640 x 360 distorts it: its ratio is about 1.17 and the viewport's about 1.78.
-- [ ] B. A 40-pixel-tall sprite takes up about a quarter of this viewport's height, so it would dominate the screen.
-- [ ] C. Enlarging a low-resolution picture by interpolation adds real detail that was missing from the original.
-- [ ] D. Fitting the picture inside 640 x 360 without stretching gives exactly 640 x 360 pixels, because the viewport sets the size.
-- [ ] E. Fitting the picture inside 640 x 360 without stretching gives an image about 422 pixels wide and 360 tall.
-
-**Key:** A=T B=F C=F D=F E=T
-
-**Why:**
-
-- A: 1,024 / 873 is about 1.17 and 640 / 360 is about 1.78, so non-uniform scaling changes the proportions.
-- B: 40 / 360 is about 11 percent, closer to one ninth than one quarter.
-- C: Interpolation creates more pixels but not more information; the added detail is guessed, not recovered.
-- D: Keeping the ratio leaves unused space on one axis; only a stretched copy fills both dimensions exactly.
-- E: The scale factor is 360 / 873, about 0.412, so the width becomes 1,024 x 0.412, about 422.
-
-**Source:** Resolution and aspect ratio
-
-## MA-ch02.3
-
-A developer asks an image generator for a character sprite 'on a transparent background' and receives a file named hero.jpg. In the engine the sprite appears inside a white rectangle. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Setting the sprite node's opacity to 50 percent makes the white rectangle transparent while the character stays opaque.
-- [ ] B. JPEG has no alpha channel, so a .jpg file cannot hold transparency no matter what the prompt asked.
-- [ ] C. A white background painted into the pixels is content, not transparency; remove it and save as PNG or another format with alpha.
-- [ ] D. After removing a white background by colour, light fringe pixels can remain around the character's edge.
-- [ ] E. A pixel with an alpha of 255 in an 8-bit channel is fully transparent and shows nothing of its colour.
-
-**Key:** A=F B=T C=T D=T E=F
-
-**Why:**
-
-- A: Node opacity fades the whole image, character and white background alike.
-- B: Godot's documentation notes that JPEG does not support transparency.
-- C: Transparency needs an alpha value per pixel, which PNG stores and JPEG does not.
-- D: Anti-aliased edge pixels are a blend of the character and the old background, so a colour key misses them.
-- E: 255 is fully opaque; 0 is fully transparent.
-
-**Source:** Alpha and transparency
-
-## MA-ch02.4
-
-A 32 x 32 pixel-art sprite is shown in a game at four times its size (128 x 128 screen pixels). At its original size it looks crisp, but in the running game its edges look blurry and smeared. The developer asks a coding agent to fix it. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Nearest filtering takes the colour of the single closest texel, so enlarged pixel art keeps hard edges.
-- [ ] B. The right fix is to regenerate the sprite at a higher resolution and keep the same filtering, since extra pixels resist blur.
-- [ ] C. The instruction 'make it sharper' tells the agent that the texture filter should be set to nearest.
-- [ ] D. Linear filtering blends neighbouring texels when a texture is enlarged, which softens hard pixel edges into blur.
-- [ ] E. A filter mode set as the project-wide default applies to each sprite that does not set its own, while a mode set on one sprite applies only to that sprite.
-
-**Key:** A=T B=F C=F D=T E=T
-
-**Why:**
-
-- A: Nearest samples one texel per screen pixel, producing blocks.
-- B: More pixels still get blended by linear filtering; the cause is the sampling mode, not the source size.
-- C: The word does not name the setting; the agent may sharpen the image file or change something else.
-- D: Linear filtering interpolates between neighbouring texels.
-- E: Scope follows where the setting is placed: a default covers everything that does not override it, and a setting on one sprite covers only that sprite (in Godot 4 this is the node's texture filter, which can inherit the project default).
-
-**Source:** Nearest versus linear filtering
-
-## MA-ch02.5
-
-A pixel-art game is drawn in a 640 x 360 viewport with nearest filtering, and the window shows it scaled up to fill the screen. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A non-integer scale is harmless to pixel art as long as nearest filtering is on.
-- [ ] B. In a 1,600 x 900 window the scale is 2.5, so some source pixels cover 2 screen pixels and others 3.
-- [ ] C. In a 1,280 x 720 window the scale is exactly 2, so each source pixel becomes a 2 x 2 block of screen pixels.
-- [ ] D. Switching to linear filtering removes the uneven pixel widths at a non-integer scale with no other change to the look.
-- [ ] E. In a 1,366 x 768 window the scale is exactly 2 in both directions.
-
-**Key:** A=F B=T C=T D=F E=F
-
-**Why:**
-
-- A: Nearest filtering makes the unevenness visible as pixels of different widths.
-- B: 1,600 / 640 = 900 / 360 = 2.5; nearest filtering rounds each pixel to a whole number of screen pixels.
-- C: 1,280 / 640 = 720 / 360 = 2.
-- D: Linear filtering hides the unevenness by blurring everything.
-- E: 1,366 / 640 is about 2.13 and 768 / 360 is about 2.13, neither a whole number.
-
-**Source:** Integer scaling of pixel art
-
-## MA-ch02.6
-
-A developer is deciding which of four things to ask a coding agent to create or use: a sprite sheet, a texture atlas, a tileset and a tilemap. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A sprite sheet is one image holding the frames of an animation, typically in a regular grid of equal cells.
-- [ ] B. An atlas packs many separate images, often of different sizes, into one texture with a record of each rectangle.
-- [ ] C. A tilemap is the image file holding all the tile artwork, and a tileset is the painted level layout.
-- [ ] D. A sprite sheet and a tileset can both be a single PNG laid out as a grid; they differ in how the engine uses the cells.
-- [ ] E. A tileset is a library of reusable tiles; a tilemap is the level grid whose cells each reference one of them.
-
-**Key:** A=T B=T C=F D=T E=T
-
-**Why:**
-
-- A: This is the usual meaning, and the engine slices it into frames.
-- B: Its purpose is to reduce texture switching so more sprites can be drawn together.
-- C: The two terms are swapped.
-- D: A sheet's cells are played in order as frames, while a tileset's cells are placed individually on the map.
-- E: The tileset supplies the pieces and the tilemap places them.
-
-**Source:** Sprite sheet, atlas, tileset, tilemap
-
-## MA-ch02.7
-
-A designer wants to paint cave levels quickly with 16 x 16 pixel tiles for floor, wall, ceiling and corners, so a 40 x 22 cell room can be painted with a brush. The designer tells a coding agent: 'make me a cave tilemap'. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The artwork the designer needs is a tileset; 'tilemap' names the painted grid, not the library of tile art.
-- [ ] B. 'Make me a cave tilemap' is precise enough, because the agent can infer tile size, tile count and edge rules from the word 'cave'.
-- [ ] C. A precise request gives tile size (16 x 16), the tile types, matching edges, and one PNG with transparency in a grid.
-- [ ] D. The tile size can be left out of the request, because the engine works it out from the image.
-- [ ] E. The wording could be met by one 640 x 352 pixel painting of a finished room that cannot be rearranged.
+- [ ] A. Resolution is the pixel dimensions of an image, written as width by height.
+- [ ] B. Texture and sprite are synonyms for one thing.
+- [ ] C. A sprite is a 2D image, or one frame of one, drawn as an object in the game scene.
+- [ ] D. Aspect ratio is the total pixel count of an image.
+- [ ] E. A texture is image data applied to a surface or drawn, and a sprite is drawn using a texture.
 
 **Key:** A=T B=F C=T D=F E=T
 
 **Why:**
 
-- A: The reusable tile images are the tileset.
-- B: Nothing in the phrase fixes tile size, which tiles exist or how edges match.
-- C: Each element removes a guess the agent would otherwise make.
-- D: The engine has to be told the size of one tile to cut the image into tiles.
-- E: 40 x 16 = 640 and 22 x 16 = 352; a single picture of that size matches the words but not the need.
+- A: A 32 by 48 image has a resolution of 32 by 48 pixels.
+- B: The two words name different things.
+- C: A sprite is a drawn 2D object.
+- D: Aspect ratio is the proportion of width to height.
+- E: Texture names the image data and sprite names the thing drawn from it.
 
-**Source:** Say it to the agent: tileset or tilemap
+**Source:** Sprite, texture, resolution, aspect ratio
 
-## MA-ch02.8
+## MA-ch02.2
 
-An image generator is asked for a four-frame walk cycle 'in one row' and returns a single image of 800 x 200 pixels. The developer slices it as a grid of 4 columns and 1 row and plays the cells in order. Check each statement that is true. Each statement is worth 1 point (5 points total).
+An image generator returns a nearly square picture, and the game uses a wide 16:9 viewport. Check each statement that is true about placing it. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The playback speed of the walk cycle is stored in the image file as part of its pixel data.
-- [ ] B. A frame count of 4 confirms that the four figures are four poses of one character.
-- [ ] C. If the character's feet sit at a different height in each cell, the animation bobs even though each frame looks fine alone.
-- [ ] D. Equal slicing gives correct frames whether or not the generator spaced the figures evenly, because each figure ends up centred in its cell.
-- [ ] E. Equal slicing gives four cells of 200 x 200 pixels.
-
-**Key:** A=F B=F C=T D=F E=T
-
-**Why:**
-
-- A: Speed is set in the engine, for example as frames per second on the animation.
-- B: A count says how many cells there are, not whether the figures are the same creature.
-- C: Frames must share a baseline and scale to play as one motion.
-- D: Slicing cuts at fixed positions; unevenly spaced figures get cut apart or shifted.
-- E: 800 / 4 = 200 wide and the height stays 200.
-
-**Source:** Sprite sheet frame layout
-
-## MA-ch02.9
-
-An interviewer asks why a 2D game with 64 sprites, each a separate 32 x 32 image file, can run better after the images are packed into one 256 x 256 atlas. Check each statement that is true about a sound answer. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An atlas stores fewer pixels in total than the separate images it replaces, which is why it saves memory.
-- [ ] B. The 64 sprites of 32 x 32 add up to 65,536 pixels, exactly the area of a 256 x 256 atlas, so the atlas has no room left for padding.
-- [ ] C. Packing sprites into an atlas changes their on-screen size, so the sprites must be redrawn at the new scale.
-- [ ] D. Sprites sharing one texture can often be batched into fewer draw calls, with no texture switch between them.
-- [ ] E. Without padding, linear filtering or scaling can pull colour from a neighbouring sprite and bleed at the edges.
-
-**Key:** A=F B=T C=F D=T E=T
-
-**Why:**
-
-- A: Padding and unused space can make it larger; the gain is fewer state changes, not fewer pixels.
-- B: 64 x 32 x 32 = 65,536 = 256 x 256.
-- C: An atlas changes where pixels are stored, not how large the sprite is drawn.
-- D: Fewer texture switches allow batching.
-- E: Sampling near a sprite's edge can read the next sprite's pixels.
-
-**Source:** Why atlases help
-
-## MA-ch02.10
-
-A developer generates a 256 x 256 grass image to repeat across a large ground plane and will tell a coding agent to turn on repeat (tiling) for it. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. An image that looks good as a single picture will therefore look right when repeated across a surface.
-- [ ] B. A seamless (tileable) texture is one whose opposite edges match, so repeated copies show no visible join.
-- [ ] C. Making the image tileable requires making it smaller than 256 x 256, so the edges can be blended.
-- [ ] D. A seamless texture shows no visible repetition across a large area, however large the area is.
-- [ ] E. The way to test tileability is to view a single copy at full size, since a seam can only exist at the image's edge.
-
-**Key:** A=F B=T C=F D=F E=F
-
-**Why:**
-
-- A: Nothing about a single view guarantees the edges line up with their copies.
-- B: Seamlessness is a property of the image's edge content.
-- C: Tileability depends on matching edges, not on image size.
-- D: Without a visible join the pattern can still repeat noticeably when distinctive features recur.
-- E: A seam is the join between copies, so test with copies placed side by side.
-
-**Source:** Seamless and tileable textures
-
-## MA-ch02.11
-
-A pixel-art game restricts all art to a 16-colour palette. An image generator is asked for an enemy sprite 'using only these 16 colours', and the returned file is opened in a script that counts its distinct colours. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Counting distinct colours and testing each against the palette is a check a script can do.
-- [ ] B. Smoothed or anti-aliased edges introduce in-between colours that are not in the palette, so a count above 16 is likely.
-- [ ] C. An indexed-colour image stores a palette plus an index per pixel, so editing palette entries recolours the sprite without changing the index data.
-- [ ] D. A palette is a fixed set of colours the art draws from, and using one palette across assets helps them look like they belong together.
-- [ ] E. An image generator reliably honours 'only these 16 colours', so counting the colours in the result is unnecessary.
-
-**Key:** A=T B=T C=T D=T E=F
-
-**Why:**
-
-- A: It is an exact, automatable test.
-- B: Blended edge pixels are extra colours.
-- C: That separation is what makes palette swaps cheap.
-- D: A shared palette is a main source of visual consistency in pixel art.
-- E: Generators approximate such constraints; the count is a check that costs nothing.
-
-**Source:** Palette
-
-## MA-ch02.12
-
-In Godot, a PNG added to a project is converted by an importer, and its import settings (such as compression mode and mipmaps) are stored in a small text file next to it; that file holds the choices made for this image, which the engine cannot work out from the PNG alone. A developer asks a coding agent to 'make the sprite crisp'. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The small settings file next to the PNG is created by the engine on import, so it can be left out of version control without losing the choices made for the sprite.
-- [ ] B. For 2D pixel art, hardware (VRAM) texture compression is the recommended setting because it makes textures smaller with no visible cost.
-- [ ] C. Turning on mipmaps sharpens a sprite that is drawn at its native size.
-- [ ] D. 'Make the sprite crisp' is precise enough to tell the agent which filter, compression and mipmap settings to change.
-- [ ] E. At runtime the engine uses the imported copy, so changing import settings changes the result without editing the PNG.
-
-**Key:** A=F B=F C=F D=F E=T
-
-**Why:**
-
-- A: The file records the choices made for the image, which cannot be recovered from the PNG alone, so a clone without it falls back to default import settings; it belongs in version control with the asset.
-- B: Godot's documentation recommends lossless for pixel art and says VRAM compression shows noticeable artifacts in 2D.
-- C: Mipmaps are pre-shrunk copies for drawing something smaller; they add memory and do not sharpen.
-- D: The phrase names a result, not the settings; the agent may change the wrong ones or the image itself.
-- E: Import settings act between the source file and the game.
-
-**Source:** Import settings
-
-## MA-ch02.13
-
-A sound effect is stored as uncompressed (PCM) audio with 16 bits per sample, 2 channels (stereo) and 44,100 samples per second. It lasts 10 seconds. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Converting to mono at the same rate and bit depth reduces the data to 441,000 bytes.
-- [ ] B. A 5 kHz tone can be captured at 8,000 samples per second, since 5,000 is below 8,000.
-- [ ] C. The highest frequency this sample rate can represent is half of it, 22,050 Hz.
-- [ ] D. The data size is 44,100 x 2 bytes x 2 channels x 10 s = 1,764,000 bytes.
-- [ ] E. Raising the sample rate to 88,200 samples per second makes the sound louder.
-
-**Key:** A=F B=F C=T D=T E=F
-
-**Why:**
-
-- A: One channel halves the size to 882,000 bytes, not 441,000.
-- B: The limit at 8,000 samples per second is 4,000 Hz, so a 5 kHz tone cannot be represented correctly.
-- C: A sampled signal can represent frequencies up to half the sample rate.
-- D: 16 bits is 2 bytes per sample per channel.
-- E: Sample rate sets how finely time is sampled and the highest frequency, not the level.
-
-**Source:** Sample rate and audio size
-
-## MA-ch02.14
-
-A model generates an 8-bar music track at 120 beats per minute in 4/4 time to loop behind a level, and the developer wants it to loop with no audible gap or jump. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. At 120 BPM in 4/4, eight bars last 16 seconds, which is 705,600 samples at 44,100 Hz.
-- [ ] B. Cutting the loop at a bar line, not an arbitrary point, keeps the rhythm unbroken across the join.
-- [ ] C. A track that sounds smooth when played once from start to end is guaranteed to loop seamlessly.
-- [ ] D. A fade-out baked into the end of the file does not matter, because the loop restarts at full volume.
-- [ ] E. A sharp jump between the last and first sample can cause an audible click at the loop point.
-
-**Key:** A=T B=T C=F D=F E=T
-
-**Why:**
-
-- A: 8 bars x 4 beats = 32 beats at 2 beats per second = 16 s; 16 x 44,100 = 705,600.
-- B: A loop that ends mid-bar shifts the beat on every repeat.
-- C: A single play never exercises the join between end and start.
-- D: The fade makes an audible dip followed by a jump back up at each repeat.
-- E: An abrupt jump in value is heard as a click.
-
-**Source:** Audio loops
-
-## MA-ch02.15
-
-A developer is choosing file formats and playback behaviour for a short coin-pickup effect and a three-minute background track. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. Lossless audio (WAV, FLAC) keeps all samples; lossy audio (Ogg Vorbis, MP3) discards detail for good.
-- [ ] B. FLAC is a lossy format, because any compressed audio file has thrown some detail away.
-- [ ] C. An effect is usually short, event-triggered and may overlap itself; music is long and usually loops.
-- [ ] D. Converting one lossy file to another lossy format at the same bit rate loses nothing extra, since the rate is unchanged.
-- [ ] E. Once a track is saved as a lossy file, the original uncompressed audio can be rebuilt exactly from it.
-
-**Key:** A=T B=F C=T D=F E=F
-
-**Why:**
-
-- A: Lossy encoding trades information for size.
-- B: Compressed does not mean lossy; FLAC compresses without discarding anything.
-- C: These differences drive format and playback choices.
-- D: Each lossy encoding discards more detail, so quality degrades with every generation.
-- E: The discarded detail is gone, so only an approximation can be rebuilt.
-
-**Source:** SFX versus music; lossless versus lossy
-
-## MA-ch02.16
-
-A game routes sound effects to a bus named SFX and music to a bus named Music. Both feed a Master bus that goes to the speakers. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. A bus whose volume is set to 0 dB is silent, because zero means no signal is passed on.
-- [ ] B. Raising the SFX bus by 6 dB multiplies the amplitude of the effects on it by 6, which is why small steps are safe.
-- [ ] C. A bus is a channel audio passes through on the way to the output; its volume and effects apply to all sources routed to it.
-- [ ] D. Lowering the Music bus by 6 dB cuts the amplitude of all music to roughly half and leaves the SFX bus unchanged.
-- [ ] E. If loud sounds sum past the digital maximum at the Master output, the result clips and distorts.
+- [ ] A. A 16:9 viewport and a nearly square picture have the same aspect ratio.
+- [ ] B. Enlarging a low-resolution picture by interpolation adds real detail that was missing.
+- [ ] C. Scaling it uniformly to fit keeps the aspect ratio and leaves unused space on one axis.
+- [ ] D. Stretching the picture to the viewport size distorts it because the aspect ratios differ.
+- [ ] E. Interpolation estimates new pixel values from neighbouring pixels.
 
 **Key:** A=F B=F C=T D=T E=T
 
 **Why:**
 
-- A: 0 dB means no change in level (unity gain); silence is a very large negative value.
-- B: 6 dB is a factor of about 2; adding 12 dB gives about 4.
-- C: Godot's documentation describes a bus as a place audio is channelled through before playback.
-- D: A 6 dB change is about a factor of 2 in amplitude, and only sources routed to that bus are affected.
-- E: Simultaneous sounds sum, and the sum can exceed the maximum representable level.
+- A: 16:9 is much wider than near-square.
+- B: Interpolation creates pixels but not information.
+- C: Uniform scaling keeps the shape, so one dimension does not fill the viewport.
+- D: Non-uniform scaling changes the proportions.
+- E: The new values are guesses based on nearby pixels.
 
-**Source:** Audio buses and decibels
+**Source:** Aspect ratio and scaling
 
-## MA-ch02.17
+## MA-ch02.3
 
-In a platformer, the coin pickup sound is played by one audio player node limited to a single simultaneous voice. When the player grabs three coins within 0.15 seconds, the sound is heard as one clipped blip. A developer asks a coding agent to 'make the coin sound better'. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer asks an image generator for a character sprite "on a transparent background" and gets hero.jpg. In the engine the sprite sits inside a white rectangle. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Allowing more simultaneous voices on the player lets overlapping copies of the sound be heard together.
-- [ ] B. With a limit of one voice, each new play request cuts off the sound still playing, which explains the clipped blip.
-- [ ] C. Playing the sound once when the player first touches a coin, rather than repeatedly during the overlap, makes the cut-off worse.
-- [ ] D. 'Make the coin sound better' tells the agent that the real problem is the limit on simultaneous voices.
-- [ ] E. Making the audio file louder fixes the clipped blip, because the sound will survive being cut off.
+- [ ] A. Lowering the sprite node's opacity makes just the white rectangle transparent.
+- [ ] B. JPEG has no alpha channel, so it does not hold transparency.
+- [ ] C. Removing a background by colour key can leave light fringe pixels along the edge.
+- [ ] D. A white background painted into the pixels counts as transparency.
+- [ ] E. An alpha channel stores opacity for each pixel.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: Node opacity fades the whole image, character and background.
+- B: PNG stores alpha and JPEG does not.
+- C: Anti-aliased edge pixels blend the character with the old background.
+- D: Painted white is colour content, not an alpha value.
+- E: Alpha is the extra channel for opacity.
+
+**Source:** Alpha channel, transparency
+
+## MA-ch02.4
+
+A 32 x 32 pixel-art sprite looks crisp at its original size but looks blurry when shown at four times its size in the game. Check each statement that is true about texture filtering. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Linear filtering blends neighbouring texels when a texture is enlarged, which softens hard edges.
+- [ ] B. Nearest filtering takes the colour of the single closest texel, so enlarged pixel art keeps hard edges.
+- [ ] C. The instruction "make it sharper" names the setting that should be changed.
+- [ ] D. A filter set on one sprite applies to that sprite, while a project default applies to sprites that do not set their own.
+- [ ] E. Regenerating the sprite at a higher resolution fixes the blur while linear filtering stays on.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: Linear interpolates between neighbouring texels.
+- B: Nearest samples one texel per screen pixel.
+- C: "Sharper" names a result, not the filter setting.
+- D: Scope follows where the setting is placed.
+- E: The cause is the sampling mode, not the source size.
+
+**Source:** Nearest versus linear filtering
+
+## MA-ch02.5
+
+A pixel-art game is drawn in a 640 x 360 viewport with nearest filtering and scaled up to fill the window. Check each statement that is true about scaling. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Switching to linear filtering removes the uneven widths with no other change to the look.
+- [ ] B. A non-integer scale is harmless to pixel art as long as nearest filtering is on.
+- [ ] C. At a non-integer scale with nearest filtering, pixels show uneven widths.
+- [ ] D. At an integer scale each source pixel becomes a whole-number block of screen pixels.
+- [ ] E. Integer scaling needs linear filtering to look right.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: Linear filtering hides the unevenness by blurring everything.
+- B: Nearest filtering makes the unevenness visible.
+- C: Some source pixels cover more screen pixels than others.
+- D: A scale of 2 makes each pixel a 2 by 2 block.
+- E: Integer scaling pairs with nearest filtering.
+
+**Source:** Integer scaling of pixel art
+
+## MA-ch02.6
+
+A developer chooses among a sprite sheet, a texture atlas, a tileset and a tilemap. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A tileset is a library of reusable tiles, and a tilemap is the level grid whose cells reference them.
+- [ ] B. A sprite sheet and a tileset can both be one PNG in a grid and differ in how the engine uses the cells.
+- [ ] C. A sprite sheet is one image holding the frames of an animation, often in equal grid cells.
+- [ ] D. An atlas packs many separate images, often of different sizes, into one texture with a record of each rectangle.
+- [ ] E. A tilemap is the image file of tile artwork, and a tileset is the painted level layout.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: The tileset supplies the pieces and the tilemap places them.
+- B: Sheet cells are played as frames, and tileset cells are placed on a map.
+- C: The engine slices a sheet into frames played in order.
+- D: An atlas is a packing of many images into one texture.
+- E: The two terms are swapped.
+
+**Source:** Sprite sheet, atlas, tileset, tilemap
+
+## MA-ch02.7
+
+A designer tells a coding agent "make me a cave tilemap" and wants to paint rooms with 16 x 16 tiles for floor, wall, ceiling and corners. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The reusable tile artwork is a tileset, and a tilemap is the painted grid.
+- [ ] B. The wording could be met by one fixed picture of a finished room.
+- [ ] C. The tile size can be left out, because the engine infers it from the image.
+- [ ] D. A precise request gives the tile size, the tile types, the edge-matching rule and the file format.
+- [ ] E. "Cave tilemap" is a precise request because it fixes tile size and edge rules.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: Tileset names the library and tilemap names the layout.
+- B: A fixed picture matches the words but cannot be rearranged.
+- C: The engine is told the size of one tile to cut the image.
+- D: Each item removes a guess.
+- E: The phrase leaves out size, types and edge rules.
+
+**Source:** Tileset or tilemap in an instruction
+
+## MA-ch02.8
+
+An image generator is asked for a four-frame walk cycle in one row and returns one 800 x 200 image. The developer slices it into 4 columns and 1 row. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Equal slicing assumes the figures are spaced evenly in the image.
+- [ ] B. Frames of one cycle share a baseline and a scale so that they play as one motion.
+- [ ] C. Equal slicing centres each figure in its cell.
+- [ ] D. Playback speed is set in the engine on the animation, not stored in the image.
+- [ ] E. A frame count of 4 shows that the figures are poses of one character.
+
+**Key:** A=T B=T C=F D=T E=F
+
+**Why:**
+
+- A: Slicing cuts at fixed positions.
+- B: A shifting baseline makes the animation bob.
+- C: Unevenly spaced figures are cut apart or shifted.
+- D: Frames per second is an animation setting.
+- E: A count says how many cells, not who is drawn.
+
+**Source:** Sprite sheet frame layout
+
+## MA-ch02.9
+
+An interviewer asks why packing 64 separate sprite images into one atlas can make a 2D game run better. Check each statement that is true about a sound answer. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Padding between packed sprites prevents colour bleed when filtering samples near an edge.
+- [ ] B. Packing sprites into an atlas changes their drawn size.
+- [ ] C. An atlas stores fewer pixels than the separate images it replaces.
+- [ ] D. Sprites that share one texture can be batched into fewer draw calls.
+- [ ] E. An atlas reduces texture switches rather than reducing the number of pixels stored.
+
+**Key:** A=T B=F C=F D=T E=T
+
+**Why:**
+
+- A: Without padding, sampling can read a neighbour sprite's pixels.
+- B: An atlas changes where pixels are stored, not how large the sprite is drawn.
+- C: Padding and unused space can make an atlas larger.
+- D: No texture switch is needed between them.
+- E: The gain is fewer state changes.
+
+**Source:** Atlas, batching, draw call, padding
+
+## MA-ch02.10
+
+A developer will repeat a 256 x 256 grass image over a large ground plane. Check each statement that is true about seamless textures. Each statement is worth 1 point (5 points total).
+
+- [ ] A. An image that looks good as a single picture is therefore seamless.
+- [ ] B. With repeat mode the image tiles, and with clamp mode the edge pixels stretch.
+- [ ] C. Placing copies side by side tests whether a texture is seamless.
+- [ ] D. A seamless (tileable) texture has opposite edges that match, so copies show no visible join.
+- [ ] E. A seamless texture shows no visible repetition over a large area.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: One view says nothing about how the edges meet their copies.
+- B: Repeat and clamp are the two wrap behaviours.
+- C: A seam is the join between copies.
+- D: Seamlessness is a property of the image's edge content.
+- E: Distinctive features recurring at a regular spacing still form a pattern.
+
+**Source:** Seamless textures, repeat versus clamp
+
+## MA-ch02.11
+
+A pixel-art game restricts its art to a 16-colour palette, and a script counts the distinct colours in a generated enemy sprite. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A script can count distinct colours and test each against the palette.
+- [ ] B. Anti-aliased edges add in-between colours that are not in the palette.
+- [ ] C. An image generator guarantees it will respect a request for these 16 colours.
+- [ ] D. An indexed-colour image stores a palette plus an index per pixel, so editing palette entries recolours the sprite.
+- [ ] E. A palette is a fixed set of colours the art draws from, and sharing one helps assets look consistent.
+
+**Key:** A=T B=T C=F D=T E=T
+
+**Why:**
+
+- A: The test is exact and can be automated.
+- B: Blended edge pixels are extra colours.
+- C: Generators approximate such constraints, so the result is checked.
+- D: The index data stays the same when palette entries change.
+- E: A shared palette gives visual consistency.
+
+**Source:** Palette, indexed colour
+
+## MA-ch02.12
+
+In Godot, an imported PNG has import settings stored in a small file beside it. A developer asks an agent to "make the sprite crisp". Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Mipmaps are pre-shrunk copies of a texture used when it is drawn smaller.
+- [ ] B. The settings file records the import choices for that image and belongs in version control with the asset.
+- [ ] C. Lossless compression is the recommended mode for pixel art, because VRAM compression shows artifacts in 2D.
+- [ ] D. Mipmaps sharpen a sprite that is drawn at its native size.
+- [ ] E. "Make the sprite crisp" names the import settings to change.
+
+**Key:** A=T B=T C=T D=F E=F
+
+**Why:**
+
+- A: They help with minified drawing.
+- B: A clone without it falls back to default import settings.
+- C: Compression artifacts are visible on small 2D images.
+- D: Mipmaps add memory and do not sharpen.
+- E: The phrase names a result, so the agent may change the wrong setting.
+
+**Source:** Import settings, compression, mipmaps
+
+## MA-ch02.13
+
+A sound effect is stored as uncompressed PCM audio with a sample rate, a bit depth and a number of channels. Check each statement that is true about these terms. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Sample rate is the number of samples taken per second.
+- [ ] B. The highest frequency a sample rate can represent is half of it, which is the Nyquist limit.
+- [ ] C. Raising the sample rate makes the sound louder.
+- [ ] D. Stereo has one channel and mono has two.
+- [ ] E. Bit depth sets the number of samples taken per second.
 
 **Key:** A=T B=T C=F D=F E=F
 
 **Why:**
 
-- A: Raising polyphony is the direct fix.
-- B: Exceeding the voice limit drops the oldest playing sound.
-- C: Triggering on the transition into overlap reduces repeated play calls.
-- D: The phrase names no problem; the agent may re-edit or replace the sound file.
-- E: Loudness is unrelated to voices being cut off.
+- A: Sample rate is how finely time is sampled.
+- B: A signal above half the rate cannot be represented correctly.
+- C: Sample rate does not set loudness.
+- D: Stereo has two channels and mono has one.
+- E: Bit depth is the precision of each sample's level; samples per second is the sample rate.
 
-**Source:** Say it to the agent: polyphony
+**Source:** Sample rate, bit depth, channels
 
-## MA-ch02.18
+## MA-ch02.14
 
-A studio is reviewing sprites produced by an image generator for a pixel-art game. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A model generates an 8-bar music track at a steady tempo in 4/4 time to loop behind a level. Check each statement that is true about looping. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A smoothed, JPEG-compressed picture of pixel-art-looking creatures can be turned into clean pixel art by shrinking it with linear filtering.
-- [ ] B. A generated picture can look like pixel art while its 'pixels' are several source pixels wide and blurred, so it sits on no exact grid.
-- [ ] C. 'Pixel art' means an image with a retro colour scheme, however it was made.
-- [ ] D. Pixel art is authored at a low resolution on a grid, with each pixel placed deliberately.
-- [ ] E. Pixel art is normally shown at a whole-number scale with nearest filtering so each art pixel stays a crisp block.
+- [ ] A. A fade-out baked into the end of the file is harmless in a loop.
+- [ ] B. A sharp jump between the last and first sample can be heard as a click.
+- [ ] C. A track that sounds smooth played once will loop seamlessly.
+- [ ] D. Cutting the loop at a bar line keeps the rhythm unbroken across the join.
+- [ ] E. The loop point is the position where the track fades out before repeating.
 
-**Key:** A=F B=T C=F D=T E=T
+**Key:** A=F B=T C=F D=T E=F
 
 **Why:**
 
-- A: Shrinking blends the artifacts into the result and does not restore a clean grid.
-- B: The look of blocky pixels does not guarantee a true pixel grid.
-- C: The term describes how the image is built, not only how it looks.
-- D: Control over individual pixels is what defines the style.
-- E: Uneven scaling or blending destroys the intended pixel shapes.
+- A: The fade makes a dip and then a jump back up at the join.
+- B: A discontinuity in the waveform is audible.
+- C: A single play does not test the join.
+- D: A loop that ends mid-bar shifts the beat on each repeat.
+- E: A loop point is where playback jumps back to, and a fade-out at that point would be audible.
 
-**Source:** Pixel art
+**Source:** Audio loops
 
-## MA-ch02.19
+## MA-ch02.15
 
-A developer is shipping a game that uses an AI-generated sprite and an AI-generated music track. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer chooses file formats and playback behaviour for a coin-pickup effect and a three-minute background track. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A generating tool's terms can restrict use, for example to non-commercial work, so read them before shipping.
-- [ ] B. Having written the prompt gives the developer full copyright in the output, in the countries where the game is sold.
-- [ ] C. An unrecorded reference image can leave its licence doubt attached to anything generated from it.
-- [ ] D. Provenance is the record of an asset's origin: tool and version, prompt and settings, terms, edits and references.
-- [ ] E. A provenance record helps regenerate or replace an asset later, since it holds the prompt and settings.
+- [ ] A. A one-shot plays once per trigger, and a loop repeats until stopped.
+- [ ] B. Lossless audio such as WAV or FLAC keeps the samples, and lossy audio such as Ogg Vorbis or MP3 discards detail permanently.
+- [ ] C. FLAC is a lossy format because it is compressed.
+- [ ] D. Re-encoding a lossy file to another lossy format loses no further detail at the same bit rate.
+- [ ] E. The original uncompressed audio can be rebuilt in full from a lossy file.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: One-shot and loop are playback behaviours.
+- B: Lossy encoding trades information for size.
+- C: Compressed does not mean lossy.
+- D: Each lossy generation discards more detail.
+- E: The discarded detail is gone.
+
+**Source:** Lossless versus lossy; one-shot versus loop
+
+## MA-ch02.16
+
+A game routes sound effects to a bus named SFX and music to a bus named Music, and both feed a Master bus. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A bus is a channel that audio is routed through before output, and its volume and effects apply to the sources routed to it.
+- [ ] B. A bus at 0 dB is silent.
+- [ ] C. Clipping happens when summed sounds pass the digital maximum, which causes distortion.
+- [ ] D. A change of about 6 dB roughly doubles or halves the amplitude.
+- [ ] E. A bus at 0 dB passes the signal with no change in level.
 
 **Key:** A=T B=F C=T D=T E=T
 
 **Why:**
 
-- A: Some models and services carry non-commercial terms.
-- B: Ownership of generated output depends on the tool's terms and the jurisdiction, and prompts alone may not suffice.
-- C: A result derived from an unknown reference inherits the doubt about the reference.
-- D: A provenance log is the evidence trail for an asset.
-- E: Recorded settings make an asset reproducible and replaceable.
+- A: Buses group sources for shared control.
+- B: Silence is a very large negative decibel value.
+- C: Simultaneous sounds add, and the sum can exceed the limit.
+- D: The decibel scale is logarithmic.
+- E: 0 dB is unity gain.
+
+**Source:** Audio buses, decibels, clipping
+
+## MA-ch02.17
+
+A coin sound is played by one audio player limited to a single simultaneous voice. Three quick pickups produce one clipped blip. A developer says "make the coin sound better". Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. With a limit of one voice, a new play request cuts off the sound still playing.
+- [ ] B. "Make the coin sound better" names the voice limit as the problem.
+- [ ] C. Raising polyphony cuts off overlapping copies of the sound sooner.
+- [ ] D. Making the file louder fixes the cut-off.
+- [ ] E. Polyphony is the number of voices that can sound at the same time.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: Exceeding the limit drops the earlier sound.
+- B: The phrase names no problem.
+- C: More voices lets overlapping plays sound together instead of cutting each other off.
+- D: Loudness is unrelated to cut-off.
+- E: Polyphony counts simultaneous voices.
+
+**Source:** Polyphony
+
+## MA-ch02.18
+
+A studio reviews sprites from an image generator for a pixel-art game. Check each statement that is true about pixel art. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Pixel art means an image with a retro colour scheme.
+- [ ] B. Pixel art is authored at low resolution on a grid, with each pixel placed deliberately.
+- [ ] C. Pixel art is shown at an integer scale with nearest filtering so each art pixel stays a crisp block.
+- [ ] D. A generated image can look like pixel art while lacking a true pixel grid.
+- [ ] E. A smoothed, JPEG-compressed picture becomes clean pixel art when shrunk with linear filtering.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: The term describes how the image is built.
+- B: Control over each pixel defines the style.
+- C: Uneven scaling or blending would destroy the pixel shapes.
+- D: Blocky look does not guarantee the pixels sit on a grid.
+- E: Shrinking blends the artifacts and does not restore a grid.
+
+**Source:** Pixel art
+
+## MA-ch02.19
+
+A developer ships a game with an AI-generated sprite and an AI-generated music track. Check each statement that is true about licensing and provenance. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Provenance is the record of an asset's origin: tool and version, prompt and settings, terms, references and edits.
+- [ ] B. An unrecorded reference image can leave its licence doubt attached to the result.
+- [ ] C. A tool's terms can restrict use, for example to non-commercial work.
+- [ ] D. A provenance record helps regenerate or replace an asset later.
+- [ ] E. Writing the prompt gives the developer full copyright in the output.
+
+**Key:** A=T B=T C=T D=T E=F
+
+**Why:**
+
+- A: Provenance is the evidence trail for an asset.
+- B: A result derived from an unknown reference inherits the doubt.
+- C: Some services carry non-commercial terms.
+- D: Recorded settings make an asset reproducible.
+- E: Ownership of output depends on the terms and the jurisdiction.
 
 **Source:** Licence and provenance
+
+## MA-ch02.20
+
+A developer tells an image generator and a coding agent: "Make me a cool pixel-art enemy with a walk animation, plus a jump sound and some background music that I can ship." Check each statement that is true about making this precise. Each statement is worth 1 point (5 points total).
+
+- [ ] A. "That I can ship" is a licensing requirement that a provenance record supports.
+- [ ] B. "Background music" does not say whether it loops, and "looping track cut on a bar boundary" does.
+- [ ] C. "Pixel-art" becomes precise when the size in the viewport and the palette are stated.
+- [ ] D. "Cool" tells the generator the viewpoint and the on-screen size.
+- [ ] E. "Walk animation" is imprecise, and "four-frame walk cycle as a sprite sheet in equal cells" is precise.
+
+**Key:** A=T B=T C=T D=F E=T
+
+**Why:**
+
+- A: Shipping needs terms and origin to be known.
+- B: Loop and one-shot are different playback behaviours.
+- C: Size and palette remove guesses.
+- D: "Cool" names a taste, not a viewpoint or size.
+- E: The precise phrase fixes frame count and layout.
+
+**Source:** Rewriting a vague asset request
+
+## MA-ch02.21
+
+Pixel art looks crisp in an image viewer but smeared when enlarged in the running game. Check each statement that is true about causes and checks. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Changing the filter mode edits the PNG file.
+- [ ] B. Texture filtering applies when the texture is sampled at draw time.
+- [ ] C. Import settings apply when the source file is converted for the engine.
+- [ ] D. Checking at several window sizes tests the effect of scale.
+- [ ] E. A JPEG-compressed source with blocky artifacts becomes clean pixel art once nearest filtering is chosen.
+
+**Key:** A=F B=T C=T D=T E=F
+
+**Why:**
+
+- A: The filter is an engine setting, not a change to the image.
+- B: Filtering happens when pixels are drawn.
+- C: Import happens before the game runs.
+- D: Non-integer scales show uneven pixels.
+- E: Filtering cannot repair a source that is not on a pixel grid.
+
+**Source:** Blurry pixel art diagnosis
+
+## MA-ch02.22
+
+A game has an eight-frame walking character and a cave level built from forty reusable wall and floor pieces. Check each statement that is true about which term fits. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The cave pieces are a tileset that is painted into a tilemap.
+- [ ] B. The eight-frame character is described with a sprite sheet.
+- [ ] C. The cells of a tileset are played in order as frames.
+- [ ] D. The walking character is described with a tilemap.
+- [ ] E. A texture atlas is chosen mainly to reduce texture switches and draw calls.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: The tileset holds pieces and the tilemap places them.
+- B: A sheet holds animation frames.
+- C: Sheet cells play in order and tileset cells are placed individually.
+- D: A tilemap is a level grid, not a character animation.
+- E: Packing images into one texture reduces state changes.
+
+**Source:** Choosing sheet, atlas, tileset or tilemap
+
+## MA-ch02.23
+
+A game needs a short coin sound, an ambient loop and a three-minute music piece. Check each statement that is true about formats and playback. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Long music is often a lossy file, to save space, that is streamed.
+- [ ] B. A short effect is a one-shot that is triggered by an event and may overlap itself.
+- [ ] C. Keeping a lossless master rules out a later re-export.
+- [ ] D. An ambient loop should have a fade-out baked into its end.
+- [ ] E. Sample rate changes loudness.
+
+**Key:** A=T B=T C=F D=F E=F
+
+**Why:**
+
+- A: Streaming plays from disk rather than loading the whole file.
+- B: One-shot describes playback once per trigger.
+- C: A lossless master is what allows a later re-export without generation loss.
+- D: A fade-out would make a dip at each repeat.
+- E: Sample rate sets time resolution and the highest frequency.
+
+**Source:** Audio formats and playback
+
+## MA-ch02.24
+
+A student ships an AI-generated sprite made from a reference picture of unknown source, and a music track from a tool whose terms were not read. Check each statement that is true about provenance. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A provenance record lets a problem be traced after the fact.
+- [ ] B. A good log entry lists the tool and version, the prompt and settings, references with licences, the terms and the edits.
+- [ ] C. An unknown-source reference stops affecting the result once it is deleted from the project.
+- [ ] D. Ownership of generated output follows automatically from writing the prompt.
+- [ ] E. Some terms require attribution as a duty.
+
+**Key:** A=T B=T C=F D=F E=T
+
+**Why:**
+
+- A: Recorded origin makes tracing possible.
+- B: The log is the evidence trail for the asset.
+- C: The uncertainty stays with the generated asset.
+- D: Ownership depends on terms and jurisdiction.
+- E: Attribution is a condition of use in some licences.
+
+**Source:** Provenance log
+
+## MA-ch02.25
+
+A developer covers a large ground surface with a 256 x 256 texture. Check each statement that is true about repeating textures. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Stretching the texture once across a large plane is tiling.
+- [ ] B. Without repeat mode, the edge pixels stretch instead of the image repeating.
+- [ ] C. The tiling scale is the number of repeats across a surface.
+- [ ] D. An engine repeat setting can make a non-seamless image seamless.
+- [ ] E. Distinctive features that recur at a regular spacing show as visible repetition even without a seam.
+
+**Key:** A=F B=T C=T D=F E=T
+
+**Why:**
+
+- A: Stretching is scaling, not repeating.
+- B: Clamp mode extends the edge pixels.
+- C: The scale decides how finely the texture repeats.
+- D: Seamlessness is a property of the image content.
+- E: Repeating features form a pattern the eye notices.
+
+**Source:** Tiling scale, repeat, clamp
+
+## MA-ch02.26
+
+A game has music, sound effects, dialogue and interface clicks, with separate sliders for music and effects. Check each statement that is true about the audio design. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Headroom is the loudest level that distortion is allowed to reach.
+- [ ] B. Each volume slider sets the volume of its own bus.
+- [ ] C. Decibels are a linear, absolute scale.
+- [ ] D. Ducking automatically lowers the music bus while dialogue plays and restores it afterwards.
+- [ ] E. Separate buses for Music, SFX and Dialogue can each feed the Master bus.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: Headroom is the margin kept below the digital maximum so sums do not clip.
+- B: Each slider acts on one bus.
+- C: Decibels are logarithmic and relative.
+- D: Ducking keeps speech intelligible.
+- E: Buses give independent control and feed the output.
+
+**Source:** Bus layout, ducking, decibels, headroom

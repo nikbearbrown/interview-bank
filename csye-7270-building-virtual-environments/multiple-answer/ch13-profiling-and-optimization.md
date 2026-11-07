@@ -2,396 +2,528 @@
 
 ## MA-ch13.1
 
-A team reports performance in frames per second, but the engineers work in frame time, where frame time in milliseconds is 1000 divided by FPS. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A team talks about speed using the terms frame time, frame budget, FPS and refresh rate. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A drop from 60 FPS to 50 FPS costs about 3.3 ms of extra time on each frame.
-- [ ] B. A drop of 5 FPS, from 30 to 25, costs about 6.7 ms per frame, more than the 3.3 ms lost going from 60 to 50.
-- [ ] C. Equal drops in FPS, such as 5 FPS starting from 60 or from 30, correspond to equal increases in frame time.
-- [ ] D. A 60 Hz target leaves a budget of about 16.7 ms for all the work in a frame.
-- [ ] E. A 144 Hz display target leaves a budget of about 14.4 ms, the refresh rate divided by ten.
+- [ ] A. A larger frame budget goes with a higher target frame rate.
+- [ ] B. FPS and frame time are reciprocals, so losing the same number of FPS costs more milliseconds at a low frame rate than at a high one.
+- [ ] C. Frame time is the duration of one frame, measured in milliseconds.
+- [ ] D. Refresh rate is the number of frames the GPU renders each second.
+- [ ] E. A frame budget is the longest frame time that still meets the target frame rate, about 16.7 ms at 60 Hz.
 
-**Key:** A=T B=T C=F D=T E=F
+**Key:** A=F B=T C=T D=F E=T
 
 **Why:**
 
-- A: 1000/50 = 20.0 ms against 1000/60 = 16.7 ms, a difference of about 3.3 ms.
-- B: 1000/25 = 40.0 ms against 1000/30 = 33.3 ms, a difference of about 6.7 ms, even though the FPS drop is smaller.
-- C: FPS is the reciprocal of frame time, so the same FPS loss costs more milliseconds at low frame rates than at high ones.
-- D: 1000/60 is about 16.7 ms, the time available to finish everything.
-- E: 1000/144 is about 6.9 ms; 14.4 ms would correspond to roughly 69 FPS.
+- A: A higher target rate leaves less time per frame, so the budget gets smaller.
+- B: Because FPS is the reciprocal of frame time, equal FPS drops are not equal millisecond costs.
+- C: Frame time is the time one frame takes, usually given in milliseconds.
+- D: Refresh rate is how often the display updates, not how often the GPU renders.
+- E: The budget is 1000 divided by the target rate, so 60 Hz gives about 16.7 ms.
 
-**Source:** Frame time versus FPS
+**Source:** Frame time, frame budget, FPS, refresh rate
 
 ## MA-ch13.2
 
-In a capture of 100 consecutive frames, 98 frames took 10 ms and 2 frames took 50 ms. The game targets 60 Hz, a budget of 16.7 ms per frame. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A capture shows most frames finishing quickly but a few frames taking much longer. Check each statement that is true about the terms used to describe it. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The mean frame time of the capture is 10.8 ms, well under the 16.7 ms budget.
-- [ ] B. The 99th percentile frame time is 50 ms, so it exposes the hitches that the mean hides.
-- [ ] C. Because the mean of 10.8 ms is under the 16.7 ms budget, the game will feel smooth.
-- [ ] D. Each of the two slow frames overshoots the 60 Hz budget by about 33 ms.
-- [ ] E. Removing the two slow frames from the capture would raise the mean frame time above 11 ms.
+- [ ] A. Stutter is the name for a high average frame rate.
+- [ ] B. A hitch is a single frame that takes much longer than the frames around it.
+- [ ] C. A frame-time graph shows a hitch as a spike above the budget line.
+- [ ] D. The mean frame time is the best number for exposing hitches, because slow frames dominate it.
+- [ ] E. The 99th percentile frame time is the value that 99 percent of frames stay at or below, so it exposes rare slow frames.
 
-**Key:** A=T B=T C=F D=T E=F
+**Key:** A=F B=T C=T D=F E=T
 
 **Why:**
 
-- A: (98 x 10 + 2 x 50) / 100 = 10.8 ms.
-- B: Sorted, the 99th and 100th values are 50 ms, so the 99th percentile catches the stutters while the mean (10.8) and the 95th percentile (10) do not.
-- C: An average can sit well under budget while individual frames miss it, and players see the misses as stutter.
-- D: 50 ms minus the 16.7 ms budget is about 33 ms of overshoot per slow frame.
-- E: Without the slow frames every remaining frame is 10 ms, so the mean falls to 10.0 ms.
+- A: Stutter is uneven frame delivery that the player can see, not a high frame rate.
+- B: A hitch is one long frame among shorter ones.
+- C: Plotting frame time per frame makes a hitch appear as a spike.
+- D: A mean is pulled very little by a few slow frames, so it hides hitches.
+- E: A high percentile reports the slow end of the distribution that an average hides.
 
-**Source:** Frame time distribution, mean versus worst frame
+**Source:** Hitch, stutter, mean versus percentile frame time
 
 ## MA-ch13.3
 
-A game runs at 22 ms per frame on a target phone, with vertical sync off. The developer lowers the render resolution to half the width and half the height (a quarter of the pixels) and frame time stays at 22 ms. Then the developer halves the number of AI-controlled characters and frame time drops to 15 ms. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A game takes 22 ms per frame on the target phone. Lowering the render resolution does not change frame time. Check each statement that is true about the terms involved. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The first result suggests the frame is CPU-bound rather than limited by pixel work on the GPU.
-- [ ] B. The first result shows that fill rate is the bottleneck, since the frame time did not change when the pixel count did.
-- [ ] C. If pixel work on the GPU limited the frame, lowering the resolution should have shortened it.
-- [ ] D. Because resolution had no effect, it proves that draw calls are not a problem.
-- [ ] E. The drop to 15 ms proves that AI code is the only cost in the frame and nothing else needs attention.
+- [ ] A. An unchanged frame time after lowering resolution suggests the frame is not fill-rate bound.
+- [ ] B. GPU-bound means GPU work such as shading sets the length of the frame.
+- [ ] C. Lowering resolution reduces pixel work, so it helps a frame that is limited by fill rate.
+- [ ] D. CPU-bound means CPU-side work such as game logic, physics or draw-call submission sets the length of the frame.
+- [ ] E. Fill rate is the number of draw calls the CPU can submit each second.
 
-**Key:** A=T B=F C=T D=F E=F
+**Key:** A=T B=T C=T D=T E=F
 
 **Why:**
 
-- A: Changing pixel count did nothing, so the time is being spent elsewhere, most likely on the CPU side.
-- B: Fill-rate limits would have improved when the pixel count fell by 75 percent.
-- C: Resolution is the standard experiment for separating pixel-bound GPU work from CPU work.
-- D: Draw-call overhead is CPU work and does not change with resolution, so the experiment cannot rule it out.
-- E: A 7 ms saving shows AI is a large part of the frame, not that nothing else costs time.
+- A: If fewer pixels did not help, pixel shading was not the limit.
+- B: A GPU-bound frame waits on rendering work.
+- C: Fewer pixels means less fragment work, which helps when fill rate is the limit.
+- D: A CPU-bound frame waits on CPU work.
+- E: Fill rate is how many pixels the GPU can write per second, not a CPU submission rate.
 
-**Source:** CPU-bound versus GPU-bound
+**Source:** CPU-bound, GPU-bound, fill rate
 
 ## MA-ch13.4
 
-In a renderer where the main thread, the render thread and the GPU work as a pipeline, a frame takes about as long as the slowest of the three. Per-frame times are: main thread 14 ms, render thread 6 ms, GPU 9 ms. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A renderer runs the main thread, the render thread and the GPU as a pipeline. Check each statement that is true about bottlenecks. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Frame time is about 14 ms, roughly 71 FPS.
-- [ ] B. Cutting GPU time from 9 ms to 4.5 ms leaves frame time at about 14 ms.
-- [ ] C. Cutting main-thread time by 4 ms, to 10 ms, brings frame time to about 10 ms, roughly 100 FPS.
-- [ ] D. Cutting render-thread time from 6 ms to 3 ms brings frame time to about 11 ms.
-- [ ] E. Because the three stages add up to 29 ms, the game runs at about 34 FPS.
+- [ ] A. Game script logic runs on the render thread.
+- [ ] B. Speeding up a stage that is not the bottleneck leaves the frame time unchanged.
+- [ ] C. The bottleneck is the stage with the longest time per frame, and it sets the pace.
+- [ ] D. In a pipeline, frame time is the sum of the times of the stages.
+- [ ] E. After a bottleneck is removed, another stage can become the new bottleneck.
 
-**Key:** A=T B=T C=T D=F E=F
+**Key:** A=F B=T C=T D=F E=T
 
 **Why:**
 
-- A: The slowest stage, the main thread at 14 ms, sets the pace, and 1000/14 is about 71 FPS.
-- B: The GPU was not the longest stage, so speeding it up changes nothing while the main thread is the bottleneck.
-- C: With the main thread at 10 ms the slowest stage becomes the GPU at 9 ms, so the frame takes max(10, 6, 9) = 10 ms.
-- D: The render thread is not the slowest stage, so cutting it leaves the frame at 14 ms.
-- E: In a pipeline the stages overlap in time, so frame time is the longest stage and not their sum.
+- A: Game logic runs on the main thread; the render thread prepares and submits drawing work.
+- B: Only improving the bottleneck shortens the frame.
+- C: The slowest stage limits throughput.
+- D: Pipeline stages overlap in time, so the slowest one sets frame time rather than the sum.
+- E: Once the slowest stage speeds up, the next slowest becomes the limit.
 
-**Source:** Bottleneck and pipelined frame time
+**Source:** Bottleneck, main thread, render thread, pipeline
 
 ## MA-ch13.5
 
-A scene has 1,000 small props, each drawn with its own draw call, and the frame is slow on the CPU. Another scene has one mesh of 1,000,000 triangles drawn with a single draw call and runs fast. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A scene has 1,000 small props, each with its own draw call, and it is slow on the CPU. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A draw call is a command from the CPU to the GPU to draw some geometry using a particular set of state, such as a mesh and a material.
-- [ ] B. Each draw call carries CPU overhead, so many small draw calls can cost more CPU time than one large one with more triangles.
-- [ ] C. The slow scene must contain more triangles in total, since the number of triangles is what mostly determines how long the CPU takes to prepare a frame.
-- [ ] D. Merging draw calls reduces GPU shading cost in proportion, because the GPU then has fewer commands to process.
-- [ ] E. Draw-call overhead comes from the GPU hardware, so a call costs about the same whichever graphics API or engine submits it.
+- [ ] A. Draw call and triangle are two names for the same measurement.
+- [ ] B. Triangle count and draw-call count are separate costs that can be tuned apart.
+- [ ] C. A draw call is a command from the CPU asking the GPU to draw geometry with a given mesh, material and state.
+- [ ] D. Draw-call cost is mostly GPU shading work.
+- [ ] E. A frame with many small draw calls can be CPU-bound even when the triangle count is low.
 
-**Key:** A=T B=T C=F D=F E=F
+**Key:** A=F B=T C=T D=F E=T
 
 **Why:**
 
-- A: A draw call is how the CPU submits a batch of geometry plus the state needed to draw it.
-- B: Validation and state changes make each call cost CPU time, which is why call count matters apart from triangle count.
-- C: The slow scene need not have more triangles at all (the props can be small and few-sided), because triangle count is only one cost and per-call overhead can dominate when there are many small objects.
-- D: Draw calls are mostly CPU and submission cost; shading cost depends on pixels covered, which merging calls does not reduce.
-- E: The overhead is mostly CPU-side validation and driver work, which differs between APIs and engines, which is why newer APIs were designed to lower it.
+- A: A draw call is a command; a triangle is a piece of geometry.
+- B: A scene can have few triangles and many calls, or the reverse.
+- C: A draw call submits a batch of geometry plus the state to draw it.
+- D: Each call costs CPU submission and validation time, not mainly shading.
+- E: Per-call overhead can dominate with many small objects.
 
-**Source:** Draw call
+**Source:** Draw call versus triangle count
 
 ## MA-ch13.6
 
-A forest scene has 2,000 trees that use the same mesh and the same material, and 40 rocks that each use a different mesh and a different material. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer is choosing between batching, instancing and a texture atlas to cut draw calls. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Instancing can draw all 2,000 trees in one draw call, because they share a mesh and material and differ only in per-instance data like position.
-- [ ] B. Instancing can also combine the 40 rocks into one draw call, because instancing works on groups of objects with different meshes and materials.
-- [ ] C. Batching merges geometry that shares a material into fewer draw calls, but merging copies of one mesh into a single large mesh stores the vertex data of each copy, using more memory.
-- [ ] D. Giving each of the 2,000 trees its own unique material makes them easier to batch, because each tree can then be tuned separately.
-- [ ] E. Sprites that show different images can still share one material and be batched if the images are packed into a single texture atlas.
-
-**Key:** A=T B=F C=T D=F E=T
-
-**Why:**
-
-- A: Instancing draws many copies of one mesh with one material, with per-instance values such as transform supplied alongside.
-- B: Different meshes and materials cannot be drawn as instances of one mesh, so the rocks remain separate.
-- C: Merging copies into one mesh cuts calls but stores each copy's geometry separately, so memory use rises.
-- D: A unique material per tree breaks any grouping by material and makes the draw count worse.
-- E: An atlas lets different images live in one texture, so objects using different pictures can share a material.
-
-**Source:** Batching versus instancing
-
-## MA-ch13.7
-
-A developer tells a coding agent: "The grass is slow. Use instancing." The grass is 50,000 blades, each currently a separate scene node with its own mesh and material resource. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. For the instruction to work, the agent must set up one shared blade mesh, one shared material, and a per-instance list of transforms.
-- [ ] B. The saving from instancing comes mainly from submitting one draw call for many copies of the mesh, not from drawing fewer triangles.
-- [ ] C. Instancing lowers the pixel-shading cost of the grass, since the copies are drawn together in one call.
-- [ ] D. Because instancing removes thousands of draw calls, it will speed up the grass, so the agent can apply it and move on without comparing frame times.
-- [ ] E. The instruction is precise enough on its own, because "instancing" implies the agent will also add level of detail and culling for each blade.
-
-**Key:** A=T B=T C=F D=F E=F
-
-**Why:**
-
-- A: Instancing needs one mesh and material shared by all copies, plus per-copy data, so the existing per-node resources must be replaced.
-- B: Every copy still has its triangles processed; what shrinks is the per-call CPU overhead of submitting 50,000 separate draws.
-- C: Drawing copies together saves submission overhead, but every visible pixel of every blade is still shaded, so grass that is slow because of overdraw or shader cost stays slow.
-- D: The benefit depends on the platform and on where the time goes (if the grass is slow from shading or overdraw, fewer draw calls will not help), so the change is justified by before and after measurements.
-- E: Instancing is a way of drawing many copies in one call; deciding which copies to draw (level of detail, culling) is a separate matter that the instruction would have to request.
-
-**Source:** Instancing and what it requires
-
-## MA-ch13.8
-
-A 1920 x 1080 screen (2,073,600 pixels) is covered by 8 full-screen semi-transparent smoke layers. Each layer is shaded in full for every pixel, with no early rejection. The game targets 60 FPS. Check each statement that is true. Each statement is worth 1 point (5 points total).
-
-- [ ] A. The layers cause about 16.6 million fragment shader invocations per frame.
-- [ ] B. At 60 FPS that is about 1.0 billion fragment shader invocations per second.
-- [ ] C. The overdraw factor is about 8, meaning each screen pixel is shaded about 8 times per frame.
-- [ ] D. Cutting from 8 layers to 2 layers reduces the fragment work by about one third.
-- [ ] E. Overdraw is a cost on the CPU, so it shows up when the CPU is waiting on the GPU.
+- [ ] A. Instancing draws many copies of one mesh and one material in a single call, with per-instance data such as transform.
+- [ ] B. Batching merges geometry that shares a material into fewer draw calls.
+- [ ] C. A texture atlas packs many images into one texture, so objects that show different images can share a material.
+- [ ] D. Instancing draws many copies of different meshes with different materials in one call.
+- [ ] E. Giving each object its own unique material makes batching easier.
 
 **Key:** A=T B=T C=T D=F E=F
 
 **Why:**
 
-- A: 2,073,600 pixels x 8 layers = 16,588,800 fragments per frame.
-- B: 16,588,800 x 60 = 995,328,000, about one billion per second.
-- C: Overdraw measures how many times the average pixel is shaded; eight full layers give a factor of 8.
-- D: Two layers is a quarter of eight, so the work falls by about 75 percent, to about 4.1 million per frame.
-- E: Overdraw is shading work on the GPU (a fill-rate cost), not CPU work.
+- A: Per-instance data such as transform is supplied alongside the shared mesh.
+- B: Shared material is the condition for merging into fewer calls.
+- C: An atlas lets different pictures live in one texture and one material.
+- D: Instances share one mesh and one material.
+- E: Unique materials split the groups and defeat batching.
 
-**Source:** Overdraw and fill rate
+**Source:** Batching, instancing, texture atlas
+
+## MA-ch13.7
+
+A developer tells a coding agent: "The grass is slow. Use instancing." The grass is 50,000 blades, each a separate scene node with its own mesh and material. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Instancing needs one shared blade mesh, one shared material and a per-instance list of transforms.
+- [ ] B. If the grass is slow because of overdraw, fewer draw calls will fix it.
+- [ ] C. Instancing reduces the number of triangles the GPU processes for the grass.
+- [ ] D. The saving from instancing comes from fewer pixels being shaded.
+- [ ] E. The word instancing in the prompt also asks the agent to add level of detail and culling.
+
+**Key:** A=T B=F C=F D=F E=F
+
+**Why:**
+
+- A: Instancing needs a shared mesh and material plus per-copy data.
+- B: Overdraw is shading cost on the GPU, which draw-call count does not touch.
+- C: Each copy still has its triangles processed; only submission overhead falls.
+- D: Instancing cuts draw calls, not shaded pixels.
+- E: Level of detail and culling are separate terms and would have to be requested.
+
+**Source:** Instancing in an agent prompt
+
+## MA-ch13.8
+
+A scene is slow because eight full-screen semi-transparent smoke layers are shaded for each pixel. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Overdraw is a cost on the CPU.
+- [ ] B. A fragment is a candidate pixel produced by rasterization that the fragment shader processes.
+- [ ] C. Merging the overlapping planes into one mesh removes the overdraw.
+- [ ] D. Fill rate is how many pixels the GPU can write per second, and stacked transparent layers strain it.
+- [ ] E. Overdraw is the same screen pixel being shaded more than once in a frame.
+
+**Key:** A=F B=T C=F D=T E=T
+
+**Why:**
+
+- A: Overdraw is shading work on the GPU.
+- B: Each fragment is a potential pixel that gets shaded.
+- C: A merged mesh still covers the same pixels the same number of times.
+- D: Fill rate limits pixel output, and each layer adds more of it.
+- E: Eight layers over one pixel give an overdraw factor of eight.
+
+**Source:** Fragment, overdraw, fill rate
 
 ## MA-ch13.9
 
-A mobile scene has only 200 draw calls and spends 4 ms of CPU time per frame, yet runs at 14 FPS because 12 full-screen semi-transparent fog planes overlap. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A 3D game draws a city, and the developer wants fewer objects submitted. Check each statement that is true about culling terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Fill rate, the pixel shading work, is the likely limit, so cutting draw calls alone will not help much.
-- [ ] B. Merging all twelve fog planes into one mesh removes the overdraw, since only one object is then drawn.
-- [ ] C. Frustum culling would remove the fog planes and fix the problem, since most of them overlap each other.
-- [ ] D. Adding level-of-detail meshes to the fog planes would fix the problem, since LOD reduces the cost of drawing distant objects.
-- [ ] E. Using higher-resolution fog textures would fix the problem, since sharper textures need fewer layers to look dense.
+- [ ] A. Frustum culling removes a building hidden behind a wall when the building is inside the view volume.
+- [ ] B. Occlusion culling skips objects that are inside the view volume but hidden behind other geometry.
+- [ ] C. A culled object is not submitted, which saves the draw calls and shading work it would have caused.
+- [ ] D. Frustum culling skips objects that lie outside the camera's view volume.
+- [ ] E. Backface culling discards individual triangles that face away from the camera.
 
-**Key:** A=T B=F C=F D=F E=F
+**Key:** A=F B=T C=T D=T E=T
 
 **Why:**
 
-- A: The CPU side is cheap here, so the GPU is the limit, and each pixel is shaded about twelve times.
-- B: Merged geometry still covers the same pixels twelve times, so every pixel is still shaded for every layer.
-- C: The planes are inside the view, so frustum culling keeps them.
-- D: The planes are already minimal geometry; the cost is the number of pixels shaded, not triangles.
-- E: Larger textures add memory and sampling cost without reducing the layers shaded.
+- A: Being inside the frustum is not the same as being visible, which is the gap occlusion culling fills.
+- B: Occlusion culling tests visibility against other geometry.
+- C: Culling decides what not to draw, so the culled cost disappears.
+- D: The frustum is the volume the camera can see.
+- E: Backface culling works on triangles, not whole objects.
 
-**Source:** Overdraw versus draw calls
+**Source:** Frustum, occlusion and backface culling
 
 ## MA-ch13.10
 
-A 3D game draws a city. Check each statement that is true about culling. Each statement is worth 1 point (5 points total).
+A character has three meshes: a detailed one for close-ups, a medium one and a simple one for the distance. Check each statement that is true about level of detail (LOD). Each statement is worth 1 point (5 points total).
 
-- [ ] A. Frustum culling skips objects that lie wholly outside the camera's view volume.
-- [ ] B. Occlusion culling skips objects that are inside the view volume but hidden behind other geometry.
-- [ ] C. Frustum culling alone still submits a building hidden behind a large wall if the building is inside the camera's view volume.
-- [ ] D. Culling decides what not to draw, so it lowers the draw calls and shading work spent on the culled objects.
-- [ ] E. Backface culling removes entire objects that are behind the camera, which is why frustum culling is rarely needed.
+- [ ] A. LOD replaces the need for culling, since distant objects cost nothing to draw.
+- [ ] B. LOD swaps in a simpler version as the object gets farther away or smaller on screen.
+- [ ] C. Cross-fading or tuning the switch distances can reduce popping.
+- [ ] D. Popping is the visible jump when the engine switches from one LOD version to another.
+- [ ] E. Keeping three LOD versions uses less memory than keeping the detailed mesh alone.
 
-**Key:** A=T B=T C=T D=T E=F
+**Key:** A=F B=T C=T D=T E=F
 
 **Why:**
 
-- A: A view frustum is the volume the camera can see; objects wholly outside it cannot appear.
-- B: Occlusion culling tests visibility against other geometry, not just the view volume.
-- C: Being in the frustum is not the same as being visible, which is the gap occlusion culling fills.
-- D: A culled object is not submitted, saving the calls and pixel work it would have caused.
-- E: Backface culling discards individual triangles facing away from the camera; objects behind the camera are handled by frustum culling.
+- A: Cheap objects still cost something, so culling is a separate tool.
+- B: LOD chooses a representation by distance or screen size.
+- C: Blending or better thresholds hides the swap.
+- D: Popping is the visible swap between versions.
+- E: Extra versions are extra mesh data held in memory.
 
-**Source:** Culling (frustum and occlusion)
+**Source:** Level of detail, popping
 
 ## MA-ch13.11
 
-A character model has three versions: 20,000 triangles for close-ups, 5,000 for mid-range and 1,000 for the distance. Check each statement that is true about level of detail (LOD). Each statement is worth 1 point (5 points total).
+A developer tells a coding agent: "Pool the bullets." Each shot currently creates a new bullet and destroys it on impact. Check each statement that is true about object pooling. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The engine switches to a cheaper version as the object gets farther away or smaller on screen.
-- [ ] B. At a distance, using the 1,000-triangle version reduces the vertex and triangle processing for each character drawn.
-- [ ] C. Storing all three versions takes more memory than storing only the 20,000-triangle version.
-- [ ] D. Visible popping when the version switches can be reduced by cross-fading between versions or by tuning the switch distances.
-- [ ] E. With LOD in place, culling is no longer needed, since distant objects are cheap and cost nothing to draw.
+- [ ] A. Acquire takes an object from the pool and release returns it.
+- [ ] B. Pooling creates objects in advance and reuses them instead of creating and destroying them.
+- [ ] C. Pool exhaustion is the situation where no free object is left when one is requested, and the code needs a policy for it.
+- [ ] D. Idle pooled objects are free, taking up no memory.
+- [ ] E. A reused pooled object needs no reset, because it was cleaned when it was created.
 
-**Key:** A=T B=T C=T D=T E=F
+**Key:** A=T B=T C=T D=F E=F
 
 **Why:**
 
-- A: LOD swaps in simpler representations according to distance or screen size.
-- B: Fewer triangles and vertices means less geometry work for each distant character.
-- C: Each extra version is additional mesh data kept in memory.
-- D: Cross-fades and well-chosen transition distances hide the swap from the player.
-- E: Cheap is not free; objects outside the view or hidden still cost work unless culled.
+- A: Acquire and release are the two basic pool operations.
+- B: A pool trades creation and destruction for reuse.
+- C: Exhaustion needs a policy such as growing, skipping the shot or recycling the oldest.
+- D: Pooled objects still occupy memory while they wait.
+- E: A reused object keeps its old state, so it needs a reset such as position, velocity and timers.
 
-**Source:** Level of detail
+**Source:** Object pooling, acquire, release, exhaustion
 
 ## MA-ch13.12
 
-A developer tells a coding agent: "Pool the bullets." Currently each shot creates a new bullet object and destroys it on impact. At 20 shots per second the game stutters periodically. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A game written in a language with a tracing garbage collector allocates a small temporary list each frame, and players see short freezes. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Object pooling creates bullets in advance and reuses them: one is taken from the pool on firing and returned on impact.
-- [ ] B. A pooled bullet must be fully reset on reuse (position, velocity, timers, hit flags), or state from its last use leaks into the new shot.
-- [ ] C. Pooling removes the need to decide what happens when the pool has no free bullet left, since the pool has enough bullets.
-- [ ] D. Pooling avoids repeated allocation and destruction, which with garbage collection also means less garbage to clean up.
-- [ ] E. Idle bullets in a pool cost nothing while they wait, since an object that is not in use takes up no memory and no processing time at all.
+- [ ] A. Garbage is allocated memory that is no longer referenced and waits to be reclaimed by the collector.
+- [ ] B. Pooling reduces allocation, which means less garbage for the collector.
+- [ ] C. Lowering the refresh rate removes the freezes by giving the collector more time.
+- [ ] D. Garbage collection manages GPU memory, so a faster GPU shortens the pauses.
+- [ ] E. A collection pause is time the collector takes out of a frame, which shows as a hitch.
 
-**Key:** A=T B=T C=F D=T E=F
+**Key:** A=T B=T C=F D=F E=T
 
 **Why:**
 
-- A: The pool trades creating and destroying objects for acquiring and releasing existing ones.
-- B: Reused objects keep whatever state they had, so a missed reset makes a shot behave like the previous one.
-- C: A pool has a fixed size, so the code needs a policy for exhaustion, such as growing, skipping the shot or recycling the oldest.
-- D: Less allocation means less short-lived garbage and fewer collection pauses where a collector is used.
-- E: Pooled objects still occupy memory and may cost processing unless they are disabled.
+- A: Garbage is unreachable memory awaiting reclamation.
+- B: Reusing objects avoids creating short-lived garbage.
+- C: Refresh rate does not change allocation, which is the cause.
+- D: The collector manages CPU-side memory.
+- E: The collector's work lands inside a frame as a spike.
 
-**Source:** Object pooling
+**Source:** Garbage, garbage collection, allocation
 
 ## MA-ch13.13
 
-A game written in a language with a tracing garbage collector allocates a small temporary list every frame. After ten seconds, players see a brief freeze about once every few seconds. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A team wants to cut texture memory on a phone. Check each statement that is true about the terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Garbage is memory that was allocated and is no longer referenced, which the collector later reclaims.
-- [ ] B. Collection can interrupt the game for part of a frame at times the developer does not control, which shows as a hitch.
-- [ ] C. Making the temporary list larger removes the freezes, because the collector then runs less often.
-- [ ] D. Lowering the display refresh rate fixes the cause of the freezes, because frames then arrive less often and the collector has more time.
-- [ ] E. A faster GPU reduces collection pauses, because the freezes happen at the moment the frame is drawn.
+- [ ] A. The size of a PNG file on disk is the same as the texture's footprint in VRAM.
+- [ ] B. A mipmap chain is a series of smaller copies of a texture used when the texture appears small on screen.
+- [ ] C. GPU texture compression is the same thing as saving the image as a smaller PNG.
+- [ ] D. VRAM is the memory of the GPU, where textures are held for sampling.
+- [ ] E. Texture streaming loads textures or mip levels into memory as they are needed.
 
-**Key:** A=T B=T C=F D=F E=F
+**Key:** A=F B=T C=F D=T E=T
 
 **Why:**
 
-- A: Garbage is unreachable allocated memory awaiting reclamation by the collector.
-- B: The collector runs when it decides to, and its work can take time out of a frame, which shows as a spike.
-- C: A larger list creates more garbage per frame, which makes collection more frequent or longer.
-- D: The refresh rate does not control allocation; the freezes come from allocation and collection.
-- E: Collection runs on the CPU and manages CPU-side memory, so GPU speed does not change it.
+- A: VRAM size follows resolution and format, not the file.
+- B: Mip levels are pre-shrunk copies for distant or small use.
+- C: GPU compression formats stay compressed in memory; PNG is decoded before use.
+- D: VRAM is video memory.
+- E: Streaming brings in data on demand.
 
-**Source:** Garbage collection
+**Source:** VRAM, mipmap, texture compression, streaming
 
 ## MA-ch13.14
 
-A 2048 x 2048 texture with four 8-bit channels (RGBA, 4 bytes per pixel) is uploaded to the GPU uncompressed. Take 1 MiB as 1,048,576 bytes. A full mipmap chain adds about one third on top of the base level (1 + 1/4 + 1/16 + ... = 4/3). A GPU-compressed format stores the same image at 1 byte per pixel. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer compares two builds of a system with several timed runs each. Check each statement that is true about benchmarking terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. The base level occupies 16 MiB (2048 x 2048 x 4 bytes).
-- [ ] B. With a full mipmap chain, the uncompressed texture occupies about 21.3 MiB.
-- [ ] C. In the compressed format with a full mipmap chain, it occupies about 5.3 MiB.
-- [ ] D. A 100 KB PNG file of this image occupies only about 100 KB of GPU memory.
-- [ ] E. Halving both dimensions to 1024 x 1024 reduces the uncompressed base level to a quarter, 4 MiB.
+- [ ] A. A warm-up period is the start of a run that is discarded because shader compilation and cache filling are not steady-state cost.
+- [ ] B. One run is enough to show a real difference between two versions.
+- [ ] C. Variance is how much results differ from run to run for the same code.
+- [ ] D. A difference smaller than the run-to-run spread is within noise.
+- [ ] E. The median is the middle value of the sorted samples.
 
-**Key:** A=T B=T C=T D=F E=T
+**Key:** A=T B=F C=T D=T E=T
 
 **Why:**
 
-- A: 2048 x 2048 x 4 bytes = 16,777,216 bytes = 16 MiB.
-- B: 16 MiB x 4/3 is about 21.3 MiB.
-- C: 2048 x 2048 x 1 byte = 4 MiB, and times 4/3 is about 5.3 MiB.
-- D: A PNG is compressed for storage on disk; the GPU needs the pixels in a format it can sample, so its size in memory follows the format, not the file.
-- E: Memory scales with pixel count, so halving each dimension leaves a quarter: 1024 x 1024 x 4 = 4 MiB.
+- A: Start-up work is not representative, so it is dropped before measuring.
+- B: A single run cannot separate a real effect from noise.
+- C: Variance measures run-to-run spread.
+- D: A gap smaller than the normal spread does not show a real change.
+- E: Median is the middle of the sorted values.
 
-**Source:** Texture memory
+**Source:** Warm-up, variance, median, noise
 
 ## MA-ch13.15
 
-A developer compares two implementations of a system. Version A's mean frame time (ms) in five separate runs was 8.4, 8.0, 8.2, 8.1 and 8.3. Version B's was 7.9, 8.5, 7.6, 8.4 and 8.2. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer reports: "A steady 60 FPS, so plenty of headroom." The display runs at 60 Hz with vertical sync on, in the editor, on a fast development PC. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Both versions have a median of 8.2 ms across their five runs.
-- [ ] B. B's mean (8.12 ms) is only 0.08 ms below A's (8.2 ms), far less than B's own spread of 7.6 to 8.5 ms, so the runs do not show B is faster.
-- [ ] C. The right conclusion from these numbers is that B is about 1 percent faster, since its mean is lower, so the team should switch.
-- [ ] D. More repeated runs would help show whether any real difference exists beyond run-to-run variance.
-- [ ] E. Frames from the first seconds after launch, while shaders compile and caches fill, should usually be excluded as warm-up.
+- [ ] A. A development PC counts as the target hardware if it is faster than the phone.
+- [ ] B. Vertical sync caps the frame rate at the refresh rate, which can hide spare time in the frame.
+- [ ] C. Vertical sync makes the game's work run faster.
+- [ ] D. An editor session or debug build adds overhead that a release build does not have.
+- [ ] E. Headroom is the part of the frame budget that is already used.
 
-**Key:** A=T B=T C=F D=T E=T
+**Key:** A=F B=T C=F D=T E=F
 
 **Why:**
 
-- A: Sorted, A is 8.0, 8.1, 8.2, 8.3, 8.4 and B is 7.6, 7.9, 8.2, 8.4, 8.5; the middle value is 8.2 in both.
-- B: Variation between runs of the same code is larger than the gap between the means, so the difference is within noise.
-- C: Reporting a 1 percent gain would claim an effect the data cannot distinguish from chance.
-- D: More repetitions shrink the uncertainty and show whether a consistent difference exists.
-- E: Start-up work is not representative of steady-state cost, so it is normally discarded before measuring.
+- A: Target hardware is the device the game ships to.
+- B: A frame that finishes early waits for the next refresh, so FPS stays at 60.
+- C: Vertical sync waits on the display and does not speed the work.
+- D: Tool overhead and extra checks change timings.
+- E: Headroom is the unused part of the budget.
 
-**Source:** Benchmark method: warm-up, repetition, variance
+**Source:** Vertical sync, build type, target hardware, headroom
 
 ## MA-ch13.16
 
-A developer reports: "The game shows a steady 60 FPS, so it has plenty of headroom." The display refreshes at 60 Hz with vertical sync on, the measurement was taken inside the editor with debugging tools attached, and it was taken on a fast development PC rather than the target phone. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A developer tells a coding agent: "Make the game faster." Check each statement that is a precise rewrite fragment using correct performance terms. Each statement is worth 1 point (5 points total).
 
-- [ ] A. With vertical sync on, frame rate is capped at the refresh rate, so 60 FPS does not show whether frames take 4 ms or 16 ms.
-- [ ] B. Measurements from an editor session or a debug build can differ from a release build, because of extra checks and tool overhead.
-- [ ] C. A fast development PC performs the same as the target phone, so the result transfers directly to the device.
-- [ ] D. A steady 60 FPS proves that each frame uses exactly 16.7 ms of CPU work, since a locked frame rate means the frames take the full budget.
-- [ ] E. Turning vertical sync off would make the game slower, because the display would then be waiting on it.
+- [ ] A. "Optimize the parts of the code that look slow."
+- [ ] B. "Boost FPS as much as you can."
+- [ ] C. "Profile first to find whether the frame is CPU-bound or GPU-bound, then change one thing and re-measure."
+- [ ] D. "Bring frame time to the 16.7 ms budget at 60 Hz on the target phone, measured in a release build."
+- [ ] E. "Report the 99th percentile frame time as well as the mean, after discarding a warm-up period."
 
-**Key:** A=T B=T C=F D=F E=F
+**Key:** A=F B=F C=T D=T E=T
 
 **Why:**
 
-- A: A frame that finishes early waits for the next refresh, so the FPS number hides how much time is left over.
-- B: Editors and debug builds add work that a shipped build does not, so release builds on the target are the honest test.
-- C: Different hardware has different CPU, GPU and memory limits, so measurements must be taken on the device being targeted.
-- D: The cap means the frame can take less than the budget and still show 60 FPS.
-- E: Vertical sync waits on the display and does not make the work faster; turning it off only removes the cap and exposes the real frame time.
+- A: Looks slow is a guess, not a profiled hot spot.
+- B: It names no target, device or measurement.
+- C: Naming the bottleneck type and one change at a time is exact use of the terms.
+- D: It gives a measurable frame-time budget, target device and build type.
+- E: It names a percentile and a warm-up period.
 
-**Source:** Measurement pitfalls: vsync, build type, hardware
+**Source:** Rewriting a vague performance prompt
 
 ## MA-ch13.17
 
-A 60 Hz game has a budget of 16.7 ms per frame and currently takes 20 ms. A profiler shows: physics 8 ms, one function update_minimap 1 ms, and everything else 11 ms. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A scene has 5,000 small separate objects, each with its own draw call, and the frame is CPU-bound. Check each statement that is a sensible instruction to the coding agent. Each statement is worth 1 point (5 points total).
 
-- [ ] A. Making update_minimap twice as fast saves only 0.5 ms, small compared with the roughly 3.3 ms that must be saved to reach the budget.
-- [ ] B. Making physics four times faster would cut the frame to about 14 ms, inside the budget.
-- [ ] C. Making update_minimap infinitely fast would bring the game under budget on its own.
-- [ ] D. The 3.3 ms to be saved should be shared out in roughly equal parts across physics, update_minimap and the remaining 11 ms of work, since each of them adds to the frame time.
-- [ ] E. Because update_minimap is the easiest function to change, the best first step is to rewrite it, and the larger costs can be looked at afterwards if the budget is still missed.
+- [ ] A. "Use instancing for the 5,000 props, each with its own mesh and material."
+- [ ] B. "Batch the props that share a material to reduce draw calls."
+- [ ] C. "Use GPU texture compression to lower the draw-call count."
+- [ ] D. "Add LOD meshes to lower the draw-call count."
+- [ ] E. "Pack the prop images into a texture atlas so the props can share one material."
 
-**Key:** A=T B=T C=F D=F E=F
+**Key:** A=F B=T C=F D=F E=T
 
 **Why:**
 
-- A: Halving a 1 ms function saves 0.5 ms, about 3 percent of the frame.
-- B: Physics falls from 8 to 2 ms, saving 6 ms, and 20 - 6 = 14 ms.
-- C: Removing the whole 1 ms still leaves 19 ms, above 16.7 ms.
-- D: update_minimap costs 1 ms in total, so it cannot supply an equal 1.1 ms share; the saving has to come mostly from the large items, physics and the remaining work.
-- E: Effort belongs where the measured time is: update_minimap offers at most 1 ms of the 3.3 ms needed and cannot meet the goal alone, while physics at 8 ms offers far more, and ease of change does not alter that.
+- A: Instancing needs one shared mesh and material.
+- B: Batching merges geometry that shares a material.
+- C: Compression lowers memory, not calls.
+- D: LOD cuts triangles at a distance and does not reduce calls.
+- E: An atlas makes different images share a material, enabling batching.
 
-**Source:** Bottleneck and premature optimization
+**Source:** Choosing batching, instancing or atlas
 
 ## MA-ch13.18
 
-A developer is learning to use a profiler. Check each statement that is true. Each statement is worth 1 point (5 points total).
+A team discusses premature optimization and hot spots. Check each statement that is true. Each statement is worth 1 point (5 points total).
 
-- [ ] A. A profiler records where time or memory goes during a run, such as per function or frame stage, to find hot spots.
-- [ ] B. Recording in a profiler's most detailed mode does not change how fast the game runs, so the frame times it reports can be quoted as the game's normal speed.
-- [ ] C. A profiler's report points to the fix as well as to the slow part, so the developer's job is to carry out what the report indicates.
-- [ ] D. A capture of a single frame taken at a busy moment is enough to find the bottleneck of a game whose load changes during play.
-- [ ] E. A profiler reports how long the CPU spends in each function, but time spent on the GPU is not measured directly and has to be guessed from the frame rate.
+- [ ] A. A profiler reports the fix as well as the slow part.
+- [ ] B. A detailed profiling run adds overhead, so its absolute times are inflated.
+- [ ] C. A hot spot is a function or frame stage that takes a large share of the frame time.
+- [ ] D. Premature optimization is optimizing before measurement shows a need.
+- [ ] E. Headroom is the amount by which the frame exceeds its budget.
 
-**Key:** A=T B=F C=F D=F E=F
+**Key:** A=F B=T C=T D=T E=F
 
 **Why:**
 
-- A: Showing where time is spent is the purpose of a profiler.
-- B: Detailed profiling adds overhead and slows the program, which is why absolute times from a profiled run should not be quoted as normal speed.
-- C: A profiler shows data; deciding what it means and what to change is the developer's work.
-- D: One frame can be unrepresentative, so captures should span a representative stretch of play.
-- E: GPU profiling tools exist in the major engines and report GPU time separately from CPU time.
+- A: A profiler shows data; choosing the change is the developer's work.
+- B: Instrumentation slows the program.
+- C: Hot spots are where time concentrates.
+- D: Optimizing without evidence may miss the real bottleneck.
+- E: Headroom is spare budget; exceeding the budget is a miss.
 
-**Source:** Profiler
+**Source:** Premature optimization, hot spot, profiler overhead
+
+## MA-ch13.19
+
+A developer is learning to use a profiler. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. A profiler records where time or memory goes during a run.
+- [ ] B. A profiler reports CPU time and GPU time as the same number.
+- [ ] C. A capture of one frame at a busy moment is enough for a game whose load changes during play.
+- [ ] D. A hot spot is the function that uses the least time.
+- [ ] E. A capture should span a representative stretch of play.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: Recording time and memory by function or stage is the purpose of a profiler.
+- B: CPU and GPU timings are separate readings.
+- C: One frame can be unrepresentative.
+- D: A hot spot is a large cost, not the smallest.
+- E: A representative capture avoids mistaking an outlier for the norm.
+
+**Source:** Profiler, capture
+
+## MA-ch13.20
+
+A game runs out of GPU memory. Check each statement that is true about the options. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Removing the mipmap chain reduces draw calls.
+- [ ] B. A texture atlas is a lower-resolution copy used for distant objects.
+- [ ] C. Lowering texture resolution reduces memory but loses detail.
+- [ ] D. GPU texture compression reduces bytes per pixel at some risk of visible artifacts.
+- [ ] E. Texture streaming keeps the full set of textures resident in memory at the same time.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: Mipmaps affect memory and sampling, not draw calls.
+- B: That describes a mip level; an atlas packs several images into one texture.
+- C: Fewer pixels means less memory and less detail.
+- D: Compressed formats store fewer bytes per pixel and can add artifacts.
+- E: Streaming loads data on demand rather than keeping everything resident.
+
+**Source:** Texture memory options
+
+## MA-ch13.21
+
+A shooter pools its bullets. Check each statement that is true about sizing and operating the pool. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Pool size is set from peak simultaneous demand plus a margin.
+- [ ] B. An inactive pooled bullet stays visible and colliding so it is ready to use.
+- [ ] C. Pool size is set from the average number of bullets alive, with no margin.
+- [ ] D. Releasing an object back to the pool twice is harmless.
+- [ ] E. Pooling helps little when objects are few and long-lived.
+
+**Key:** A=T B=F C=F D=F E=T
+
+**Why:**
+
+- A: Peak demand sets the needed count, with margin for spikes.
+- B: Inactive objects are hidden with processing and collision disabled.
+- C: Average demand would run out at peaks.
+- D: A double release can put the same object in the pool twice and cause bugs.
+- E: Pooling saves creation cost, which is small for few long-lived objects.
+
+**Source:** Pool sizing and operations
+
+## MA-ch13.22
+
+Classify fixes by the bottleneck they address. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reducing overdraw is a fix for a GPU-bound frame.
+- [ ] B. GPU texture compression is a fix for a CPU-bound frame.
+- [ ] C. Simplifying a pixel shader is a fix for a GPU-bound frame.
+- [ ] D. Batching is a fix for CPU-side draw-call submission cost.
+- [ ] E. Updating AI less often is a fix for CPU-side work.
+
+**Key:** A=T B=F C=T D=T E=T
+
+**Why:**
+
+- A: Overdraw is GPU pixel work.
+- B: Compression saves memory, not CPU time.
+- C: A cheaper shader reduces GPU work per pixel.
+- D: Fewer calls means less CPU submission time.
+- E: Less frequent AI updates cut CPU logic cost.
+
+**Source:** CPU-side versus GPU-side fixes
+
+## MA-ch13.23
+
+A developer says: "I ran it once and version B was faster, so we are switching." Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. Reporting FPS alone is enough, because an average shows hitches.
+- [ ] B. Repeated runs let the developer report the spread.
+- [ ] C. Comparing a release build of A with a debug build of B is a fair test.
+- [ ] D. Run-to-run noise comes from things such as other processes and thermal effects.
+- [ ] E. Frames from the warm-up period are representative of steady-state cost.
+
+**Key:** A=F B=T C=F D=T E=F
+
+**Why:**
+
+- A: Averages hide hitches; percentiles reveal them.
+- B: Repetition shows variance.
+- C: Build type changes timing, so conditions must match.
+- D: Noise sources vary between runs.
+- E: Warm-up frames include start-up work and are discarded.
+
+**Source:** Benchmark critique
+
+## MA-ch13.24
+
+A game targets 60 Hz and takes 12 ms per frame. A teammate wants a complex rewrite to save an estimated 0.2 ms. Check each statement that is true. Each statement is worth 1 point (5 points total).
+
+- [ ] A. The game is over budget.
+- [ ] B. A game that is within budget is GPU-bound by definition.
+- [ ] C. The estimated saving should be confirmed by measurement before counting.
+- [ ] D. The headroom is the unused part of the 16.7 ms budget, about 4.7 ms.
+- [ ] E. The rewrite targets a confirmed hot spot.
+
+**Key:** A=F B=F C=T D=T E=F
+
+**Why:**
+
+- A: 12 ms is under 16.7 ms.
+- B: Being within budget says nothing about CPU or GPU limits.
+- C: An estimate is not a measurement.
+- D: Headroom is budget minus frame time.
+- E: A hot spot needs profile evidence.
+
+**Source:** Headroom, hot spot, premature optimization
