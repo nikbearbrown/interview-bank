@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Short essay scored against a rubric of five items, 1 point each."
   },
-  "count": 939,
+  "count": 943,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -86,6 +86,38 @@
         {
           "point": 5,
           "text": "States that a prompt is input to inference, not training, so weights stay fixed."
+        }
+      ]
+    },
+    {
+      "id": "ES-2.2",
+      "type": "essay",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "2. What is a model? What is a language model?",
+      "source": null,
+      "prompt": "A news analyst asks a language model about each day's events and wants answers they can rely on. Explain why the model cannot know today's events from its training, describe three ways the analyst can get today's information to the model and say what each does to the model's weights, and say who decides which sources are used and what the analyst should still check.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Explains that training data is a large, filtered snapshot that ends at a cutoff, so later events are not in the weights, and the model can still answer fluently with out-of-date or invented content."
+        },
+        {
+          "point": 2,
+          "text": "Names three routes, for example pasting or attaching the content, a search tool that can be pointed at trusted sources, and a connected tool such as an MCP server or an API, and says each places text in the model's input."
+        },
+        {
+          "point": 3,
+          "text": "States that none of the routes changes the weights, so the information is available only while it is in the context or is supplied again."
+        },
+        {
+          "point": 4,
+          "text": "States that a person decides which sources are trusted and connected, and that access is limited by what a site allows (blocked, paywalled or login-gated sources)."
+        },
+        {
+          "point": 5,
+          "text": "Says the analyst checks the answer against the source itself, because a retrieved or cited passage is a claim, not a verification."
         }
       ]
     },
@@ -10554,6 +10586,38 @@
       ]
     },
     {
+      "id": "ES-ch05.62",
+      "type": "essay",
+      "points": 5,
+      "chapter": 5,
+      "group": "chapter",
+      "section": null,
+      "source": "Who may do what is decided before the code exists",
+      "prompt": "A support agent handles refund requests. It could reach the order database, other customers' records, internal staff notes, and payroll data. Explain \"need to know\" as a heuristic for what information the agent should receive, apply it to this agent, and say who decides what the task needs.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "States the heuristic: give an agent only the information its task requires, and if it does not need a piece of information it does not get it (as in systems that grade information by who needs it)."
+        },
+        {
+          "point": 2,
+          "text": "Applies it: the agent gets the requesting customer's order and refund details and the refund policy, and does not get payroll, other customers' records, or unrelated internal notes."
+        },
+        {
+          "point": 3,
+          "text": "Gives reasons: less to leak, less room for injected text to steer the agent to reveal something, less irrelevant context, and smaller harm when the agent errs."
+        },
+        {
+          "point": 4,
+          "text": "Says the rule covers what the agent can reach through tools and data access, not only what is written in its prompt, because an agent that can query everything effectively knows everything."
+        },
+        {
+          "point": 5,
+          "text": "Says a person decides what the task needs and what to do when the agent cannot finish without more, that any grant of more information is deliberate, and that the rule is a heuristic, so what actually reached the agent should still be checked."
+        }
+      ]
+    },
+    {
       "id": "ES-ch06.1",
       "type": "essay",
       "points": 5,
@@ -14390,6 +14454,38 @@
         {
           "point": 5,
           "text": "Says that when the sources do not answer, the report should say so or narrow the claim, and not fill the gap with a plausible statement."
+        }
+      ]
+    },
+    {
+      "id": "ES-ch07.60",
+      "type": "essay",
+      "points": 5,
+      "chapter": 7,
+      "group": "chapter",
+      "section": null,
+      "source": "The gate: write the source list and the evidence rules first",
+      "prompt": "A team builds an assistant for staff. It is asked (a) for the current leave policy, a private document revised last month; (b) for a sensible order in which to complete an onboarding checklist; (c) for today's remaining budget in a ledger; and (d) to draft a friendly reminder email. For each, say whether the answer should come from retrieved or looked-up facts or can be left to the language model's own reasoning and writing, and give the rule you used. State what a person should check.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Says (a) should be grounded in retrieved text of the current document, because the policy is private and changed after the model was trained, and the answer should quote the passage and its date."
+        },
+        {
+          "point": 2,
+          "text": "Says (c) is an exact value that changes, so it should be read from the system where it is stored through a lookup, not recalled by the model or found by similarity search over saved text."
+        },
+        {
+          "point": 3,
+          "text": "Says (b) and (d) are ordering and writing tasks the model can do from the stated goal and constraints, because they do not depend on a private or current fact, while any fact inside them (a deadline, a name) must come from a source."
+        },
+        {
+          "point": 4,
+          "text": "States a rule: use sources for claims about the world that could be false, change, or are private, or that need to be traceable; leave structure, ordering, drafting and options to the model."
+        },
+        {
+          "point": 5,
+          "text": "Says a person checks which sources reached the model and reviews the output, and that if no source answers a question the assistant should say so and not fill the gap."
         }
       ]
     },
@@ -20182,6 +20278,38 @@
         {
           "point": 5,
           "text": "Defines completion, halt and defer exits with owners, and reopens the plan, recording the version and reason, whenever a result contradicts it."
+        }
+      ]
+    },
+    {
+      "id": "ES-ch10.61",
+      "type": "essay",
+      "points": 5,
+      "chapter": 10,
+      "group": "chapter",
+      "section": null,
+      "source": "Review before action: a plan predicts, a result records",
+      "prompt": "A language model drafts a plan to clean up a shared folder. Explain which parts of the plan the model can produce by itself, which parts must be checked against the real system, and what review happens before any step runs.",
+      "rubric": [
+        {
+          "point": 1,
+          "text": "Says the model can propose the steps, their order, the dependencies between them, and the conditions for stopping, from the goal and constraints."
+        },
+        {
+          "point": 2,
+          "text": "Says facts about the real folder, such as which files exist, who owns them, their sizes and their permissions, must come from observation such as a listing or a tool result, and not from the model's guess."
+        },
+        {
+          "point": 3,
+          "text": "Says the plan is a prediction and should mark where it relies on a fact not yet verified, so a reviewer can see it."
+        },
+        {
+          "point": 4,
+          "text": "Says a person reviews the plan before action, resolves contradictions between its parts, and approves it, so the system that wrote the plan does not approve it."
+        },
+        {
+          "point": 5,
+          "text": "Says the results record what actually happened and are compared with the plan, with a stop and a report when something unexpected appears."
         }
       ]
     },

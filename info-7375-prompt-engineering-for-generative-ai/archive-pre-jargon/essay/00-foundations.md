@@ -34,6 +34,20 @@ Trace what happens between typing a prompt and receiving the first generated tok
 4. Softmax converts logits to probabilities and one token is sampled.
 5. States that a prompt is input to inference, not training, so weights stay fixed.
 
+## ES-2.2
+
+A news analyst asks a language model about each day's events and wants answers they can rely on. Explain why the model cannot know today's events from its training, describe three ways the analyst can get today's information to the model and say what each does to the model's weights, and say who decides which sources are used and what the analyst should still check.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Explains that training data is a large, filtered snapshot that ends at a cutoff, so later events are not in the weights, and the model can still answer fluently with out-of-date or invented content.
+2. Names three routes, for example pasting or attaching the content, a search tool that can be pointed at trusted sources, and a connected tool such as an MCP server or an API, and says each places text in the model's input.
+3. States that none of the routes changes the weights, so the information is available only while it is in the context or is supplied again.
+4. States that a person decides which sources are trusted and connected, and that access is limited by what a site allows (blocked, paywalled or login-gated sources).
+5. Says the analyst checks the answer against the source itself, because a retrieved or cited passage is a claim, not a verification.
+
 # 3. Feedforward networks, encoders, decoders, context and prediction
 
 ## ES-3.1

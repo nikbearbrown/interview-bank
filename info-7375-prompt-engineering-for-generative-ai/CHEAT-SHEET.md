@@ -2,6 +2,8 @@
 
 **Status: DRAFT v0.1, 2026-11-04, for TA review.** Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
 
+Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks/books/interview-bank/info-7375-prompt-engineering-for-generative-ai/GLOSSARY-jargon-midterm.md).
+
 ## Executive summary
 
 **What this is.** One quick sheet of what you need to know for the midterm, in plain words. Each item says what to know, and where to go if you do not know it yet.

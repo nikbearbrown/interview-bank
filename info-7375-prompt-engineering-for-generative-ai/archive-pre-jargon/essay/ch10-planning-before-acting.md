@@ -1006,3 +1006,19 @@ Design a plan-review process for a team that uses a coding agent for routine bug
 5. Defines completion, halt and defer exits with owners, and reopens the plan, recording the version and reason, whenever a result contradicts it.
 
 **Source:** The gate: a reviewed plan, before Claude implements
+
+## ES-ch10.61
+
+A language model drafts a plan to clean up a shared folder. Explain which parts of the plan the model can produce by itself, which parts must be checked against the real system, and what review happens before any step runs.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Says the model can propose the steps, their order, the dependencies between them, and the conditions for stopping, from the goal and constraints.
+2. Says facts about the real folder, such as which files exist, who owns them, their sizes and their permissions, must come from observation such as a listing or a tool result, and not from the model's guess.
+3. Says the plan is a prediction and should mark where it relies on a fact not yet verified, so a reviewer can see it.
+4. Says a person reviews the plan before action, resolves contradictions between its parts, and approves it, so the system that wrote the plan does not approve it.
+5. Says the results record what actually happened and are compared with the plan, with a stop and a report when something unexpected appears.
+
+**Source:** Review before action: a plan predicts, a result records

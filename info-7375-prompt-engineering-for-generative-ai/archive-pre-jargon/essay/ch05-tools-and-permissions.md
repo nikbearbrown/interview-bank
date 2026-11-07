@@ -975,3 +975,19 @@ An engineer finishes a permission-boundary experiment and must record evidence t
 5. Includes the commands, outputs and dates, the engineer's own predictions and any decision revised after testing, plus a list of what was not checked.
 
 **Source:** Ship It: a permission policy with evidence
+
+## ES-ch05.62
+
+A support agent handles refund requests. It could reach the order database, other customers' records, internal staff notes, and payroll data. Explain "need to know" as a heuristic for what information the agent should receive, apply it to this agent, and say who decides what the task needs.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. States the heuristic: give an agent only the information its task requires, and if it does not need a piece of information it does not get it (as in systems that grade information by who needs it).
+2. Applies it: the agent gets the requesting customer's order and refund details and the refund policy, and does not get payroll, other customers' records, or unrelated internal notes.
+3. Gives reasons: less to leak, less room for injected text to steer the agent to reveal something, less irrelevant context, and smaller harm when the agent errs.
+4. Says the rule covers what the agent can reach through tools and data access, not only what is written in its prompt, because an agent that can query everything effectively knows everything.
+5. Says a person decides what the task needs and what to do when the agent cannot finish without more, that any grant of more information is deliberate, and that the rule is a heuristic, so what actually reached the agent should still be checked.
+
+**Source:** Who may do what is decided before the code exists

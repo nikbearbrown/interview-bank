@@ -112,13 +112,13 @@ def build():
     out_dir = ROOT / "json"
     out_dir.mkdir(exist_ok=True)
     result = {}
-    for kind, prefix, parser in (("multiple-answer", "MA", parse_ma), ("essay", "ES", parse_es)):
+    for kind, prefix, parser in (("multiple-answer", "MA", parse_ma),):  # essays retired; old ones are in archive-pre-jargon/
         qs = []
         chapters = {}
         for path in sorted((ROOT / kind).glob("*.md"), key=file_order):
             text = path.read_text()
             ch = chapter_of(path)
-            chapters[str(ch) if ch else "foundations"] = parse_title(text)
+            chapters.setdefault(str(ch) if ch else "foundations", parse_title(text))
             qs += parser(path, text)
         doc = {"course": COURSE, "type": kind, "scoring": SCORING[kind], "count": len(qs),
                "chapters": chapters, "questions": qs}

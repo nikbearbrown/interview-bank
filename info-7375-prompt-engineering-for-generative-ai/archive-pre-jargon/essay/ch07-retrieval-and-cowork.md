@@ -943,3 +943,19 @@ A reviewer fixes the rules for an evidence table before reading any generated re
 5. Says that when the sources do not answer, the report should say so or narrow the claim, and not fill the gap with a plausible statement.
 
 **Source:** The gate: write the source list and the evidence rules first
+
+## ES-ch07.60
+
+A team builds an assistant for staff. It is asked (a) for the current leave policy, a private document revised last month; (b) for a sensible order in which to complete an onboarding checklist; (c) for today's remaining budget in a ledger; and (d) to draft a friendly reminder email. For each, say whether the answer should come from retrieved or looked-up facts or can be left to the language model's own reasoning and writing, and give the rule you used. State what a person should check.
+
+**Points:** 5
+
+**Rubric (1 point each):**
+
+1. Says (a) should be grounded in retrieved text of the current document, because the policy is private and changed after the model was trained, and the answer should quote the passage and its date.
+2. Says (c) is an exact value that changes, so it should be read from the system where it is stored through a lookup, not recalled by the model or found by similarity search over saved text.
+3. Says (b) and (d) are ordering and writing tasks the model can do from the stated goal and constraints, because they do not depend on a private or current fact, while any fact inside them (a deadline, a name) must come from a source.
+4. States a rule: use sources for claims about the world that could be false, change, or are private, or that need to be traceable; leave structure, ordering, drafting and options to the model.
+5. Says a person checks which sources reached the model and reviews the output, and that if no source answers a question the assistant should say so and not fill the gap.
+
+**Source:** The gate: write the source list and the evidence rules first
