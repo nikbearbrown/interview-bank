@@ -1,0 +1,8 @@
+1. Read `app/triage.py` to find the Claude call and the `save_reply` write, and check how `config.py` sets timeouts and how the SDK client is built. Note what exceptions each call can raise.
+2. Decide which failures are worth retrying: for the Claude call, the SDK's transient errors (connection errors, timeouts, rate limits, 5xx/overloaded). For `save_reply`, only transient database errors such as connection drops or lock timeouts.
+3. Do not retry permanent errors such as bad requests, authentication failures, or constraint violations. These fail fast so they are not hidden.
+4. For the Claude call, first try the SDK's built-in `max_retries` option on the client (set it from `config.py`) and set an explicit timeout. If that is enough, do not add a hand-written loop around it.
+5. For `save_reply`, add a small retry helper in `app/triage.py` that makes up to 3 attempts with a short exponential backoff and a bit of jitter. It catches only the transient exceptions from step 2 and re-raises the last error when the attempts run out.
+6. Check that retrying `save_reply` is safe. If the write is not idempotent, change it to an upsert keyed on `ticket_id` so a retry cannot create a duplicate reply. Also make sure the retry wraps only the save, so a save failure never repeats the Claude call.
+7. Log each retry with the ticket id and attempt number, and make `POST /triage` return a clear error if all attempts fail.
+8. Add pytest tests with the Claude client and `save_reply` mocked: one that fails once then succeeds, one that fails every time and raises, and one that hits a permanent error and is not retried. Run the test suite.

@@ -1,0 +1,6 @@
+- backoff_jitter: Retry waits grow between attempts (exponential backoff) and/or include jitter.
+- idempotency: Makes repeated save_reply writes safe: idempotency key, upsert, unique constraint, dedupe check.
+- transient_only: Retries only transient errors (429, 5xx, overloaded, timeout, connection) and explicitly not client errors such as 400/401.
+- circuit_breaker: Includes open/half-open/closed breaker state that stops calls after repeated failures.
+- explicit_timeout: Sets an explicit per-request or overall timeout value.
+- failure_tests: Adds tests that simulate failures (mocked errors) to exercise the retry/breaker/timeout.

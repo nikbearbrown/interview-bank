@@ -1,0 +1,8 @@
+1. Read the `docs/` articles and `app/triage.py` to see how the reply-drafting call to Claude is built today (system prompt, model, max tokens) and what ticket categories the replies cover.
+2. Write a short policy summary of about 200 to 300 words, grouped by billing, bug, and how-to. For each group it lists the key rules, such as refund windows, escalation paths, and what we never promise, and it points to the matching article titles.
+3. Store the summary as a constant in a new module, for example `app/policy.py`, so it is easy to edit and review without touching the triage logic.
+4. Change the Anthropic SDK call in `app/triage.py` so the system prompt includes the policy summary, with instructions to answer only from the summary and the help articles. If the answer is not covered there, the reply should say a human agent will follow up and should not guess.
+5. Make the drafter cite the relevant article by title in each reply, and keep `save_reply(ticket_id, text)` unchanged so the database write behaves as before.
+6. Add pytest tests in `tests/` that mock the Anthropic client and check that the system prompt contains the policy summary, that the classification still works, and that `save_reply` is called once with the drafted text.
+7. Write a few sample tickets per category, including one with no matching article. Run the drafter on them with a real API key from the environment and check the replies for grounding, correct citations, and no invented policy.
+8. Add a simple test that fails when `app/policy.py` grows past a size limit or refers to an article that no longer exists in `docs/`. Then rebuild the container and confirm `POST /triage` still works.

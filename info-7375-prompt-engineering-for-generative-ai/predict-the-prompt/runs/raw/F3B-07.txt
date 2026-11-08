@@ -1,0 +1,15 @@
+1. Measure first: read all 40 files in docs/ and count tokens with the Anthropic SDK's token-counting endpoint (client.messages.count_tokens). At about 600 words each, 40 articles should be roughly 32,000 tokens, which fits easily in Claude's context window, so the plan is viable. Record the exact number and the per-request cost it implies.
+
+2. Add a loader in app/triage.py (or a small app/kb.py) that reads every docs/*.md file at startup, in sorted filename order so the output is deterministic. Wrap each article in a labelled block (for example <article id="filename" title="...">...</article>) and join them into one KNOWLEDGE_BASE string, built once and kept in memory. Fail loudly at startup if the docs folder is empty or has not exactly 40 files.
+
+3. Put the articles in the system prompt. Write the system prompt as a list of content blocks: first the instructions (role, "answer only from the articles below", cite the article id, say so and escalate if no article covers the question), then the KNOWLEDGE_BASE block. Put the stable articles first and keep the per-ticket text in the user message so the system prefix is identical on every call.
+
+4. Turn on prompt caching by adding cache_control {"type": "ephemeral"} to the last system block. Every ticket then reuses the cached roughly 32k-token prefix at a fraction of the input cost and latency, and I will check usage.cache_read_input_tokens in the response to confirm the cache is actually hit.
+
+5. Keep the two calls separate: the classification call (billing / bug / how-to) stays small and does not need the articles, while only the reply-drafting call gets the full system prompt. Ask the drafter to return structured output (reply text plus the list of article ids it used), parse it, and only then call save_reply(ticket_id, text).
+
+6. Handle failures: if the reply cites no article, or cites an id that does not exist, do not save it as a normal draft; flag it for human review instead. Add timeouts and retries around the Anthropic call, and keep the save_reply write after validation so a bad draft never reaches the database.
+
+7. Write pytest tests that mock the Anthropic client: the loader returns 40 articles in stable order, the system prompt contains every article and the cache_control marker, citations are validated, and save_reply is not called on a bad draft. Then run a small hand-checked set of real tickets against the live model to confirm the answers come from the articles and not from the model's general knowledge.
+
+8. Roll out in the single container: put docs/ into the image, add the model name and a feature flag to config.py (secrets still from environment variables), and watch the token usage, cache-hit rate and latency logs after deploy. If the corpus later grows past the budget, switch to retrieving only the relevant articles rather than sending all of them.

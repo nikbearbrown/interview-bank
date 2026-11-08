@@ -1,0 +1,8 @@
+1. Read app/triage.py and the existing tests/ files to learn how classification, reply drafting, and save_reply are structured, and which pytest conventions and fixtures are already in use.
+2. Decide the test boundaries: unit tests must never call the real Anthropic API or write to the real database, so I would isolate the Claude call behind a fake or monkeypatched client and replace save_reply with a recording stub.
+3. Write fake Claude responses for each category (billing, bug, how-to) and assert that the classifier returns the matching label and that the drafted reply text is passed through to save_reply with the correct ticket_id.
+4. Add edge-case tests: empty or whitespace-only ticket text, very long text, an unexpected or malformed label from the model, an empty reply, and mixed-category tickets, asserting the code's defined fallback or error behavior.
+5. Add failure-path tests that make the fake client raise Anthropic SDK errors (rate limit, timeout, API error) and confirm the code handles them as designed and does not call save_reply when classification or drafting fails.
+6. Add a test for POST /triage using FastAPI's TestClient with the triage function faked, checking the success response shape, a 422 on invalid input, and that no secrets are required from the environment (set dummy env vars via monkeypatch).
+7. Run pytest locally to confirm the new tests pass and are deterministic, then deliberately break the classification logic once to verify the tests actually fail.
+8. Keep the tests in tests/ following the existing naming pattern, and summarize which behaviors are covered and which (such as real model quality) are intentionally left to separate evaluation.

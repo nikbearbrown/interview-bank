@@ -1,0 +1,8 @@
+1. Define "works" up front: for each ticket, the classifier returns exactly one of billing / bug / how-to, the reply draft is produced, and save_reply is called once with the right ticket_id. Write these as acceptance criteria before touching anything.
+2. Read app/triage.py and app/api.py to see the current prompt, how the label is parsed out of Claude's response, which model and parameters are used, and what happens on malformed output, timeouts or API errors.
+3. Build a small labeled set of sample tickets (clear cases for each class, plus ambiguous, multi-issue, empty, very long and non-English ones) and store it under tests/ as fixtures.
+4. Add pytest tests that mock the Anthropic client with canned responses and a fake save_reply, covering the happy path for each class, unparseable or unexpected labels, API exceptions, and checking that nothing is saved when classification fails.
+5. Add an API test with FastAPI's TestClient for POST /triage covering valid input, missing or empty text, and error responses, with the Claude call and database write both mocked.
+6. Run the real classifier against the labeled set using an API key from the environment, record accuracy per class and any misclassifications, and check that the output format is stable across a few repeated runs.
+7. Fix what the tests and the live run expose, such as tightening the prompt, constraining the output to a strict label format, adding retries and a safe fallback, and making sure save_reply is called only after a valid result.
+8. Run the full pytest suite and a final live pass on the labeled set, then report the accuracy numbers and any remaining known weak spots.

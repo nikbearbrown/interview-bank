@@ -1,0 +1,8 @@
+1. Read `app/triage.py` to find the function that sends the ticket text to Claude (the classifier call), and note its inputs, the model and prompt it uses, and how it parses the label (billing / bug / how-to).
+2. Check how the classifier can be called without side effects: separate the classification call from the reply drafting and from `save_reply`, so I can run the classifier alone and never write to the database.
+3. Check `config.py` and confirm the Anthropic API key is available from the environment variable, without printing or hardcoding it.
+4. Write a small set of about 8 to 10 realistic example tickets covering each category (billing, bug, how-to), plus a few awkward ones: a ticket that mixes two categories, a very short one, a vague one, and one with unusual wording.
+5. Run the classifier on each example in a throwaway script outside the app code, using the real Claude call, and record the input, the returned label, and any raw model output.
+6. Compare each result with the label I expected, and list the misses and surprises (wrong label, unparseable output, invalid category, inconsistent answers if I run a case twice).
+7. Confirm that no replies were saved and no database rows were written during the trial, then check whether `tests/` already has related tests I should match.
+8. Report the examples, results, and any patterns in the errors to the user, and suggest next steps (such as prompt changes or new pytest cases) without making them unless asked.

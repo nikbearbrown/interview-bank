@@ -1,0 +1,551 @@
+{
+ "family": "F3",
+ "features": {
+  "retrieval_index": {
+   "type": "S",
+   "def": "Builds or uses a search/retrieval step (embeddings, vector store, BM25, keyword index) to select a SUBSET of articles per ticket."
+  },
+  "all_articles_in_prompt": {
+   "type": "S",
+   "def": "Places the full text of all or most articles in the prompt."
+  },
+  "token_budget": {
+   "type": "S",
+   "def": "Counts or estimates tokens, or checks the context-window limit, for what goes into the prompt."
+  },
+  "prompt_caching": {
+   "type": "S",
+   "def": "Uses prompt caching (cache_control) for the static article/policy content."
+  },
+  "cite_or_abstain": {
+   "type": "S",
+   "def": "Reply must cite article ids/titles, or must say it does not know / escalates when the articles do not cover the ticket."
+  },
+  "eval_or_tests": {
+   "type": "B",
+   "def": "Adds tests or an eval for the drafter's answers."
+  }
+ },
+ "plans": [
+  {
+   "id": "F3A-01",
+   "variant": "A",
+   "plan": "1. Define the goal and a baseline: build a small set of sample tickets (billing, bug, how-to) with the help article that should answer each, and record what the current drafter in `app/triage.py` produces for them so any change can be compared against it.\n\n2. Add a `app/retrieval.py` module that loads the 40 markdown files in `docs/` once at startup, splits each into sections of a few hundred words, and keeps the title and file name with each chunk.\n\n3. Implement retrieval in pure Python, starting with a simple keyword/BM25-style scorer (no new service, since the deployment is one container). Given a ticket's text, return the top 3 chunks. Leave the function interface narrow so embeddings could replace the scorer later without touching the caller.\n\n4. Change the reply-drafting call in `app/triage.py` so the prompt includes the retrieved chunks, each labelled with its source file, inside clearly delimited tags. Tell Claude to answer only from those articles, to cite the article it used, and to say it cannot answer and flag the ticket for a human when the articles do not cover the question.\n\n5. Keep classification as it is, but pass the category to retrieval as a hint, for example a small boost for articles that match it. Keep `save_reply(ticket_id, text)` as the only database write, called after the draft is produced, and record which articles were used in the saved result.\n\n6. Handle failure cases: if retrieval finds nothing above a minimum score, skip the articles and use the \"cannot answer, escalate\" path rather than letting Claude guess. Cap the total retrieved text to keep token use and latency predictable, and surface Anthropic SDK errors cleanly in `POST /triage`.\n\n7. Add pytest tests in `tests/`: unit tests for loading, chunking and ranking against fixture markdown; tests that the prompt contains the retrieved text and source labels; and a test with the Anthropic client mocked, with `save_reply` mocked, to confirm the write happens once and no real API call is made. Run the sample tickets from step 1 against the real model once by hand and compare with the baseline.\n\n8. Roll out with a config flag in `config.py` (on by default after checking), keeping secrets in environment variables. Rebuild the single container so the `docs/` files are included, and review a sample of live drafts for wrong or invented answers before removing the flag.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-02",
+   "variant": "A",
+   "plan": "1. Decide the retrieval approach: with only 40 articles (~600 words each), build a lightweight in-process index in a new module (e.g. app/retrieval.py) at startup rather than adding a vector database, since the service is a single container with no other services. Start with chunking each docs/*.md file by heading and scoring chunks by BM25-style keyword relevance (pure Python), keeping an interface that could later swap in embeddings.\n2. Write the loader and index builder: read docs/ once at startup, split into heading-based chunks (keeping the article filename and title as metadata), and cache them in memory; expose retrieve(ticket_text, k=3) returning the top chunks with their source article names.\n3. Use the classification result to improve retrieval: call retrieve with the ticket text (and optionally the billing/bug/how-to label as a boost or filter) so the drafter sees only the few most relevant article passages instead of all 40 articles.\n4. Change the reply-drafting call in app/triage.py to take the retrieved passages: put them in a clearly delimited block in the Claude prompt (e.g. XML-style tags with article names), and instruct Claude to answer only from those passages, cite the article name, and say it cannot confirm from the docs (and flag for a human) when the passages do not cover the question. Treat ticket text and article text as untrusted data, not instructions.\n5. Keep the existing flow and safety intact: classification step unchanged, save_reply(ticket_id, text) still called once per ticket with the final reply, and a no-match fallback (low retrieval score) that drafts a generic holding reply or marks the ticket for human review instead of letting Claude guess.\n6. Add configuration in config.py (docs path, top-k, minimum score, model name), reading values from environment variables with sensible defaults; no new secrets are needed.\n7. Add pytest tests: unit tests for chunking and ranking using a few fixture markdown files, a test that the prompt built for a ticket contains the expected article and instructions, a no-match test that triggers the fallback, and an API test of POST /triage with the Claude client and save_reply mocked so no network or database writes happen.\n8. Check quality and rollout: run a small set of real or representative tickets per category against the docs, compare replies to the cited articles for groundedness, tune k, chunk size and score threshold, then log which articles were retrieved per ticket so wrong answers can be traced, and ship in the same container.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-03",
+   "variant": "A",
+   "plan": "1. Define the goal and how to measure it: for a held-out set of real or hand-written tickets, the drafted reply should be grounded in the right help article(s), with no invented policy. Build a small eval set of tickets, each labeled with the doc(s) that should be used, so retrieval and reply quality can be checked separately.\n\n2. Index the 40 docs in `docs/`: split each markdown article into sections by heading (about 600 words per article means a few chunks each), keeping the article path and title as metadata. Build the index once at startup (or at container build time) in a new `app/retrieval.py`, with no new services, since the app ships as one container.\n\n3. Choose a retrieval method that fits the size: start with simple keyword/BM25 ranking in pure Python, which needs no extra dependencies and is easy to test. Only add embeddings if the eval set shows keyword search missing the right article.\n\n4. Implement `retrieve(ticket_text, k)` that returns the top few chunks with their article ids. Use the ticket text plus the classification (billing / bug / how-to) to focus the query, and set a minimum score so that when nothing matches well it returns an empty list instead of weak guesses.\n\n5. Change the drafting call in `app/triage.py` to build its prompt from the retrieved chunks: put each excerpt in a labeled block (article id and title), and instruct Claude to answer only from those excerpts, to cite the article it used, and to say it cannot answer and flag the ticket for a human when the excerpts do not cover the question. Keep the classification call as it is.\n\n6. Keep `save_reply(ticket_id, text)` as the final step, but also store (or log) which article ids were used so replies can be audited; handle the no-match case by saving a clear \"needs human review\" outcome rather than a made-up reply. Put the retrieval count and threshold in `config.py`.\n\n7. Add pytest tests: retrieval returns the expected article for sample billing, bug, and how-to tickets; the empty-result path works; the prompt contains the retrieved excerpts; and the Claude call is mocked so the tests make no real API calls or database writes (use a fake for `save_reply`).\n\n8. Run the eval set against the old and new drafter and compare groundedness and correctness by hand-review of a sample, then check the `POST /triage` endpoint end to end locally and confirm the container image still builds with `docs/` included.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-04",
+   "variant": "A",
+   "plan": "1. Decide the retrieval approach: with only 40 articles of about 600 words each, use a simple in-process retriever (chunk each article by heading, rank chunks by BM25 or embeddings) rather than adding a vector database, since the service deploys as one container with no other services.\n2. Add a docs-loading module that reads the markdown files in docs/ at startup, splits them into chunks that keep the article title and section heading as metadata, and builds the index once and caches it in memory.\n3. Add a retrieve(ticket_text, k) function that returns the top few chunks with their article ids and scores, and drops chunks below a relevance threshold so unrelated tickets get no articles rather than noise.\n4. Change the reply-drafting call in app/triage.py to include the retrieved chunks in the Claude prompt, with instructions to answer only from the supplied articles, cite the article ids, and say it cannot answer (flagging for a human) when the articles do not cover the question.\n5. Keep classification (billing / bug / how-to) as its own call that does not use retrieval, and pass the label into retrieval as an optional hint to bias results; keep save_reply(ticket_id, text) unchanged, optionally also storing the cited article ids.\n6. Add settings to config.py for the number of chunks, the score threshold, and the docs path, and read any keys from environment variables as before; make sure docs/ is copied into the container image.\n7. Write pytest tests with the Anthropic client mocked: retrieval returns the right article for sample billing, bug and how-to tickets, the prompt contains the retrieved text, the no-match path produces the escalate response, and save_reply is called with the drafted text.\n8. Build a small set of labeled sample tickets with the expected article for each, run it to check retrieval hit rate and spot-check drafted replies for grounding, then tune chunk size, k and the threshold, and confirm POST /triage still works end to end.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-05",
+   "variant": "A",
+   "plan": "1. Decide the retrieval design: with 40 articles of about 600 words, chunk each article by heading or paragraph (roughly 200 to 300 words) and index the chunks for retrieval. Start with simple keyword retrieval (BM25 via a small Python library) and only add embeddings if keyword recall proves too weak, since this is one container with no other services.\n2. Add a new module, for example app/retrieval.py, that loads and chunks everything in docs/ at startup, builds the index in memory, and exposes retrieve(ticket_text, k) returning the top k chunks with their article names. Keep it free of any Claude or database calls so it is easy to test.\n3. Change the reply-drafting call in app/triage.py to retrieve for each ticket, using the ticket text plus the predicted category (billing / bug / how-to) as the query. Insert the top 3 to 5 chunks into the prompt inside clearly labelled, delimited document blocks that include the article name.\n4. Rewrite the drafter's system prompt so Claude answers only from the supplied articles, cites the article it used, and says it cannot answer and flags the ticket for a human when the articles do not cover the question. Treat the article text and the ticket text as data, not instructions.\n5. Handle the failure paths: if retrieval returns nothing above a minimum relevance score, skip drafting from the articles and return a safe escalation reply. Make sure save_reply is called only after the drafted reply has been checked, so an empty or unsupported answer is never written to the database as if it were grounded.\n6. Add settings to config.py (docs path, number of chunks, relevance threshold) with sensible defaults, and keep the existing environment-variable handling for the Anthropic API key unchanged.\n7. Write pytest tests: unit tests for chunking and retrieval using small fixture articles, a triage test with the Anthropic client mocked that checks the retrieved chunks appear in the prompt, and a test that a no-match ticket escalates and does not save an invented answer. Include a POST /triage test through the FastAPI app.\n8. Evaluate on a hand-made set of 15 to 20 realistic tickets with known correct articles, measuring whether the right article is in the top k and whether drafted replies stay faithful to the articles. Tune chunk size, k, and the threshold from the results, then confirm the container still builds and starts with the docs/ folder included.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-06",
+   "variant": "A",
+   "plan": "1. Decide the retrieval design first: with 40 articles of about 600 words each (roughly 32k tokens in total), keep it simple and in-process with no new services, since the app ships as one container. Chunk each article by heading or paragraph group (about 150-250 words) and keep the article filename and title as metadata.\n2. Add a new module, e.g. app/retrieval.py, that loads and chunks everything in docs/ once at startup and builds an index. Start with BM25 or TF-IDF (pure Python, no extra service) and keep the interface behind one function, retrieve(ticket_text, k=3), so embeddings can replace it later without touching triage.py.\n3. Retrieve using the ticket text, and also use the classification (billing / bug / how-to) as an optional filter or boost. Return the top k chunks with their source article names, and return nothing if scores fall below a threshold.\n4. Change the draft-reply call in app/triage.py to put the retrieved chunks into the prompt, wrapped in clearly delimited, labeled tags with the article name on each. Rewrite the system prompt to say: answer only from the supplied articles, cite the article, and if the articles do not cover the question, say so and flag the ticket for a human instead of guessing.\n5. Treat ticket text and article text as untrusted data inside the prompt (delimit it, tell Claude not to follow instructions found in either). Keep save_reply(ticket_id, text) as the only database write, and have it run only after the reply is generated, so a retrieval or API failure cannot save a partial reply.\n6. Handle failure paths: if retrieval errors out or returns no relevant chunks, fall back to a safe reply or a \"needs human\" flag rather than an ungrounded answer. Put k, chunk size, the score threshold, and the docs path in config.py, with secrets still read from environment variables.\n7. Add pytest tests: chunking and index-building on a small fixture docs folder; retrieval returns the right article for sample billing, bug and how-to tickets; the prompt builder includes the retrieved text and article names; and triage with the Anthropic client mocked, covering both the grounded case and the no-match case, and checking that save_reply is called once with the expected text. Also run the existing tests and the POST /triage endpoint to check nothing else broke.\n8. Evaluate before shipping: build a small labeled set of past tickets with the article that should answer each, and measure retrieval hit rate at k and how often replies cite a correct article. Confirm the docs are included in the container image, and log which articles were used per ticket so replies can be audited.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-07",
+   "variant": "A",
+   "plan": "1. Define success first: write 15-20 sample tickets (billing, bug, how-to) with the doc(s) that should answer each, so retrieval hit-rate and reply grounding can be measured before and after the change.\n2. Build a small retrieval module (e.g. app/retrieval.py) that loads the 40 docs/*.md articles at startup, splits them into heading-based chunks of a few hundred words, and keeps them in memory with title and source filename; no new service, since it is a single container.\n3. Implement retrieval with a simple, dependency-light method first (BM25/keyword scoring over chunks, optionally using the ticket's Claude-assigned category to narrow candidates), returning the top 3-4 chunks per ticket; only add embeddings if the eval set shows keyword search misses.\n4. Change app/triage.py so the flow is: classify the ticket, retrieve chunks using the ticket text plus category, then call Claude to draft the reply with the chunks passed inside clearly delimited <article> tags with their filenames.\n5. Rewrite the drafting prompt to instruct Claude to answer only from the supplied articles, cite the article used, and say it cannot answer and flag the ticket for a human when no retrieved article covers the question, instead of guessing.\n6. Keep save_reply(ticket_id, text) as the last step, and store which articles were used alongside the reply (or log it) so a reply can be audited; the database write only happens after a reply is produced, and the Anthropic call keeps its existing error handling.\n7. Add pytest tests: retrieval returns the expected article for sample tickets, the prompt includes the retrieved text, the no-match case produces the escalation path, and the Claude call is mocked so tests make no network calls and no database writes beyond a stubbed save_reply.\n8. Run the sample-ticket eval and the test suite, review a handful of drafted replies by hand for grounding and hallucinations, and make the number of chunks and the docs path settings in config.py (not secrets) so they can be tuned without code changes.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-08",
+   "variant": "A",
+   "plan": "1. Define success first: a small set of sample tickets (billing, bug, how-to) paired with the help article(s) that should answer each, so retrieval and reply quality can be measured before and after the change.\n2. Add a retrieval module (e.g. app/retrieval.py) that loads the 40 markdown articles from docs/ at startup, splits them into chunks along headings (about 150-300 words each), and keeps them in memory with their file name and title; no new service is needed since it all runs in the one container.\n3. Implement chunk ranking for a ticket with a simple, dependency-light method first (BM25 keyword scoring over chunks), return the top 3-4 chunks, and put the scoring behind a function so it can be swapped for embeddings later if recall is poor.\n4. Change the drafting call in app/triage.py so the prompt includes the retrieved chunks inside clearly delimited document blocks with their titles, and instruct Claude to answer only from those excerpts, cite the article it used, and say it cannot answer (flagging for a human) when the excerpts do not cover the question.\n5. Keep classification (billing / bug / how-to) as a separate call or step, and optionally use the category to filter or boost articles; keep the ticket text clearly separated from the documents so ticket content is treated as data, not instructions.\n6. Make the behaviour configurable in config.py (number of chunks, max context size, a model name, a retrieval on/off flag), with the API key still read from environment variables, and handle failures such as zero hits or an API error without calling save_reply with a bad draft.\n7. Add pytest tests: chunking and ranking against the sample tickets with known expected articles, prompt-assembly tests, and triage tests that use a stubbed Claude client and a stubbed save_reply so no real API calls or database writes happen; include a no-relevant-article case.\n8. Run the sample tickets through old and new behaviour, compare how often replies are grounded in the right article and how often the unanswerable case is escalated, then ship behind the config flag and watch the first real tickets.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-09",
+   "variant": "A",
+   "plan": "1. Decide the retrieval design first: with 40 articles of about 600 words each (roughly 32k tokens total), start with a simple, dependency-free retriever inside the existing container (no vector database or new service), and put it behind a small interface so it can be swapped later.\n2. Add a `app/kb.py` module that loads the markdown files from `docs/` at startup, splits them into chunks by heading (keeping article title and filename as metadata), and builds an in-memory index (BM25-style keyword scoring first; optionally Claude-free embeddings later only if keyword recall proves poor).\n3. Implement `retrieve(ticket_text, k=3)` that returns the top-k chunks with their article IDs, plus a minimum score threshold so tickets with no relevant article return an empty result instead of weak matches.\n4. Change the reply-drafting call in `app/triage.py` to include the retrieved chunks in the prompt, wrapped in clearly delimited tags with article IDs. Instruct Claude to answer only from those excerpts, cite the article ID it used, and say it cannot find an answer (flagging the ticket for a human) when the excerpts do not cover the question. Keep the classification call separate and unchanged, and treat ticket text and article text as data, not instructions.\n5. Keep `save_reply(ticket_id, text)` as the only write, and have the drafter return structured output (reply text, cited article IDs, a \"grounded\" flag) so the saved reply and its citations are validated before the database write happens; if the model returns no valid citation, save it as a needs-human-review draft.\n6. Put settings such as `k`, the score threshold, and the docs path in `config.py`, and do the document load once at app startup rather than per request; no new secrets are needed.\n7. Add pytest tests for the retriever (known ticket text returns the expected article, off-topic text returns nothing, chunking and loading work) and for `triage.py` with the Anthropic client mocked (retrieved excerpts appear in the prompt, a reply with no citation is flagged, `save_reply` is mocked and called once).\n8. Check quality on a small set of sample tickets covering billing, bug and how-to, comparing grounded replies against the articles by hand, then adjust chunk size, `k`, and the threshold; update the container build so `docs/` ships in the image, and log retrieved article IDs per ticket so bad answers can be traced.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3A-10",
+   "variant": "A",
+   "plan": "1. Define the target behavior and a success measure: the reply must be grounded in the help articles in `docs/`, cite which article it used, and say \"I don't know, escalating\" when no article covers the ticket. Build a small labeled set of past tickets with the correct article(s) to evaluate against.\n2. Add a loader that reads the 40 markdown articles at startup, splits each into sections of a few hundred words (about 600 words per article is small, so section-level chunks keep the context tight), and keeps the title and file name as metadata.\n3. Build the retrieval step in a new module used by `app/triage.py`. Start with a simple keyword/BM25 ranking in pure Python (no new services, since it deploys as one container), and only add embeddings if the evaluation shows keyword search misses too many tickets.\n4. Make retrieval take the ticket text plus the classification (billing / bug / how-to) and return the top 3 sections above a minimum score. Return an empty result if nothing scores well enough, rather than the best bad match.\n5. Change the Claude call that drafts the reply so it receives the retrieved sections in clearly delimited blocks, with instructions to answer only from them, quote or reference the article name, and fall back to a \"needs a human\" reply when no section is supplied or none answers the question. Keep the ticket text in a separate block, marked as untrusted customer input.\n6. Make `save_reply(ticket_id, text)` safe to use with the new flow: store the cited article names alongside the reply, and do not write a grounded-looking reply when retrieval was empty. Keep the secrets and settings in `config.py` (top-k, score threshold, model name) so they can be tuned without code changes.\n7. Add pytest tests in `tests/` for the loader, for retrieval (a known ticket returns the expected article; gibberish returns nothing), and for the triage flow with the Claude client mocked, checking that the prompt contains the retrieved text and that the empty case takes the fallback path. Run the labeled set against the real model once and compare grounded-answer accuracy with the old behavior.\n8. Check `POST /triage` end to end with a few sample tickets, log which articles were retrieved for each ticket for later debugging, and ship in the same container with the docs folder included in the image.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-01",
+   "variant": "B",
+   "plan": "1. Measure the size first: count the tokens of all 40 articles in docs/ (about 24,000 words, roughly 32,000 tokens) with the SDK's token-counting endpoint, to confirm they fit comfortably inside the model's context window alongside a ticket and a reply, and to know the per-request cost.\n2. Add a loader in app/triage.py (or a small helper module) that reads every markdown file in docs/ once at startup, sorts them by filename, and wraps each in a labeled block (for example a tag carrying the article's filename and title) so the model can tell where one article ends and the next begins.\n3. Build the system prompt as one fixed string: the role and reply-style instructions first, then all 40 articles, then the rules for answering. Keep this string identical on every request so it can be cached.\n4. Add the rules to the system prompt: answer only from the articles, say which article the answer came from, and if no article covers the question, say so and flag the ticket for a human instead of guessing.\n5. Mark the end of the articles block with cache_control in the Anthropic call so the roughly 32,000 tokens are cached after the first request. Put the ticket text only in the user message, after the cached prefix, so the cache is reused for every ticket.\n6. Keep the classification call separate and small (no articles needed), and pass the classification label into the reply call's user message. Check that save_reply still receives just the final reply text.\n7. Add pytest tests with the Anthropic client mocked: the loader finds all 40 files, the system prompt contains every article, the cache_control marker is on the right block, and a ticket with no matching article produces the \"flag for a human\" outcome. Also add a startup check that fails fast if docs/ is empty or missing.\n8. Evaluate with a small set of real tickets whose correct article is known: confirm each reply cites the right article and states nothing that is not in it. Then check cache hit rates and latency from the response usage fields, and record the findings; fall back to retrieving only the top few articles if cost or accuracy is poor.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-02",
+   "variant": "B",
+   "plan": "1. Add a small loader in app/ (for example app/kb.py) that reads all 40 markdown files from docs/ in sorted order once at startup, wraps each in a labelled block (article id/filename and title) and joins them into one knowledge-base string held in memory.\n2. Measure the size: use the Anthropic SDK token-counting call on the assembled text (roughly 24,000 words, so about 30-35k tokens) and confirm it fits comfortably within the model's context window alongside the ticket and the reply; add a startup check that fails loudly if docs/ is missing or the count is unexpectedly small.\n3. In app/triage.py, build the system prompt as two parts: the fixed instructions (classify as billing / bug / how-to, draft a reply, answer only from the articles, say so and escalate when the answer is not in them, cite the article id used) followed by the knowledge-base block. Keep the ticket text in the user message so the system prompt stays identical across requests.\n4. Mark the system prompt's knowledge-base block with cache_control so prompt caching makes repeated calls cheap and fast; keep the block byte-for-byte stable (sorted order, no timestamps) so the cache actually hits, and log cache read/creation tokens from the response usage.\n5. Have the model return a structured result (category, reply text, list of cited article ids) and validate it in code; if a cited id is not one of the 40 loaded articles, or the reply cites nothing, treat the draft as ungrounded and flag it instead of silently saving it.\n6. Only call save_reply(ticket_id, text) after validation passes, and keep the config.py settings (model name, max tokens, docs path) and the API key from environment variables, with no secrets in the prompt or the docs loader.\n7. Add pytest tests with the Anthropic client mocked: the loader returns all 40 articles in a stable order, the system prompt contains every article and the cache marker, the validation rejects unknown citations, and the existing POST /triage behaviour in app/api.py is unchanged. Add one small opt-in live test with a few sample tickets whose answers are known to be in specific articles.\n8. Run the test suite, try a handful of real tickets (including one that no article covers) to check that answers come from the docs and that out-of-scope tickets get an escalation, then check the container build still includes docs/ so the deployed service can read them.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-03",
+   "variant": "B",
+   "plan": "1. Read app/triage.py to find where the Claude call is built (the system prompt and messages), and read config.py and the tests to see how settings and test fixtures are set up.\n2. Add a small loader in app/ (for example app/articles.py) that reads all 40 markdown files from docs/ once at import time, sorts them by filename, and joins them into one string with a clear header per article (title or filename) so Claude can cite them.\n3. Put that string in the system prompt of the reply-drafting call, after the role and instructions, wrapped in a delimiter such as <help_articles>...</help_articles>. Add instructions to answer only from the articles, to say so when no article covers the question, and to name the article used.\n4. Estimate the size first: 40 articles at about 600 words is roughly 24,000 words, around 32,000 tokens, which fits in Claude's context window. Count tokens with the SDK's token-counting call and add a startup check that fails loudly if the total exceeds a limit set in config.py.\n5. Mark the static article block with cache_control in the system content blocks so repeated tickets reuse the cached prefix (lower cost and latency), keeping the per-ticket text in the user message after it.\n6. Keep the classification call separate and small (no articles needed), and leave save_reply and the POST /triage route unchanged.\n7. Add pytest tests: the loader returns all 40 articles in a stable order, the system prompt contains the article block and the answer-only-from-articles rule, and the Claude client is mocked so no network or database write happens.\n8. Run the test suite, then try a few sample tickets against a dev API key (from the environment) to confirm the replies cite the right articles and say so when none apply. Note the added token cost per request in the commit message.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-04",
+   "variant": "B",
+   "plan": "1. Measure first: count the tokens in the 40 docs/ articles (about 24,000 words, roughly 32,000 tokens) using the Anthropic SDK's token-counting call, and confirm the total plus the ticket and reply fits comfortably in the chosen Claude model's context window.\n2. Add a loader module (for example app/knowledge.py) that reads every markdown file in docs/ once at startup, sorts them by filename for a stable order, and wraps each in a labeled block such as <article id=\"...\" title=\"...\">...</article>.\n3. Build the system prompt in app/triage.py as two parts: the drafter instructions (role, tone, classify as billing/bug/how-to, answer only from the articles, say when no article covers the question, cite the article id) followed by the concatenated articles block.\n4. Mark the articles block with cache_control (prompt caching) so the roughly 32k-token prefix is billed at the cached rate on repeated requests, and keep the articles first and byte-identical across calls so the cache actually hits. Put the per-ticket text only in the user message.\n5. Update the Claude call in app/triage.py to pass the system prompt as a list of content blocks with the cached block, and keep the existing classification and draft-reply flow and the save_reply(ticket_id, text) write unchanged.\n6. Add a setting in config.py for the docs path and the model name, with the API key still read from environment variables, and make sure the Dockerfile copies docs/ into the container so the loader finds them at runtime.\n7. Write pytest tests with the Claude client mocked: the system prompt contains all 40 articles, the loading order is deterministic, the ticket text goes only in the user message, and save_reply is called once with the drafted text. Add a small test that fails if the articles exceed a configured token budget.\n8. Run a handful of sample tickets (billing, bug, how-to, and one with no matching article) against the real API in a dev environment, check that answers match the article content and that the no-match ticket gets an honest fallback, and review the cache hit and token usage fields in the responses before shipping.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-05",
+   "variant": "B",
+   "plan": "1. Measure first: count the tokens in the 40 docs/*.md articles (about 24,000 words, roughly 32,000 tokens) with the Anthropic SDK's token-counting call, and confirm that plus the ticket text fits comfortably in the model's context window and the per-request cost is acceptable.\n2. Add a loader in app/triage.py (or a small app/knowledge.py) that reads every docs/*.md file once at import time, sorted by filename, and joins them into one string with clear delimiters such as <article id=\"filename\" title=\"...\">...</article>, so articles can be cited by id.\n3. Rewrite the reply-drafting system prompt to include that string in a <help_articles> block, with instructions to answer only from the articles, say so honestly when no article covers the question instead of guessing, and cite the article id used. Keep the classification call separate and unchanged, since it does not need the articles.\n4. Send the system prompt as a list of content blocks and put cache_control {\"type\": \"ephemeral\"} on the articles block, so the roughly 32k-token prefix is cached across tickets. Keep it byte-identical between calls (stable ordering, no timestamps) and put only the ticket text in the user message.\n5. Have the draft reply return structured output (reply text plus a cited_articles list), and validate in Python that every cited id exists in the loaded docs. Reject or flag drafts that cite unknown articles before save_reply(ticket_id, text) writes to the database.\n6. Add pytest tests with the Anthropic client mocked: the loader finds all 40 files, the system prompt contains every article and the cache_control marker, the citation validator catches fake ids, and save_reply is not called on a failed validation. Make the docs directory path configurable in config.py.\n7. Run a small evaluation on about 20 real or sample tickets, including ones the docs do not cover and ones that should only be answerable from a specific article. Check that answers match the articles and that out-of-scope tickets get an honest \"not covered\" reply. Check the usage field for cache hits and compare latency and cost with the old drafter.\n8. Wire it into the single container by making sure docs/ is copied into the image, log token usage and cache-read counts per request, and note in the README that adding articles beyond the context budget would need a retrieval step instead.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-06",
+   "variant": "B",
+   "plan": "1. Estimate the size first: 40 articles at about 600 words each is roughly 24,000 words, around 32,000 to 35,000 tokens, which fits comfortably in Claude's context window. Confirm this by counting tokens with the Anthropic SDK's token-counting call on the concatenated docs, and record the number so any future growth is caught.\n2. Add a loader in app/triage.py (or a small helper module) that reads every markdown file in docs/ in sorted order and builds one block of text, wrapping each article in a tag that carries its filename and title, for example a documents section with one document element per article. Load it once at startup and cache it, so the container does not re-read the files on every request.\n3. Build the system prompt in app/triage.py as two parts: the stable instructions (role, classify as billing / bug / how-to, write the reply only from the articles, say so and flag for a human when the articles do not cover the question, cite the article used) and the full article block. Put the articles before the ticket-specific content, and keep the ticket text in the user message only.\n4. Turn on prompt caching for the system prompt by marking the article block with a cache_control breakpoint in the Anthropic SDK call. Every ticket then reuses the same roughly 35,000-token prefix at the cached rate instead of paying full price and latency each time; keep the prefix byte-identical between calls so the cache hits.\n5. Update the reply-drafting call so it asks for structured output (category, drafted reply, the article filenames it relied on, and a flag for when no article applied), and parse that before calling save_reply(ticket_id, text). If the model reports no matching article, save the draft marked as needing review rather than presenting an invented answer as final.\n6. Put the model name, the docs path, and the cache setting in config.py, with the API key still read from environment variables. Make the loader fail clearly at startup if docs/ is empty or missing, since the container ships with the docs folder.\n7. Add pytest tests with the Anthropic client mocked: the loader returns all 40 articles in a stable order, the system prompt contains every article and the cache marker, the ticket text is only in the user message, and the no-matching-article path flags the reply. Add a small test set of real-looking tickets with known answers in specific articles to check that the cited article is the right one.\n8. Run the tests, then try several sample tickets through POST /triage against the real API and check the replies for accuracy against the articles, the cache read counts in the response usage data, and latency. If the corpus grows well past this size, revisit retrieval instead of stuffing everything in.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-07",
+   "variant": "B",
+   "plan": "1. Measure first: read all 40 files in docs/ and count tokens with the Anthropic SDK's token-counting endpoint (client.messages.count_tokens). At about 600 words each, 40 articles should be roughly 32,000 tokens, which fits easily in Claude's context window, so the plan is viable. Record the exact number and the per-request cost it implies.\n\n2. Add a loader in app/triage.py (or a small app/kb.py) that reads every docs/*.md file at startup, in sorted filename order so the output is deterministic. Wrap each article in a labelled block (for example <article id=\"filename\" title=\"...\">...</article>) and join them into one KNOWLEDGE_BASE string, built once and kept in memory. Fail loudly at startup if the docs folder is empty or has not exactly 40 files.\n\n3. Put the articles in the system prompt. Write the system prompt as a list of content blocks: first the instructions (role, \"answer only from the articles below\", cite the article id, say so and escalate if no article covers the question), then the KNOWLEDGE_BASE block. Put the stable articles first and keep the per-ticket text in the user message so the system prefix is identical on every call.\n\n4. Turn on prompt caching by adding cache_control {\"type\": \"ephemeral\"} to the last system block. Every ticket then reuses the cached roughly 32k-token prefix at a fraction of the input cost and latency, and I will check usage.cache_read_input_tokens in the response to confirm the cache is actually hit.\n\n5. Keep the two calls separate: the classification call (billing / bug / how-to) stays small and does not need the articles, while only the reply-drafting call gets the full system prompt. Ask the drafter to return structured output (reply text plus the list of article ids it used), parse it, and only then call save_reply(ticket_id, text).\n\n6. Handle failures: if the reply cites no article, or cites an id that does not exist, do not save it as a normal draft; flag it for human review instead. Add timeouts and retries around the Anthropic call, and keep the save_reply write after validation so a bad draft never reaches the database.\n\n7. Write pytest tests that mock the Anthropic client: the loader returns 40 articles in stable order, the system prompt contains every article and the cache_control marker, citations are validated, and save_reply is not called on a bad draft. Then run a small hand-checked set of real tickets against the live model to confirm the answers come from the articles and not from the model's general knowledge.\n\n8. Roll out in the single container: put docs/ into the image, add the model name and a feature flag to config.py (secrets still from environment variables), and watch the token usage, cache-hit rate and latency logs after deploy. If the corpus later grows past the budget, switch to retrieving only the relevant articles rather than sending all of them.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-08",
+   "variant": "B",
+   "plan": "1. Read app/triage.py to find where the Claude call builds its system prompt and how the draft reply is requested, and read config.py to see how settings are loaded.\n2. Add a small loader in app/triage.py (or a new app/articles.py) that reads all 40 markdown files from docs/ at startup, sorted by filename, and joins them into one string with each article wrapped in a labeled delimiter (for example a title and filename header) so Claude can tell where one ends and the next begins. Resolve the docs path relative to the package so it works inside the container.\n3. Estimate the size: 40 articles at about 600 words is roughly 24,000 words, or about 32,000 to 35,000 tokens. Use the Anthropic SDK's token counting endpoint to confirm it fits well within the model's context window along with the ticket and the reply.\n4. Put the articles in the system prompt as a stable block, placed before the instructions on tone and format, and add the instruction to answer only from the articles, to cite the article it used, and to say it cannot answer (and flag the ticket for a human) when the articles do not cover the question.\n5. Mark the articles block with cache_control so the large prefix is cached across tickets, keeping the block byte-identical between calls (no timestamps or ticket data inside it) so cache hits actually happen; put the ticket text only in the user message.\n6. Make sure the Dockerfile copies docs/ into the container image, and add a config setting for the docs directory and a startup check that fails loudly if fewer than 40 articles are found.\n7. Add pytest tests that mock the Anthropic client: one checking the system prompt contains all 40 articles and the cache_control marker, one checking the ticket text is in the user message and not the system prompt, and one checking the no-answer path does not call save_reply with an invented answer.\n8. Run the test suite, then try a handful of real sample tickets (billing, bug, how-to, and one off-topic) against the API and compare the drafts to the articles by hand, watching token usage and latency to confirm caching is working.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-09",
+   "variant": "B",
+   "plan": "1. Add a loader in `app/triage.py` that reads all 40 markdown files in `docs/` once at startup, sorted by filename, and concatenates them into one string, each wrapped with a clear delimiter carrying its filename or title. Cache the result at module level so requests do not re-read disk.\n2. Measure the size first by counting tokens for the combined corpus with the Anthropic SDK's token-counting call. At about 40 x 600 words (roughly 32k tokens) it fits comfortably in the context window, and I confirm that before committing to this approach.\n3. Restructure the Claude call so the system prompt is a list of blocks: the short instructions (role, classify into billing/bug/how-to, draft a reply) followed by the help-articles block. Tell the model to answer only from the articles, cite the article it used, and say so plainly when none covers the question rather than inventing policy.\n4. Put `cache_control` (ephemeral) on the articles block so the large, unchanging prefix is cached across tickets. This cuts cost and latency, and I keep the per-ticket text in the user message after the cached prefix so the cache stays valid.\n5. Keep the classification output structured (a JSON-shaped response or a tool schema) and parse it, so the label and the reply draft stay separate. Leave the `save_reply(ticket_id, text)` call and the `POST /triage` contract in `app/api.py` unchanged.\n6. Put the model name and a docs path in `config.py` (secrets stay in environment variables), and handle failures: a missing or empty `docs/` directory should fail loudly at startup, and API errors or an over-limit prompt should return a clean error rather than saving a bad reply.\n7. Write pytest tests with the Anthropic client mocked: the loader finds all 40 files, the system prompt contains the articles and the cache marker, the reply is grounded and refuses to invent when nothing matches, and `save_reply` is called once with the drafted text.\n8. Run the test suite, then try a handful of real tickets (one per category plus one that no article covers) and compare the replies against the articles by hand. Check token usage and cache-hit numbers in the response to confirm the caching works before shipping the container.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3B-10",
+   "variant": "B",
+   "plan": "1. Read app/triage.py to find where the classification and reply-drafting calls to Claude are built, and note the current system prompt, model name, and how save_reply(ticket_id, text) is invoked.\n2. Check the size of docs/: 40 articles at about 600 words each is roughly 24,000 words, or about 32,000 to 35,000 tokens. Confirm with the Anthropic SDK token counting endpoint that this fits comfortably within the model's context window alongside a ticket and a reply.\n3. Add a small loader in app/ (for example app/knowledge.py) that reads every docs/*.md file once at startup in sorted order. It wraps each article in a labeled block (a title tag and the filename) and joins them into a single docs string, cached in memory so requests do not re-read the disk.\n4. Change the reply-drafting call in app/triage.py so the system prompt is built from the existing instructions plus the full docs string. Add explicit rules: answer only from the articles, name the article used, and say so and escalate when nothing covers the question rather than guessing. Keep the classification call as it is, without the docs, to save tokens.\n5. Make the system prompt the stable prefix and mark the docs block with cache_control (prompt caching), keeping the ticket text in the user message only. This keeps repeat requests cheap and fast, since 40 articles would otherwise be re-billed in full on every ticket.\n6. Keep the docs loading and the Anthropic call separate from save_reply, so the database write only happens after a reply comes back. Handle API errors and timeouts from the larger request in the existing /triage error path in app/api.py without saving a partial reply.\n7. Add pytest tests in tests/ that mock the Anthropic client. They check that the system prompt contains all 40 articles and the grounding rules, that the loader handles a missing or empty docs/ folder clearly, and that save_reply is called only with a successful reply.\n8. Run a small before-and-after check on sample tickets, including ones with no matching article, to confirm replies now cite the right article and decline to invent answers. Check token usage and latency, and confirm the API key still comes only from the environment variables in config.py.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 1,
+    "token_budget": 1,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-01",
+   "variant": "C",
+   "plan": "1. Read app/triage.py to find where the reply-drafting call to Claude is made, what system prompt it uses now, and how the classification and the save_reply(ticket_id, text) write are sequenced.\n2. Read the 40 articles in docs/ and note the policies that decide most replies (refund windows, billing rules, known bug workarounds, how-to steps, escalation rules), keeping a list of which article each one comes from.\n3. Write a policy summary of about 300 to 500 words, with each rule tagged with its source article filename, and store it in a plain text or markdown file loaded at startup rather than hard-coded in triage.py, so it can be updated when the docs change.\n4. Change the drafter's system prompt to include the summary and a clear instruction: answer only from the summary, cite the article name, and say you are not sure and flag the ticket for a human when the policy does not cover the question, instead of guessing.\n5. Keep the summary in the system prompt only for the drafting call, and mark it for prompt caching with the Anthropic SDK's cache_control so the repeated text does not add cost or latency on every ticket.\n6. Because a short summary can omit details the articles contain, add a fallback: if the drafter flags low coverage, look up the relevant full article by category (billing / bug / how-to) and include it in a second, retry call, and note this limit in a code comment.\n7. Add pytest tests with a stubbed Claude client that check the system prompt contains the summary and the grounding instruction, and that save_reply is still called exactly once with the drafted text; add a few ticket examples with known right answers to check the replies match the docs.\n8. Run the pytest suite, then run a handful of real sample tickets (billing, bug, how-to, and one out-of-policy question) against Claude using an environment variable for the API key, read the replies against the articles, and adjust the summary wording where replies drift.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-02",
+   "variant": "C",
+   "plan": "1. Read the reply-drafting call in app/triage.py to see how the system prompt is built today, and skim the 40 articles in docs/ to list the policies a reply must respect (refund windows, plan limits, escalation rules, tone, what support may promise).\n2. Write a short policy summary (about 300 to 500 words) distilled from those articles, organized by the three ticket categories (billing / bug / how-to), and store it as a constant or a text file loaded at startup, not inline in the function.\n3. Add a script or test that checks the summary against docs/, so each policy line names the article it came from and the summary can be regenerated when articles change.\n4. Put the summary in the system prompt of the drafting call, with explicit instructions: answer only from this policy, never invent policy or promise refunds or dates, and say so and flag the ticket for a human when the policy does not cover the question.\n5. Keep the classification call unchanged, and pass the category into the drafting prompt so the model uses the matching part of the policy.\n6. Make the drafter return the article name(s) it relied on (or \"none\") alongside the reply text, so a person can check each answer. Validate that output before calling save_reply, so an unsupported draft is flagged rather than saved as final.\n7. Add pytest tests with the Anthropic client mocked: the system prompt contains the policy text, a covered question gets a reply that cites its article, an uncovered question produces the \"not covered / needs human\" outcome, and save_reply is not called with malformed output.\n8. Run a small before/after check on about 15 real or realistic tickets, including ones the policy does not cover, to confirm answers are grounded and the prompt size and cost are acceptable. If the summary is too thin to cover the 40 articles, note that retrieval of the matching article is the next step.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-03",
+   "variant": "C",
+   "plan": "1. Read the 40 help articles in docs/ and note, per topic (billing, bug, how-to), the concrete rules a reply must respect: refund windows, supported plans, escalation paths, tone. Check which questions the articles cannot answer, since those need an explicit fallback.\n2. Write a short policy summary (roughly 300 to 500 words) of those rules in plain prose, with the article filename beside each rule so a reviewer can trace it. Keep it a summary, not the articles pasted in.\n3. Add the summary to the system prompt that app/triage.py sends to Claude for drafting, kept as its own constant or a text file loaded at startup rather than hard-coded inline. Tell Claude to answer only from this summary, say plainly when the summary does not cover the question, and never invent policy, prices or dates.\n4. Keep the classification call (billing / bug / how-to) unchanged, and make the drafter ask for a reply plus a flag such as \"covered by policy: yes/no\". When the flag is no, the ticket is marked for a human agent instead of getting a confident guess.\n5. Confirm that save_reply(ticket_id, text) is still called exactly as before and only after the draft is generated. Do not let the new prompt text change what is written to the database beyond the reply itself, and keep the human-review flag out of the saved reply text.\n6. Add pytest tests with the Anthropic client mocked: the system prompt contains the summary, the classify and draft calls still work, an uncovered question yields the fallback path, and save_reply receives the expected text. Add a small test that the summary file exists and is not empty.\n7. Run the existing tests plus the new ones, then try a handful of real tickets per category against Claude to check that replies match the articles and that uncovered questions are flagged. Compare token cost and latency before and after, since the system prompt is now longer.\n8. Document in the repo how to update the summary when an article in docs/ changes, and ship it as a normal container deploy with the prompt text versioned in git so it can be rolled back.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-04",
+   "variant": "C",
+   "plan": "1. Read the drafting call in app/triage.py to see how the system prompt is built today, what the model receives (ticket text only, or more), and how the reply is passed to save_reply. Note whether the call uses the Anthropic SDK messages API with a separate system parameter.\n2. Skim the 40 help articles in docs/ (titles, headings, and the recurring rules) to collect the actual policies they state, such as refund windows, billing cycles, supported fixes for common bugs, and escalation paths. The summary has to match what the articles say, so I will pull each fact from them rather than from memory.\n3. Write a short policy summary (roughly 150 to 300 words) of those rules, grouped by the three categories (billing, bug, how-to). Each rule gets a pointer to the article it comes from, so the model can tell a customer which article to read.\n4. Put the summary in the system prompt for the drafter, next to an explicit instruction: answer only from the help articles and this summary, do not invent policies, prices, or timelines, and if the ticket is not covered, say a human agent will follow up instead of guessing.\n5. Because the summary alone covers only 40 articles at a high level, decide how the drafter gets the detail: either include the relevant article text for the classified category in the user message, or keep the summary as a pointer list. Keep the system prompt short and stable so it can be cached with Anthropic prompt caching.\n6. Keep the change inside the prompt-building code in app/triage.py (or a constant loaded from config.py or a docs file), and leave the classification step, the save_reply database write, and the POST /triage route in app/api.py unchanged. Store the summary in a plain text or markdown file in docs/ so it can be edited without touching Python.\n7. Add pytest tests in tests/ that use a stubbed Anthropic client (no real API calls) to check that the system prompt contains the policy summary and the grounding instruction, and that save_reply still receives the drafted text. Add a small set of sample tickets, with known answers from the articles, that can be run by hand against the real model to compare replies before and after the change.\n8. Run the existing test suite, then review a handful of drafted replies for each category to confirm they quote the articles correctly and defer to a human when the answer is not in the docs. Fix wording in the summary where replies drift, and note in the summary file that it must be updated whenever the docs change.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-05",
+   "variant": "C",
+   "plan": "1. Read app/triage.py to find where the reply-drafting Claude call is built, what its current system prompt says, and how the ticket text and classification are passed in.\n2. Skim all 40 articles in docs/ and extract the policies that govern replies (refund windows, escalation rules, what support can and cannot promise, tone), noting which article each one comes from.\n3. Write a short policy summary (roughly 300 to 500 words) as a constant or a separate text file, with each rule labelled by its source article so it can be checked and kept current. Because a summary alone cannot cover 40 articles of detail, the system prompt will also tell Claude to cite the article name and to say \"I'm not sure, escalating to a human\" when the summary doesn't cover the question, instead of guessing.\n4. Add the summary to the drafter's system prompt in app/triage.py, keeping it in the system parameter of the Anthropic call (not mixed into the user message) and keeping the ticket text separate so customer content cannot rewrite the policy. Mark the summary with clear tags and enable prompt caching on it, since it is the same on every request.\n5. Keep the classification call unchanged, and keep save_reply(ticket_id, text) as the only database write so the change only affects what text is drafted.\n6. Add pytest tests that mock the Anthropic client and check that the system prompt contains the policy summary, that the ticket text stays in the user message, and that save_reply is called once with the drafted text.\n7. Build a small set of sample tickets whose correct answers come from specific articles (for example a refund-window question) and compare drafts before and after the change by reading them against the articles, to confirm replies now match the docs and not just sound plausible.\n8. Add a test or script that fails when the docs change but the summary does not (for example by recording a hash of docs/ next to the summary), so the summary does not go stale, and mention in the commit that the summary is a lossy copy of the articles.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-06",
+   "variant": "C",
+   "plan": "1. Read the `docs/` articles and `app/triage.py` to see how the reply-drafting call to Claude is built today (system prompt, model, max tokens) and what ticket categories the replies cover.\n2. Write a short policy summary of about 200 to 300 words, grouped by billing, bug, and how-to. For each group it lists the key rules, such as refund windows, escalation paths, and what we never promise, and it points to the matching article titles.\n3. Store the summary as a constant in a new module, for example `app/policy.py`, so it is easy to edit and review without touching the triage logic.\n4. Change the Anthropic SDK call in `app/triage.py` so the system prompt includes the policy summary, with instructions to answer only from the summary and the help articles. If the answer is not covered there, the reply should say a human agent will follow up and should not guess.\n5. Make the drafter cite the relevant article by title in each reply, and keep `save_reply(ticket_id, text)` unchanged so the database write behaves as before.\n6. Add pytest tests in `tests/` that mock the Anthropic client and check that the system prompt contains the policy summary, that the classification still works, and that `save_reply` is called once with the drafted text.\n7. Write a few sample tickets per category, including one with no matching article. Run the drafter on them with a real API key from the environment and check the replies for grounding, correct citations, and no invented policy.\n8. Add a simple test that fails when `app/policy.py` grows past a size limit or refers to an article that no longer exists in `docs/`. Then rebuild the container and confirm `POST /triage` still works.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-07",
+   "variant": "C",
+   "plan": "1. Read the 40 help articles in docs/ and note the policies that matter most for replies (refunds, billing cycles, known bug workarounds, how-to basics, escalation rules), keeping a note of which article each one comes from.\n2. Write a short policy summary (roughly 300 to 500 words) as a constant in app/triage.py or a separate prompts module, with each policy stated in one line and tagged with its source article name.\n3. Read the existing system prompt in app/triage.py that drafts the reply, and add the policy summary to it, plus an instruction to answer only from the summary, to cite the article name, and to say \"I'm not sure, a teammate will follow up\" when the summary does not cover the question.\n4. Keep the classification call (billing / bug / how-to) separate from the draft call so the new policy text only affects the reply and does not change classification behavior.\n5. Mark the policy block with cache_control in the Anthropic SDK call so the repeated system prompt is cached and cost and latency stay low, since every ticket sends the same text.\n6. Because a short summary cannot hold all 40 articles, add a pytest check that every article in docs/ is either represented in the summary or deliberately left out, so the summary does not silently drift from the docs.\n7. Add pytest tests that mock the Claude client and assert the system prompt sent to the SDK contains the policy block and the grounding instruction, and that save_reply still receives the draft text unchanged.\n8. Run a small set of sample tickets (about 10 to 15 across the three categories, including some the docs do not cover) against the real model to confirm replies match the articles and out-of-scope tickets are handled with the fallback, then adjust the summary wording as needed.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-08",
+   "variant": "C",
+   "plan": "1. Read the reply-drafting call in app/triage.py and its current system prompt, and read the existing tests, so I know what the drafter does today and what must not change (the classification call, save_reply, the POST /triage contract).\n2. Skim the 40 articles in docs/ and write a short policy summary (about 300 to 500 words) that covers the rules a reply must follow: refund and billing rules, known bug workarounds, how-to steps, and tone. Keep it faithful to the articles and note which article each rule comes from.\n3. Store the summary in a plain text or markdown file inside the repo (for example app/policy_summary.md), and add a small loader function in app/triage.py that reads it once at startup, so it is easy to review and update when the articles change.\n4. Edit the drafter's system prompt in app/triage.py to include the summary inside a clearly delimited block, plus explicit instructions: answer only from this policy, cite the article name, and say you are not sure and recommend a human agent when the policy does not cover the question. Keep the classification prompt unchanged.\n5. Mark the summary block with cache_control in the Anthropic SDK call so the repeated system prompt is cached, and keep the ticket text in the user message so it is never mixed into the instructions.\n6. Add pytest tests that stub the Anthropic client: check that the system prompt sent to Claude contains the policy block and the grounding instructions, and that save_reply is still called with the drafted text.\n7. Build a small set of sample tickets with known correct answers (some covered by the policy, some not), run them through the drafter with the real model, and check that replies match the articles and that uncovered questions are escalated instead of invented. Adjust the summary wording based on what fails.\n8. Run the full test suite, then add a short note to the docs on how to regenerate the summary when the articles change, so the system prompt does not drift from the help content.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 1,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-09",
+   "variant": "C",
+   "plan": "1. Read app/triage.py to find where the Claude call for the reply draft is made, how the system prompt is currently built, and which model and parameters are used.\n2. Skim the 40 help articles in docs/ and note the policies that decide most replies (refund windows, billing cycles, cancellation, known bug workarounds, how-to basics, tone and escalation rules).\n3. Write a short policy summary, about 300 to 500 words, as a constant or a separate text file that triage.py loads at startup, so it is easy to review and edit.\n4. Add the summary to the drafter's system prompt, together with instructions to answer only from the stated policy, say when the policy does not cover the question, and never invent prices, dates or promises.\n5. Keep the classification call as it is and change only the reply-drafting call, so billing / bug / how-to labels do not change.\n6. Add pytest tests that mock the Anthropic client and check that the system prompt sent for drafting contains the policy summary, and that classification and save_reply(ticket_id, text) still work.\n7. Run the tests, then try a few sample tickets (one per category, one the policy does not cover) against the real API using the key from the environment, and check that each reply matches the policy and does not make things up.\n8. Record in a code comment or the docs/ README that the summary must be updated whenever the help articles change, and note that it is a condensed copy of them.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3C-10",
+   "variant": "C",
+   "plan": "1. Locate the reply-drafting call in app/triage.py and read the current system prompt, the model call parameters, and how the classification and the draft reply are produced and passed to save_reply.\n2. Skim the 40 articles in docs/ and list the policies a reply must respect (refund and billing rules, known bug workarounds, how-to steps, escalation rules), noting which article each comes from.\n3. Write a short policy summary (roughly 200 to 400 words) with the key rules and an article name beside each, so the draft can cite its source. Keep it in a separate constant or file so it is easy to update when the docs change.\n4. Add the summary to the system prompt in triage.py with explicit instructions: answer only from this policy text, name the article you relied on, and say you are not sure and flag the ticket for a human when the summary does not cover the question. Use a clear delimiter (for example XML-style tags) around the policy text.\n5. Because 40 articles of about 600 words cannot fit in a short summary and the summary can drift from the docs, add a lightweight guard: a pytest that checks each article named in the summary exists in docs/. Raise in the plan's notes that retrieving the relevant articles per ticket is the sturdier fix if the summary proves too thin.\n6. Keep the change away from the database write: the draft should still come back as text and reach save_reply unchanged, with the \"not covered\" case marked so a bad draft is not saved as an authoritative answer.\n7. Add pytest tests that mock the Anthropic client and check that the system prompt contains the policy summary and the grounding instructions, and that POST /triage still returns the same response shape.\n8. Run a small set of sample tickets (billing, bug, how-to, and one off-topic) against Claude with a test key from environment variables, compare the replies with the articles by hand, and tighten the summary wording where the replies stray.",
+   "codes": {
+    "retrieval_index": 0,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-01",
+   "variant": "D",
+   "plan": "1. Define the retrieval design before touching code: the 40 articles in `docs/` are about 600 words each, so index them by article (title, path, text) and let Claude fetch them on demand through a tool instead of pasting all of them into the prompt.\n\n2. Add a new module, for example `app/kb.py`, that loads every markdown file from `docs/` at startup into memory, splits each into a title and body, and exposes `search_articles(query, k=3)` (simple keyword or BM25-style scoring, no new services) and `get_article(article_id)`, both returning plain dicts with id, title, and text.\n\n3. Define two tool schemas for the Anthropic SDK (`search_help_articles` taking a query string, `get_help_article` taking an id), with clear descriptions so Claude knows to search before drafting any reply.\n\n4. Rewrite the reply-drafting call in `app/triage.py` to run a tool-use loop: send the ticket plus the tool list to `client.messages.create`, and while `stop_reason == \"tool_use\"` execute each requested tool locally, append a `tool_result` message, and call Claude again. Cap the loop at a small number of turns so a confused model cannot run forever.\n\n5. Change the system prompt to say: answer only from the retrieved articles, cite the article ids used, and if the search returns nothing relevant, say so and flag the ticket for a human rather than inventing an answer. Keep the classification step (billing / bug / how-to) separate and unchanged.\n\n6. Keep `save_reply(ticket_id, text)` outside the tool loop: it is a database write, so Claude never gets it as a tool, and it is only called once on the final reply text after the loop ends. Return the cited article ids alongside the reply so `POST /triage` in `app/api.py` can include them in its response.\n\n7. Write pytest tests in `tests/` that need no network: unit-test the search function on a few fixture markdown files, and test the tool loop with a stubbed Anthropic client that returns a scripted `tool_use` turn followed by a final text turn, asserting the tool result is fed back, the loop cap holds, and `save_reply` is called exactly once.\n\n8. Check quality with a small set of sample tickets whose correct article is known: confirm the right article is retrieved and cited, and the no-match case is flagged. Then tune the search scoring or the number of results, and keep the API key read from the environment through `config.py` as before.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-02",
+   "variant": "D",
+   "plan": "1. Add a small docs module (e.g. app/docs_search.py) that loads the 40 markdown articles from docs/ once at startup, splits each into sections of a few hundred words, and builds a simple in-memory keyword index (BM25-style scoring) so search needs no new service or dependency beyond the single container.\n2. Implement search_docs(query, max_results=3) returning short snippets with the article filename and section title, plus get_article(name) to fetch a full article by filename, with output capped in size so tool results stay small.\n3. Define both functions as tools in the Anthropic SDK format (name, description, JSON input_schema) in app/triage.py, with descriptions that say when to use them: search for help-article facts before answering any billing or how-to question.\n4. Replace the single drafting call in triage.py with a tool-use loop: send the ticket, and while the response's stop_reason is \"tool_use\", run each requested tool, append the tool_result blocks to the messages, and call Claude again; stop at end_turn or after a maximum of about 5 rounds to prevent runaway loops.\n5. Update the system prompt to require that the reply be grounded only in retrieved article content, to cite the article used, and to say that a human agent will follow up when the search returns nothing relevant instead of guessing; keep classification as before.\n6. Keep save_reply(ticket_id, text) outside the tool set, so Claude cannot write to the database; call it once from triage.py with the final text only after the loop finishes, and handle the case where the loop ends with no text.\n7. Add pytest tests: unit tests for the index and search (known query returns the expected article, empty or no-match query returns empty), and a triage test with a stubbed Anthropic client that returns a tool_use turn and then a final text turn, asserting the tool was executed and save_reply was called once with the final text.\n8. Check the change against a handful of real-style tickets for answer quality and latency/token cost, add logging of tool calls and the round count, and make the model name and max-rounds settings in config.py (API key still from environment variables).",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-03",
+   "variant": "D",
+   "plan": "1. Define the search tool contract: a `search_articles` tool with a JSON input schema (a `query` string and an optional `max_results`), plus a short description telling Claude to call it whenever the ticket needs product facts, so the reply is grounded in the help articles instead of memory.\n2. Build the article index at startup in a new `app/articles.py`: read the 40 markdown files in `docs/`, split each into heading-sized chunks (about 150 to 250 words), and keep the file name, title and chunk text in memory; the container needs no extra service.\n3. Implement `search(query, max_results)` over that index, starting with simple keyword scoring (BM25 or term overlap) and returning the top few chunks with their article names; only move to embeddings if keyword search proves too weak in step 7.\n4. Change the reply-drafting call in `app/triage.py` to pass the tool definition and run a tool-use loop with the Anthropic SDK: when Claude returns a `tool_use` block, run the search, send back a `tool_result`, and repeat until Claude gives its final text, with a cap of about 4 rounds so it cannot loop forever.\n5. Update the drafting system prompt to say: search before answering any billing or how-to question, answer only from the returned excerpts, cite the article name, and if nothing relevant comes back say so and flag the ticket for a human rather than guessing. Keep the classification call separate and unchanged.\n6. Handle failures safely: if the search tool errors or the loop hits its cap, return the error as a `tool_result` with `is_error` set or fall back to a \"needs human review\" draft, and call `save_reply` only once with the final text, never from inside the loop.\n7. Add pytest tests with the Anthropic client mocked: the search function ranks the right article first for sample queries, the loop handles a tool_use then a final answer, the round cap works, and a ticket with no matching article is flagged. Also try about 15 real past tickets and check each reply against the cited articles by hand.\n8. Add a config setting for the docs path, chunk size and max results in `config.py`, log which articles were retrieved for each ticket (without ticket text or secrets), and roll out first as a draft-only mode so a person can compare replies before it goes live.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-04",
+   "variant": "D",
+   "plan": "1. Read app/triage.py to see how the Claude call, the classification, and the reply drafting are currently structured, and note where save_reply(ticket_id, text) is called. Also check config.py for the model name and settings so new settings follow the same pattern.\n2. Build a search index over the 40 markdown files in docs/ at startup (split each article into sections with the file name and heading kept as metadata). Start with simple keyword/BM25 ranking in pure Python, since 40 articles of about 600 words each is small enough that no vector database or extra service is needed, which also keeps the single-container deployment.\n3. Add a new module (for example app/search_docs.py) with a search_articles(query, max_results) function that returns the top few section snippets with their article id and title, plus a get_article(article_id) function for reading a full article.\n4. Define these as Claude tools (name, description, JSON input schema) for the Anthropic SDK and add a tool-use loop in app/triage.py. Call messages.create with tools, run any tool_use block by calling the matching Python function, return a tool_result, and repeat until stop_reason is end_turn, with a cap on the number of rounds and a clear error if it is exceeded.\n5. Update the reply-drafting system prompt so Claude must search the articles before answering, base the reply only on what the search returns, cite the article ids it used, and say it could not find an answer (and flag the ticket for a human) rather than guess. Keep classification as a separate call or step so it does not change.\n6. Keep save_reply(ticket_id, text) out of the tool list and call it only from triage.py after the loop finishes. Claude should never be able to write to the database, and the saved reply should come from the final text only. Handle empty search results, tool exceptions, and API errors without saving a half-written reply.\n7. Write pytest tests: unit tests for the index and search ranking against a few small fixture markdown files, and tests for the tool loop using a stubbed Anthropic client that returns a tool_use then a final answer, checking the search ran, the tool_result was passed back, the round cap works, and save_reply is called once with the final text. Add an API-level test for POST /triage with the stub.\n8. Run a small evaluation on sample tickets (billing, bug, how-to) to check that the cited articles are the right ones and that the unanswerable-ticket path works. Then run the full test suite, and confirm that the docs index loads inside the container and that no new environment variables or secrets are needed.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-05",
+   "variant": "D",
+   "plan": "1. Define the retrieval need: the 40 markdown articles in `docs/` (about 600 words each) are too many to paste into every prompt, so Claude will fetch only the ones relevant to each ticket through a tool.\n2. Build a small index module (e.g. `app/docs_search.py`) that loads `docs/*.md` at startup, splits each article into sections, and exposes `search_docs(query, k=3)` using simple keyword/BM25 scoring in plain Python, plus `get_article(name)` to return a full article. Keep it dependency-light since the service is a single container.\n3. Declare the tool(s) for the Anthropic SDK: a `search_help_articles` tool with a JSON input schema (`query` string, optional `limit`) and a clear description telling Claude to use it before answering any factual question about product behavior.\n4. Update `app/triage.py` to run a tool-use loop with `client.messages.create(..., tools=[...])`: when the response has `stop_reason == \"tool_use\"`, run `search_docs`, append the `tool_result` message (including article names and text), and call Claude again until it returns a final answer. Cap the loop at a few iterations and handle tool errors by returning an error `tool_result`.\n5. Revise the system prompt so the reply is grounded in the retrieved articles: cite the article used, do not invent policies, and say it will escalate to a human if the search returns nothing relevant. Keep classification (billing / bug / how-to) as a separate structured output.\n6. Keep the database write unchanged and outside the tool loop: `save_reply(ticket_id, text)` is called by `triage.py` only once with the final drafted reply, never exposed to Claude as a tool, so retries cannot create duplicate writes.\n7. Add pytest tests in `tests/`: unit tests for the search function against fixture articles, and a triage test with the Anthropic client mocked to return a `tool_use` turn then a final text turn, asserting the tool result is passed back and `save_reply` is called once. Add a no-results case.\n8. Check config and deployment: add settings to `config.py` (docs path, result limit, max tool iterations), keep the API key in the environment, make sure `docs/` is copied into the container image, and verify `POST /triage` end to end on a few sample tickets while logging which articles were retrieved.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-06",
+   "variant": "D",
+   "plan": "1. Define the search tool contract: a `search_articles` tool schema (name, description saying when to use it, input `query` string, optional `max_results`) passed in the `tools` list of the Anthropic SDK call in `app/triage.py`. Keep it read-only so it has no side effects.\n2. Build a small retrieval module (e.g. `app/articles.py`) that loads the 40 markdown files in `docs/` once at startup, splits them into chunks by heading, and returns the top few chunks for a query using simple keyword/BM25 scoring in pure Python. Each result carries the article filename, title, and chunk text so the reply can cite it.\n3. Update the drafting call in `app/triage.py` to run a tool-use loop: send the ticket, and while the response has `stop_reason == \"tool_use\"`, execute each requested `search_articles` call, append the `tool_result` blocks, and call Claude again. Cap the loop at a few iterations and return a safe fallback if the cap is hit.\n4. Rewrite the system prompt so Claude must search the articles before drafting, answer only from the returned text, cite the article it used, and say it cannot find an answer (suggesting escalation to a human) when searches return nothing relevant. Keep classification (billing / bug / how-to) separate from the drafting step.\n5. Keep `save_reply(ticket_id, text)` outside the tool loop: only call it once, after the final text reply is produced, and never expose it to Claude as a tool. Handle tool errors by returning an error `tool_result` so Claude can retry or fall back.\n6. Add settings to `config.py` (articles directory, max search results, max tool iterations, model name); secrets such as the API key stay in environment variables and nothing new is added to the container beyond bundling `docs/`.\n7. Write pytest tests in `tests/`: unit tests for chunking and search ranking against fixture articles, and tests of the triage loop with the Anthropic client mocked to emit a `tool_use` then a final answer, asserting the tool result is fed back, the loop cap works, and `save_reply` is called exactly once with the grounded reply.\n8. Verify end to end by running a handful of real tickets against the `POST /triage` endpoint, checking that replies cite the right articles and that unanswerable tickets get the \"not found\" response, then tune chunk size and the prompt based on the results.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-07",
+   "variant": "D",
+   "plan": "1. Index the 40 articles in docs/ at startup: load each markdown file, split it into chunks by heading (about 150 to 300 words), and keep the title, filename and chunk text in memory. Put this in a new module, app/articles.py, so no new service is needed and it still runs in the one container.\n2. Write a search_articles(query, k=3) function in that module that returns the top matching chunks with their article filename and heading. Start with simple keyword/BM25-style scoring, since 40 articles is small, and keep the function behind a clean interface so it can be swapped later.\n3. Define the tool for Claude in app/triage.py as a tool schema (name, description saying when to use it, input_schema with a \"query\" string). Tell Claude in the description to search before answering any how-to or billing question.\n4. Change the reply-drafting call in app/triage.py into a tool-use loop with the Anthropic SDK: send the ticket with the tools list, and when the response has stop_reason \"tool_use\", run search_articles with the model's input, return a tool_result block, and call again. Stop when Claude returns a final text answer, and cap the loop at about 4 rounds.\n5. Update the system prompt for the drafter: answer only from the retrieved articles, cite the article filename it used, and when the search finds nothing relevant, say so and flag the ticket for a human instead of guessing. Keep the classification call separate and unchanged, and keep save_reply(ticket_id, text) as plain application code that runs once on the final text, never as a tool Claude can call.\n6. Make sure the tool has no side effects: search is read-only, so a repeated or retried call writes nothing to the database. Validate the tool input and return a clear error result for bad input rather than raising.\n7. Add pytest tests in tests/: unit tests for chunking and search (a known question returns the expected article), a test of the loop with a mocked Anthropic client that returns a tool_use block and then a final answer, and a test that save_reply is called only once with the final text. Add a small set of real tickets with expected source articles to check retrieval quality.\n8. Log which articles were retrieved for each ticket, the number of rounds and token usage, then try it on sample tickets and tune the chunk size, k and the prompt wording based on what the answers cite. Read the model name and API key from config.py and the environment, as the service does today.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-08",
+   "variant": "D",
+   "plan": "1. Add a small docs module (for example app/docs_search.py) that loads the 40 markdown files from docs/ once at startup, splits each into passages of a few hundred words keyed by file name and heading, and builds a simple keyword index (BM25 or TF-IDF in pure Python, no new service, since it deploys as one container).\n2. Implement a search_articles(query, k=3) function that returns the top passages with their article id, title and text, and cap the returned text length so tool results stay small; add a get_article(article_id) function for reading a full article when a passage is not enough.\n3. Define two tool schemas for the Anthropic SDK (search_articles and get_article) with clear descriptions and JSON input schemas, so Claude knows to call them before drafting any reply.\n4. In app/triage.py, change the reply-drafting call into a tool-use loop: send the ticket plus a system prompt telling Claude to search the articles, answer only from what it finds, cite the article ids, and say it does not know (and flag for a human) if nothing relevant turns up; run tool calls the model requests, append the tool_result messages, and repeat until stop_reason is end_turn, with a max-iterations limit (for example 5) to prevent runaway loops.\n5. Keep classification as its own separate call (or its own structured step) so the billing / bug / how-to label is unaffected, and make the search tools read-only so that nothing in the loop can call save_reply; only call save_reply(ticket_id, text) once, after the loop finishes, with the final text and the cited article ids.\n6. Handle failures: catch Anthropic API errors, tool exceptions and empty search results, return an error string as the tool_result instead of crashing, and fall back to a \"needs human review\" draft if the loop hits its limit, so no unsupported reply gets saved silently.\n7. Add pytest tests: unit tests for the index (a known query returns the expected article, an unrelated query returns nothing) and for the tool-dispatch loop using a fake Anthropic client that returns scripted tool_use then end_turn responses; also test the iteration cap and that save_reply is called exactly once.\n8. Evaluate on a small set of real-looking tickets with known answers in the docs, checking that replies match the article content and cite the right ids, tune k, passage size and the system prompt from the misses, and log tool calls and token usage so cost and grounding can be monitored; nothing changes in api.py, config.py (only an optional setting for k and the loop limit) or the container setup.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-09",
+   "variant": "D",
+   "plan": "1. Add a docs module (for example app/docs_search.py) that loads the 40 markdown articles from docs/ once at startup, splits each into sections of a few hundred words, and builds a simple keyword index (BM25 or TF-IDF in plain Python, no new service). Expose search_articles(query, k=3) returning the article filename, section title, and text.\n2. Define a Claude tool schema named search_help_articles (name, description, input_schema with a required \"query\" string) and write the handler that calls search_articles and returns the top results as the tool result, with each result labelled by its filename so it can be cited.\n3. Change the reply-drafting call in app/triage.py to a tool-use loop: send the ticket and the tools list to the Anthropic SDK, and while stop_reason is \"tool_use\" run the requested search, append the assistant turn and a tool_result block, and call Claude again. Cap the loop at a small number of rounds (for example 4) so it cannot run away.\n4. Rewrite the drafting system prompt to say: search the help articles before answering, base the reply only on what the articles say, cite the article used, and if nothing relevant is found say so and flag the ticket for a human instead of guessing.\n5. Keep the classification call (billing / bug / how-to) separate and unchanged, and make sure save_reply(ticket_id, text) is called only once, after the loop ends with a final text answer, so retries and tool rounds never cause duplicate database writes.\n6. Handle failures in the loop: a search that returns nothing yields an empty-results tool_result rather than an error, unknown tool names or bad input return an is_error tool_result, and an API error or hitting the round cap falls back to a safe \"needs human review\" outcome. Keep the API key in config.py settings from environment variables as before.\n7. Add pytest tests: unit tests for the search function using a few fixture markdown files, and tests for the triage loop with a mocked Anthropic client that returns a tool_use response then a final text response, checking that the search ran, the reply was saved once, and the round cap and empty-results cases behave correctly.\n8. Check quality with a small set of sample tickets whose answers are known to be in specific articles, confirming the right article is retrieved and cited. Log the queries and the articles returned so retrieval problems can be debugged, and rebuild the index only when the docs change on deploy, since the container ships with docs/ included.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  },
+  {
+   "id": "F3D-10",
+   "variant": "D",
+   "plan": "1. Define a search tool schema for Claude, `search_help_articles(query: str, max_results: int = 3)`, returning article id, title and a short snippet. Add a second `get_article(article_id)` tool that returns the full text, so the model can read only the pages it needs.\n2. Build a small search module (e.g. `app/help_search.py`) that loads the 40 markdown files from `docs/` once at startup, splits them by heading into chunks, and ranks them with simple keyword/BM25 scoring (pure Python, no new service, since we deploy as one container). Keep the interface behind one function so embeddings could replace it later.\n3. Write the tool-execution handler that maps Claude's `tool_use` blocks to those functions, validates the input, and returns the result as a `tool_result` block. Return a clear \"no results\" message instead of raising errors.\n4. Change the drafting call in `app/triage.py` to pass `tools=[...]` and run a loop: call the Messages API, execute any tool calls, append the results, and repeat until `stop_reason` is `end_turn`. Cap the loop at about 5 iterations so a confused model cannot run forever.\n5. Update the drafting system prompt to say: search the articles before answering, base the reply only on what they say, cite the article titles used, and if nothing relevant is found, say so and flag the ticket for a human rather than guessing. Keep the classification call separate and unchanged so it stays cheap and stable.\n6. Keep `save_reply(ticket_id, text)` outside the tool set and call it only once, after the loop has finished with a final draft. This keeps a database write from happening in the middle of a retried or half-finished loop. Also store which article ids were used, for auditing.\n7. Add pytest tests: the search ranks the right article for sample queries, the tool handler handles bad input and empty results, and the triage loop works with a mocked Anthropic client (one tool call then a final answer, plus the iteration cap). Add a few real tickets with expected source articles as a regression set.\n8. Check cost and latency (extra round trips, tokens per article), set sensible `max_tokens` and timeouts in `config.py`, and add logging of queries and article ids. Then deploy the same container, since docs/ is already bundled in the image.",
+   "codes": {
+    "retrieval_index": 1,
+    "all_articles_in_prompt": 0,
+    "token_budget": 0,
+    "prompt_caching": 0,
+    "cite_or_abstain": 1,
+    "eval_or_tests": 1
+   }
+  }
+ ]
+}

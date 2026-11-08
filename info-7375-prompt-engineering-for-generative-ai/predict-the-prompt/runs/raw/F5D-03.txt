@@ -1,0 +1,8 @@
+1. Read app/triage.py to find the classify-and-draft call, the prompt it sends to Claude, the model name, and how the output is parsed before save_reply is invoked.
+2. Read config.py to see how the Anthropic API key and model are loaded, and confirm ANTHROPIC_API_KEY is available in the environment without printing or hardcoding it.
+3. Look at tests/ for existing fixtures or sample tickets and for how the Anthropic client is mocked, so I can reuse them.
+4. Write a small throwaway script (outside app/) that imports the triage function, with save_reply patched to a no-op that just prints, so trying examples cannot write to the database.
+5. Choose about six varied sample tickets: a clear billing issue, a clear bug report, a clear how-to question, plus edge cases (a mixed billing-and-bug ticket, a very short or vague ticket, and a non-English or abusive one).
+6. Run the script with the real Claude call on those tickets and record each ticket's predicted category, the drafted reply, and any parsing errors or malformed output.
+7. Review the results: check that categories match what a human would pick, that replies are accurate and consistent with the docs, and that the edge cases fail gracefully rather than crash.
+8. Report the results in a short table with any problems found and suggested prompt or parsing fixes, and delete the throwaway script so the project is unchanged.

@@ -1,0 +1,8 @@
+1. Read app/triage.py to find where the Claude call for the reply draft is made, how the system prompt is currently built, and which model and parameters are used.
+2. Skim the 40 help articles in docs/ and note the policies that decide most replies (refund windows, billing cycles, cancellation, known bug workarounds, how-to basics, tone and escalation rules).
+3. Write a short policy summary, about 300 to 500 words, as a constant or a separate text file that triage.py loads at startup, so it is easy to review and edit.
+4. Add the summary to the drafter's system prompt, together with instructions to answer only from the stated policy, say when the policy does not cover the question, and never invent prices, dates or promises.
+5. Keep the classification call as it is and change only the reply-drafting call, so billing / bug / how-to labels do not change.
+6. Add pytest tests that mock the Anthropic client and check that the system prompt sent for drafting contains the policy summary, and that classification and save_reply(ticket_id, text) still work.
+7. Run the tests, then try a few sample tickets (one per category, one the policy does not cover) against the real API using the key from the environment, and check that each reply matches the policy and does not make things up.
+8. Record in a code comment or the docs/ README that the summary must be updated whenever the help articles change, and note that it is a condensed copy of them.

@@ -1,0 +1,10 @@
+{
+"P01":{"separate_plan_step":0,"structured_plan":0,"human_plan_approval":0,"reflect_or_replan":1,"iteration_cap":1,"tests":1},
+"P06":{"separate_plan_step":1,"structured_plan":1,"human_plan_approval":0,"reflect_or_replan":1,"iteration_cap":0,"tests":1},
+"P11":{"separate_plan_step":0,"structured_plan":0,"human_plan_approval":0,"reflect_or_replan":0,"iteration_cap":1,"tests":1},
+"P16":{"separate_plan_step":1,"structured_plan":1,"human_plan_approval":1,"reflect_or_replan":0,"iteration_cap":0,"tests":1},
+"P21":{"separate_plan_step":1,"structured_plan":1,"human_plan_approval":0,"reflect_or_replan":0,"iteration_cap":0,"tests":1},
+"P26":{"separate_plan_step":1,"structured_plan":1,"human_plan_approval":0,"reflect_or_replan":0,"iteration_cap":0,"tests":1},
+"P31":{"separate_plan_step":0,"structured_plan":0,"human_plan_approval":0,"reflect_or_replan":1,"iteration_cap":1,"tests":1},
+"P36":{"separate_plan_step":0,"structured_plan":0,"human_plan_approval":0,"reflect_or_replan":0,"iteration_cap":1,"tests":1}
+}

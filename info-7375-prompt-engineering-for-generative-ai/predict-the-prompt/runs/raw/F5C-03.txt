@@ -1,0 +1,8 @@
+1. Read app/triage.py and app/api.py to learn the function signatures, the Claude call, how the classification and reply are parsed, and where save_reply is called. Also read the existing tests/ files to match their pytest style and fixtures.
+2. List the behaviours to cover: each category (billing, bug, how-to) is returned correctly, an unexpected or malformed model output is handled, empty or very long ticket text, and save_reply called exactly once with the right ticket_id and reply text.
+3. Isolate the tests from the network and the database. Mock the Anthropic client (for example with pytest's monkeypatch or unittest.mock) to return canned responses, and replace save_reply with a fake that records its calls.
+4. Write unit tests in tests/test_triage.py: one parametrized test across the three categories, plus tests for malformed output, API errors or timeouts from the SDK, and the no-save-on-failure path.
+5. Add endpoint tests in tests/test_api.py using FastAPI's TestClient with the triage function mocked. Check the 200 response shape, 422 on a missing or invalid body, and the error status when triage fails.
+6. Make sure no test needs a real ANTHROPIC_API_KEY. Use monkeypatch.setenv for config.py settings so secrets never come from the real environment.
+7. Run pytest and confirm the new tests pass. Check that they fail when the behaviour is broken (for example, by temporarily changing a category label) so they are not vacuous.
+8. Summarize which behaviours are covered and which are left out, such as live-model quality of the replies, which unit tests cannot check.

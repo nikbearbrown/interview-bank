@@ -1,0 +1,6 @@
+- tool_schema: Defines issue_refund as a Claude tool with an input schema / passes it in the tools parameter (a tool_use flow).
+- human_approval: A human approves or rejects a specific refund before it executes (pending queue, approval step, review endpoint).
+- permission_scope: Restricts WHO or WHICH tickets can use the tool: allowlist, roles, verified accounts, scopes, tool only exposed to some requests.
+- amount_limit: Limits on refund size or frequency: per-refund cap, daily total, rate limit, max refunds per ticket.
+- audit_log: Records refund attempts/decisions in a log or audit table.
+- mocked_tests: Adds pytest tests that mock the Claude client or the tool.

@@ -712,3 +712,35 @@ Each table gives a term and one plain sentence. A term appears once, under the f
 | verification | checking against evidence confirmable apart from the producer |
 | acceptance criteria | conditions for accepting a result, stated before the work |
 | plan mode / planning before acting | researching without editing and presenting a plan for approval before a change |
+
+## Jargon sets k01 to k03: compress and decompress, reading agent output, false friends
+
+New terms and contrasts only; terms already listed above (idempotent, deterministic, approval gate, acceptance criteria, eval vs test, diff review and others) are tested again in these sets, here as a term and its checkable conditions.
+
+| Term | Meaning |
+|---|---|
+| unpacking a term | turning one word into the conditions you can check, such as idempotent = same end state after a repeat |
+| compressing a requirement | writing the one-line instruction that carries all of a requirement's conditions |
+| tool_use / tool_result | the model's structured request to run a tool; the matching output returned to it, linked by an id |
+| permission scope | the set of actions, paths or commands a tool or agent is allowed to use |
+| scope violation | a change outside the files or actions the instruction allowed, harmless or not |
+| claim vs evidence | a statement of what happened vs output you can check apart from the claimant |
+| claim/code mismatch | a summary that says something the diff or code does not do |
+| check-then-act race | a condition checked, then acted on after another process may have changed it |
+| read-modify-write race | two writers read the same value and the later write overwrites the earlier |
+| partial result | a run that finished some of its work and reported as if it finished all |
+| trivial test | a test that would pass whether or not the claimed behaviour exists |
+| failing test first | a test shown to fail before the change, so a later pass means something |
+| silent failure | an error swallowed with no signal, so the run looks successful |
+| stable (sort) vs stable (API) | equal items keep their relative order; an interface that does not change between versions |
+| atomic | all-or-nothing as seen by others: a file replace, a commit, or one indivisible step |
+| serializable (data) vs serializable (isolation) | convertible to a stored or sent format such as JSON; transactions behave as if run one at a time |
+| cache (lru_cache) vs prompt caching | stored return values for repeated calls in Python; reuse of a processed prompt prefix by the API |
+| memory (agent) vs context | information kept across sessions; tokens in the current window |
+| agent vs workflow | model chooses the next step at run time vs code fixes the steps in advance |
+| tool vs skill | a callable function that takes an action vs packaged instructions loaded when relevant |
+| prompt vs system prompt | the request in a turn vs standing instructions that frame the whole session; untrusted text does not belong in the system prompt |
+| hallucination vs error | an unsupported claim stated as fact vs a failure such as an exception or wrong status code |
+| evaluation vs test | scored judgment over many varying outputs vs a fixed pass/fail expectation |
+| MCP server vs client | the process that exposes tools, resources and prompts vs the host side that connects to servers and calls them |
+| model vs agent | the weights that produce tokens vs the system of model, tools and loop that acts |

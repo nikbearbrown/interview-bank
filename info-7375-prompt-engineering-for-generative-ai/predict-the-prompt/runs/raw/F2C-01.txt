@@ -1,0 +1,15 @@
+1. Define the failure modes to protect against: Claude API errors (timeouts, 429, 5xx, connection errors) and database errors from `save_reply`. Treat them as two separate dependencies with separate breakers, and decide which exceptions count as failures (Anthropic SDK `APIConnectionError`, `APITimeoutError`, `RateLimitError`, `InternalServerError`; not 4xx bad-request errors that retrying cannot fix).
+
+2. Write a small, dependency-free `CircuitBreaker` class (new module such as `app/breaker.py`) with closed, open, and half-open states, a consecutive-failure threshold, a cool-down timeout, and a limited number of half-open trial calls. Make it thread-safe with a lock, use `time.monotonic()` for timing, and allow an injectable clock so tests need no sleeping.
+
+3. Add breaker settings (failure threshold, cool-down seconds, half-open trials, per-call timeout) to `config.py`, read from environment variables with safe defaults, so they can be tuned in the container without a code change.
+
+4. Wrap the Claude call in `app/triage.py` with its breaker, and set an explicit timeout and a small, bounded retry-with-backoff on the Anthropic client so that one breaker "failure" means a call that already exhausted its retries. When the breaker is open, fail fast with a clear `ServiceUnavailable`-style exception instead of calling the API.
+
+5. Wrap `save_reply` with its own breaker, and make the write safe to retry (idempotent per `ticket_id`, for example an upsert) so a retry or half-open trial can never create duplicate replies. Never let a failed or skipped save be silently dropped: surface it or queue the drafted reply for retry.
+
+6. Decide the degraded behavior when a breaker is open: in `app/api.py`, map the open-breaker exception to HTTP 503 with a `Retry-After` header and log it. Do not return a fake classification; either reject the request or return the ticket as "pending triage."
+
+7. Add pytest tests for the breaker state machine (closed to open at threshold, open rejects calls, half-open success closes, half-open failure reopens) and for `triage.py` using a mocked Anthropic client and a mocked `save_reply` that raise errors; also test the 503 response in `POST /triage`. Use the injectable clock to keep the tests fast.
+
+8. Add observability and rollout: log state transitions with the dependency name and ticket id (never secrets or full ticket text), expose breaker state in a simple health or metrics endpoint, and run the full pytest suite before shipping. Since it is one container, keep breaker state in process memory and note that it resets on restart.

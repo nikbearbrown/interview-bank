@@ -1,0 +1,8 @@
+1. Read app/triage.py, app/api.py, and config.py to see how the Claude call, the classification parsing, and the reply drafting are wired, and note exactly which model, prompt, and output format are used.
+2. Run the existing pytest suite in tests/ to get a baseline and see what is already covered, and check that the container starts with the required environment variables set.
+3. Build a small labeled set of sample tickets covering billing, bug, and how-to, plus awkward cases (mixed topics, empty text, very long text, non-English, prompt-injection text in the ticket body).
+4. Run the classifier on that set against the real Claude API and compare its labels to the expected ones, recording accuracy and any malformed or off-list outputs.
+5. Check that the classification output is constrained and validated: ask Claude for a strict structured result (for example a tool-use schema or JSON), reject or retry on labels outside billing/bug/how-to, and handle API errors, timeouts, and rate limits with bounded retries.
+6. Confirm that save_reply only runs after a valid classification and reply, is not called on failures, and cannot be triggered twice for the same ticket_id, using a mocked database write in tests.
+7. Add pytest tests for the findings: the labeled samples with a mocked Claude client for fast runs, error paths, and a POST /triage test through FastAPI's test client, then fix any bugs found in triage.py or api.py.
+8. Re-run the full test suite and the live sample evaluation, confirm the accuracy and behavior are acceptable, and report the results and any remaining weaknesses.

@@ -1,0 +1,8 @@
+1. Add a TRIAGE_TIMEOUT_SECONDS setting (and a separate SAVE_TIMEOUT_SECONDS) to config.py, read from environment variables with sensible defaults (for example 30 s for Claude, 5 s for the database write).
+2. In app/triage.py, pass the timeout to the Anthropic client (the `timeout` argument on `anthropic.Anthropic(...)` or per call via `client.with_options(timeout=...)`), and set `max_retries` explicitly so total wait stays bounded.
+3. Catch `anthropic.APITimeoutError` (and `APIConnectionError`) around the classify and draft-reply calls, retry once with a short backoff, then raise a clear domain error such as `TriageTimeout` instead of hanging.
+4. Wrap the `save_reply(ticket_id, text)` write with a timeout, using the database driver's own statement/connect timeout if it has one, or `asyncio.wait_for` / `concurrent.futures` with a deadline otherwise, so a stuck write cannot block the request.
+5. Make `save_reply` safe to retry: confirm it is idempotent per ticket_id (upsert rather than insert), so a timed-out write that actually succeeded does not create a duplicate reply.
+6. In app/api.py, map `TriageTimeout` and the save timeout to a clean HTTP response (504 or 503 with a short message) in the `POST /triage` handler, and log the ticket_id and which stage timed out.
+7. Add pytest tests in tests/ that mock the Anthropic client to raise `APITimeoutError` and mock `save_reply` to sleep past the deadline, asserting the error type, the single retry, and the HTTP status; also test the happy path is unchanged.
+8. Run the full test suite, and note in the config/docs that the two timeouts are tunable through environment variables and must stay below the container's or load balancer's request timeout.

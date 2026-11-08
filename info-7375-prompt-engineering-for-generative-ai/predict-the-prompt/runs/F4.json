@@ -1,0 +1,551 @@
+{
+ "family": "F4",
+ "features": {
+  "separate_plan_step": {
+   "type": "S",
+   "def": "A distinct planning stage (its own model call or phase) produces a plan before any action is executed."
+  },
+  "structured_plan": {
+   "type": "S",
+   "def": "The plan is a structured object (JSON/schema/list of typed steps) that code parses."
+  },
+  "human_plan_approval": {
+   "type": "S",
+   "def": "A human reviews/approves the plan before execution."
+  },
+  "reflect_or_replan": {
+   "type": "S",
+   "def": "After step results, the agent reflects, checks, or revises the plan/next step."
+  },
+  "iteration_cap": {
+   "type": "S",
+   "def": "A max-steps / iteration / budget limit on the agent loop."
+  },
+  "tests": {
+   "type": "B",
+   "def": "Adds pytest tests (mocked Claude) for the agent."
+  }
+ },
+ "plans": [
+  {
+   "id": "F4A-01",
+   "variant": "A",
+   "plan": "1. Define the agent's contract: input is a ticket (id and text), output is a structured result (category: billing / bug / how-to, a drafted reply, and a confidence or \"needs human\" flag). Keep the existing POST /triage shape so callers do not change.\n2. Split the work into a planning call and an execution phase in app/triage.py. First ask Claude, with no database access, to produce a short structured plan (JSON validated with Pydantic) listing the steps it intends to take for this ticket, such as classify, look up relevant help articles, draft, self-check.\n3. Validate the plan in plain Python before anything runs: only allow known step names from a fixed allowlist, cap the number of steps, and reject or fall back to a default plan if the output is malformed.\n4. Execute the approved steps one at a time, each as its own Claude call with a narrow prompt: classify the ticket, retrieve the most relevant docs/ articles by simple keyword or embedding match (loaded once at startup, since the 40 articles are small), then draft the reply grounded in those articles.\n5. Add a verification step before acting: a second Claude call (or rule checks) reviews the draft against the ticket and the retrieved articles for wrong claims, tone, and leaked secrets; if it fails, redraft once, then mark the ticket for human review instead of saving.\n6. Gate the only side effect: call save_reply(ticket_id, text) exactly once, only after the plan was followed and verification passed, and make it idempotent per ticket_id so retries cannot write duplicates. Log the plan, each step result, and the final decision for auditing.\n7. Handle failures and limits in config.py and app/api.py: read the API key from the environment, set model name, timeouts, retry with backoff, and a step/token budget; return clear HTTP errors from POST /triage and never save on partial failure.\n8. Write pytest tests with the Anthropic client mocked: a valid plan runs end to end and saves once; a malformed or disallowed plan falls back safely; a failed verification does not call save_reply; retries do not double-write. Then update docs only if the API response shape changed, and ship in the same single container.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-02",
+   "variant": "A",
+   "plan": "1. Define the agent's contract: a ticket comes in via POST /triage, and the agent must produce a category (billing / bug / how-to), a drafted reply, and a saved reply. Write down the allowed actions (classify, search docs, draft, save_reply) and treat save_reply as the only side-effecting step.\n2. Add a planning stage in app/triage.py: before any action, call Claude once to produce a structured plan (JSON via the Anthropic SDK) listing the category guess, which of the 40 docs/ articles it needs, and the ordered steps. Validate the plan against a schema and the allowed-action list; reject or retry with an error message if it is malformed or proposes an unknown action.\n3. Build read-only tools for the plan to use: a docs lookup that finds relevant articles in docs/ (keyword or small index, loading only the few needed since each is about 600 words), and keep the plan's references to docs limited to files that exist.\n4. Write an executor loop that runs the validated plan step by step, calling Claude for classification and drafting with the retrieved docs as context. Cap the number of steps and tokens, and have the executor check each result against the plan, replanning once if a step fails or the classification contradicts the plan.\n5. Gate the write: only call save_reply(ticket_id, text) after a final check step (reply non-empty, matches the category, grounded in retrieved docs), and make it idempotent per ticket_id so retries cannot save duplicates. If checks fail, return the draft flagged for human review instead of saving.\n6. Wire it into app/api.py: POST /triage runs plan then execute, returns the category, reply, and the plan trace in the response, with timeouts and clear error handling for Anthropic API errors. Add model name, step limits, and the API key (from environment variables) to config.py.\n7. Add pytest tests in tests/ with the Anthropic client mocked: plan schema validation, rejection of bad plans, each category path, replanning on failure, and that save_reply is called exactly once on success and never on a failed check.\n8. Log each plan and step outcome for debugging without logging secrets or full ticket text, run the test suite, and try a few sample tickets of each type in the single container before shipping.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-03",
+   "variant": "A",
+   "plan": "1. Define the routing contract first: a fixed set of queues (billing, bug, how-to, plus an \"unclear/escalate to human\" queue) and a structured output schema (category, confidence, chosen queue, rationale, flags such as urgent or contains-PII). Document it in config.py so triage and tests share one source of truth.\n2. Add a planning step in app/triage.py that runs before any action: call Claude with the ticket and ask it to return a short structured plan (what the ticket is about, which docs/articles might be needed, which actions it intends to take and in what order). Validate the plan against the schema and reject or retry malformed plans; take no side effects at this stage.\n3. Add a plan-checking gate in plain Python between planning and acting: verify every planned action is on an allowlist (classify, look up docs, draft reply, save_reply), that save_reply targets the given ticket_id only, and that low-confidence or sensitive tickets are routed to the human queue instead of auto-replying.\n4. Implement the execution step that follows the approved plan one action at a time: classify and route with Claude, retrieve only the relevant docs/ articles (keyword or simple embedding match over the 40 markdown files, loaded once at startup) to ground the draft, then draft the reply with Claude using those excerpts.\n5. Make the write safe: call save_reply(ticket_id, text) only after the draft passes a final check (non-empty, references no invented policy, within length limit), make it idempotent per ticket_id so retries cannot duplicate replies, and log the plan and every executed action alongside the result.\n6. Handle failures explicitly: set timeouts and bounded retries on Anthropic SDK calls, fall back to the human queue on API errors or invalid plans, and never expose the API key (read from environment variables via config.py) in logs or responses.\n7. Update POST /triage in app/api.py to return the plan, the routing decision, and the saved-reply status, with request validation and clear error codes, keeping the service as a single container.\n8. Write pytest tests in tests/ using a stubbed Claude client: plan-before-act ordering (no save_reply before an approved plan), allowlist rejection, low-confidence escalation, idempotent saves, malformed-plan retry, and a few representative tickets per category; run the suite and a manual end-to-end check on sample tickets before shipping.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-04",
+   "variant": "A",
+   "plan": "1. Define the routing contract first: a fixed set of categories (billing, bug, how-to, plus an \"unclear/escalate\" bucket), the routing action for each, and a Pydantic schema for the plan and for the final decision. Write this down before touching any code so the agent and the tests share one definition.\n2. Add a planning stage in `app/triage.py` that makes a first Claude call which only produces a short structured plan (what the ticket is asking, which docs articles might matter, what action it intends, and what it is unsure about). This call has no side effects and its output is validated against the schema before anything else runs.\n3. Add a plan-check step in plain Python between planning and acting: reject plans that pick an unknown category, skip the confidence field, or request an action outside the allowed list, and retry the planning call once with the validation error before falling back to the escalate bucket.\n4. Execute the plan in a second stage: use the planned category and doc references to load only the relevant `docs/` articles into the prompt (not all 40), call Claude to draft the reply, and keep `save_reply(ticket_id, text)` as the last step so no database write happens until classification, plan, and draft have all passed validation.\n5. Make the write safe: skip `save_reply` and flag the ticket for a human when confidence is low or the plan was escalated, and make the save idempotent per ticket_id so retries or duplicate requests cannot store two replies.\n6. Update `app/api.py` so `POST /triage` returns the plan, the category, and the draft reply together, with sensible error responses for Claude API failures or timeouts, and take the API key and model name from `config.py` via environment variables.\n7. Write pytest tests in `tests/` with the Anthropic client mocked: a valid plan per category, a malformed plan that triggers retry then escalation, a low-confidence case that must not call `save_reply`, and a check that the plan call happens before any save.\n8. Run the tests and a handful of realistic sample tickets through the endpoint in the container, review the logged plans for mistakes, and tune the planning and drafting prompts based on what you see before shipping.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-05",
+   "variant": "A",
+   "plan": "1. Define the agent's contract before writing anything: input is a ticket (id and text), output is a structured result with category (billing / bug / how-to), a drafted reply, and a recorded plan. The only side effect is save_reply(ticket_id, text), which must happen last and only after the plan has been checked.\n2. Add a planning stage in app/triage.py that makes a first Claude call (Anthropic Python SDK) which returns a short structured plan, as JSON via a tool schema, and does not act. The plan lists the classification, which of the 40 docs/ articles are relevant, what the reply must contain, and whether anything is too uncertain or sensitive to auto-save.\n3. Build a small docs lookup for the planner and the drafter: load the 40 markdown help articles at startup, index them by title and keywords, and give the planner a compact index (titles plus one-line summaries) so it can pick the few articles to cite without stuffing all 24,000 words into the prompt.\n4. Add a plan validation step in plain Python between planning and acting. Check the schema, that the category is one of the three allowed values, that the chosen docs exist, and that the step list contains no unsupported action. If the check fails, retry the planner once with the error message, then fall back to a \"needs human review\" outcome without writing to the database.\n5. Add the execution stage: a second Claude call that receives the ticket, the approved plan, and only the selected articles, then drafts the reply. Pass the plan as the instruction, so the drafter follows it instead of improvising a new approach.\n6. Gate the write. Run save_reply only when the plan said \"safe to auto-save\" and the draft passes simple checks (non-empty, within a length limit, and no content outside the cited articles). Otherwise store nothing and return the plan and draft marked for review, so the single irreversible action is never taken on a bad plan.\n7. Wire it into POST /triage in app/api.py: return the category, the plan, the reply, and a status field (saved or needs_review). Put the model name, token limits, retry count, and the API key (read from an environment variable) in config.py, and log each plan and outcome per ticket id.\n8. Write pytest tests in tests/ with the Claude client mocked: a normal billing ticket saves exactly once, a malformed plan triggers a retry and then needs_review with no save_reply call, an unknown category never writes, and a plan that cites a missing doc is rejected. Add one small set of real-API example tickets, run manually, to check plan quality.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-06",
+   "variant": "A",
+   "plan": "1. Define the agent's job and limits: it receives a ticket and the classification categories (billing / bug / how-to), and its first output is a written plan, never an action. The plan lists the steps it intends to take, which docs it expects to need, and whether the ticket needs a human, before any tool is called.\n2. Add a planning stage in app/triage.py: one Claude call (Anthropic SDK, structured JSON output) that reads the ticket and returns a plan object with the predicted category, a confidence value, the docs to look up, and the ordered steps. Validate this plan against a schema, and reject or retry it if it is malformed.\n3. Give the agent read-only tools for the execution stage: a tool that searches the 40 docs in docs/ (simple keyword or embedding index built at startup) and a tool that returns the text of a chosen article. Keep save_reply out of the tool list so the planning and research stages cannot write to the database.\n4. Add an execution stage that follows the approved plan step by step: look up the planned articles, classify the ticket, and draft a reply grounded in the retrieved text. Check after each step that the result still matches the plan, and if it diverges (for example the category changes), go back to the planning stage with the new evidence.\n5. Add a check step before any write: a second Claude call (or rules) verifies the draft reply against the ticket and the retrieved docs, and flags low confidence, billing disputes, or anything the docs do not cover. Flagged tickets are routed to a human queue instead of calling save_reply.\n6. Call save_reply(ticket_id, text) exactly once, only after the plan, the draft, and the check have all passed, and make it idempotent per ticket_id so retries do not create duplicate replies. Wrap model calls with timeouts, retry limits, and a maximum number of steps so the agent cannot loop.\n7. Update app/api.py so POST /triage returns the plan, category, draft reply, and whether it was routed to a human, and log the plan and each step (without secrets) for debugging. Keep ANTHROPIC_API_KEY and other settings in config.py, read from environment variables.\n8. Write pytest tests in tests/ using a mocked Claude client: plan validation, correct category routing for sample billing/bug/how-to tickets, that save_reply is never called when the plan or check fails, that it is called once on success, and that the step limit stops runaway loops. Run the suite and try a few real tickets before deploying the single container.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-07",
+   "variant": "A",
+   "plan": "1. Define the agent's contract first: input is a ticket (id plus text), output is a routing decision (billing, bug, or how-to, plus a confidence and a short reason) and an optional draft reply. Decide up front which actions are read-only and which are writes, since `save_reply` is the only database write and must never run before the plan is approved by the agent's own checks.\n2. Add a planning stage in `app/triage.py` that makes a Claude call with no side effects. It returns a structured plan (JSON validated with a Pydantic model): the category, the evidence from the ticket, which of the 40 `docs/` articles to consult, and the exact actions it intends to take, in order.\n3. Add an act stage that runs only the actions listed in the validated plan. Retrieval over `docs/` is done with a simple keyword or title lookup loaded at startup (no new service, since this is one container), and the selected articles are passed to a second Claude call that drafts the reply and sets the category.\n4. Put a deterministic gate between plan and act: reject plans with an unknown category, a missing ticket id, or any step outside an allowed list, and send low-confidence or ambiguous tickets to a \"needs human\" outcome instead of calling `save_reply`. Call `save_reply` once, last, with the reply text, and make it idempotent per ticket id so retries cannot write twice.\n5. Wire it into `POST /triage` in `app/api.py` with request and response models. Return the plan, the category, and the draft in the response so a reviewer can see why the ticket was routed that way, and map failures (invalid plan, Claude errors, timeouts) to clear HTTP errors.\n6. Configure the model name, max tokens, timeouts, retry count, and confidence threshold in `config.py`, with the Anthropic API key read from an environment variable and never logged. Keep the ticket text and plan out of logs beyond the ticket id and category.\n7. Write pytest tests in `tests/` using a stubbed Anthropic client: one ticket per category, a malformed plan, a low-confidence ticket, a plan that tries a disallowed step, and a retry that must not double-write. Assert that `save_reply` is called zero times on rejection and exactly once on success.\n8. Run the full test suite, then try a small set of realistic tickets against the real API in a non-production environment, and compare the plans with the final actions to confirm the agent does what it said it would. Rebuild the container image and check that the endpoint starts and responds with only the environment variables set.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-08",
+   "variant": "A",
+   "plan": "1. Define the agent's contract: input is a ticket (id and text), output is a structured routing decision (category billing/bug/how-to, confidence, chosen action, reply draft). Fix the allowed actions up front (search docs, classify, draft reply, save reply, escalate to a human) so the plan can only name real steps.\n2. Add a new module, for example app/router.py, with a planning call to Claude that sees only the ticket and the action list and returns a short structured plan (JSON validated with a Pydantic model) before any action runs. The planning call has no tools and cannot write to the database.\n3. Validate the plan in plain Python before executing it: every step must use an allowed action, the length must be capped, and save_reply may appear only as the last step. If validation fails, retry the planning call once with the error message, then fall back to escalating to a human.\n4. Implement an executor that runs the validated plan step by step. Read-only steps (classify, find relevant articles among the 40 docs by keyword or by a small Claude selection call, draft the reply grounded in those articles) run freely, and each step's output is passed to the next.\n5. Add a checkpoint before the one irreversible action: a Claude review call, or a rule-based check, compares the draft with the ticket and the plan, and only a passing draft reaches save_reply(ticket_id, text). Low confidence, a failed check, or an unclear category routes to escalation and saves nothing.\n6. Expose the agent through a new endpoint in app/api.py, for example POST /route, that returns the plan, the step results, and the final decision. Keep the existing POST /triage working, set timeouts and a maximum step count in config.py, and read the API key from environment variables as today.\n7. Write pytest tests with the Anthropic client mocked: a valid plan runs in order, an invalid plan is rejected and retried, save_reply is not called when the review fails, and an escalation path works. Add a few fixed sample tickets per category to check routing.\n8. Log each plan and step outcome for debugging, with no secrets or customer personal data in the logs. Run the tests, then document the new endpoint and its behavior, and build and deploy the single container as before.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-09",
+   "variant": "A",
+   "plan": "1. Define the routing contract first: the set of queues the agent can route to (billing, bug, how-to, plus an \"escalate to human\" fallback), what a routing decision must contain (queue, confidence, one-sentence reason, whether a reply draft is needed), and which actions are side effects (anything that calls save_reply or otherwise writes to the database) versus read-only.\n2. Add a planning stage in app/triage.py that runs before any action: one Claude call (Anthropic Python SDK) that receives the ticket text and returns a structured plan as JSON (ordered steps, the queue it intends to pick, which help articles it expects to need, and what it is unsure about). Validate that JSON against a schema (for example with pydantic) and retry once or fall back to escalation if it is malformed.\n3. Add a plan-check step between planning and acting: deterministic Python code that rejects plans using unknown queues, skipping the classification step, or calling save_reply with no drafted reply, and that routes low-confidence or ambiguous plans to the human fallback instead of acting. Keep this check in plain code, not a second model call, so it is cheap and testable.\n4. Implement the execution stage as a small loop that carries out the approved plan one step at a time: classify, retrieve only the help articles named in the plan from docs/ (selecting by title or keyword rather than loading all 40 into the prompt), draft the reply with those articles as context, and only then call save_reply(ticket_id, text). If a step's result contradicts the plan (for example the classification differs from the planned queue), stop and re-plan once, or escalate.\n5. Make writes safe and traceable: call save_reply exactly once per ticket and only after validation passes, make it idempotent on ticket_id so a retry cannot create duplicate replies, and log the plan, the executed steps and the final routing decision with the ticket id (without logging secrets or full customer text beyond what is needed).\n6. Wire it into app/api.py by keeping POST /triage's request shape, returning the routing decision plus the plan summary in the response, and adding timeouts, a bounded retry on Anthropic API errors, and a clear error response; load the model name, retry limits, confidence threshold and the API key from config.py and environment variables.\n7. Write pytest tests in tests/ using a mocked Anthropic client: one ticket per queue, a malformed plan, a plan that fails the check, a low-confidence ticket going to the fallback, a mid-run contradiction triggering re-plan, and an assertion that save_reply is never called when planning or checking fails.\n8. Verify end to end by running the test suite and a handful of realistic sample tickets against the container locally, review the logged plans for sanity, then roll out behind a config flag so the old direct-triage path can be restored quickly if routing quality drops.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4A-10",
+   "variant": "A",
+   "plan": "1. Define the agent's contract first: input is a ticket (id and text), and the output is one of a fixed set of actions (classify as billing, bug, or how-to; draft a reply; save the reply; or escalate to a human). Write down what counts as success and which action is the only side effect (the `save_reply` database write), so the plan step can be checked against it.\n\n2. Add a planning stage in `app/triage.py` that calls Claude with only read-only information (the ticket text and the list of available actions) and asks for a short structured plan as JSON: the classification, which docs articles are needed (if any), what the reply should cover, and whether to save or escalate. Validate the plan against a Pydantic schema and reject or retry if it is malformed or proposes an unknown action.\n\n3. Keep the model call and the write separate: planning produces no side effects, and `save_reply` is never reachable from the planning call. Give the model no tool that can write, so the only way a write happens is through the code that executes an approved plan.\n\n4. Build the execution stage so it runs the plan step by step in plain Python: select the relevant articles from the 40 docs by classification (loading only the few needed, not all 600-word articles), call Claude to draft the reply using that context, and check the draft against the plan (right category, covers the planned points, no invented policies or refunds) before anything is saved.\n\n5. Add a gate before `save_reply`: save only if the plan validated, the draft passed the check, and the model's confidence is above a configured threshold in `config.py`. Otherwise mark the ticket for human review and do not write a reply. Make `save_reply` idempotent per ticket_id so retries cannot create duplicate rows.\n\n6. Wire it into `POST /triage` in `app/api.py`: return the plan, the classification, the draft, and the outcome (saved or escalated) in the response, with clear error codes for bad input and for upstream Claude failures. Add timeouts, a bounded retry count, and a cap on plan steps so the agent cannot loop. Keep the API key in an environment variable read through `config.py`.\n\n7. Test with pytest using a fake Claude client that returns canned plans and drafts: cases for each category, a malformed plan, a plan with an unknown action, a draft that fails the check, a low-confidence ticket, a retry that must not double-save, and a test that proves `save_reply` is never called during planning. Add a small set of real example tickets run against the live model as a separate, opt-in marker.\n\n8. Roll out safely in the single container: log each plan and outcome (without secrets or full customer text), first deploy in a shadow mode that records plans and drafts but skips `save_reply`, compare against human decisions for a period, then enable saving once the escalation rate and the error rate look acceptable.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-01",
+   "variant": "B",
+   "plan": "1. Define the agent's tools as Anthropic SDK tool schemas in a new module under app/: classify_ticket (billing / bug / how-to), search_docs (keyword lookup over the 40 markdown articles in docs/), draft_reply, save_reply (wrapping the existing save_reply(ticket_id, text) database write), and route_ticket (assign the ticket to a queue).\n2. Write a short system prompt that tells Claude to act one step at a time: read the ticket, call a tool, look at the result, then decide the next call. It gets no upfront plan or task decomposition, and no separate planning call.\n3. Implement the loop in app/agent.py as a plain ReAct-style loop on the Messages API. Send the ticket and tool list, run each tool_use block Claude returns, append the tool_result to the messages, and repeat until Claude replies with end_turn.\n4. Add guardrails: a maximum iteration count (for example 8), a per-call timeout, tool errors returned to Claude as is_error results instead of raised, and a check that save_reply runs at most once per ticket_id so retries cannot write duplicate replies.\n5. Put the model name, max iterations and token limits in config.py, and read ANTHROPIC_API_KEY from the environment. Keep the doc index small enough to load once at startup.\n6. Wire the agent into app/triage.py, or add it beside the existing path, and have POST /triage in app/api.py call it, returning the category, the routing decision and the saved reply. Keep the response shape the same so current callers do not break.\n7. Add pytest tests in tests/ that stub the Anthropic client with scripted tool_use sequences. Cover the happy path for each category, a tool error, hitting the iteration limit, and the single-save rule. Add a small manual check against a few real example tickets.\n8. Add logging of each step (tool name, inputs, result size, token usage) so runs can be audited. Rebuild the single container and confirm the test suite passes before deploying.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-02",
+   "variant": "B",
+   "plan": "1. Define the agent's tool set as Claude tool-use schemas in a new module under app/: classify_ticket (billing / bug / how-to), search_docs (keyword search over the 40 markdown articles in docs/), draft_reply, and save_reply(ticket_id, text) wrapping the existing database write.\n2. Write one system prompt that tells Claude to handle the ticket by taking one action at a time, looking at each tool result before choosing the next action, and to never write out a multi-step plan up front. State that save_reply is the final action and may be called only once.\n3. Implement the loop with the Anthropic Python SDK: send the ticket, and while the response has tool_use blocks, execute each tool, append the tool_result to the messages, and call Claude again. Stop when Claude ends its turn or save_reply succeeds.\n4. Add guardrails in the loop: a maximum step count (for example 8), a per-call token cap, and a rule that rejects a second save_reply. Log every step (tool name, input, result) so the routing can be audited.\n5. Handle failures inside the loop: return tool errors to Claude as is_error tool_results so it can recover, retry transient API errors with backoff, and on hitting the step limit fall back to saving nothing and flagging the ticket for a human.\n6. Wire the loop into app/triage.py in place of the current single-call flow, keeping the same inputs and outputs, so POST /triage in app/api.py works unchanged. Read the model name and the step limit from config.py, and keep the API key in an environment variable.\n7. Write pytest tests with a stubbed Anthropic client that replays scripted tool-use sequences: a normal billing ticket, a how-to ticket that searches docs, a tool error, a step-limit overrun, and a duplicate save_reply attempt. Assert that save_reply is called exactly once with the right ticket_id.\n8. Run the test suite and a small set of realistic sample tickets against the real model with save_reply pointed at a test database. Check that the classifications and replies are sensible, then tune the system prompt and tool descriptions before shipping in the single container.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-03",
+   "variant": "B",
+   "plan": "1. Define the agent's contract: input is a ticket (id and text), output is a routing decision (billing / bug / how-to, or escalate to a human) plus the saved reply. Because the agent must act step by step with no separate planning step, decide up front that it will be a ReAct-style loop, where each turn Claude picks one next action from the tools and sees the result before choosing the next, with no upfront plan call.\n2. Define a small set of tools as Anthropic tool-use schemas: search_docs (keyword lookup over the 40 markdown articles in docs/), classify_ticket (records the category and a confidence), save_reply (wraps the existing save_reply(ticket_id, text) database write), and escalate_to_human. Keep each tool narrow, with clear descriptions and typed inputs, and keep the docs lookup returning short excerpts rather than whole 600-word articles.\n3. Write the system prompt: state the goal, the routing categories, when each tool applies, and when to stop (after save_reply or escalate_to_human). Instruct the model to take one action at a time and reason briefly from the latest observation, and do not include any instruction to write a plan first.\n4. Implement the loop in a new module (for example app/router_agent.py) using the Anthropic Python SDK: send the messages with the tools, execute each tool_use block, append the tool_result, and repeat until the model ends its turn or calls a terminal tool. Add a hard step cap (for example 6 turns), per-call timeouts, and a safe fallback to escalate_to_human when the cap is hit or the SDK raises an error.\n5. Add guardrails around the one side effect: save_reply may run only once per ticket, only after a category has been recorded, and with idempotency on ticket_id so retries cannot write duplicate replies. Validate tool inputs, truncate or sanitize ticket text, and treat ticket content and doc excerpts as untrusted data so they cannot override the system prompt.\n6. Wire it in: have POST /triage in app/api.py call the agent (keeping the existing request and response shape), and have app/triage.py expose the tools. Read the model name, step cap, and API key from config.py and environment variables, and log each step (tool, arguments summary, latency, token use) for debugging.\n7. Test with pytest using a fake or mocked Anthropic client that returns scripted tool_use sequences. Cover a billing ticket, a how-to ticket answered from docs, a bug ticket, a model that loops past the step cap, malformed tool arguments, and a duplicate save attempt, and assert that save_reply is called exactly once in the normal paths.\n8. Evaluate before shipping: run a small labeled set of sample tickets against the real model in a gated, non-default test, and compare routing accuracy and average step count against the current single-call classification. Then confirm the container still builds with no new services, and release behind a config flag so the old path can be restored quickly.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-04",
+   "variant": "B",
+   "plan": "1. Read app/triage.py, app/api.py, and config.py to see how a ticket is classified today, how Claude is called, and how save_reply and settings are used, so the new agent fits the existing structure.\n2. Define the agent's tools as plain Python functions with JSON schemas: classify_ticket (billing / bug / how-to), search_docs (keyword lookup over the 40 markdown files in docs/), draft_reply, save_reply(ticket_id, text), and escalate_to_human. Make save_reply the only tool with a side effect.\n3. Write a system prompt that tells Claude to act one step at a time: call a tool, read the result, then choose the next action, with no up-front plan and no separate planning call. It should state the routing rules and say to finish by calling save_reply or escalate_to_human.\n4. Add app/agent.py with a loop that uses the Anthropic SDK's tool-use messages: send the ticket, execute each tool_use block, append the tool_result, and repeat until Claude gives a final answer or a hard cap on turns is reached (for example 8). Run only the tool calls Claude requests, and log each step.\n5. Add guardrails: validate the tool inputs, allow save_reply only once per ticket, and fall back to escalate_to_human on a loop timeout, a malformed tool call, or an API error. Read the model name and API key from config.py and environment variables.\n6. Wire the agent into POST /triage in app/api.py behind a config flag, returning the category, the reply, the saved/escalated status, and the step trace. Keep the old triage path available until the agent is checked.\n7. Write pytest tests that use a stubbed Anthropic client with scripted tool-use turns: billing, bug, and how-to tickets reach the right outcome, save_reply is called exactly once, the turn cap triggers escalation, and a bad tool call is handled. Also test the API endpoint.\n8. Run the test suite, then try a handful of real sample tickets against the live model to check the routing and the step traces, and note any needed prompt changes. Update the docs with how to switch the agent on.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-05",
+   "variant": "B",
+   "plan": "1. Define the agent's action vocabulary as a small set of Claude tool definitions (read_ticket, classify, search_docs, draft_reply, save_reply, escalate), with typed input schemas, and keep the existing app/triage.py entry point so POST /triage just hands the ticket text to the new agent loop.\n2. Write the system prompt in a new module: state the goal (classify as billing / bug / how-to, draft a reply, save it), describe each tool, and instruct Claude to act one step at a time, observing each tool result before choosing the next action, with no up-front plan or plan-writing step.\n3. Implement the loop in app/triage.py using the Anthropic Python SDK: send the messages, execute whatever tool_use block comes back, append the tool_result, and repeat until Claude returns a final answer or stops calling tools.\n4. Implement the tool handlers; classify and draft_reply stay as Claude-backed helpers, search_docs does simple keyword search over the 40 markdown files in docs/ and returns only the relevant excerpts, and save_reply wraps the existing database write.\n5. Add guardrails: a hard cap on iterations (for example 8), a per-run token budget, validation of tool arguments, and a rule that save_reply is called at most once and only after a reply has been drafted, since it is the only side effect. If the cap is hit, return an error and save nothing.\n6. Keep secrets in environment variables via config.py, add the model name and loop limits as settings there, and have /triage return the category, the reply, and a short action trace for debugging.\n7. Write pytest tests with the Claude client mocked to return scripted tool_use sequences: normal path, unknown tool name, malformed arguments, a loop that never finishes, and a double save attempt; assert save_reply is called exactly once on success and never on failure.\n8. Run the test suite, then try a handful of realistic billing, bug, and how-to tickets against the live API, review the action traces for wasted or wrong steps, and tighten the system prompt and tool descriptions before deploying the container.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-06",
+   "variant": "B",
+   "plan": "1. Define the routing contract first: the agent receives a ticket and a fixed set of tools (classify_ticket, search_docs, draft_reply, save_reply, escalate_to_human), each with a strict JSON input schema, so every action the agent can take is a typed Claude tool call.\n2. Write a system prompt for the agent in app/agent.py that states its goal (route the ticket to billing, bug, or how-to and get a reply saved), the tool list, and the stop condition (a final save_reply or escalate call), and that tells it to act one step at a time, deciding each next action from the latest observation, with no upfront plan.\n3. Implement the loop on the Anthropic SDK Messages API with tool use: send the ticket, execute whichever tool Claude requests, append the tool_result to the message history, and call Claude again until it stops requesting tools.\n4. Implement the tools as thin wrappers over existing code: classify_ticket and draft_reply reuse the Claude calls in app/triage.py, search_docs does keyword lookup over the 40 markdown files in docs/, and save_reply wraps the existing database write.\n5. Add guardrails around the loop: a hard cap on steps (for example 8), a per-run token budget, validation of tool arguments, a rule that save_reply may run only once per ticket_id (idempotent), and a forced escalate_to_human when the cap is hit or the classification is low-confidence.\n6. Wire it into app/api.py as a new route (or a flag on POST /triage) that runs the loop and returns the category, the reply, and the list of steps taken; load the model name and limits from config.py and read the API key from the environment.\n7. Write pytest tests in tests/ with a fake Claude client that returns scripted tool calls, covering a normal billing, bug, and how-to path, a loop that hits the step cap, a malformed tool argument, and a duplicate save_reply.\n8. Log each step (tool name, arguments, result summary, tokens) for debugging, run the new tests plus the existing suite, then replay a sample of past tickets against the old triage path to compare category accuracy and cost before switching traffic to the new agent in the single container.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-07",
+   "variant": "B",
+   "plan": "1. Define the agent's contract: input is a ticket, output is a routing decision (billing / bug / how-to, plus a drafted reply) saved via save_reply. Decide the loop is reactive, with no up-front planning call: at each turn Claude sees the ticket plus all prior tool results and picks only the next action.\n2. Add a new module (e.g. app/router_agent.py) that runs a ReAct-style loop with the Anthropic SDK's tool-use API. Each iteration makes one messages.create call, executes any requested tool, appends the tool_result to the message list, and repeats until Claude returns a final answer.\n3. Define a small set of tools with JSON schemas: search_docs (keyword search over the 40 markdown articles in docs/), classify_ticket (records the category and a confidence), and save_reply (wraps the existing database write). Keep save_reply as the only side-effecting tool.\n4. Write the system prompt so the model acts one step at a time. It should say to look at what is known so far, take the single most useful next action, and not write out a multi-step plan. It should also say to call save_reply exactly once, only after it has classified the ticket and drafted a reply grounded in the docs.\n5. Add guardrails in code, not in the prompt: a hard cap on iterations (e.g. 6), a token budget, a retry with backoff on API errors, and validation of tool arguments. If the cap is reached without a saved reply, fall back to the existing single-call triage path or flag the ticket for a human.\n6. Wire the agent into app/api.py behind POST /triage, selected by a config.py setting (e.g. an AGENT_MODE flag), with the API key still read from the environment. Return the category, the reply and the number of steps taken so behavior can be observed.\n7. Write pytest tests that mock the Anthropic client with scripted tool-use sequences. Cover the normal path, a ticket that needs a docs lookup, the iteration cap, a malformed tool call, and the guarantee that save_reply is called at most once.\n8. Check quality on a small set of labeled sample tickets, comparing routing accuracy and steps per ticket against the current single-call version. Log each step's tool and result for debugging, then ship it in the same container behind the flag and enable it gradually.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-08",
+   "variant": "B",
+   "plan": "1. Define the agent's tool set as Anthropic SDK tool schemas in app/triage.py: classify_ticket(category: billing|bug|how-to), search_docs(query) over the 40 markdown articles in docs/, draft_reply(text), save_reply(ticket_id, text), and escalate(reason). Keep each tool narrow with strict input schemas, and keep save_reply as the only write.\n2. Write a short system prompt that tells Claude to work one action at a time: look at the ticket, pick the single best next tool call, read the result, and then decide again. It should include no planning or outline phase, only the instruction to act, observe, and continue, plus a rule to finish by calling save_reply exactly once.\n3. Implement the loop with the SDK's Messages API: send the ticket plus tools, execute each tool_use block in Python, append the tool_result to the conversation, and call Claude again until it returns end_turn or a stop condition. Add a hard cap on steps (for example 8) and a token and time budget so a stuck agent cannot loop forever.\n4. Guard the write: make save_reply idempotent per ticket_id, validate that the reply is non-empty and the category is one of the three allowed values, and refuse a second save in the same run. If the step cap is hit without a save, fall back to escalate instead of writing a partial reply.\n5. Load docs lazily: search_docs returns only short matching snippets with filenames, and a read_doc(name) tool fetches a single article on demand, so the 40 articles (about 24,000 words) never all enter the context. Enable prompt caching on the system prompt and tool definitions to cut cost across steps.\n6. Wire it into POST /triage in app/api.py: validate the request, run the agent loop, return the category, reply, and a trace of the steps taken, and map failures such as API errors, timeouts, and step-cap hits to clear HTTP responses. Read the API key and settings (model name, step cap) from config.py and environment variables.\n7. Write pytest tests in tests/ with a stubbed Claude client that returns scripted tool_use sequences: a normal billing ticket, a how-to ticket that needs a doc lookup, a malformed tool call, a step-cap overrun, and a duplicate save attempt. Assert that save_reply is called exactly once with the right ticket_id on the success paths and never on the failure paths.\n8. Run a small manual evaluation on a handful of sample tickets with the real model, reviewing the traces for wasted steps, wrong categories, or replies that ignore the docs. Tune the system prompt and tool descriptions accordingly, then rebuild the single container and check the endpoint end to end.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-09",
+   "variant": "B",
+   "plan": "1. Define the agent's tool set as Anthropic SDK tool schemas in app/triage.py: classify_ticket (billing / bug / how-to), search_docs (keyword lookup over the 40 markdown articles in docs/), draft_reply, and save_reply(ticket_id, text) wrapping the existing database write.\n2. Write a short system prompt that tells Claude to act step by step: after each tool result, decide and call the single next tool, with no separate planning step or up-front plan, and to finish by calling save_reply once.\n3. Implement a plain ReAct-style loop in app/triage.py using client.messages.create with tools: send the ticket, execute whichever tool_use block comes back, append the tool_result to the messages, and repeat until Claude returns a final answer with no tool call.\n4. Add loop safeguards: a hard max-iterations cap (for example 8), a per-call token limit, a timeout, and handling of unknown tool names or malformed tool inputs by returning an error tool_result so the model can recover.\n5. Make save_reply safe to call from an agent: enforce that it runs at most once per ticket_id (idempotent write), validate the text is non-empty, and keep it as the last step so a failed loop never leaves a half-written reply.\n6. Keep search_docs lightweight and in-process (load docs/ at startup, return only the top few short excerpts rather than whole 600-word articles) to protect context size; read the API key from the environment via config.py and add a configurable model name.\n7. Wire the loop into POST /triage in app/api.py, returning the category, the reply, and the list of steps taken (tool names called) so behavior can be inspected.\n8. Add pytest tests in tests/ with a mocked Anthropic client: a scripted multi-step run (classify, search, draft, save), the iteration-cap path, a bad tool call recovery, and a check that save_reply is called exactly once; then manually try a few sample tickets.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4B-10",
+   "variant": "B",
+   "plan": "1. Define the agent's tools as Anthropic tool schemas in app/triage.py: classify_ticket (billing / bug / how-to), search_docs (keyword lookup over the 40 markdown articles in docs/), draft_reply, and save_reply(ticket_id, text) as the only database write.\n2. Write a short system prompt that tells Claude to act one step at a time: after each tool result it picks the next action, with no up-front plan or task list, and it stops by calling save_reply or by routing to a human.\n3. Implement the loop with the Anthropic SDK Messages API: send the ticket, run any tool_use block Claude returns, append the tool_result to the message history, and call Claude again until it returns end_turn.\n4. Keep the loop safe: cap it at a fixed number of iterations, return tool errors to Claude as tool_result errors instead of raising, and make save_reply idempotent per ticket_id so a retry cannot write twice.\n5. Have search_docs return only the few most relevant article snippets, not whole 600-word articles, so the context stays small as the loop runs.\n6. Update POST /triage in app/api.py to call the agent loop and return the category, the reply, and the list of steps taken. Read the API key and model name from environment variables through config.py.\n7. Write pytest tests in tests/ with a mocked Anthropic client that returns scripted tool_use sequences. Cover a normal route for each of the three categories, a tool error, and the iteration cap, and check that save_reply runs exactly once.\n8. Run the tests, then try a few sample tickets through the local container and review the step traces for wrong turns, such as saving before classifying, and tighten the system prompt and tool descriptions where needed.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-01",
+   "variant": "C",
+   "plan": "1. Define the routing contract: the categories (billing / bug / how-to) plus an \"unclear\" fallback, and a structured plan schema (ticket_id, category, confidence, proposed reply summary, proposed actions, and which actions write to the database). Keep the config in config.py, with secrets from environment variables only.\n2. Add a planning stage to app/triage.py: one Claude call that reads the ticket and returns a structured plan (classification, reasoning, which of the 40 docs/ articles it intends to cite, draft reply outline) without performing any action. This call has no access to save_reply or any write path.\n3. Ground the plan in the help articles: before planning, select the few relevant docs/ articles by simple keyword or category matching, and pass only those to Claude, so the plan cites real articles instead of inventing answers.\n4. Persist the plan as a pending record keyed by ticket_id (status \"awaiting_approval\") and change POST /triage so it returns the plan and a plan_id instead of executing, with no call to save_reply at this point.\n5. Add the approval gate in app/api.py: new endpoints such as POST /triage/{plan_id}/approve (optionally with human edits) and /reject, protected by an auth check using a token from config.py. Only an approved plan moves to execution; rejected plans store the reviewer's reason.\n6. Implement the execution stage: on approval, run a second Claude call that drafts the final reply from the approved (possibly edited) plan, then call save_reply(ticket_id, text) exactly once. Make it idempotent so a repeated approve cannot write twice, and verify the plan is unchanged since approval.\n7. Add pytest tests with the Anthropic client mocked: save_reply is never called before approval, rejected and unapproved plans never write, approval triggers exactly one write, double approval is a no-op, and malformed model output falls back to the \"unclear\" category for human review.\n8. Add logging of plan, decision, and write outcome, handle API errors and timeouts with a retry and a safe \"needs human\" state, update docs and the single container's environment settings, and do a manual end-to-end run on a few sample tickets of each category.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-02",
+   "variant": "C",
+   "plan": "1. Define the agent's contract: a ticket comes in, the agent produces a structured plan (classification, intended reply approach, which docs it will consult, and the exact write it intends to make), and nothing is written until a human approves that plan. Decide the plan schema (Pydantic model) and the states a ticket moves through: received, planned, awaiting_approval, approved, executed, rejected.\n2. Add a planning step in `app/triage.py` that calls Claude using the Anthropic SDK with a system prompt that forbids acting, and forces a structured JSON plan via a tool schema (category billing/bug/how-to, confidence, relevant doc names, proposed reply outline, and the planned `save_reply` call). Keep this step strictly read-only: it may read the ticket and the `docs/` articles but must never call `save_reply`.\n3. Give the planner a way to find the right help articles from the 40 docs, for example a simple keyword or title index loaded at startup passed to Claude, or a retrieval tool Claude can call, so the plan cites specific articles rather than guessing. At about 600 words each the articles may be small enough to include selectively in context, with prompt caching for the stable portion.\n4. Persist each plan with its state (a small `plans` table next to the replies table, written through the existing database layer), and add two endpoints in `app/api.py`: `POST /triage` now returns the plan and a plan ID with status awaiting_approval, and `POST /triage/{plan_id}/decision` accepts approve, reject, or edit from a human reviewer. Protect the decision endpoint with a reviewer credential read from an environment variable in `config.py`.\n5. Build the execution step so it only runs for an approved plan: it re-reads the stored approved plan (including any human edits), calls Claude to draft the reply constrained to that plan, then calls `save_reply(ticket_id, text)` once. Make it idempotent and reject execution if the plan is not in approved state, if it was already executed, or if the ticket changed since the plan was made.\n6. Add safeguards: validate Claude's plan output against the schema and retry or fail closed on malformed output, handle SDK errors and timeouts with bounded retries, expire stale pending plans, and log every state change (who approved, when, what changed) for auditing. Keep the API key and reviewer credentials in environment variables only.\n7. Write pytest tests with Claude mocked: the plan step never calls `save_reply`, execution refuses unapproved, rejected, or already-executed plans, edits by the reviewer are honoured, malformed model output fails closed, and the endpoints return the expected states. Add a few evaluation cases of real-looking tickets for each category to check the classification and the cited docs.\n8. Update the container configuration and docs: confirm the single container still works with the new table and environment variables, add a short help article or README section explaining the approve-then-execute flow, and do a manual end-to-end run (submit a ticket, review the plan, approve, check the saved reply) before release.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-03",
+   "variant": "C",
+   "plan": "1. Define the agent's contract first: input is a ticket (id, text); output is a structured plan (classification billing/bug/how-to, proposed reply, proposed `save_reply` write, cited help articles) plus a status of pending, approved, rejected, or edited. Nothing that writes to the database may run in the planning phase.\n2. Split `app/triage.py` into two Claude-backed phases using the Anthropic SDK: a planning call that returns the plan as JSON (validated with a schema, retried once on malformed output), and an execution call that runs only after approval. Give the planner read-only tools (for example, search of the 40 docs in `docs/`) and withhold any write tool from it.\n3. Add a lightweight retrieval step for the help articles: chunk and index the `docs/` markdown at startup (keyword or embedding search, no new service, since we deploy one container), so the plan can cite the specific articles it will base the reply on.\n4. Persist pending plans so approval can happen asynchronously: a small plans table (or SQLite file in the same container) holding ticket id, plan JSON, status, reviewer, timestamps, and a hash of the plan that was shown to the reviewer.\n5. Extend `app/api.py`: `POST /triage` now only creates and returns a pending plan; add `GET /plans/{id}`, `POST /plans/{id}/approve` (optionally with edits), and `POST /plans/{id}/reject`. Protect the approval endpoints with a reviewer API key read from an environment variable via `config.py`, and make approval idempotent.\n6. Implement execution in `app/triage.py`: on approval, verify the stored plan hash matches what was approved, then run the plan and call `save_reply(ticket_id, text)` exactly once with the approved or edited text. Reject a replay on an already-executed plan, and record the outcome.\n7. Add guardrails: truncate and delimit ticket text as untrusted input to resist prompt injection, enforce a step limit and timeout on the planner, route low-confidence classifications to a human with no auto-suggested reply, and log every plan, decision, and write without leaking secrets.\n8. Write pytest tests with the Claude client mocked: planner output schema validation, no `save_reply` call before approval, approve/reject/edit paths, replay and tampered-plan rejection, and API auth. Then update `docs/` or a README section describing the approval workflow and the new environment variables.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-04",
+   "variant": "C",
+   "plan": "1. Define the agent's contract: it receives a ticket and first produces a structured plan (classification, intended reply approach, the exact actions it will take including the `save_reply` write), and it may not perform any write until a human has approved that plan.\n2. Split `app/triage.py` into two phases: a read-only `plan_ticket(ticket_text)` that calls Claude (using the Anthropic SDK with a JSON-schema or tool-use output) to return the plan, and an `execute_plan(plan)` that performs the approved actions. Only `execute_plan` is allowed to call `save_reply`.\n3. Add a plan store (a plans table in the existing database, or a persisted record) holding plan id, ticket id, plan content, status (pending / approved / rejected / edited), reviewer, and timestamps, so approval state survives restarts in the single container.\n4. In `app/api.py`, change `POST /triage` to return the plan and a plan id with status pending instead of saving a reply, and add `POST /plans/{id}/approve` and `POST /plans/{id}/reject` endpoints (reject takes a reason; approve may take human edits), protected by authentication whose credentials come from environment variables in `config.py`.\n5. Make the approval gate enforced in code, not in the prompt: `execute_plan` loads the stored plan, verifies status is approved and that the plan content is unchanged since approval (hash check), refuses otherwise, and ensures each plan runs at most once so double-clicks or retries don't write twice.\n6. Ground the planning prompt in the 40 help articles in `docs/` by retrieving only the relevant few for each ticket rather than loading all of them, and have the plan cite which articles it will rely on so the reviewer can check them.\n7. Handle edge cases explicitly: on rejection, feed the human's reason back to Claude for one revised plan; expire stale pending plans; log every plan, decision, and execution for audit; and handle Anthropic API errors and malformed plan output with validation and clear failures.\n8. Write pytest tests with Claude mocked: plan generation returns a valid schema, `save_reply` is never called before approval, rejected or tampered plans are refused, re-execution is blocked, and the endpoints enforce auth; then run the suite and do one manual end-to-end check of plan, approve, execute.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 1,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-05",
+   "variant": "C",
+   "plan": "1. Define the agent's contract: it takes a ticket and first produces a structured plan (classification, intended reply approach, the exact database write it intends to make, and any docs it needs), and it may not call `save_reply` until a human approves that plan. Reads and Claude calls are allowed in the planning phase; the database write is not.\n2. Split `app/triage.py` into two stages: `plan_ticket(ticket)` and `execute_plan(plan)`. In the planning stage Claude, using the Anthropic Python SDK with a JSON-schema tool output, returns the category (billing / bug / how-to), the relevant help articles from `docs/` (chosen by title or keyword, not by loading all 40 articles), a draft reply, and a list of side effects it proposes.\n3. Persist each plan as a pending record with an id, a status (pending, approved, rejected, executed), the ticket text, and a hash of the plan contents, so that approval is tied to exactly what the human saw and a later edit invalidates it. Keep this in the existing database, since the container has no other services.\n4. Change `app/api.py` so `POST /triage` returns the plan with a plan id and status \"pending\" and writes nothing else. Add `GET /plans/{id}` for review and `POST /plans/{id}/approve` and `POST /plans/{id}/reject` (with an optional edited reply and a reason), protected by a reviewer credential read from an environment variable in `config.py`.\n5. Make execution gated in code, not just in the prompt: `execute_plan` verifies the status is approved and the hash matches, then calls `save_reply(ticket_id, text)` once, marks the plan executed, and is idempotent so a repeated approve call cannot write twice. Rejected or edited plans cause re-planning or a human-written reply instead of an automatic write.\n6. Write the planning prompt so Claude states its steps before acting, says what it is unsure about (for example, an ambiguous category or a billing issue that needs account data it lacks), and treats the ticket text as untrusted data rather than instructions. Set low-confidence or sensitive tickets (refunds, legal, account closure) to be flagged for closer review.\n7. Add pytest tests in `tests/` with the Claude client mocked: planning never calls `save_reply`; an unapproved or rejected plan cannot execute; an edited plan after approval is refused; double approval writes once; and the plan output matches the schema. Add a small set of recorded sample tickets to check classification and the choice of docs.\n8. Roll it out behind a config flag with all tickets requiring approval at first, log plan, approval, and execution events (without secrets or full customer text), and review approval and edit rates after a trial period to decide whether any low-risk category could later be auto-approved.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 1,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-06",
+   "variant": "C",
+   "plan": "1. Define the agent's contract: it first produces a structured plan (ticket id, proposed category of billing / bug / how-to, which of the 40 docs it intends to cite, the draft reply, and the one write it wants to make), and it may not call save_reply until a human has approved that exact plan. Represent the plan as a Pydantic model so it can be validated, stored, and shown to the reviewer.\n2. Split app/triage.py into two phases: plan_ticket(ticket) and execute_plan(plan_id). plan_ticket calls Claude through the Anthropic SDK with read-only tools only (classify, search_docs) and returns a plan with no side effects; execute_plan is the only code path that touches save_reply.\n3. Add a read-only docs lookup tool for the planning phase that searches the 40 help articles with simple keyword matching, so the plan can name the articles it relied on. Return short excerpts rather than whole articles to keep the context small.\n4. Add an approval store inside the existing container (a small table in the current database, with states pending, approved, rejected, edited) that records the plan, a hash of its contents, who decided, and when. Approval is bound to the hash, so any edit to the plan after approval invalidates it.\n5. Extend app/api.py: POST /triage now returns a pending plan and its id instead of saving anything; add GET /plans/{id} for the reviewer, and POST /plans/{id}/decision for approve, reject, or edit. Protect the decision endpoint with a reviewer credential read from an environment variable in config.py, and have execute_plan refuse to run unless the stored state is approved and the hash matches.\n6. On approval, execute_plan re-checks the plan against the stored hash, calls save_reply exactly once (idempotent on ticket_id and plan id so a retry cannot double-write), and records the outcome. Rejected or edited plans send the reviewer's feedback back to Claude for a revised plan, with a cap on revision rounds.\n7. Write pytest tests with the Claude client mocked: no save_reply before approval, rejection and edit paths, a tampered or edited plan failing the hash check, a retried approval not writing twice, and malformed model output being rejected by validation. Add one end-to-end test through the FastAPI test client.\n8. Log every plan, decision, and write with the ticket id for audit, and add a short docs note explaining the approve-then-act flow and the reviewer endpoint. Roll out behind a config flag so the old direct-save behavior can be switched off cleanly once the reviewers are using the new flow.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-07",
+   "variant": "C",
+   "plan": "1. Define the agent's contract first: a ticket comes in, the agent produces a structured plan (category, proposed routing queue, proposed reply or action, and the one risky step, `save_reply`), and nothing with side effects runs until a human approves that plan. Write this down as the single rule the whole design must satisfy.\n2. Add a planning pass in `app/triage.py` that calls Claude with the ticket text and asks for a JSON plan only (classification billing/bug/how-to, routing decision, ordered steps, confidence, and which steps write to the database). Validate the output against a Pydantic model and retry once on a malformed plan, so a bad plan can never reach the approval stage.\n3. Keep planning strictly read-only: the planner may look up relevant help articles from `docs/` (a simple keyword or section lookup is enough for 40 articles) but cannot call `save_reply` or any write. Enforce this in code by giving the planning step no write function, not just by telling the model not to write.\n4. Persist the pending plan with a plan ID and status (pending, approved, rejected, edited, expired) and expose it through new FastAPI routes in `app/api.py`: `POST /triage` now returns the plan and its ID instead of acting, plus `GET /plans/{id}` and `POST /plans/{id}/decision` for a human reviewer to approve, reject, or edit. Protect the decision route with an auth token read from an environment variable via `config.py`.\n5. Build the execution step so it runs only for an approved plan: it re-reads the stored (possibly human-edited) plan, checks the status is approved and not already executed, then calls Claude to draft the reply and calls `save_reply(ticket_id, text)`. Make it idempotent so a repeated approval cannot write twice, and refuse to run if the ticket content changed since planning.\n6. Decide the approval policy explicitly: always require a human for any plan that writes, and route low-confidence or ambiguous classifications to a human with a note on why, rather than guessing. Record who approved, when, and what they changed, so the decision is auditable.\n7. Add pytest tests in `tests/` with the Claude client mocked: plans validate, no write happens before approval, rejected plans never write, edited plans execute as edited, double approval writes once, and malformed model output is retried then surfaced as an error. Add a small set of recorded sample tickets per category to check classification and routing.\n8. Run the full test suite, then try the flow end to end locally with a few real tickets, confirming the plan matches the reply that is eventually saved. Update the relevant `docs/` or README notes on the new approve-before-act flow and keep deployment as the same single container.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-08",
+   "variant": "C",
+   "plan": "1. Define the agent's contract: input is a ticket (text plus ticket_id), and the output is a structured plan (list of proposed actions: classification, which docs to consult, draft reply, whether save_reply will be called) that is produced before any action runs. Write this plan schema as a Pydantic model so it can be validated and shown to a reviewer.\n2. Split `app/triage.py` into two phases: a read-only planning phase and a separate execution phase. The planning phase may call Claude to classify the ticket (billing / bug / how-to) and to choose which of the 40 `docs/` articles are relevant, but it must not call `save_reply` or any other write.\n3. Implement the planner with the Anthropic SDK, using a system prompt that requires Claude to return the plan as structured JSON (via tool use or a forced schema), including its reasoning, confidence, and the exact reply it intends to save. Retrieve only the relevant docs (simple keyword or title matching) rather than stuffing all 40 articles into context.\n4. Add the approval gate: persist each pending plan (ticket_id, plan, status=pending, plan hash) in the existing database, and make `POST /triage` return the plan with a plan_id instead of executing it. Add `POST /triage/{plan_id}/approve` (and a reject/edit variant) that records the reviewer's identity and decision, with auth from environment-based secrets in `config.py`.\n5. Make execution strictly conditional on approval: the execute phase loads the approved plan, verifies its hash is unchanged and status is approved, then runs the steps and calls `save_reply(ticket_id, text)` once. Make it idempotent so a repeated approve call or retry cannot write twice, and expire stale plans after a configurable time.\n6. Handle failure and edge cases: reject malformed or schema-invalid plans and retry the planning call a limited number of times, escalate low-confidence or ambiguous tickets to a human with no draft saved, and never let ticket text override the system instructions (treat ticket content as untrusted data).\n7. Write pytest tests with the Claude client mocked: the plan is generated without any DB write, `save_reply` is not called before approval, rejection saves nothing, approval saves exactly once, tampered or expired plans are refused, and the API endpoints return the right status codes. Add a few real-ticket fixtures for each category as a regression set.\n8. Update `config.py` with settings (model name, approval timeout, confidence threshold), add logging of every plan and decision for audit, document the new flow in `docs/`, and confirm the single container still runs with no new services.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-09",
+   "variant": "C",
+   "plan": "1. Define the routing contract: a fixed set of ticket types (billing / bug / how-to) mapped to named handlers or queues, plus a Pydantic model for a \"plan\" (ordered steps, the ticket ID, the chosen route, which docs to consult, which writes it intends to make, and a confidence note).\n2. Add a planning stage in `app/triage.py` that calls Claude with the ticket text and the route list and asks for a plan only, returned as structured JSON validated against the Pydantic model, with no tool access to anything that writes.\n3. Keep every side effect (including `save_reply`, which is the one database write) out of the planning stage, so the agent can propose actions but cannot execute them until a human has approved.\n4. Store each pending plan with a status (pending / approved / rejected / edited) and an expiry, keyed to the ticket ID, in the existing database, since the service is a single container with no other services.\n5. Add API endpoints in `app/api.py`: `POST /triage` now returns a plan and a plan ID, and a new approval endpoint accepts approve / reject / edit-and-approve from a reviewer, checks the reviewer's identity against a credential read from an environment variable via `config.py`, and refuses to proceed if the plan is not in the pending state.\n6. Add an execution stage that runs only on an approved plan: it re-validates the stored plan, has Claude draft the reply (pulling in relevant articles from the 40 docs), calls `save_reply`, and records who approved it and when; rejected or expired plans do nothing.\n7. Put guardrails around it: a step limit, a timeout, handling of API errors and malformed model output (retry once, then route the ticket to a human), and logging of every plan, decision, and execution without writing secrets or full ticket text.\n8. Write pytest tests with the Claude client mocked, covering that nothing is written before approval, that rejection and expiry block execution, that an edited plan runs as edited, that malformed plans are caught, and that approving the same plan twice writes only once; then update `docs/` with a short description of the approval flow.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 0,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4C-10",
+   "variant": "C",
+   "plan": "1. Define the agent's contract: ticket text in, a structured plan out (classification of billing/bug/how-to, which of the 40 docs articles it intends to cite, and the draft reply outline), with no side effects until a human approves. Specify this as Pydantic models so every stage has a typed input and output.\n2. Add a planning stage in app/triage.py that calls Claude (via the Anthropic SDK, using tool-use or JSON output for a validated schema) to produce the plan only. The planner may use read-only tools such as searching the docs/ articles, but it must not have access to save_reply.\n3. Persist the pending plan with a plan_id and status \"awaiting_approval\" (stored alongside the existing database, since there are no other services), including the ticket text, the plan, and a hash of the plan so edits can be detected.\n4. Split the API in app/api.py: POST /triage now returns the plan and plan_id instead of saving anything, and a new POST /triage/{plan_id}/approve (plus a /reject endpoint with optional edits) takes the human's decision. Protect these with authentication read from environment variables in config.py, and record the reviewer's identity.\n5. Implement the execution stage so it runs only when the plan is approved and unchanged: it calls Claude to draft the reply following the approved plan, then calls save_reply(ticket_id, text) exactly once, idempotent on plan_id so retries or double-clicks cannot write twice. Rejected or expired plans never reach save_reply.\n6. Enforce the approval gate in code, not in the prompt: execution checks the stored status and plan hash, and the executor's tool list excludes anything outside the approved plan's steps. Add timeouts, a retry limit, and clear handling for Claude API errors and schema-validation failures.\n7. Write pytest tests with the Anthropic client mocked: plan generated without a DB write, approve leads to exactly one save_reply, reject and unapproved calls never write, tampered plan is refused, and duplicate approval is idempotent. Also add a few prompt-behavior checks for classification on sample tickets.\n8. Update docs and config: document the two-step flow, new environment variables, and the review process; log each plan, decision, and write for auditing; then roll out behind a config flag in the single container, starting with all tickets requiring approval.",
+   "codes": {
+    "separate_plan_step": 1,
+    "structured_plan": 1,
+    "human_plan_approval": 1,
+    "reflect_or_replan": 0,
+    "iteration_cap": 0,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-01",
+   "variant": "D",
+   "plan": "1. Define the routing contract first: a fixed label set (billing / bug / how-to / escalate-to-human), a Pydantic schema for the agent's structured output (label, confidence, short rationale, next_action), and a hard cap on loop iterations so the agent cannot run forever.\n2. Add a new module app/router.py with a small tool set the Claude agent can call: classify_ticket, search_docs (keyword lookup over the 40 markdown articles, loaded once at startup), draft_reply, and save_reply(ticket_id, text) wrapped so it is only reachable after a passing check.\n3. Implement the agent loop with the Anthropic SDK tool-use API: send the ticket plus a system prompt, execute whichever tool Claude requests, and append the tool_result to the message history before the next call.\n4. Build the reflection step into the loop: after every tool result, make a separate short Claude call (or a required \"reflect\" tool call) that asks \"does this result answer what I needed, is it consistent with the ticket, and what is the next step?\" and returns a structured verdict of proceed, retry with a changed input, or escalate. Log each reflection with the step number.\n5. Gate the database write: before save_reply runs, a final reflection checks the draft against the retrieved docs and the ticket (no invented policies, correct category, no secrets or other customers' data); on failure the agent revises once, then routes to a human queue instead of saving.\n6. Wire it into POST /triage in app/api.py in place of the single-shot call, returning the label, the reply, and the reflection trace; keep timeouts, a per-ticket token budget, and retry-with-backoff for API errors, with the API key read from an environment variable via config.py.\n7. Write pytest tests with the Claude client mocked: a clean billing ticket passes in one pass, a bad first search triggers a retry, a failed final check never calls save_reply, and the iteration cap forces escalation.\n8. Evaluate on a small hand-labelled set of past tickets, comparing label accuracy and reply quality with and without reflection, and record the extra latency and token cost per ticket before deciding on defaults.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-02",
+   "variant": "D",
+   "plan": "1. Define the routing contract first: a small fixed set of destination queues (billing, bug, how-to, plus an explicit \"needs human\" fallback) and a structured result schema (category, confidence, reason, suggested queue) that Claude must return, so every step's output can be checked mechanically.\n2. Extend app/triage.py with a route_ticket step that calls Claude with the ticket text and the queue definitions, requesting that structured output, and add the queue list and confidence threshold to config.py (secrets stay in environment variables).\n3. Add a reflection step: after each result, make a second Claude call that receives the ticket, the proposed routing, and the reason, and critiques it (is the category supported by the ticket text, is anything ambiguous, is the draft reply consistent with the routing), returning accept / revise / escalate with a short justification.\n4. Wrap the steps in a bounded loop in triage.py: classify, reflect, and if the verdict is revise, re-run classification with the critique added to the prompt; cap it at two or three iterations, and route to \"needs human\" if the cap is hit or confidence stays below the threshold.\n5. Ground the reflection in the docs/ help articles by selecting a few relevant articles (simple keyword or embedding-free retrieval over the 40 files, limited to a token budget) and passing them to the reply-drafting and reflection calls, so the agent checks claims against real help content instead of guessing.\n6. Make side effects safe: only call save_reply(ticket_id, text) once, after the final accepted or escalated decision, never inside the loop, and make it idempotent per ticket_id so retries and repeated POST /triage calls cannot write duplicate or half-reflected replies.\n7. Expose the result through POST /triage in app/api.py, returning the final category, queue, reply, and a trace of each step's reflection verdict, with handling for API errors, timeouts, and malformed model output (retry once, then fall back to \"needs human\").\n8. Add pytest tests in tests/ that stub the Claude client: clear tickets accepted on the first pass, an ambiguous ticket that gets revised, a loop that hits the iteration cap and escalates, malformed output, and a check that save_reply is called exactly once; then run the suite and a few real sample tickets to tune the threshold and prompts.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-03",
+   "variant": "D",
+   "plan": "1. Define the agent's scope: for each ticket it runs a loop of observe, act, reflect, then decide the next step, with a hard cap (for example 6 iterations) and a clear stop condition, in a new module app/agent.py that app/api.py's POST /triage calls instead of the single-shot path.\n2. Give Claude a small set of tools via the Anthropic SDK tool-use API: classify_ticket (billing / bug / how-to), search_docs (keyword lookup over the 40 markdown articles in docs/, loaded once at startup), draft_reply, and route_ticket. Keep save_reply out of the model's tools so the database write happens only in code the model cannot trigger directly.\n3. Write the system prompt so that after every tool result Claude must emit a short structured reflection (what the result showed, whether it is sufficient or contradicts earlier findings, confidence, and the single next action) before it may call another tool. Parse this reflection as JSON so the loop can read it rather than trusting free text.\n4. Implement the loop in code: send the conversation, execute any requested tool, append the tool result, then require the reflection; stop when Claude chooses \"finish\", when confidence is high, when the iteration cap or a token budget is reached, or when two consecutive reflections show no progress, and fall back to \"needs human review\" in those last cases.\n5. Add guardrails around reflection: validate the classification against the allowed labels, require the reply to cite a docs article it actually retrieved, and run one final self-check pass comparing the draft reply to the ticket before routing, with a low-confidence result sending the ticket to a human queue rather than saving.\n6. Call save_reply(ticket_id, text) exactly once at the end, only for an approved final result, and make it idempotent per ticket_id so retries or a repeated POST /triage never write duplicates; handle SDK errors, timeouts and malformed tool output with bounded retries.\n7. Log each step's tool call, result and reflection (without secrets or full customer text beyond what is needed), and put the model name, iteration cap and thresholds in config.py with the API key read from an environment variable.\n8. Add pytest tests in tests/ using a stubbed Anthropic client with scripted responses: a happy path, a reflection that triggers a second search, a loop that hits the cap, malformed reflection JSON, and a check that save_reply is called once; then run the suite and try a few sample tickets by hand.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-04",
+   "variant": "D",
+   "plan": "1. Define the agent's loop and its tools in a new module (e.g. app/agent.py) using the Anthropic Python SDK tool-use API: a small, fixed tool set such as lookup_docs (search the 40 help articles), classify_ticket, draft_reply, and save_reply, with a hard cap on the number of turns and a clear stop condition.\n2. Write the system prompt so that after every tool result the model must emit a short structured reflection (what the result showed, whether it is good enough, what to do next, or whether to escalate) before choosing the next action. Keep the reflection in a dedicated field or tool call so it can be logged and checked, not buried in free text.\n3. Implement the docs lookup as a simple keyword or embedding-free search over the markdown files, returning only the few most relevant passages so the 600-word articles do not flood the context.\n4. Add guardrails in code around the reflection step: if the reflection says the classification is low-confidence, the draft contradicts the retrieved docs, or the retrieval was empty, route back to re-search or re-classify, or hand the ticket to a human, rather than continuing.\n5. Make save_reply the final, gated action: it runs only after the reflection step approves the draft, only once per ticket, and never on a retry loop, since it is a database write; validate ticket_id and the text before writing.\n6. Wire the agent into POST /triage in app/api.py, keeping the existing response shape, and add settings to config.py (model name, max turns, timeouts) with the API key read from the environment.\n7. Add pytest tests with a stubbed Claude client: a happy path per category (billing / bug / how-to), a case where reflection forces a retry, a case that hits the turn cap and escalates, and a check that save_reply is called exactly once or not at all.\n8. Log each step and its reflection (without secrets or customer personal data), run the tests, and try a handful of realistic tickets end to end to check cost, latency, and that the reflection actually changes behaviour.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-05",
+   "variant": "D",
+   "plan": "1. Define the routing contract first: a fixed label set (billing / bug / how-to, plus an \"unsure\" escape hatch), a Pydantic model for the structured result (label, confidence, short rationale, next action), and the explicit steps the agent may take (classify, retrieve doc, draft reply, route, save_reply, escalate to human).\n2. Refactor app/triage.py into a small explicit loop in plain Python with the Anthropic SDK: each iteration the model proposes one step through tool use (forced structured output), my code executes it, and the result goes back into the message history. Cap the loop at a fixed number of steps and a token budget, and put the model name, limits and thresholds in config.py (secrets stay in environment variables).\n3. Add the reflection step after every tool result: a separate short Claude call (or a dedicated turn with its own prompt) that sees the ticket, the step taken and its result, and must return a structured verdict: ok / retry with a changed approach / escalate, with a one-line reason. The loop only proceeds to the next step on \"ok\", so a bad classification or a poor doc lookup gets caught before it feeds the next step.\n4. Implement the tools: classify (returns label and confidence), find_docs (keyword search over the 40 markdown articles in docs/, loaded once at startup, no new service needed), draft_reply (grounded in the retrieved articles and told to cite them), and route/escalate. Keep save_reply as the only write and make it a gated final step that cannot run until the reflection on the drafted reply passes.\n5. Make the write safe: save_reply is idempotent per ticket_id (upsert, not insert), runs only once at the end, and is never called on a retried or escalated path without an explicit \"approved\" verdict. Low confidence, repeated reflection failures, or hitting the step cap route the ticket to a human queue with the trace attached instead of saving a guessed reply.\n6. Wire it into POST /triage in app/api.py: keep the existing request shape, return the label, the reply, the route and a compact trace of steps and reflection verdicts, and handle API errors, timeouts and rate limits with bounded retries, so the endpoint always returns a clean result or an explicit escalation.\n7. Write pytest tests with the Anthropic client mocked: happy path, a reflection that rejects the first classification and triggers a retry, step-cap exhaustion, escalation on low confidence, malformed structured output, and a check that save_reply is called exactly once and only after approval. Add a small labeled set of sample tickets as a regression check that can optionally run against the live API.\n8. Log each step, reflection verdict, token usage and latency per ticket (never secrets or raw customer data beyond what is needed), check the added reflection calls against cost and latency targets, and ship it in the same container behind a config flag so I can compare against the old single-call path before making it the default.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-06",
+   "variant": "D",
+   "plan": "1. Define the agent's contract first: a ticket goes in; a classification (billing / bug / how-to), a drafted reply, and a routing decision come out, with a hard cap on steps and a fixed list of allowed actions. Write this as a short spec so every later step can be tested against it.\n2. Break the work in `app/triage.py` into small named tools the agent can call: `classify_ticket`, `search_docs` (over the 40 help articles in `docs/`), `draft_reply`, and `save_reply`. Keep `save_reply` as the only write, and make it the last action, never one the agent can repeat freely.\n3. Build the agent loop with the Anthropic SDK tool-use API in a new module (for example `app/agent.py`). Each turn, Claude picks one tool, the code runs it, and the result goes back as a tool_result message; stop on a final answer or when the step cap is reached.\n4. Add the reflection step: after every tool result, make a separate Claude call (or a required reflection field) that asks \"Does this result answer what was needed? Is it consistent with the ticket? What should happen next?\", and returns a structured verdict (continue / retry with a change / escalate to a human). Feed that verdict into the next turn instead of letting the agent proceed blindly.\n5. Make reflection decide the risky moves: before `save_reply`, require a reflection check that the category fits the ticket, the reply is grounded in the retrieved docs, and nothing is invented. If the check fails, allow a bounded number of redraft attempts, then route to a human queue rather than saving a bad reply.\n6. Handle failures and cost: catch API errors, malformed tool arguments, and empty doc searches, and let the reflection step see these errors as results. Keep the loop idempotent so a retry never writes the same reply twice, and load the API key only from the environment via `config.py`.\n7. Wire it into `app/api.py` so `POST /triage` calls the agent, and return the category, the reply, and a short trace of the steps and reflections (log the trace for debugging). Keep the old single-call path behind a setting so it can be switched back quickly.\n8. Test with pytest using a stubbed Claude client: scripted cases for each category, a case where reflection triggers a retry, a case that hits the step cap and escalates, and a check that `save_reply` is called exactly once. Run a small set of real sample tickets by hand to compare quality and cost against the old path before shipping the container.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-07",
+   "variant": "D",
+   "plan": "1. Define the routing contract: a fixed set of queues (billing, bug, how-to, plus an \"unsure/human\" queue), and a small typed result object (queue, confidence, reasoning, cited doc names) that every Claude call must return as validated JSON.\n2. Add a new module `app/router.py` that runs a loop per ticket: Claude proposes a route (step), then the code executes it, then a separate \"reflect\" Claude call reviews that result before the next step is allowed. Keep the loop bounded (for example, a hard maximum of 3 iterations) so it cannot run away on cost or time.\n3. Give the agent a few narrow tools via the Anthropic SDK tool-use API: `search_docs` (looks up the relevant markdown articles in `docs/` by keyword, returning short snippets rather than whole 600-word articles), `classify`, and `draft_reply`. Do not expose `save_reply` to the model.\n4. Write the reflection prompt so Claude critiques the last result against explicit checks (does the category match the ticket text, is the draft grounded in a retrieved doc, is anything promised that the docs do not support), then answers with a structured verdict: accept, revise with a stated reason, or escalate to human.\n5. Make the database write deterministic and gated: only the surrounding Python code calls `save_reply(ticket_id, text)`, and only after the reflection verdict is \"accept\" on the final draft; escalations save nothing to the reply table and are flagged for a person. Make the write idempotent per ticket_id so a retry cannot double-save.\n6. Wire the router into `app/triage.py` and `POST /triage` in `app/api.py` behind a config flag in `config.py`, so the old single-call path stays available for rollback; read the API key and limits (max iterations, model name, timeouts) from environment variables, and return the route, number of reflection rounds, and escalation status in the response.\n7. Add pytest tests in `tests/` using a stubbed Claude client: a clean ticket accepted on the first pass, a ticket whose first draft is rejected and then fixed on revision, a ticket that hits the iteration cap and escalates, malformed JSON from the model, and a check that `save_reply` is never called on escalation or failure.\n8. Build a small labelled set of sample tickets (including ambiguous and adversarial ones) and compare the reflecting agent against the single-call baseline for accuracy, escalation rate, and extra latency and token cost; log each step's input, output, and verdict with the ticket_id so failures can be inspected, then tune the reflection prompt and iteration cap from those results.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-08",
+   "variant": "D",
+   "plan": "1. Define the agent's job and its allowed actions: for each ticket, a loop of small steps (classify, look up relevant docs, draft reply, check reply, route/save), implemented in app/triage.py with the Anthropic SDK using Claude tool use, so every step is a named tool call with a typed result.\n2. Give Claude a small tool set: classify_ticket (billing / bug / how-to, with a confidence value), search_docs (keyword search over the 40 markdown articles in docs/, returning only the top few passages rather than whole articles), draft_reply, and save_reply(ticket_id, text). Keep save_reply as the only tool with a side effect, and gate it so it cannot be called until the checks pass.\n3. After every tool result, add an explicit reflection step: ask Claude to write a short structured note (JSON fields such as \"what_i_learned\", \"is_result_sufficient\", \"problems\", \"next_action\") before it chooses the next step. For example, if search_docs returns weak or off-topic passages, the reflection should say so and trigger a refined query instead of drafting on thin evidence.\n4. Make the reflection grounded rather than self-congratulating: check the draft reply against the retrieved doc passages and the original ticket text, and require each factual claim in the reply to cite a passage. Where the classification confidence is low or the category disagrees with the reply content, reroute or escalate to a human rather than guess.\n5. Bound the loop for cost and safety: set a maximum number of steps (for example 6), a token budget per ticket, and a retry limit on repeated identical tool calls. Add timeouts and handle SDK errors and rate limits with backoff, so the agent always ends in a final state of either \"saved\", \"needs human review\" or \"failed\".\n6. Wire it into POST /triage in app/api.py: validate input, run the agent loop, return the category, reply, and a trace of the steps and reflections. Persist the trace alongside the reply (or log it) so a person can see why a ticket was routed the way it was, and read the API key and model name from config.py environment variables only.\n7. Write pytest tests in tests/ with the Claude client mocked: scripted tool results for a clean billing ticket, a bug ticket with poor first search results (reflection must trigger a second search), a low-confidence ticket (must escalate), and a runaway loop (must stop at the step cap). Assert that save_reply is called exactly once, and only after the checks pass.\n8. Evaluate on a small hand-labelled set of real-style tickets, comparing the reflecting agent with the current single-pass triage on classification accuracy, reply groundedness, latency and token cost. Keep the reflection step only where it measurably helps, then deploy in the same container behind a config flag so we can roll back quickly.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-09",
+   "variant": "D",
+   "plan": "1. Define the routing contract in `app/triage.py`: a small set of routes (billing / bug / how-to / escalate-to-human) and a typed result (route, confidence, reply draft, reasoning), so every step has an explicit input and output to check.\n2. Build the agent as a bounded loop using the Anthropic SDK's tool-use messages API: Claude gets tools such as `search_docs`, `classify`, `draft_reply`, and `save_reply`, and the loop runs at most a fixed number of turns (e.g. 6) with a token budget, so it cannot run away.\n3. Add a \"reflection\" step after every tool result: before the next action, Claude must write a short structured note (what the result showed, whether it is sufficient or suspicious, what to do next), and the loop stores this note in the message history so later steps can use it.\n4. Give `search_docs` a cheap implementation over the 40 help articles (keyword or chunked-embedding lookup loaded once at startup), returning short excerpts with article IDs, so reflection can judge whether the retrieved text actually supports the draft reply.\n5. Make the reflection gate decisions: if classification confidence is low or the docs do not support the draft, the agent re-classifies, searches again with a rewritten query, or routes to \"escalate\"; only a reflected-and-approved draft may call `save_reply`, which is the one database write, done once per ticket and idempotently by ticket_id.\n6. Wire it into `POST /triage` in `app/api.py`, returning the route, reply, and a trace of steps and reflections; read the API key and limits (max turns, model name, confidence threshold) from environment-driven `config.py`, with timeouts and retries on SDK calls and graceful fallback to escalate on errors.\n7. Write pytest tests with a stubbed Anthropic client that replays scripted tool-use sequences: a clean billing ticket, a case where reflection triggers a re-search, a loop that hits the turn cap, malformed tool output, and a check that `save_reply` is never called twice or before approval.\n8. Run a small evaluation on sample tickets with the real model (tracking route accuracy, steps per ticket, and cost/latency versus a single-call baseline), log traces for review, and tune the reflection prompt and thresholds before deploying the single container.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  },
+  {
+   "id": "F4D-10",
+   "variant": "D",
+   "plan": "1. Define the agent's job and tools: a Claude tool-use loop in a new `app/agent.py` with a small set of tools (classify_ticket, search_docs over the 40 help articles, draft_reply, save_reply), keeping `save_reply` as the only database write. Cap the loop at a fixed number of steps so it cannot run forever.\n2. Add a reflection step after every tool result: before choosing the next action, the model must write a short structured note (JSON via a tool-use schema) stating what the result showed, whether it is good enough (confidence, any contradiction or missing information), and what to do next. Keep this note in the conversation history so later steps can see it.\n3. Write the system prompt to define the three categories (billing / bug / how-to), the reflect-then-act rule, and when to stop or escalate to a human instead of guessing. Include a few examples of a reflection that changes course, such as a low-confidence classification leading to a doc search before drafting.\n4. Implement docs retrieval simply: load the 40 markdown articles at startup, split them into sections, and have search_docs return the top few matching sections (keyword or embedding ranking). Reflection should check whether the retrieved text actually answers the ticket, and re-query with different terms if it does not.\n5. Gate the write: allow `save_reply` only after a final reflection confirms the category is set, the draft is grounded in the retrieved docs, and no unsupported promises (refunds, dates) appear. If the checks fail after a set number of retries, route the ticket to a human-review status instead of saving an automated reply.\n6. Wire it into `app/triage.py` and `POST /triage` in `app/api.py`, returning the category, the reply, and the reflection trace so decisions can be audited. Add settings in `config.py` for model name, max steps, and retry limits, with the API key read from an environment variable.\n7. Write pytest tests with a mocked Anthropic client: a clean ticket reaches save_reply in the expected steps, a low-confidence reflection triggers a re-search, a failed check escalates without writing, and the step cap holds. Add a small set of labeled sample tickets for checking classification accuracy.\n8. Add logging of each step's tool call, reflection, token use, and latency, then run the tests and a handful of real tickets to tune the prompt and the thresholds. Note in the docs that reflection adds extra model calls per ticket, so cost and latency go up.",
+   "codes": {
+    "separate_plan_step": 0,
+    "structured_plan": 0,
+    "human_plan_approval": 0,
+    "reflect_or_replan": 1,
+    "iteration_cap": 1,
+    "tests": 1
+   }
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+1. Define the goal and how to measure it: for a held-out set of real or hand-written tickets, the drafted reply should be grounded in the right help article(s), with no invented policy. Build a small eval set of tickets, each labeled with the doc(s) that should be used, so retrieval and reply quality can be checked separately.
+
+2. Index the 40 docs in `docs/`: split each markdown article into sections by heading (about 600 words per article means a few chunks each), keeping the article path and title as metadata. Build the index once at startup (or at container build time) in a new `app/retrieval.py`, with no new services, since the app ships as one container.
+
+3. Choose a retrieval method that fits the size: start with simple keyword/BM25 ranking in pure Python, which needs no extra dependencies and is easy to test. Only add embeddings if the eval set shows keyword search missing the right article.
+
+4. Implement `retrieve(ticket_text, k)` that returns the top few chunks with their article ids. Use the ticket text plus the classification (billing / bug / how-to) to focus the query, and set a minimum score so that when nothing matches well it returns an empty list instead of weak guesses.
+
+5. Change the drafting call in `app/triage.py` to build its prompt from the retrieved chunks: put each excerpt in a labeled block (article id and title), and instruct Claude to answer only from those excerpts, to cite the article it used, and to say it cannot answer and flag the ticket for a human when the excerpts do not cover the question. Keep the classification call as it is.
+
+6. Keep `save_reply(ticket_id, text)` as the final step, but also store (or log) which article ids were used so replies can be audited; handle the no-match case by saving a clear "needs human review" outcome rather than a made-up reply. Put the retrieval count and threshold in `config.py`.
+
+7. Add pytest tests: retrieval returns the expected article for sample billing, bug, and how-to tickets; the empty-result path works; the prompt contains the retrieved excerpts; and the Claude call is mocked so the tests make no real API calls or database writes (use a fake for `save_reply`).
+
+8. Run the eval set against the old and new drafter and compare groundedness and correctness by hand-review of a sample, then check the `POST /triage` endpoint end to end locally and confirm the container image still builds with `docs/` included.

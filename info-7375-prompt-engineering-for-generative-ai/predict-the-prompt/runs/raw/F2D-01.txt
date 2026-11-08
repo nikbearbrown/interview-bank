@@ -1,0 +1,8 @@
+1. Add timeout settings to `config.py`: a Claude request timeout (e.g. `CLAUDE_TIMEOUT_S`), a database write timeout, and a max-retries value, all read from environment variables with safe defaults.
+2. In `app/triage.py`, construct the Anthropic client with an explicit `timeout` (an `httpx.Timeout` with separate connect and read values) and a small `max_retries`, so a hung call raises `anthropic.APITimeoutError` instead of blocking forever.
+3. Wrap the classify and draft-reply calls so `APITimeoutError` and `APIConnectionError` are caught and turned into a clear, typed error (e.g. `TriageTimeout`) carrying the ticket id, with logging of the elapsed time.
+4. Add a timeout to the `save_reply` write, using the database driver's statement or connect timeout setting if it has one, or otherwise an overall deadline around the call using `asyncio.wait_for` or a worker thread with a deadline.
+5. Make `save_reply` safe to retry by keying the write on `ticket_id` (an upsert), so a timed-out write that actually succeeded cannot create duplicate replies when retried.
+6. Set an overall time budget for one triage so the Claude call and the save share a single deadline, and never start the save if the budget is already spent.
+7. In `app/api.py`, map `TriageTimeout` to an HTTP 504 response, with a short error body, from `POST /triage`, so clients can retry cleanly.
+8. Add pytest tests in `tests/` that mock the Anthropic client to raise `APITimeoutError` and mock `save_reply` to stall, checking the typed error, the 504 response, and that a retry does not duplicate the reply.

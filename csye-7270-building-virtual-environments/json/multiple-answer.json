@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 600,
+  "count": 678,
   "chapters": {
     "foundations": "Engine vocabulary (Godot, Unity, Unreal)",
     "0": "Chapter 0: The toolchain",
@@ -25222,6 +25222,3282 @@
           "text": "Naming one animation clip per state, with a blend or transition between them, tells the agent how motion changes.",
           "correct": true,
           "explanation": "Clips are assigned to states."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.1",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Collision layer versus mask",
+      "stem": "A coin is an Area2D on collision layer 4. The player body is on layer 1. The coin must fire body_entered when the player touches it. A reviewer unpacks the layer and mask settings into checkable constraints. Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The player's collision mask must include layer 4 for the coin's body_entered signal to fire.",
+          "correct": false,
+          "explanation": "The signal depends on the area's mask, not the player's mask, so changing the player's mask does not fix detection."
+        },
+        {
+          "label": "B",
+          "text": "The coin's collision mask must include layer 1, because the area scans for bodies on the layers in its mask.",
+          "correct": true,
+          "explanation": "An area detects a body when the body's layer is in the area's own mask, so the mask must name layer 1."
+        },
+        {
+          "label": "C",
+          "text": "If the coin's mask is empty, body_entered does not fire even while the player overlaps the coin.",
+          "correct": true,
+          "explanation": "With no layer in its mask the area scans for nothing, so overlapping bodies are never reported."
+        },
+        {
+          "label": "D",
+          "text": "Moving the coin from layer 4 to layer 1 does not make it detect the player, because detection comes from the mask.",
+          "correct": true,
+          "explanation": "Changing the coin's layer changes what the coin is, not what it looks for, so detection stays broken."
+        },
+        {
+          "label": "E",
+          "text": "The coin's collision layer must include layer 1 so that it can see the player.",
+          "correct": false,
+          "explanation": "The coin's layer declares what the coin is, not what it sees, so adding layer 1 there would not make it detect the player."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.2",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Collision layer versus mask",
+      "stem": "A platformer has walls (StaticBody2D, layer 2), enemies (layer 3) and a player CharacterBody2D (layer 1). The player must be stopped by walls and must not be blocked by enemies. Ignore the enemies' own settings. Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The wall's collision mask must include layer 1 for the wall to stop the player.",
+          "correct": false,
+          "explanation": "A static body does not move or scan, so its mask does not decide whether the player is stopped."
+        },
+        {
+          "label": "B",
+          "text": "The player's collision mask includes layer 2.",
+          "correct": true,
+          "explanation": "A moving body is stopped by the layers listed in its own mask, so layer 2 must be there for walls to block it."
+        },
+        {
+          "label": "C",
+          "text": "The player's collision mask leaves out layer 3.",
+          "correct": true,
+          "explanation": "A layer missing from the mask is passed through by this body, so enemies on layer 3 do not block the player."
+        },
+        {
+          "label": "D",
+          "text": "The player's own layer must be set to 2 so that it can hit walls.",
+          "correct": false,
+          "explanation": "The player's layer says what the player is; the walls are found through the player's mask, so changing the layer is wrong."
+        },
+        {
+          "label": "E",
+          "text": "Moving the player from layer 1 to layer 5 does not change whether walls stop it, as long as its mask still includes layer 2.",
+          "correct": true,
+          "explanation": "Blocking is decided by the moving body's mask, not by its own layer."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Collision layer versus mask",
+      "stem": "Layers: player 1, walls 2, enemies 3, bullets 4. Spec: \"A bullet hits walls and enemies, passes through the player, and passes through other bullets.\" Check each statement that is a correct unpacking or compression of that spec.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Clearing the bullet's collision layer does not change what the bullet hits, because hits come from its mask.",
+          "correct": true,
+          "explanation": "The mask still contains the same layers, so the bullet keeps hitting the same things as before."
+        },
+        {
+          "label": "B",
+          "text": "Set the bullet's mask to include layers 2 and 3 and exclude layers 1 and 4.",
+          "correct": true,
+          "explanation": "The mask lists what the bullet checks for, so walls and enemies are in it while the player and bullets are left out."
+        },
+        {
+          "label": "C",
+          "text": "Putting the bullet on layer 4 labels it as a bullet but does not by itself decide what it hits.",
+          "correct": true,
+          "explanation": "The layer states what the bullet is; what it hits is chosen by its mask."
+        },
+        {
+          "label": "D",
+          "text": "Leaving layer 4 out of the bullet's mask is what stops bullets from hitting one another.",
+          "correct": true,
+          "explanation": "A bullet reports only bodies on layers in its mask, so omitting layer 4 lets bullets pass through each other."
+        },
+        {
+          "label": "E",
+          "text": "Set the bullet's mask to layers 1 and 4.",
+          "correct": false,
+          "explanation": "That makes the bullet hit the player and other bullets, which is the opposite of the spec and misses walls and enemies."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "_physics_process versus _process",
+      "stem": "A programmer pastes the term pair \"_physics_process versus _process\" into a spec and asks for unpackings that can be checked in code. Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "_physics_process is called on the fixed physics tick, so its delta is the same each call.",
+          "correct": true,
+          "explanation": "The physics tick runs at a fixed step, so the delta passed in stays constant from call to call."
+        },
+        {
+          "label": "B",
+          "text": "_process is called once per rendered frame, so its delta changes when the frame rate changes.",
+          "correct": true,
+          "explanation": "Rendered frames take varying time, so the delta passed to _process varies with the frame rate."
+        },
+        {
+          "label": "C",
+          "text": "Defining both functions on one node makes Godot ignore _process.",
+          "correct": false,
+          "explanation": "Godot calls both functions on the node each in its own cycle, so neither one disables the other."
+        },
+        {
+          "label": "D",
+          "text": "_physics_process is called once per rendered frame, so it runs less often on a slow computer.",
+          "correct": false,
+          "explanation": "It follows the physics tick instead; on a slow computer it can run more than once per rendered frame to catch up."
+        },
+        {
+          "label": "E",
+          "text": "A health bar that only needs to animate smoothly on screen fits _process, because it does not touch physics.",
+          "correct": true,
+          "explanation": "Visual updates tied to the display belong in the per-frame callback, since no physics step is involved."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.5",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Delta and frame-rate independence",
+      "stem": "A spec says: \"Make the movement frame-rate independent.\" An agent proposes the changes below. Check each statement that correctly unpacks \"frame-rate independent\" for a character that moves by changing its position in _process.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Multiplying a per-second speed by delta gives the same distance per second at 30 and 144 frames per second.",
+          "correct": true,
+          "explanation": "Delta shrinks as the frame rate rises, so more frames each cover a proportionally smaller step."
+        },
+        {
+          "label": "B",
+          "text": "Raise the maximum frame rate until the movement looks the same on the developer's machine and a slow laptop.",
+          "correct": false,
+          "explanation": "Frame rate is not guaranteed on other hardware, so the movement would still differ between machines."
+        },
+        {
+          "label": "C",
+          "text": "Store the speed in units per second and add speed multiplied by delta to the position each frame.",
+          "correct": true,
+          "explanation": "Scaling by delta converts a per-second rate into a per-frame step, so distance per second is the same at any frame rate."
+        },
+        {
+          "label": "D",
+          "text": "Add gravity multiplied by delta to the vertical velocity each frame.",
+          "correct": true,
+          "explanation": "Gravity is an acceleration in units per second squared, so it is scaled by delta when it changes velocity."
+        },
+        {
+          "label": "E",
+          "text": "Multiply the velocity by delta before assigning it to the velocity that move_and_slide uses.",
+          "correct": false,
+          "explanation": "move_and_slide applies the time step itself, so the velocity is scaled twice and the character moves far too slowly."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.6",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Coyote time",
+      "stem": "A level designer writes \"coyote time 0.1 s\" in the spec. Check each statement that is a correct unpacking into a checkable constraint.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The timer starts when the player presses the jump button.",
+          "correct": false,
+          "explanation": "Starting at the press would build a buffer, not a grace window that opens after leaving the ground."
+        },
+        {
+          "label": "B",
+          "text": "A jump press 0.08 s after walking off a ledge still jumps.",
+          "correct": true,
+          "explanation": "The press arrives inside the 0.1 s grace window, so the jump is accepted."
+        },
+        {
+          "label": "C",
+          "text": "After a real jump the window is cleared, so a second press during the same fall does not give a second jump.",
+          "correct": true,
+          "explanation": "Clearing it prevents coyote time from turning into a free double jump."
+        },
+        {
+          "label": "D",
+          "text": "A jump press 0.08 s before landing still jumps when the character lands.",
+          "correct": false,
+          "explanation": "That behaviour is a jump buffer, a separate feature that remembers early presses, not coyote time."
+        },
+        {
+          "label": "E",
+          "text": "The timer starts at the moment the character leaves the floor without jumping.",
+          "correct": true,
+          "explanation": "That moment opens the short grace window in which a jump is still allowed after walking off an edge."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.7",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Jump buffer",
+      "stem": "A level designer writes \"jump buffer 0.1 s\" in the spec. Check each statement that is a correct unpacking into a checkable constraint.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A jump press 0.05 s after walking off a ledge results in a jump.",
+          "correct": false,
+          "explanation": "That is coyote time, a different feature that allows jumping after leaving the floor."
+        },
+        {
+          "label": "B",
+          "text": "The press is stored when the character is standing on the floor, and ignored while it is in the air.",
+          "correct": false,
+          "explanation": "The press must be stored while airborne, since remembering an early press before landing is the whole purpose."
+        },
+        {
+          "label": "C",
+          "text": "A jump press 0.05 s before landing results in a jump on the landing frame.",
+          "correct": true,
+          "explanation": "The early press is remembered for the buffer duration, and the jump fires when the character lands inside that time."
+        },
+        {
+          "label": "D",
+          "text": "The buffer makes the jump reach a higher apex.",
+          "correct": false,
+          "explanation": "It changes when the jump starts, not how high it goes, so apex height is unaffected."
+        },
+        {
+          "label": "E",
+          "text": "The remembered press expires after 0.1 s, so a press 0.3 s before landing does not jump on landing.",
+          "correct": true,
+          "explanation": "The buffer is a timer, so presses older than its duration are forgotten."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.8",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Coyote time, jump buffer, variable jump height",
+      "stem": "A producer pairs a described behaviour with a one-line instruction for the agent. Check each pair in which the instruction correctly compresses the behaviour.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"A short tap makes a small hop and holding makes a full jump\" is compressed by \"add a jump buffer\".",
+          "correct": false,
+          "explanation": "A buffer changes when a jump starts, not how high it goes, so the tap and hold behaviour would be missing."
+        },
+        {
+          "label": "B",
+          "text": "\"A short tap makes a small hop and holding makes a full jump\" is compressed by \"add variable jump height\".",
+          "correct": true,
+          "explanation": "Variable jump height makes the apex depend on how long the button is held."
+        },
+        {
+          "label": "C",
+          "text": "\"Players who walk off a ledge can still jump for a split second\" is compressed by \"add coyote time of 0.1 s\".",
+          "correct": true,
+          "explanation": "Coyote time is the grace window that allows a jump just after leaving the floor."
+        },
+        {
+          "label": "D",
+          "text": "\"A jump pressed just before landing still happens on landing\" is compressed by \"add a jump buffer of 0.1 s\".",
+          "correct": true,
+          "explanation": "A jump buffer remembers an early press and applies it when the character lands."
+        },
+        {
+          "label": "E",
+          "text": "\"Players who walk off a ledge can still jump for a split second\" is compressed by \"add a jump buffer\".",
+          "correct": false,
+          "explanation": "A buffer remembers an early press; the ledge case needs coyote time, so the wrong feature would be built."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.9",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Variable jump height",
+      "stem": "A designer asks for variable jump height. Check each statement that is a correct unpacking of it for a character that jumps by setting an upward velocity.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The apex height stays the same and the time in the air changes.",
+          "correct": false,
+          "explanation": "Apex height is what varies with the hold length, so a fixed height would fail the spec."
+        },
+        {
+          "label": "B",
+          "text": "Releasing the button while the character is already falling cuts the fall speed.",
+          "correct": false,
+          "explanation": "The cut applies while rising; reducing a fall speed would make the character float instead of shortening the jump."
+        },
+        {
+          "label": "C",
+          "text": "A tap and a full hold of the button produce different apex heights.",
+          "correct": true,
+          "explanation": "That difference in apex height is the observable result a test can check."
+        },
+        {
+          "label": "D",
+          "text": "If the jump button is released while the character is still rising, the upward velocity is cut to a smaller value.",
+          "correct": true,
+          "explanation": "Cutting the rising velocity on release is the usual implementation, ending the jump early at a lower apex."
+        },
+        {
+          "label": "E",
+          "text": "Releasing the button after the apex has been reached changes nothing about the jump.",
+          "correct": true,
+          "explanation": "The character is already falling, so the height is fixed and release has no effect."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.10",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "State machine",
+      "stem": "An agent is asked to build a player state machine with Idle, Run and Jump. Check each statement that is a correct unpacking of \"state machine\" into constraints that can be tested.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Run and Jump are both active while the character runs and jumps at once.",
+          "correct": false,
+          "explanation": "In a basic state machine one state is current; a jump while running is a transition from Run to Jump."
+        },
+        {
+          "label": "B",
+          "text": "A state with no transition into it does not become active unless it is the starting state.",
+          "correct": true,
+          "explanation": "Without an incoming transition or start role the state is unreachable."
+        },
+        {
+          "label": "C",
+          "text": "Exactly one state is active at a time.",
+          "correct": true,
+          "explanation": "A single current state is what separates a state machine from a pile of independent flags."
+        },
+        {
+          "label": "D",
+          "text": "Taking a transition makes the new state current, and the old state stops being active.",
+          "correct": true,
+          "explanation": "Moving between states replaces the current state, which keeps exactly one active."
+        },
+        {
+          "label": "E",
+          "text": "Each transition names the state it leaves, the state it enters and the condition that triggers it.",
+          "correct": true,
+          "explanation": "Transitions are the checkable part: a source, a target and a trigger condition."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.11",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Blend tree versus state machine",
+      "stem": "A designer wants walk-to-run to change smoothly with speed, and wants an attack to interrupt movement. Check each statement that correctly maps the behaviour to an AnimationTree tool.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A blend tree stores which state is current and the rules for leaving it.",
+          "correct": false,
+          "explanation": "Tracking the current state and its transition rules is the state machine's job, not the blend tree's."
+        },
+        {
+          "label": "B",
+          "text": "If the speed parameter is set once in _ready, the walk-to-run blend keeps following the speed.",
+          "correct": false,
+          "explanation": "The parameter must be updated as speed changes, otherwise the blend stays at its initial position."
+        },
+        {
+          "label": "C",
+          "text": "A longer blend time between walk and run handles the attack interruption.",
+          "correct": false,
+          "explanation": "Blend time only smooths a transition; interrupting movement needs a state machine transition into an Attack state."
+        },
+        {
+          "label": "D",
+          "text": "A blend space driven by a speed parameter blends walk into run continuously.",
+          "correct": true,
+          "explanation": "A blend space mixes clips smoothly according to a parameter value, which suits a speed-driven change."
+        },
+        {
+          "label": "E",
+          "text": "A blend space is the right tool for choosing one attack clip when the attack button is pressed.",
+          "correct": false,
+          "explanation": "Picking one clip on a button press is a discrete change of state, which a state machine handles."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.12",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Tween and easing",
+      "stem": "A designer says: \"Slide the menu panel in to x = 200 over 0.5 seconds, slowing as it arrives.\" Check each statement that is a correct unpacking into a tween.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Make the panel move smoothly\" is as complete a tween spec as the one above.",
+          "correct": false,
+          "explanation": "It names no property, target value or duration, so an agent would have to guess them."
+        },
+        {
+          "label": "B",
+          "text": "A finished tween returns the property to its starting value.",
+          "correct": false,
+          "explanation": "The property stays at the final value unless another tween or script moves it."
+        },
+        {
+          "label": "C",
+          "text": "\"Slowing as it arrives\" is an ease-out curve.",
+          "correct": true,
+          "explanation": "Ease-out decelerates toward the end of the motion, which matches a panel that slows as it arrives."
+        },
+        {
+          "label": "D",
+          "text": "The tween needs a property (position), a final value (x = 200) and a duration (0.5 s).",
+          "correct": true,
+          "explanation": "Those three values are the constraints a tween call needs to be fully specified."
+        },
+        {
+          "label": "E",
+          "text": "Easing changes the final value the property reaches.",
+          "correct": false,
+          "explanation": "Easing shapes the speed curve over time; the end value and duration stay what was set."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.13",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Signals",
+      "stem": "A Godot script has `signal died` and a UI script that should react. Check each statement that is a correct unpacking of \"use a signal\".",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The connected function's return value is sent back to the emitter.",
+          "correct": false,
+          "explanation": "Signals are one-way notifications, so the emitter receives no result from listeners."
+        },
+        {
+          "label": "B",
+          "text": "The emitter declares the signal and calls emit; the listener connects one of its own functions to it.",
+          "correct": true,
+          "explanation": "The two ends are declaring and emitting on one side and connecting a function on the other."
+        },
+        {
+          "label": "C",
+          "text": "Values passed in emit are ignored; the connected function reads them from the emitter.",
+          "correct": false,
+          "explanation": "Parameters travel with the signal and arrive as arguments of the connected function."
+        },
+        {
+          "label": "D",
+          "text": "Emitting a signal that has no connected function raises an error.",
+          "correct": false,
+          "explanation": "Emitting with no listeners simply does nothing, since the emitter does not know or depend on its listeners."
+        },
+        {
+          "label": "E",
+          "text": "A signal accepts a single connected function.",
+          "correct": false,
+          "explanation": "Many functions can connect to one signal, and all of them are called when it is emitted."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.14",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Call down, signal up",
+      "stem": "A designer says \"the child should tell its parent, not reach into it\". Check each statement that correctly applies \"call down, signal up\" to a Door scene that sits inside a Level scene.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The Door can be tested alone because it does not need to know which nodes listen.",
+          "correct": true,
+          "explanation": "Signals decouple the sender from its receivers, so the Door runs without a Level."
+        },
+        {
+          "label": "B",
+          "text": "The Door's signal carries a notification and arguments, and the Level's connected function decides what changes.",
+          "correct": true,
+          "explanation": "The Level reacts in its own function, so the Door never edits the Level's properties directly."
+        },
+        {
+          "label": "C",
+          "text": "The Door calls get_parent() and runs a method of Level directly.",
+          "correct": false,
+          "explanation": "That ties the Door to one specific parent and breaks when the Door is reused elsewhere."
+        },
+        {
+          "label": "D",
+          "text": "The Level can connect to the Door's signal after the Door is added to the scene tree.",
+          "correct": true,
+          "explanation": "Connections can be made at runtime whenever both nodes exist, so ordering against add_child is flexible."
+        },
+        {
+          "label": "E",
+          "text": "The Level calls methods on the Door, and the Door emits a signal when it is opened.",
+          "correct": true,
+          "explanation": "Parents call down into children and children signal up, keeping the child independent."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.15",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Area monitoring and monitorable",
+      "stem": "An Area2D has the properties monitoring and monitorable. A coin Area2D must detect the player body. A hurtbox Area2D must be detectable by enemy hitbox areas. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A hurtbox that enemy hitbox areas must detect needs monitorable on.",
+          "correct": true,
+          "explanation": "The hurtbox is the detected side, so other areas can only see it when monitorable is on."
+        },
+        {
+          "label": "B",
+          "text": "Monitoring is whether this area detects others.",
+          "correct": true,
+          "explanation": "Monitoring controls the detecting side: whether this area reports overlaps with bodies and areas."
+        },
+        {
+          "label": "C",
+          "text": "Monitorable is whether other areas can detect this area.",
+          "correct": true,
+          "explanation": "Monitorable controls the detected side: whether other areas can see this one."
+        },
+        {
+          "label": "D",
+          "text": "Turning monitoring off makes the area block bodies like a wall.",
+          "correct": false,
+          "explanation": "Areas do not block movement; turning monitoring off just stops the area from reporting overlaps."
+        },
+        {
+          "label": "E",
+          "text": "Setting the coin's monitorable to false stops the coin from detecting the player.",
+          "correct": false,
+          "explanation": "The coin's detection depends on its monitoring flag; monitorable affects only whether other areas see the coin."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.16",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Body types",
+      "stem": "Four game objects need physics bodies: a wall, a player moved by input code that slides along walls, a crate shoved around by forces, and a moving platform driven by an animation that must push the player. Check each statement that is a correct match.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The moving platform is a StaticBody2D, because the animation moves it.",
+          "correct": false,
+          "explanation": "A body that is moved by animation yet must push others is an AnimatableBody2D."
+        },
+        {
+          "label": "B",
+          "text": "The player is a RigidBody2D so that the engine handles walking.",
+          "correct": false,
+          "explanation": "RigidBody2D is driven by forces and gives imprecise walking control, unlike the scripted control of CharacterBody2D."
+        },
+        {
+          "label": "C",
+          "text": "The player is a StaticBody2D, because its movement is written in code.",
+          "correct": false,
+          "explanation": "Static bodies are not meant to be moved; code-driven sliding movement uses a CharacterBody2D with move_and_slide."
+        },
+        {
+          "label": "D",
+          "text": "The wall is a StaticBody2D.",
+          "correct": true,
+          "explanation": "A wall does not move, which is exactly what a static body is for."
+        },
+        {
+          "label": "E",
+          "text": "The crate is a CharacterBody2D.",
+          "correct": false,
+          "explanation": "A crate pushed around by forces and tumbling needs a RigidBody2D, which simulates forces and mass."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.17",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Raycast and shape query",
+      "stem": "An enemy must know whether the player is in line of sight. A tower must find every enemy within 3 metres. Check each statement that is a correct choice and unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A ray has no width, so it can pass through a gap a wide body could not.",
+          "correct": true,
+          "explanation": "A line of zero thickness slips through narrow openings that a wider shape would be blocked by."
+        },
+        {
+          "label": "B",
+          "text": "Finding everything within 3 metres is a shape query or an area with a circle shape.",
+          "correct": true,
+          "explanation": "A shape query reports overlaps across a region instead of along one line."
+        },
+        {
+          "label": "C",
+          "text": "Line of sight is a raycast from the enemy toward the player, and the first thing hit must be the player.",
+          "correct": true,
+          "explanation": "If a wall is hit first it blocks the view, so the first hit must be the player."
+        },
+        {
+          "label": "D",
+          "text": "Line of sight is a raycast, and a hit on something means the enemy sees the player.",
+          "correct": false,
+          "explanation": "The ray may hit a wall, so the hit object must be checked to be the player."
+        },
+        {
+          "label": "E",
+          "text": "A raycast returns the first object along one line, so it is the wrong tool for finding everything within 3 metres.",
+          "correct": true,
+          "explanation": "One line misses bodies off to the side and hidden behind the first hit, so a region query is needed."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.18",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Impulse versus force",
+      "stem": "A RigidBody2D needs a one-time knockback of 400 pixels per second away from a hit, and also a constant thruster push. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The knockback is a force applied for a single physics step.",
+          "correct": false,
+          "explanation": "A force acts over time, so one step gives a small, frame-dependent change instead of a fixed 400 pixels per second kick."
+        },
+        {
+          "label": "B",
+          "text": "For a body with mass, an impulse gives a smaller velocity change to a heavier body.",
+          "correct": true,
+          "explanation": "An impulse changes momentum, so the velocity change is the impulse divided by mass."
+        },
+        {
+          "label": "C",
+          "text": "The knockback is an impulse, an instant change of velocity.",
+          "correct": true,
+          "explanation": "A one-time kick is an impulse, applied once to change the body's velocity immediately."
+        },
+        {
+          "label": "D",
+          "text": "The thruster is a force applied on every physics step, changing velocity gradually.",
+          "correct": true,
+          "explanation": "A continuous push is a force applied each step, building speed over time."
+        },
+        {
+          "label": "E",
+          "text": "Multiplying the impulse by delta makes the knockback weaker and dependent on frame rate.",
+          "correct": true,
+          "explanation": "An impulse is not a per-second quantity, so scaling it by delta shrinks it and varies it with frame rate."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.19",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Easing",
+      "stem": "A designer writes: \"The popup eases out, the falling crate eases in.\" Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Ease-in-out starts slowly, moves fastest in the middle and slows again at the end.",
+          "correct": true,
+          "explanation": "It combines both curves, so the speed is low at both ends and peaks mid-way."
+        },
+        {
+          "label": "B",
+          "text": "Ease-in starts slowly and speeds up, which suits an object starting to fall.",
+          "correct": true,
+          "explanation": "Ease-in accelerates from rest, resembling a crate that gains speed as it falls."
+        },
+        {
+          "label": "C",
+          "text": "Ease-in and ease-out reach different end values.",
+          "correct": false,
+          "explanation": "Both reach the same end value; only the speed curve along the way differs."
+        },
+        {
+          "label": "D",
+          "text": "Ease-out makes the animation take longer than a linear one of the same set duration.",
+          "correct": false,
+          "explanation": "The duration is fixed by the setting; easing only reshapes how the speed varies within it."
+        },
+        {
+          "label": "E",
+          "text": "Ease-out starts fast and slows at the end, which suits a popup that settles.",
+          "correct": true,
+          "explanation": "Ease-out decelerates into rest, so the popup comes gently to its final position."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.20",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Lerp and delta",
+      "stem": "A camera follows with `position = position.lerp(target, 0.1)` once per rendered frame. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A weight of 0.1 means the camera reaches the target in 0.1 seconds.",
+          "correct": false,
+          "explanation": "It closes a tenth of the remaining gap each frame and approaches the target gradually."
+        },
+        {
+          "label": "B",
+          "text": "At a higher frame rate the camera catches up faster in real time.",
+          "correct": true,
+          "explanation": "More lerp steps happen each second, so the gap closes sooner."
+        },
+        {
+          "label": "C",
+          "text": "A frame-rate independent version scales the weight with delta, for example 1 minus exp(-k times delta).",
+          "correct": true,
+          "explanation": "A time-based weight gives the same catch-up per second regardless of frame rate."
+        },
+        {
+          "label": "D",
+          "text": "The amount of catch-up per second depends on the frame rate.",
+          "correct": true,
+          "explanation": "A fixed weight applies once per frame, so more frames per second mean more catch-up per second."
+        },
+        {
+          "label": "E",
+          "text": "Doubling the frame rate leaves the real-time catch-up speed unchanged.",
+          "correct": false,
+          "explanation": "Doubling the frame rate doubles the lerp steps per second, which speeds up the catch-up."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.21",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Tunnelling and continuous collision detection",
+      "stem": "A bullet is fast and thin and sometimes passes through thin walls. Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A raycast from the bullet's start to its end position each step misses a wall lying between them.",
+          "correct": false,
+          "explanation": "A ray covers the whole distance between its endpoints, so it finds the wall even when the bullet would skip over it."
+        },
+        {
+          "label": "B",
+          "text": "Making the sprite larger stops tunnelling.",
+          "correct": false,
+          "explanation": "Physics uses the collision shape, not the picture, so a larger sprite changes nothing about collisions."
+        },
+        {
+          "label": "C",
+          "text": "Continuous collision detection checks the whole path of the move instead of only the end position.",
+          "correct": true,
+          "explanation": "Checking the swept path catches thin obstacles between steps, which stops tunnelling."
+        },
+        {
+          "label": "D",
+          "text": "Teleporting the bullet to its new position by setting its position is a safe way to avoid tunnelling.",
+          "correct": false,
+          "explanation": "Setting position skips the path in between, so the thin wall is never tested."
+        },
+        {
+          "label": "E",
+          "text": "Tunnelling happens when the move per physics step is longer than the thing it should hit.",
+          "correct": true,
+          "explanation": "The body is on one side of the wall at one step and the other side at the next."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.22",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Hitbox, hurtbox, body collider",
+      "stem": "A designer separates the terms \"hitbox\", \"hurtbox\" and \"body collider\" for a fighting game. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A hurtbox is the area that deals damage when it overlaps a hitbox.",
+          "correct": false,
+          "explanation": "The roles are swapped: the hurtbox receives damage and the hitbox deals it."
+        },
+        {
+          "label": "B",
+          "text": "A hitbox blocks the other fighter's movement.",
+          "correct": false,
+          "explanation": "Blocking is the body collider's job; hitboxes just detect overlaps and do not push bodies."
+        },
+        {
+          "label": "C",
+          "text": "Making the character's sprite bigger enlarges the hurtbox.",
+          "correct": false,
+          "explanation": "Collision shapes, not the picture, define the hurtbox, so scaling the sprite leaves it unchanged."
+        },
+        {
+          "label": "D",
+          "text": "A hitbox is an area that deals damage when it overlaps a hurtbox.",
+          "correct": true,
+          "explanation": "The hitbox is the attacking side, detecting overlap with the hurtbox that receives the hit."
+        },
+        {
+          "label": "E",
+          "text": "Hitbox and hurtbox are the same area under two names.",
+          "correct": false,
+          "explanation": "They have different roles, attack versus receive damage, and are usually separate shapes."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.23",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Sprite animation",
+      "stem": "An AnimatedSprite2D plays an 8-frame idle loop, and a 6-frame jump that must play once and stay on the last frame. Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Eight frames at 8 frames per second last 1 second.",
+          "correct": true,
+          "explanation": "Duration is frame count divided by frames per second, which gives 1 second here."
+        },
+        {
+          "label": "B",
+          "text": "Looping is on for idle.",
+          "correct": true,
+          "explanation": "An idle animation repeats continuously, so its loop setting is enabled."
+        },
+        {
+          "label": "C",
+          "text": "Raising the game's frame rate to 144 makes the sprite animation play faster.",
+          "correct": false,
+          "explanation": "The animation has its own frames-per-second setting, independent of the display frame rate."
+        },
+        {
+          "label": "D",
+          "text": "Looping is off for jump, so it stops on the last frame.",
+          "correct": true,
+          "explanation": "With looping off the animation plays once and holds its last frame."
+        },
+        {
+          "label": "E",
+          "text": "Doubling an animation's frames-per-second setting doubles its duration.",
+          "correct": false,
+          "explanation": "Doubling the speed halves the duration, since the same frames are shown in half the time."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.24",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Vertex, fragment, uniform, varying",
+      "stem": "A designer asks for a waving flag that moves in the world and a tint that fades on every pixel by a value set from a script. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A varying carries a value from a script into the shader.",
+          "correct": false,
+          "explanation": "A varying passes values from the vertex stage to the fragment stage, while uniforms bring in script values."
+        },
+        {
+          "label": "B",
+          "text": "A uniform is computed separately for each pixel by the fragment shader.",
+          "correct": false,
+          "explanation": "A uniform is set from outside and is the same for the whole draw, not computed per pixel."
+        },
+        {
+          "label": "C",
+          "text": "A uniform is a value set from outside the shader, for example by a script, and read by the shader.",
+          "correct": true,
+          "explanation": "A uniform is how a script passes the fade amount into the shader."
+        },
+        {
+          "label": "D",
+          "text": "Moving the flag's corners is a fragment shader job.",
+          "correct": false,
+          "explanation": "Corner positions are handled in the vertex stage; the fragment stage outputs per-pixel colour."
+        },
+        {
+          "label": "E",
+          "text": "Tinting each pixel is a vertex shader job, run once per corner.",
+          "correct": false,
+          "explanation": "Per-pixel colour comes from the fragment stage, which runs for each pixel."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.25",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Autoload",
+      "stem": "A game has a Score value that must survive scene changes. Check each statement that is correct about using an autoload (singleton) for it.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An autoload is the right place for the player's sprite, because it keeps it between levels.",
+          "correct": false,
+          "explanation": "Scene content belongs in scenes; an autoload suits global state and services, not level visuals."
+        },
+        {
+          "label": "B",
+          "text": "An autoload creates a separate copy for each scene.",
+          "correct": false,
+          "explanation": "There is one autoload instance shared by the whole game."
+        },
+        {
+          "label": "C",
+          "text": "Other scripts can reach it by its autoload name.",
+          "correct": true,
+          "explanation": "Godot registers the autoload under the name given in project settings, giving global access."
+        },
+        {
+          "label": "D",
+          "text": "An autoload node is loaded at startup and stays alive while scenes change.",
+          "correct": true,
+          "explanation": "It sits outside the current scene, so changing scenes does not free it."
+        },
+        {
+          "label": "E",
+          "text": "The score resets to zero each time the current scene is changed, because autoloads belong to the scene.",
+          "correct": false,
+          "explanation": "Autoloads do not belong to the current scene, so their values persist across scene changes."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.26",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Scene instancing",
+      "stem": "A designer wants each enemy to have its own health, but all from one enemy scene. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Instancing the scene creates a separate copy of its node tree for each enemy.",
+          "correct": true,
+          "explanation": "Each instance is its own node tree, so state is kept per enemy."
+        },
+        {
+          "label": "B",
+          "text": "Editing a property on one instance changes the other instances of the scene.",
+          "correct": false,
+          "explanation": "Instances keep their own values, so an edit on one does not touch the others."
+        },
+        {
+          "label": "C",
+          "text": "An instance must be added to the scene tree, for example with add_child, to run.",
+          "correct": true,
+          "explanation": "An instantiated node that is not in the tree is not processed or drawn."
+        },
+        {
+          "label": "D",
+          "text": "Calling instantiate edits the saved scene file.",
+          "correct": false,
+          "explanation": "It creates a node tree in memory and leaves the scene file as it was."
+        },
+        {
+          "label": "E",
+          "text": "Two instances share one health variable because they share a script.",
+          "correct": false,
+          "explanation": "Variables belong to each instance, so each enemy has its own health even with the same script."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.27",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Navigation",
+      "stem": "An enemy uses NavigationAgent2D to walk to the player. Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The walkable area comes from the NavigationAgent2D's own radius setting.",
+          "correct": false,
+          "explanation": "The walkable area comes from the navigation region; the agent's radius only affects clearance and avoidance."
+        },
+        {
+          "label": "B",
+          "text": "The agent finds a path without a navigation region set up.",
+          "correct": false,
+          "explanation": "The navigation map must be provided first, or the agent has nothing to path through."
+        },
+        {
+          "label": "C",
+          "text": "The script sets the agent's target position and then reads the next path position each physics step to move toward it.",
+          "correct": true,
+          "explanation": "The agent plans the path; the script is what actually moves the body along it."
+        },
+        {
+          "label": "D",
+          "text": "The NavigationAgent2D moves the enemy's body by itself once a target is set.",
+          "correct": false,
+          "explanation": "It only computes the path, so the body must be moved by code each step."
+        },
+        {
+          "label": "E",
+          "text": "Collision layers decide where the enemy can walk.",
+          "correct": false,
+          "explanation": "Navigation data decides the path; layers decide physics collisions, which are a separate system."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.28",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Particle settings",
+      "stem": "A one-shot explosion uses a particle node. Check each statement that is a correct unpacking of its settings.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "With one-shot off, the effect plays once and stops.",
+          "correct": false,
+          "explanation": "With one-shot off the emitter repeats continuously, which would make the explosion loop."
+        },
+        {
+          "label": "B",
+          "text": "Lifetime is how long each particle lives.",
+          "correct": true,
+          "explanation": "Lifetime is a per-particle duration, after which that particle disappears."
+        },
+        {
+          "label": "C",
+          "text": "Amount is how many particles are emitted.",
+          "correct": true,
+          "explanation": "Amount sets the number of particles the emitter creates, as distinct from how long each one lives."
+        },
+        {
+          "label": "D",
+          "text": "Lifetime is how long the emitter keeps running.",
+          "correct": false,
+          "explanation": "It describes the life of a single particle, not the time the emitter keeps emitting."
+        },
+        {
+          "label": "E",
+          "text": "One-shot makes the emitter release one burst and then stop.",
+          "correct": true,
+          "explanation": "With one-shot on, the particles are emitted once instead of continuously."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.29",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "Timer",
+      "stem": "A weapon has a cooldown of 0.5 seconds. The agent uses a Timer node. Check each statement that is a correct unpacking.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Starting the timer at fire time, not at button-press time, keeps a refused shot from extending the cooldown.",
+          "correct": true,
+          "explanation": "A refused shot should not restart the timer, or the player would wait longer than 0.5 seconds."
+        },
+        {
+          "label": "B",
+          "text": "wait_time is in seconds.",
+          "correct": true,
+          "explanation": "The Timer's wait_time property is measured in seconds, not frames, so 0.5 means half a second."
+        },
+        {
+          "label": "C",
+          "text": "One-shot off makes the timer fire once and stay stopped.",
+          "correct": false,
+          "explanation": "With one-shot off the timer restarts and times out repeatedly, so it would not stay stopped."
+        },
+        {
+          "label": "D",
+          "text": "The weapon can fire again as soon as the timer node exists.",
+          "correct": false,
+          "explanation": "The timer must finish counting down first, so merely having the node does not end the cooldown."
+        },
+        {
+          "label": "E",
+          "text": "Starting the timer when the weapon fires, and refusing to fire while the timer is running, gives a cooldown.",
+          "correct": true,
+          "explanation": "That is the core logic: the running timer blocks firing until it finishes."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.1",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Delta, impulse, frame-rate independence",
+      "stem": "An agent reports: \"Made the jump frame-rate independent by multiplying the jump impulse by delta.\" The jump is a single upward impulse applied at takeoff. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The claim is wrong: an impulse applied once is not a per-second rate, so scaling it by delta makes the jump weaker and still dependent on frame rate.",
+          "correct": true,
+          "explanation": "A one-time velocity change has no per-second unit, so multiplying by the varying delta only makes the jump height fluctuate with frame time."
+        },
+        {
+          "label": "B",
+          "text": "The frame-rate dependent part of a jump is usually gravity, which is scaled by delta when it changes the vertical velocity.",
+          "correct": true,
+          "explanation": "Gravity is an acceleration in units per second squared, so each frame adds gravity times delta to the vertical velocity."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that turns the claim into evidence is: run the jump at 30 and 144 frames per second and report the apex height for each.",
+          "correct": true,
+          "explanation": "Comparing apex height at two frame rates directly measures frame-rate independence, and matching heights would confirm the fix."
+        },
+        {
+          "label": "D",
+          "text": "The corrected code sets the jump as a one-time velocity change such as velocity.y = jump_velocity, with no delta factor.",
+          "correct": true,
+          "explanation": "A single velocity assignment at takeoff is the same at any frame rate, so delta does not belong in it."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that turns the claim into evidence is: ask the agent to explain in words why the change is correct.",
+          "correct": false,
+          "explanation": "An explanation is more claim, not a measurement, so a jump that still varies with frame rate would pass unnoticed."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.2",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "_process versus _physics_process, tunnelling",
+      "stem": "An agent reports: \"Fixed the wall clipping by moving the movement code from _physics_process to _process so it updates more often.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The reasoning is right, because more frequent updates mean smaller steps and so the clipping goes away.",
+          "correct": false,
+          "explanation": "_process does not add physics steps, and its delta is irregular, so the body can still jump past thin colliders."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: confirm the code now runs in _process and that the project still compiles.",
+          "correct": false,
+          "explanation": "Compiling and running in _process say nothing about whether the body still passes through walls, so the bad claim would be accepted."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: replay the same fast move into the thin wall 100 times and report how many times the body passed through.",
+          "correct": true,
+          "explanation": "A repeated identical test gives a pass-through count that can be compared before and after the change."
+        },
+        {
+          "label": "D",
+          "text": "The reasoning is wrong: _process follows the display, so its delta varies, while physics-based movement is meant to run on the fixed physics tick.",
+          "correct": true,
+          "explanation": "Collision handling is tuned to the fixed physics step, and a variable display delta makes per-step distances uneven and unpredictable."
+        },
+        {
+          "label": "E",
+          "text": "Clipping through thin walls is better addressed with continuous collision detection or a limit on how far a body moves per step.",
+          "correct": true,
+          "explanation": "Both options check or restrict the path travelled in a step, which is what stops a fast body from skipping a thin collider."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Coyote time",
+      "stem": "An agent reports: \"Added coyote time. The player can now jump when is_on_floor() is true.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The claim is right, since checking is_on_floor() before jumping is what coyote time means.",
+          "correct": false,
+          "explanation": "That check was already how normal jumping worked, so accepting the claim would ship a feature that was never built."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: simulate a jump press 0.05 s after leaving a ledge and report whether the jump happened.",
+          "correct": true,
+          "explanation": "A press just after leaving the floor is exactly the case coyote time must allow, so the result shows whether it works."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: confirm is_on_floor() returns true while standing and that the jump works there.",
+          "correct": false,
+          "explanation": "Jumping while grounded worked before the change, so this check passes whether or not coyote time exists."
+        },
+        {
+          "label": "D",
+          "text": "A correct implementation stores a timer that starts when the character leaves the floor without jumping, and allows the jump while the timer is above zero.",
+          "correct": true,
+          "explanation": "The timer creates the grace window, and it must start only on walking off, not on jumping, or double jumps appear."
+        },
+        {
+          "label": "E",
+          "text": "The claim is wrong: is_on_floor() being true is ordinary jumping; coyote time lets a jump work for a short window after is_on_floor() turns false.",
+          "correct": true,
+          "explanation": "Jumping while grounded already worked before, so the claim describes no new behaviour; the feature is the grace window after leaving a ledge."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Jump buffer",
+      "stem": "An agent reports: \"Added jump buffering: jump_pressed is set to true when the button is pressed and stays true until the player lands.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The implementation is correct, because it remembers the press until the character lands.",
+          "correct": false,
+          "explanation": "Remembering indefinitely is the bug, since a stale press fires an unwanted jump instead of a forgiving short buffer."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: press jump 0.05 s before landing and then 1 s before landing, and report which of the two jumps on landing.",
+          "correct": true,
+          "explanation": "A correct buffer jumps for the near press and ignores the early one, so the two cases expose a missing expiry."
+        },
+        {
+          "label": "C",
+          "text": "A correct version records the time of the press, or runs a short timer, and clears the flag when it expires.",
+          "correct": true,
+          "explanation": "Expiry limits the buffer to a fraction of a second, so only presses just before landing count."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: ask the agent to rename the flag to jump_buffer.",
+          "correct": false,
+          "explanation": "Renaming changes the label but not the missing expiry, so a flag that persists would still be accepted."
+        },
+        {
+          "label": "E",
+          "text": "The implementation lacks an expiry, so a press made long before landing still causes a jump on landing.",
+          "correct": true,
+          "explanation": "A buffer should be a short window; a flag that persists until landing turns an early press into a surprise jump seconds later."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.5",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Collision layer versus mask",
+      "stem": "An agent reports: \"Fixed the coin pickup by setting the coin's collision layer to 1 so it overlaps the player.\" The coin is an Area2D and the player is on layer 1. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The change may have side effects, since other things whose masks include layer 1 will now see the coin as part of the player's layer.",
+          "correct": true,
+          "explanation": "Layer membership has consequences: enemies or walls that scan layer 1 may now react to the coin."
+        },
+        {
+          "label": "B",
+          "text": "The fix is right because the coin must be on the same layer as the player to touch it.",
+          "correct": false,
+          "explanation": "Detection depends on one object's mask matching the other's layer, so objects do not need to share a layer."
+        },
+        {
+          "label": "C",
+          "text": "The fix targets the wrong property: the coin detects the player through its collision mask, not its collision layer.",
+          "correct": true,
+          "explanation": "An Area2D detects bodies whose layer appears in its own mask, so changing the coin's layer does not help it see the player."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: print the coin's layer and mask values and run the pickup, reporting whether body_entered fired.",
+          "correct": true,
+          "explanation": "The printed values show the actual setup, and the signal result shows whether the pickup works in play."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: ask the agent to re-read the coin's scene file.",
+          "correct": false,
+          "explanation": "Rereading the file reports the same settings but runs nothing, so a pickup that still fails would go unnoticed."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.6",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Lerp and delta",
+      "stem": "An agent reports: \"Smoothed the camera with lerp(position, target, 0.1) each frame. It's now frame-rate independent.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A delta-aware weight, such as 1 minus exp(-k times delta), makes the catch-up depend on time rather than frames.",
+          "correct": true,
+          "explanation": "The exponential form gives the same smoothing per second at any frame rate, because delta enters the weight directly."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: record how long the camera takes to close half the gap at 30 and at 144 frames per second.",
+          "correct": true,
+          "explanation": "Equal half-gap times at both frame rates would show true independence; a difference exposes the per-frame weight."
+        },
+        {
+          "label": "C",
+          "text": "The claim is wrong because lerp is not suited to cameras.",
+          "correct": false,
+          "explanation": "lerp works fine for camera smoothing; the defect is the per-frame weight, so dropping lerp would not address the actual claim."
+        },
+        {
+          "label": "D",
+          "text": "The claim is wrong: a fixed weight applied per frame catches up faster at higher frame rates.",
+          "correct": true,
+          "explanation": "A weight of 0.1 closes ten percent of the gap per frame, so more frames per second means faster catch-up."
+        },
+        {
+          "label": "E",
+          "text": "The claim is right because lerp is a time-based function.",
+          "correct": false,
+          "explanation": "lerp interpolates by a weight between zero and one, not by elapsed time, so it ignores delta unless the weight uses it."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.7",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Scope violation",
+      "stem": "A request said: \"Fix the HUD health bar. Do not modify player.gd.\" The agent reports: \"Fixed the health bar. I also cleaned up player.gd while I was there.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: run the game and confirm the health bar updates, then accept the work.",
+          "correct": false,
+          "explanation": "A working health bar does not address the scope violation, so the player.gd edits would slip through."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: show the diff limited to files changed and confirm player.gd is not in it.",
+          "correct": true,
+          "explanation": "A file-level diff directly shows whether the forbidden file was touched, so it checks the constraint."
+        },
+        {
+          "label": "C",
+          "text": "The agent went outside its scope, and the player.gd change should be reviewed or reverted before the HUD fix is accepted.",
+          "correct": true,
+          "explanation": "The instruction named the file as off limits, so the edit breaks an explicit constraint regardless of how small it looks."
+        },
+        {
+          "label": "D",
+          "text": "Cleaning up a file keeps behaviour the same, so the report can be accepted.",
+          "correct": false,
+          "explanation": "The constraint was explicit, and a claimed same-behaviour cleanup is unverified, so accepting it would let a scope violation through."
+        },
+        {
+          "label": "E",
+          "text": "The player.gd edits can stay in the commit and be reviewed later.",
+          "correct": false,
+          "explanation": "The file was off limits, so keeping edits in the commit ships a violation that a later review may miss."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.8",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Scope violation",
+      "stem": "An agent reports: \"Fixed the jump bug. While there I raised the project's physics ticks per second from 60 to 120 for smoother motion.\" The request was only to fix the jump bug. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The setting change should be reverted or approved separately, since the request named the jump bug alone.",
+          "correct": true,
+          "explanation": "A project-wide change outside the request needs its own review instead of riding along with an unrelated fix."
+        },
+        {
+          "label": "B",
+          "text": "The change is acceptable because a higher physics rate is a smoother physics rate.",
+          "correct": false,
+          "explanation": "Higher rates cost more CPU and can change tuned behaviour, so the change should not pass just because it sounds smoother."
+        },
+        {
+          "label": "C",
+          "text": "The jump fix can be evaluated alone by reverting the project setting and rerunning the jump test.",
+          "correct": true,
+          "explanation": "Reverting the extra setting isolates the requested change, so the jump result is attributable to the fix itself."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: list the project settings changed in the commit.",
+          "correct": true,
+          "explanation": "A settings list reveals scope creep like the tick rate, which a gameplay test would not show."
+        },
+        {
+          "label": "E",
+          "text": "Changing physics ticks per second is a project-wide setting that was not requested, and it can change every body's behaviour and the timing of all timers in physics code.",
+          "correct": true,
+          "explanation": "The tick rate affects how all physics code steps, so it alters tuned behaviour well beyond the jump fix."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.9",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Profiling, baseline",
+      "stem": "An agent reports: \"Fixed the stutter. Frame time is 40% better.\" No numbers, scene, or baseline were given. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A percentage improvement means little until the metric is named, such as average frame time or worst frame time.",
+          "correct": true,
+          "explanation": "Stutter is about spikes, so an improved average can hide an unchanged worst case."
+        },
+        {
+          "label": "B",
+          "text": "The claim can be accepted because a percentage is a precise measurement.",
+          "correct": false,
+          "explanation": "A percentage of an unstated quantity is vague, and it could describe average time, a best case or one lucky frame."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: profile the same scene on the same machine before and after and report average and worst frame times.",
+          "correct": true,
+          "explanation": "Same scene, same machine and both metrics make the comparison repeatable and fair."
+        },
+        {
+          "label": "D",
+          "text": "The claim should not be accepted yet because it has no before value, after value, scene or hardware.",
+          "correct": true,
+          "explanation": "A percentage without a baseline, scene and machine cannot be reproduced or checked, so it is not evidence."
+        },
+        {
+          "label": "E",
+          "text": "Worst-case frame time is useful for stutter, because an average can hide spikes.",
+          "correct": true,
+          "explanation": "Stutter appears as occasional long frames, which show up in the worst-case figure but get diluted in the average."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.10",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Evidence versus claim",
+      "stem": "An agent reports: \"All tests pass.\" The project has no test files. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A test framework such as GUT must be installed and at least one test written before a passing run means anything.",
+          "correct": true,
+          "explanation": "Without a framework and test cases the runner has nothing to execute, so a pass is meaningless."
+        },
+        {
+          "label": "B",
+          "text": "The claim shows the code works, since a test run reported zero failures.",
+          "correct": false,
+          "explanation": "Zero failures from zero tests is an empty pass, so it gives no assurance about behaviour."
+        },
+        {
+          "label": "C",
+          "text": "The claim should be questioned, because with zero tests there is nothing that could have failed.",
+          "correct": true,
+          "explanation": "A run that executes zero tests passes trivially, so it says nothing about whether the code works."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: write one test that fails on the old code and passes on the new code.",
+          "correct": true,
+          "explanation": "A test that flips from fail to pass proves the change fixed the specific behaviour."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: show the command run and its full output, including the number of tests executed.",
+          "correct": true,
+          "explanation": "The executed-test count reveals at once whether any tests actually ran."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.11",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Impulse versus force",
+      "stem": "An agent reports: \"Changed the enemy's knockback to a force of 500 applied once on hit.\" The enemy is a RigidBody2D. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: apply the knockback and report the enemy's velocity on the frame after the hit.",
+          "correct": true,
+          "explanation": "The velocity right after the hit shows whether the push is the intended size."
+        },
+        {
+          "label": "B",
+          "text": "A force applied once is the same thing as an impulse, so the claim is right.",
+          "correct": false,
+          "explanation": "A force acts over a time step, so a single step gives a small push, while an impulse changes velocity instantly."
+        },
+        {
+          "label": "C",
+          "text": "A one-time instant change in velocity is an impulse, so the term should be impulse.",
+          "correct": true,
+          "explanation": "Impulse is the correct physics term for a single instantaneous velocity change, and the code should use it."
+        },
+        {
+          "label": "D",
+          "text": "Calling apply_central_impulse once gives the intended one-time velocity change, scaled by the body's mass and not by step length.",
+          "correct": true,
+          "explanation": "An impulse is applied as a velocity change divided by mass, so it behaves the same at any frame rate."
+        },
+        {
+          "label": "E",
+          "text": "With a force applied for one physics step, the result depends on the step length and so is weaker than expected.",
+          "correct": true,
+          "explanation": "A force of 500 over a short physics step yields a small velocity change, so the knockback looks feeble."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.12",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "move_and_slide versus move_and_collide",
+      "stem": "An agent reports: \"Used move_and_collide for the player so it slides along walls.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A fix is to keep move_and_collide and raise the player's speed so the body slides along the wall.",
+          "correct": false,
+          "explanation": "Speed does not change the stopping behaviour, so the body would still halt at the wall with extra force."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: walk the player diagonally into a wall and report whether it keeps moving along the wall.",
+          "correct": true,
+          "explanation": "A diagonal approach shows sliding or stopping directly, which settles whether the claim is true."
+        },
+        {
+          "label": "C",
+          "text": "The claim is right, because collide means the body reacts to walls and so slides.",
+          "correct": false,
+          "explanation": "The body halts at contact, because move_and_collide leaves any sliding response to code written by the user."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: ask the agent to print the word slide in the log.",
+          "correct": false,
+          "explanation": "A printed word is not a movement result, so a body that stops dead would still pass."
+        },
+        {
+          "label": "E",
+          "text": "The claim is wrong: move_and_collide stops at the first hit and reports it; sliding is what move_and_slide does.",
+          "correct": true,
+          "explanation": "The two methods differ exactly here: move_and_collide returns the collision and halts, while move_and_slide deflects the motion along the surface."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.13",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Delta, move_and_slide",
+      "stem": "An agent reports: \"Enemy movement is now frame-rate independent: velocity = direction * speed * delta, then move_and_slide().\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The claim is right, because multiplying by delta is the standard step for movement.",
+          "correct": false,
+          "explanation": "With move_and_slide the multiplication is redundant, because the function already uses velocity as a per-second value."
+        },
+        {
+          "label": "B",
+          "text": "The claim is wrong: move_and_slide already applies the time step to the velocity, so scaling by delta as well makes the enemy move much too slowly.",
+          "correct": true,
+          "explanation": "Double scaling shrinks the per-second speed by the delta value, roughly a sixtieth, so the enemy crawls."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: report the distance the enemy covers in one second at 30 and 144 frames per second.",
+          "correct": true,
+          "explanation": "Equal distances per second at both rates, at the intended speed, confirm the fix directly."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: confirm the enemy moves toward the player at one frame rate.",
+          "correct": false,
+          "explanation": "The enemy moves toward the player either way, so a slow enemy at one frame rate would still pass."
+        },
+        {
+          "label": "E",
+          "text": "Keeping delta in the velocity and raising the speed value to compensate makes the movement frame-rate independent.",
+          "correct": false,
+          "explanation": "Delta varies per frame, so a fixed compensation fits only one frame rate and the enemy speed still changes."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.14",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Variable jump height",
+      "stem": "An agent reports: \"Variable jump height done: on button release I set velocity.y to 0.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: release the button in the middle of the descent and report the vertical speed on the next frame.",
+          "correct": true,
+          "explanation": "A release during descent exposes the hover bug, since the vertical speed would wrongly read near zero."
+        },
+        {
+          "label": "B",
+          "text": "The claim has a bug: if the button is released while the character is already falling, setting velocity.y to 0 makes it stop in the air briefly.",
+          "correct": true,
+          "explanation": "Zeroing a downward velocity cancels the fall, producing a visible hover before gravity restarts it."
+        },
+        {
+          "label": "C",
+          "text": "The claim is correct, because zero vertical velocity ends the jump cleanly, including while falling.",
+          "correct": false,
+          "explanation": "Zeroing the velocity during descent halts the fall, so the claim only holds while rising."
+        },
+        {
+          "label": "D",
+          "text": "A correct version halves velocity.y on release regardless of direction of travel.",
+          "correct": false,
+          "explanation": "Halving during a fall slows the descent, so the same release-in-descent glitch remains and the bug is kept."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: confirm that tapping the button gives a lower jump than holding it, and stop there.",
+          "correct": false,
+          "explanation": "That test covers only the rising case, so the hover bug during descent would pass."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.15",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Blend tree parameters",
+      "stem": "An agent reports: \"Walk-to-run blending works. I set the AnimationTree speed parameter once in _ready.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The claim is right, because a blend parameter keeps tracking the speed once set.",
+          "correct": false,
+          "explanation": "A parameter keeps the last value written to it and does not follow the character's speed by itself."
+        },
+        {
+          "label": "B",
+          "text": "The claim is doubtful: a value set once in _ready does not follow the character's changing speed, so the blend stays put.",
+          "correct": true,
+          "explanation": "The parameter holds its initial value until code updates it, so walking faster does not change the blend."
+        },
+        {
+          "label": "C",
+          "text": "The parameter can be set once in _ready to the maximum speed so the blend runs fully.",
+          "correct": false,
+          "explanation": "A fixed maximum would play the run animation constantly, so walking would never appear."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: ask the agent whether the AnimationTree node exists.",
+          "correct": false,
+          "explanation": "A node existing says nothing about whether the blend value changes with speed."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: start the game and report the blend value while the character stands still.",
+          "correct": false,
+          "explanation": "A standing character reads the initial value either way, so this check passes the bad claim."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.16",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Signals, evidence",
+      "stem": "An agent reports: \"The pickup works: I connected the coin's body_entered signal to _on_body_entered in the editor.\" No output was shown. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The claim is enough, because a connected signal means the handler runs.",
+          "correct": false,
+          "explanation": "The handler runs when the signal is emitted, and that depends on monitoring, mask and the player's layer."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: report the coin's monitoring, layer and mask values.",
+          "correct": true,
+          "explanation": "These inputs decide whether an overlap is detected, so wrong values would explain a silent handler."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: add a print in the handler, walk the player into the coin and show the output.",
+          "correct": true,
+          "explanation": "A printed line in the handler shows the signal fired and the handler ran in play."
+        },
+        {
+          "label": "D",
+          "text": "The Area2D's mask must include the player's layer for body_entered to fire.",
+          "correct": true,
+          "explanation": "An area detects only bodies on layers in its own mask, so a mismatch leaves the signal silent."
+        },
+        {
+          "label": "E",
+          "text": "A connection existing does not show that the signal fires, so the claim lacks evidence.",
+          "correct": true,
+          "explanation": "A connection only lists a handler; the signal fires when an overlap occurs, which the setup may prevent."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.17",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Tunnelling",
+      "stem": "An agent reports: \"Fixed bullet tunnelling by doubling the bullet speed so it spends less time near the wall.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: fire 200 bullets at the thin wall and report how many passed through, before and after.",
+          "correct": true,
+          "explanation": "A pass-through rate over many shots shows whether the fix reduces an intermittent bug."
+        },
+        {
+          "label": "B",
+          "text": "The reasoning is right because less time near the wall means less chance of passing through.",
+          "correct": false,
+          "explanation": "Time near the wall is not the issue; distance covered per step is, and more speed raises it."
+        },
+        {
+          "label": "C",
+          "text": "A fix that targets the cause is continuous collision detection or a raycast along the bullet's path.",
+          "correct": true,
+          "explanation": "Both check the whole path travelled in a step instead of only the end position, so thin walls are caught."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: fire one bullet and report that it hit.",
+          "correct": false,
+          "explanation": "One sample is not enough for a bug that happens sometimes, so a failing fix could still pass."
+        },
+        {
+          "label": "E",
+          "text": "The reasoning is wrong: faster bullets move farther per physics step, which makes tunnelling more likely.",
+          "correct": true,
+          "explanation": "Longer steps jump over thin colliders more easily, so doubling speed worsens the problem it claims to fix."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.18",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Normal map versus albedo",
+      "stem": "An agent reports: \"Applied the normal map to the albedo slot so the bricks look bumpy.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: render the wall with a light moved across it and show whether the highlights change with the light.",
+          "correct": true,
+          "explanation": "Real bumps shade differently as the light moves, while a flat colour texture does not."
+        },
+        {
+          "label": "B",
+          "text": "The claim is right, because both are textures that change how the surface looks.",
+          "correct": false,
+          "explanation": "The two textures hold different data, so only the normal slot reads directions to bend the lighting."
+        },
+        {
+          "label": "C",
+          "text": "In StandardMaterial3D the Normal Map feature must be enabled before the texture is read as surface directions.",
+          "correct": true,
+          "explanation": "Without enabling the feature, the assigned texture is ignored and the bricks still look flat."
+        },
+        {
+          "label": "D",
+          "text": "The normal map belongs in the material's normal slot.",
+          "correct": true,
+          "explanation": "That slot reads the texture as surface directions, which produces the bump shading under light."
+        },
+        {
+          "label": "E",
+          "text": "The claim is wrong: albedo is base colour, and a normal map stores surface directions, so in the colour slot it shows as purple-blue colour instead of bumps.",
+          "correct": true,
+          "explanation": "The texture holds direction data, so used as colour it paints the surface blue and gives no lighting detail."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.19",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Body versus area",
+      "stem": "An agent reports: \"Made the floor an Area2D so the player can stand on it.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: drop the player onto the floor and report whether is_on_floor() becomes true.",
+          "correct": true,
+          "explanation": "Landing on a real floor makes is_on_floor() true, so the result tests the claim directly."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: ask the agent to add a sprite to the floor.",
+          "correct": false,
+          "explanation": "A sprite changes the look but not the physics, so a floor the player falls through would pass."
+        },
+        {
+          "label": "C",
+          "text": "The claim is right because a collision node with a shape holds a character up.",
+          "correct": false,
+          "explanation": "Only solid bodies block movement; an area with a shape just reports overlap, so the player still falls."
+        },
+        {
+          "label": "D",
+          "text": "The claim is wrong: an Area2D detects overlaps and does not block, so the player falls through it.",
+          "correct": true,
+          "explanation": "An Area2D reports overlaps but exerts no collision response, so a character passes straight through."
+        },
+        {
+          "label": "E",
+          "text": "Matching the Area2D's layer to the player's mask is enough for the player to stand on it.",
+          "correct": false,
+          "explanation": "Layers and masks control detection between objects, but an area stays non-solid, so the player still falls."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.20",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Hitbox and hurtbox",
+      "stem": "An agent reports: \"Combined hitbox and hurtbox into one Area2D so one node handles both.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The change creates a risk: an attack area on the player would overlap the player's own hurtbox and could damage the player.",
+          "correct": true,
+          "explanation": "A merged node detects its own owner, so the attack can register as damage to the player."
+        },
+        {
+          "label": "B",
+          "text": "The change is a tidy-up, because both are the same thing.",
+          "correct": false,
+          "explanation": "They have different roles, dealing damage versus receiving it, and need different layers and masks."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: swing the player's attack in an empty room and report whether the player takes damage.",
+          "correct": true,
+          "explanation": "An empty room isolates self-hits, so damage taken exposes the merged-node bug."
+        },
+        {
+          "label": "D",
+          "text": "Keeping them separate lets each be on its own layer and mask so attackers hit only what they should.",
+          "correct": true,
+          "explanation": "Separate nodes allow separate layer and mask settings, which control who can damage whom."
+        },
+        {
+          "label": "E",
+          "text": "A hitbox can have monitoring switched off, because the hurtbox's own mask and monitoring detect the overlap.",
+          "correct": true,
+          "explanation": "The hurtbox does the detecting, so the hitbox only needs to be on a layer the hurtbox's mask includes."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.21",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Packaged build versus editor",
+      "stem": "An agent reports: \"Verified the export: the game runs correctly in the editor, so the exported build is fine.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Running in the editor does not test the packaged build, which can differ in file paths, missing resources and export settings.",
+          "correct": true,
+          "explanation": "The exported package has its own file layout and filters, so problems appear only after exporting."
+        },
+        {
+          "label": "B",
+          "text": "The claim is enough because the editor runs the same files as the build.",
+          "correct": false,
+          "explanation": "Exports apply filters, presets and packed paths, so the build can differ from the editor."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: list the resources the export excluded or failed to find.",
+          "correct": true,
+          "explanation": "Missing resources are a common export failure, and a list shows them before the player does."
+        },
+        {
+          "label": "D",
+          "text": "Resources loaded by a built string path may be missing from the export unless the preset includes them.",
+          "correct": true,
+          "explanation": "The export scans references it can see, so a path assembled at run time can be skipped."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: export the build, launch the exported executable and report what happens on the first level.",
+          "correct": true,
+          "explanation": "Running the real artefact tests what ships and exposes export-only failures."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.22",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Raycast, line of sight",
+      "stem": "An agent reports: \"Line of sight works: the enemy's raycast returns a hit, so the enemy can see the player.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: put a wall between enemy and player and report whether the ray still hits something.",
+          "correct": false,
+          "explanation": "The ray hits the wall, so it reports a hit anyway, and the enemy that sees through cover would pass."
+        },
+        {
+          "label": "B",
+          "text": "The claim is right, since the ray goes toward the player and so a hit is the player.",
+          "correct": false,
+          "explanation": "The ray stops at the first collider it meets, which can be a wall between enemy and player."
+        },
+        {
+          "label": "C",
+          "text": "Setting the ray's mask to the player's layer alone is right, because walls are then ignored.",
+          "correct": false,
+          "explanation": "Ignoring walls lets the ray reach the player through them, so the enemy sees through solid cover."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: confirm line of sight is true with the player standing in plain view, and nothing else.",
+          "correct": false,
+          "explanation": "This tests the positive case alone, so an enemy that sees through walls would pass."
+        },
+        {
+          "label": "E",
+          "text": "The claim is incomplete: a ray hit may be a wall, so the code must check that the first thing hit is the player.",
+          "correct": true,
+          "explanation": "A ray reports the first collider along its path, so a hit alone does not tell what it was."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.23",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "State machine versus blend tree",
+      "stem": "An agent reports: \"Replaced the AnimationTree state machine with a blend tree so the attack plays when the button is pressed.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The change fits poorly: an attack that interrupts movement is a discrete change of state, which a state machine with transitions expresses.",
+          "correct": true,
+          "explanation": "A state machine switches between named states on events, which matches the attack interrupting movement."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: press attack while running and report which animation is playing on the next frame.",
+          "correct": true,
+          "explanation": "The playing animation after the press shows whether the attack interrupts movement."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: ask the agent to explain the difference between the two in a paragraph.",
+          "correct": false,
+          "explanation": "A written explanation is not a behaviour test, so a broken attack would pass."
+        },
+        {
+          "label": "D",
+          "text": "A state machine suits mixing walk and run by a speed value, which is why it was replaced.",
+          "correct": false,
+          "explanation": "Mixing by a continuous speed value is blend tree work; a state machine only switches between clips."
+        },
+        {
+          "label": "E",
+          "text": "The change is right because a blend tree can trigger clips from button presses by itself.",
+          "correct": false,
+          "explanation": "A blend tree mixes animations by parameters and has no transitions to react to an event."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.24",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Tween",
+      "stem": "An agent reports: \"Used create_tween() inside _process to move the node smoothly each frame.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The approach is wrong: it creates a new tween every frame, and many tweens fight over the same property.",
+          "correct": true,
+          "explanation": "Overlapping tweens all write to the same property, so the node jitters between their targets."
+        },
+        {
+          "label": "B",
+          "text": "Moving by code with move_toward(target, speed * delta) in _process suits a target that changes continually.",
+          "correct": true,
+          "explanation": "A per-frame move toward the current target follows it smoothly without creating objects."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: report how many active tweens exist on the node after 5 seconds.",
+          "correct": true,
+          "explanation": "A growing tween count shows the per-frame creation bug directly, while one active tween is healthy."
+        },
+        {
+          "label": "D",
+          "text": "A tween should be created once with the target and duration, which suits a fixed destination.",
+          "correct": true,
+          "explanation": "A single tween runs the move on its own, so creating it once avoids conflicts."
+        },
+        {
+          "label": "E",
+          "text": "The approach is right, because a tween is created each frame to stay current.",
+          "correct": false,
+          "explanation": "One tween covers the whole move, so a fresh one per frame only multiplies the conflicts."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.25",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Scope violation",
+      "stem": "A request said: \"Add a double jump. Do not delete any files.\" The agent reports: \"Double jump added. I deleted the unused enemy scenes to keep the project tidy.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The deletion is fine because the scenes were unused.",
+          "correct": false,
+          "explanation": "The agent could not know they were unused where scripts load them by path, and the constraint applied anyway."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that shows the constraint was kept is: ask the agent to run the game once and report that it starts.",
+          "correct": false,
+          "explanation": "Starting does not load the missing scene, so a broken reference would pass."
+        },
+        {
+          "label": "C",
+          "text": "An unused file can be referenced by a path in a script, so deletion can break the game later.",
+          "correct": true,
+          "explanation": "A scene loaded by a string path is invisible to the editor's reference view, so removal causes a runtime error."
+        },
+        {
+          "label": "D",
+          "text": "The agent broke an explicit constraint, and the deleted scenes should be restored before the work is accepted.",
+          "correct": true,
+          "explanation": "The request forbade deleting files, so the removal is a violation whether or not the scenes seemed unused."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: list the files removed in the change and check them against the constraint.",
+          "correct": true,
+          "explanation": "A list of deleted files in the change shows the violation directly."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.26",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Scope, verification",
+      "stem": "A request said: \"Rename the Player node's script variable hp to health.\" The agent reports: \"Renamed hp to health in player.gd. Done.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: search the whole project for the old name and report each remaining match.",
+          "correct": true,
+          "explanation": "A project-wide search lists remaining references, showing what the rename missed."
+        },
+        {
+          "label": "B",
+          "text": "The claim is complete, since the variable is declared in player.gd.",
+          "correct": false,
+          "explanation": "Other files can read or write the variable, so declaring it in one place does not cover its uses."
+        },
+        {
+          "label": "C",
+          "text": "An exported variable renamed in a script loses its saved Inspector value in scene files, so those scenes need checking.",
+          "correct": true,
+          "explanation": "The scene stores values by property name, so the old name's value is dropped."
+        },
+        {
+          "label": "D",
+          "text": "The claim is incomplete: other scripts, scenes or animation tracks may still refer to hp.",
+          "correct": true,
+          "explanation": "A rename in one file leaves other callers of hp broken until they are found and updated."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: run the game, take damage and report the health value.",
+          "correct": true,
+          "explanation": "A play-through exercises the renamed variable and shows whether damage still reaches it."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.27",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Evidence versus claim",
+      "stem": "An agent reports: \"The test for the damage function passes. I generated the expected value by running the function and pasting its output.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The test is strong, since it passes on the current code.",
+          "correct": false,
+          "explanation": "It passes whatever the code does, because the expected value is the code's own output."
+        },
+        {
+          "label": "B",
+          "text": "The test is weak: it asserts that the function returns what it returned, so it cannot find a wrong formula.",
+          "correct": true,
+          "explanation": "The expected value comes from the code under test, so the assertion holds even when the formula is wrong."
+        },
+        {
+          "label": "C",
+          "text": "The test becomes strong once the pasted value is moved into a named constant in the test file.",
+          "correct": false,
+          "explanation": "A constant holds the same copied output, so a wrong formula still passes."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: change the damage formula on purpose and report whether the test then fails.",
+          "correct": true,
+          "explanation": "A test that stays green after a deliberate break cannot detect faults, so this check exposes it."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up that gives evidence is: run the same test a second time.",
+          "correct": false,
+          "explanation": "The same test passes again for the same reason, so it adds no independent check."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.28",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Scope violation",
+      "stem": "An agent reports: \"Edited the .tscn file by hand and renamed several nodes to match the new naming scheme. Everything still works.\" The request was to add a light. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Renaming nodes changes node paths, which scripts and signals use, so it can break references that are not tested.",
+          "correct": true,
+          "explanation": "Calls such as get_node and signal connections store paths, and a renamed node leaves them pointing nowhere."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that gives evidence is: open the scene in the editor and report that it loads.",
+          "correct": false,
+          "explanation": "A scene that loads does not prove scripts and signals still find their nodes."
+        },
+        {
+          "label": "C",
+          "text": "The rename can stay in the commit since the scene still loads and the light works.",
+          "correct": false,
+          "explanation": "The rename was outside the request and carries hidden risk, so it should be reverted or approved."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: ask the agent to restate that everything works.",
+          "correct": false,
+          "explanation": "Restating repeats the unverified claim, so a broken reference would pass."
+        },
+        {
+          "label": "E",
+          "text": "Renaming nodes is cosmetic, so it does not affect scripts or signals.",
+          "correct": false,
+          "explanation": "Paths are used in code and connections, so renames can break behaviour."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.29",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "Autoload, evidence",
+      "stem": "An agent reports: \"Fixed the global score: I reload the scene to reset it, and the score now persists across levels because it is an autoload.\" Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up that gives evidence is: ask if the autoload is registered in the project.",
+          "correct": false,
+          "explanation": "Registration does not show whether the score resets or persists."
+        },
+        {
+          "label": "B",
+          "text": "Both claims hold, because reloading the scene resets scene nodes and the autoload together.",
+          "correct": false,
+          "explanation": "The autoload sits outside the scene tree, so a reload cannot reset it."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up that gives evidence is: collect a coin, reload the scene and report the score before and after.",
+          "correct": true,
+          "explanation": "The before and after values show whether the score survives the reload."
+        },
+        {
+          "label": "D",
+          "text": "The two claims conflict: an autoload survives scene reloads, so reloading the scene does not reset the score.",
+          "correct": true,
+          "explanation": "An autoload lives outside the current scene, so changing or reloading scenes leaves its values untouched."
+        },
+        {
+          "label": "E",
+          "text": "Resetting the score needs an explicit reset in the autoload, for example a function called on a new run.",
+          "correct": true,
+          "explanation": "Only code that assigns the score can reset it, so the new-run path must call it."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.1",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Signal (false friend)",
+      "stem": "A teammate says \"the signal is not arriving\". The bug report concerns a Coin node that should tell the HUD to add a point, and the agent has to know which meaning of \"signal\" is in use. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "If the report is about a node's body_entered not reaching its handler, the places to check are the connection, the area's mask and monitoring.",
+          "correct": true,
+          "explanation": "These are the Godot causes of a missing body_entered call, so the agent inspects the connection and physics settings."
+        },
+        {
+          "label": "B",
+          "text": "A request that says \"handle the signal\" without saying which one leaves the agent guessing between event, OS signal and audio or electrical signal.",
+          "correct": true,
+          "explanation": "The word has several meanings across software and hardware, so the agent may build the wrong kind of handler."
+        },
+        {
+          "label": "C",
+          "text": "A signal emitted with nothing connected to it does nothing visible, so a missing handler call points the agent at the connection.",
+          "correct": true,
+          "explanation": "Emitting without a connected function silently has no effect, which makes the missing connection the first thing to check."
+        },
+        {
+          "label": "D",
+          "text": "In Godot, a signal is a named event a node emits, which other nodes connect functions to.",
+          "correct": true,
+          "explanation": "This is the engine meaning, so the agent should look at connections between nodes rather than operating system messages."
+        },
+        {
+          "label": "E",
+          "text": "In Godot, a signal is a message sent from the operating system to the running game process.",
+          "correct": false,
+          "explanation": "That describes an OS signal, and an agent acting on it would write process-level handlers instead of node connections."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.2",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Scene versus level",
+      "stem": "A designer says \"make the forest scene\" and also \"build the forest level\". Check each statement that is correct about the two words in Godot.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A level is a Godot file type with its own extension, so the forest should be saved as a level file.",
+          "correct": false,
+          "explanation": "Godot has no level file type, so the agent would create a file the editor cannot open."
+        },
+        {
+          "label": "B",
+          "text": "A level is a playable area, usually built as a scene in Godot.",
+          "correct": true,
+          "explanation": "Level is a design word for a playable space, and the engine represents it with an ordinary scene."
+        },
+        {
+          "label": "C",
+          "text": "A scene is a saved tree of nodes that can be reused or instanced inside another scene, whether it is a whole area or a single coin.",
+          "correct": true,
+          "explanation": "Scene is the engine's container type, so a single pickup and an entire area are both scenes."
+        },
+        {
+          "label": "D",
+          "text": "A coin should be placed in the levels folder because it is saved as a scene.",
+          "correct": false,
+          "explanation": "A coin is a scene but not a level, so the agent would misfile reusable pieces among playable areas."
+        },
+        {
+          "label": "E",
+          "text": "A game has fewer scenes than levels, because levels are made of scenes.",
+          "correct": false,
+          "explanation": "A level is usually one scene, and the game also has scenes for menus, enemies and items, so scenes outnumber levels."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Mask (false friend)",
+      "stem": "A request says \"set the mask so the laser ignores glass\". Check each statement that correctly separates the meanings of mask in a game project.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Setting a collision mask changes how the object is drawn.",
+          "correct": false,
+          "explanation": "A collision mask is a physics setting, so an agent would be wrong to expect any visual change from it."
+        },
+        {
+          "label": "B",
+          "text": "A light cull mask decides which bodies the laser ray ignores, so the agent edits the light node.",
+          "correct": false,
+          "explanation": "A light cull mask picks which render layers a light affects, so editing it leaves the physics ray unchanged."
+        },
+        {
+          "label": "C",
+          "text": "A collision mask and a collision layer are the same setting, so setting the glass's layer is enough to make the laser ignore it.",
+          "correct": false,
+          "explanation": "Layer says what the object is while mask says what it checks, so changing the glass layer would not change the laser."
+        },
+        {
+          "label": "D",
+          "text": "An alpha mask in the glass texture is where to make the laser ignore glass, so the agent edits the image.",
+          "correct": false,
+          "explanation": "An alpha mask only controls which pixels are visible, so editing the texture would change looks and leave the laser blocked."
+        },
+        {
+          "label": "E",
+          "text": "A collision mask lists the physics layers an object scans for or is blocked by.",
+          "correct": true,
+          "explanation": "The laser's ray or body checks its mask, so removing the glass layer from that mask makes the laser ignore glass."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Stable (false friend)",
+      "stem": "A build report says \"the physics is stable\". The next step depends on whether this means resting bodies stay still or something else. Check each statement that is correct about what an agent could be claiming.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "It could mean the sort of a list is stable, which means the list is sorted in place.",
+          "correct": false,
+          "explanation": "Stability in sorting concerns the order of equal items, so an agent confusing it with in-place sorting would build the wrong thing."
+        },
+        {
+          "label": "B",
+          "text": "It means the physics solver is deterministic, so replays match exactly.",
+          "correct": false,
+          "explanation": "Stable simulation means resting bodies do not jitter, and an agent assuming determinism would build replay checks instead of testing resting stacks."
+        },
+        {
+          "label": "C",
+          "text": "A stable sort keeps items with equal keys in their original relative order.",
+          "correct": true,
+          "explanation": "This is a third meaning of the word, unrelated to physics, and matters when sorting a leaderboard by score."
+        },
+        {
+          "label": "D",
+          "text": "It could mean no jitter or drift when bodies rest on each other.",
+          "correct": true,
+          "explanation": "This is simulation stability, and the check is to stack bodies in a scene and watch whether they settle."
+        },
+        {
+          "label": "E",
+          "text": "\"Stable\" here is a precise measurement, so the claim needs no follow-up.",
+          "correct": false,
+          "explanation": "The report does not say which meaning or how it was measured, so the agent should ask before accepting it."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.5",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Atomic (false friend)",
+      "stem": "An agent says \"the edit is atomic\" after changing three script files for one feature. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An atomic edit means the change is small, such as one line.",
+          "correct": false,
+          "explanation": "Atomic describes completeness of application rather than size, so an agent treating it as small would accept a half-applied large edit."
+        },
+        {
+          "label": "B",
+          "text": "A claim that the edit is atomic does not say the edit was tested, so the agent still runs the tests.",
+          "correct": true,
+          "explanation": "Atomicity and testing are separate properties, and relying on the word alone would let broken code be accepted."
+        },
+        {
+          "label": "C",
+          "text": "An atomic commit groups one logical change, which may touch several files.",
+          "correct": true,
+          "explanation": "Here atomic refers to a single coherent change, so three related scripts can belong in one atomic commit."
+        },
+        {
+          "label": "D",
+          "text": "An atomic edit is applied completely or not at all, with no half-applied state left behind.",
+          "correct": true,
+          "explanation": "Atomic means all or nothing, so a failed edit must leave the project exactly as it was."
+        },
+        {
+          "label": "E",
+          "text": "If an atomic multi-file change fails on the third file, the first two files are restored.",
+          "correct": true,
+          "explanation": "All-or-nothing behaviour means partial results are rolled back, so the project does not end in a mixed state."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.6",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Cache (false friend)",
+      "stem": "A load-time report says \"the cache was cleared and loading got slower\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A stale cache can show an old result after a source file changed.",
+          "correct": true,
+          "explanation": "When a cached result is out of date, clearing it is a sensible first fix for odd behaviour."
+        },
+        {
+          "label": "B",
+          "text": "Clearing a cache costs time once, since the stored results must be rebuilt.",
+          "correct": true,
+          "explanation": "The slower load is a one-time rebuild cost, so an agent should not treat it as a permanent regression."
+        },
+        {
+          "label": "C",
+          "text": "A cache is the source of truth for the project, so deleting it loses work.",
+          "correct": false,
+          "explanation": "A cache can be regenerated from the sources, so an agent that refuses to delete it would waste effort."
+        },
+        {
+          "label": "D",
+          "text": "A cache holds results that were already computed, such as imported assets or compiled shaders, so they need not be computed again.",
+          "correct": true,
+          "explanation": "A cache saves repeated work, which is why clearing it makes the next load slower."
+        },
+        {
+          "label": "E",
+          "text": "A CPU cache and a project import cache are different stores that share a name.",
+          "correct": true,
+          "explanation": "One is hardware memory near the processor and the other is a folder of converted assets, so clearing one does not affect the other."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.7",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Frame versus keyframe",
+      "stem": "A designer asks for \"a 12 frame walk cycle with keyframes on frames 1, 4 and 7\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Keyframes on frames 1, 4 and 7 mean frames 2, 3, 5 and 6 stay blank until the agent adds keyframes there.",
+          "correct": false,
+          "explanation": "The in-between frames get values by interpolation, so adding more keyframes would change the requested animation."
+        },
+        {
+          "label": "B",
+          "text": "A keyframe is a stored value at a specific time, and the frames between come from interpolation in an animation track.",
+          "correct": true,
+          "explanation": "Keyframes are the stored values, so the agent adds three keys to the track and lets playback fill in the rest."
+        },
+        {
+          "label": "C",
+          "text": "A frame is one displayed image in time, and a sprite sheet cell holds one.",
+          "correct": true,
+          "explanation": "The agent should plan twelve cells in the sheet because each frame is one displayed image."
+        },
+        {
+          "label": "D",
+          "text": "Counting an animation's length in frames tells you how many keyframes it holds.",
+          "correct": false,
+          "explanation": "Keyframes are only the stored values, so a twelve frame animation can hold three keyframes and an agent counting frames would add too many."
+        },
+        {
+          "label": "E",
+          "text": "A frame and a keyframe are the same thing, so 12 frames means 12 keyframes.",
+          "correct": false,
+          "explanation": "They are different, and an agent treating them as equal would build twelve keys instead of three."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.8",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Normal versus normal map",
+      "stem": "A material request says \"use the normal on this surface\" in one line and \"use the normal map\" in another. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Flipping the normal changes the surface's albedo colour, so the agent edits the colour texture.",
+          "correct": false,
+          "explanation": "Flipping a normal reverses the direction a surface faces for lighting, so editing colour would leave the lighting error in place."
+        },
+        {
+          "label": "B",
+          "text": "A normal map is an ordinary map for the surface's colour.",
+          "correct": false,
+          "explanation": "Colour belongs to the albedo texture, and an agent putting a normal map there would produce a strange purple surface."
+        },
+        {
+          "label": "C",
+          "text": "A normal map is a texture that stores a normal for each texel.",
+          "correct": true,
+          "explanation": "A normal map is an image file, so the agent assigns it to a texture slot rather than computing a vector."
+        },
+        {
+          "label": "D",
+          "text": "A normal is a direction perpendicular to a surface at a point.",
+          "correct": true,
+          "explanation": "A normal is a vector used for lighting, so the agent reads or writes it as a direction."
+        },
+        {
+          "label": "E",
+          "text": "A normal is the usual, default value of a parameter.",
+          "correct": false,
+          "explanation": "That is the everyday sense of the word, and an agent using it would reset a parameter instead of reading a surface direction."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.9",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Static (false friend)",
+      "stem": "A report says \"the static light is baked\". Check each statement that is correct about the word static in a game project.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Static lighting means light that is recomputed each frame, so the agent skips baking it.",
+          "correct": false,
+          "explanation": "Static lighting does not change at run time and may be baked, so skipping the bake would leave the scene unlit."
+        },
+        {
+          "label": "B",
+          "text": "Static typing makes objects unable to move.",
+          "correct": false,
+          "explanation": "Static typing concerns variable types in scripts, so an agent confusing it with physics would freeze objects needlessly."
+        },
+        {
+          "label": "C",
+          "text": "Static typing in a script means declaring the types of variables.",
+          "correct": true,
+          "explanation": "This is the language meaning, so the agent adds type annotations rather than changing physics bodies."
+        },
+        {
+          "label": "D",
+          "text": "StaticBody is a physics body that is not moved by forces.",
+          "correct": true,
+          "explanation": "A static body stays put under collisions, so an agent uses it for walls and floors."
+        },
+        {
+          "label": "E",
+          "text": "A StaticBody2D is pushed around by forces like a RigidBody2D.",
+          "correct": false,
+          "explanation": "A static body ignores forces, and an agent using it for a crate that should be pushed would build a crate that never moves."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.10",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Process (false friend)",
+      "stem": "A log line says \"process finished with errors\". The agent has to decide whether to debug a node or the program run. Check each statement that is correct about the word process.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A _process function is a separate operating system process.",
+          "correct": false,
+          "explanation": "It is a function inside the game process, and an agent treating it as a separate program would look for the wrong thing."
+        },
+        {
+          "label": "B",
+          "text": "In an operating system, a process is a script function the engine calls each frame.",
+          "correct": false,
+          "explanation": "An OS process is a running program, and mixing it up with _process leads to the wrong fix."
+        },
+        {
+          "label": "C",
+          "text": "Each node's process runs on its own processor core by default.",
+          "correct": false,
+          "explanation": "Godot runs _process on the main thread by default, so an agent expecting parallelism would skip needed safety checks."
+        },
+        {
+          "label": "D",
+          "text": "In Godot, _process is a function called each rendered frame.",
+          "correct": true,
+          "explanation": "This is the engine meaning, so an error in it would show up repeatedly while the game runs."
+        },
+        {
+          "label": "E",
+          "text": "In a terminal, \"Process finished\" means the node's _process stopped being called, so the agent debugs the game loop.",
+          "correct": false,
+          "explanation": "The message normally refers to the whole program run ending, so the agent should read the exit code and earlier errors."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.11",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Export (false friend)",
+      "stem": "A build request mentions \"export\" in three ways: an exported variable, an exported project, and an export from Blender. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An exported variable (@export) shows a script property in the Inspector.",
+          "correct": true,
+          "explanation": "This is the script meaning, so the agent adds an annotation to the variable rather than configuring a build."
+        },
+        {
+          "label": "B",
+          "text": "An exported variable and an exported project are unrelated features that share a word, so editing @export does not create a build.",
+          "correct": true,
+          "explanation": "Adding an annotation changes the Inspector only, and an agent expecting a build from it would never produce one."
+        },
+        {
+          "label": "C",
+          "text": "Exporting a project packages the game into a build for a platform.",
+          "correct": true,
+          "explanation": "This uses an export preset to produce a shippable build, which has nothing to do with Inspector properties."
+        },
+        {
+          "label": "D",
+          "text": "Exporting from Blender writes the model to a file format such as glTF.",
+          "correct": true,
+          "explanation": "This is the asset meaning, and the file produced is what Godot later imports."
+        },
+        {
+          "label": "E",
+          "text": "An exported variable is the build file that is shipped.",
+          "correct": false,
+          "explanation": "The shipped file comes from exporting the project, and an agent mixing them up would look for the wrong output."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.12",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Instance (false friend)",
+      "stem": "A designer says \"spawn ten instances\". An agent should keep separate the senses of instance. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "GPU instancing and scene instancing are the same feature.",
+          "correct": false,
+          "explanation": "They differ, and an agent that treats them as one would use the wrong tool to spawn gameplay objects."
+        },
+        {
+          "label": "B",
+          "text": "GPU instancing draws many copies of one mesh in one draw call.",
+          "correct": true,
+          "explanation": "This is the rendering meaning, used for efficient drawing of grass or crowds."
+        },
+        {
+          "label": "C",
+          "text": "Instancing a scene in Godot creates a new copy of its node tree.",
+          "correct": true,
+          "explanation": "Each instance_ call builds a fresh node tree, which the agent then adds to the scene."
+        },
+        {
+          "label": "D",
+          "text": "An instance of a script class is the class definition in the .gd file, so spawning ten instances means writing ten script files.",
+          "correct": false,
+          "explanation": "An instance is an object created from the class, and the agent should call new on one class ten times."
+        },
+        {
+          "label": "E",
+          "text": "Instancing a scene gives copies that share one set of variable values.",
+          "correct": false,
+          "explanation": "Each instance has its own values, and an agent assuming sharing would write code that fails to update the others."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.13",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Material (false friend)",
+      "stem": "A texture request says \"give the crate a metal material\" while a physics request says \"give the crate a bouncy material\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A physics material controls friction and bounce.",
+          "correct": true,
+          "explanation": "The bouncy request is about motion, so the agent sets bounce on a physics material on the body."
+        },
+        {
+          "label": "B",
+          "text": "A render material controls how a surface looks, for example colour and shininess.",
+          "correct": true,
+          "explanation": "The metal request is about appearance, so the agent edits the render material on the mesh."
+        },
+        {
+          "label": "C",
+          "text": "A shiny render material makes the crate slide more easily, so the agent edits the render material for slipperiness.",
+          "correct": false,
+          "explanation": "Render materials affect appearance, and slipperiness comes from the physics material's friction."
+        },
+        {
+          "label": "D",
+          "text": "The two settings live on different parts of the object.",
+          "correct": true,
+          "explanation": "The render material is on the mesh and the physics material is on the body, so both requests need separate edits."
+        },
+        {
+          "label": "E",
+          "text": "A bouncy physics material changes the crate's colour.",
+          "correct": false,
+          "explanation": "Physics materials set friction and bounce, so an agent editing them would not change the look."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.14",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Trigger (false friend)",
+      "stem": "A designer asks for \"a trigger on the door\" without saying what kind. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A trigger zone blocks the player like a wall.",
+          "correct": false,
+          "explanation": "A trigger detects overlaps and lets bodies pass, so an agent building a wall would stop the player at the door."
+        },
+        {
+          "label": "B",
+          "text": "A trigger means the same setting in Godot, Unity and Unreal.",
+          "correct": false,
+          "explanation": "The terms differ between engines, and an agent copying a Unity tutorial would look for a setting that Godot does not have."
+        },
+        {
+          "label": "C",
+          "text": "In an animation system, a trigger can be a parameter that starts a transition.",
+          "correct": true,
+          "explanation": "This third meaning is a one-shot parameter in an animation state machine rather than a physical zone."
+        },
+        {
+          "label": "D",
+          "text": "In Unity, Is Trigger makes a collider detect overlaps instead of blocking.",
+          "correct": true,
+          "explanation": "This is the Unity setting, and it explains why Unity tutorials describe triggers differently than Godot ones."
+        },
+        {
+          "label": "E",
+          "text": "In Godot, a trigger zone is usually an Area2D or Area3D that detects overlaps and does not block.",
+          "correct": true,
+          "explanation": "The agent builds an Area node with a collision shape and connects its body_entered signal."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.15",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Scale (false friend)",
+      "stem": "A request says \"scale the enemy\", \"scale the time\" and \"scale the texture\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Changing texture scale makes the mesh larger, so the agent uses it to resize the crate.",
+          "correct": false,
+          "explanation": "Texture scale or UV tiling repeats or stretches the pattern, and leaves the mesh size the same."
+        },
+        {
+          "label": "B",
+          "text": "Changing a sprite's scale resizes a sibling collision shape automatically.",
+          "correct": false,
+          "explanation": "A sibling shape is a separate node, so the agent must scale it too or the hitbox will not match."
+        },
+        {
+          "label": "C",
+          "text": "Time scale changes how fast game time runs, such as for slow motion.",
+          "correct": true,
+          "explanation": "This is the engine setting Engine.time_scale, which affects everything driven by delta."
+        },
+        {
+          "label": "D",
+          "text": "Scaling a node by 2 changes the time scale of the game.",
+          "correct": false,
+          "explanation": "Node scale and time scale are separate, and an agent mixing them up would double the size when speed was wanted."
+        },
+        {
+          "label": "E",
+          "text": "Scaling a node changes its size, and its children inherit the scale.",
+          "correct": true,
+          "explanation": "The agent sets the node's scale property and children, including collision shapes, grow with it."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.16",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Origin and pivot",
+      "stem": "A rig request says \"put the origin at the feet\" and also \"move the pivot\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Moving the pivot of a sprite changes the point it rotates around while its position stays fixed.",
+          "correct": true,
+          "explanation": "A pivot shifts the rotation centre, so the agent uses it for a spinning pickup without changing where it stands."
+        },
+        {
+          "label": "B",
+          "text": "Setting the origin at the feet makes placing the character on a floor line simple.",
+          "correct": true,
+          "explanation": "With the origin at the feet, setting the y position to the floor height puts the character on the ground."
+        },
+        {
+          "label": "C",
+          "text": "The world origin is the zero point of the scene's coordinates.",
+          "correct": true,
+          "explanation": "All positions are measured from it in global space, so the agent uses it as a reference when placing the rig."
+        },
+        {
+          "label": "D",
+          "text": "The origin and the world origin are the same thing.",
+          "correct": false,
+          "explanation": "A node origin is local to the node while the world origin is the scene's zero point, so an agent mixing them would misplace objects."
+        },
+        {
+          "label": "E",
+          "text": "A node's origin is the point its position refers to, and rotation happens around it unless an offset is set.",
+          "correct": true,
+          "explanation": "The agent places the node's origin at the feet, so position values describe where the feet stand."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.17",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Bake (false friend)",
+      "stem": "A report says \"lighting is baked\", a rig note says \"animation baked\", and a navigation note says \"navmesh baked\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A baked lightmap updates when a light is moved at run time.",
+          "correct": false,
+          "explanation": "A baked lightmap stays fixed, so an agent expecting live shadows from it would see stale lighting."
+        },
+        {
+          "label": "B",
+          "text": "Baking a navigation mesh stores the routes each agent will walk, so a moved obstacle changes the route without a rebake.",
+          "correct": false,
+          "explanation": "Baking precomputes the walkable area from level geometry rather than routes, so a moved obstacle needs a rebake or dynamic obstacle handling."
+        },
+        {
+          "label": "C",
+          "text": "Baking animation turns procedural or constraint-driven motion into stored keyframes.",
+          "correct": true,
+          "explanation": "This freezes the motion into keys, so the clip plays back without the original rig logic."
+        },
+        {
+          "label": "D",
+          "text": "Baked means the result can be edited by changing the original settings alone.",
+          "correct": false,
+          "explanation": "The result must be baked again, and an agent that only edits settings would leave the old baked data in place."
+        },
+        {
+          "label": "E",
+          "text": "Baking light precomputes lighting into textures so it is not computed at run time.",
+          "correct": true,
+          "explanation": "The result is a lightmap, which makes lighting cheap but means it must be baked again after changes."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.18",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Tile, TileSet, TileMap",
+      "stem": "A 2D level request mixes tile, TileSet and TileMap. Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Changing a tile's collision shape in the TileSet affects each cell that uses that tile.",
+          "correct": true,
+          "explanation": "The shape is shared by the tile, so one edit updates every placed copy of it."
+        },
+        {
+          "label": "B",
+          "text": "A TileSet is the node that holds the level layout, so the agent paints the level on it.",
+          "correct": false,
+          "explanation": "The TileMap holds the layout, and painting on the TileSet would change the palette rather than the level."
+        },
+        {
+          "label": "C",
+          "text": "A TileMap is the node that places tiles from a TileSet into a grid.",
+          "correct": true,
+          "explanation": "The TileMap holds the level layout, so the agent paints cells on it using the TileSet."
+        },
+        {
+          "label": "D",
+          "text": "A TileMap is the image file with the tile pictures, so the agent imports it as a texture.",
+          "correct": false,
+          "explanation": "The image is the atlas texture used by a TileSet, and importing a TileMap as a picture would give the agent nothing to paint."
+        },
+        {
+          "label": "E",
+          "text": "A TileSet is the collection of tiles, with their images and collision shapes, that can be used.",
+          "correct": true,
+          "explanation": "The TileSet is the palette resource, so the agent defines tile images and collisions there."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.19",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Shader versus material",
+      "stem": "A rendering note says \"shader\" and a design note says \"material\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A material is an asset that holds a shader and the parameter values, such as textures and colours.",
+          "correct": true,
+          "explanation": "The material supplies the settings, so the agent assigns textures and colours on it."
+        },
+        {
+          "label": "B",
+          "text": "A shader is a program that runs on the GPU to compute vertex positions or pixel colours.",
+          "correct": true,
+          "explanation": "The shader holds the code, so the agent writes GPU logic there."
+        },
+        {
+          "label": "C",
+          "text": "A shader holds the specific textures for one crate.",
+          "correct": false,
+          "explanation": "The material holds those values, and an agent storing textures in a shader would break reuse across objects."
+        },
+        {
+          "label": "D",
+          "text": "A material is a program that runs on the GPU.",
+          "correct": false,
+          "explanation": "That describes the shader, and an agent writing code into a material would find nowhere to put it."
+        },
+        {
+          "label": "E",
+          "text": "Each material needs its own copy of the shader, so ten crate colours mean ten shader programs.",
+          "correct": false,
+          "explanation": "Materials can share one shader with different parameter values, and copying the shader would multiply the code to maintain."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.20",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "Resource (false friend)",
+      "stem": "A Godot task says \"load the resource\" and a profiling note says \"the resource usage is high\". Check each statement that is correct.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A Godot Resource is the memory the game is using.",
+          "correct": false,
+          "explanation": "A Resource is a data object, and an agent treating it as memory use would profile when a file load was wanted."
+        },
+        {
+          "label": "B",
+          "text": "An agent asked to \"reduce resources\" could mean files or system load, and should be told which.",
+          "correct": true,
+          "explanation": "The phrase is ambiguous, and guessing could delete data files when the goal was to lower memory use."
+        },
+        {
+          "label": "C",
+          "text": "In Godot, a Resource is a data object that can be saved to a file, such as a texture or an animation.",
+          "correct": true,
+          "explanation": "This is the engine meaning, so \"load the resource\" calls the load function on a file path."
+        },
+        {
+          "label": "D",
+          "text": "Loading a Resource file lowers the processor usage.",
+          "correct": false,
+          "explanation": "Loading a file adds work, so an agent expecting a performance gain from loading would not fix the profiling issue."
+        },
+        {
+          "label": "E",
+          "text": "Resource usage in a profiling note usually means memory or processor time used by the game.",
+          "correct": true,
+          "explanation": "This is the system meaning, so the agent should open the profiler rather than load a file."
         }
       ]
     }

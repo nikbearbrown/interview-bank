@@ -5,7 +5,7 @@
     "points": 5,
     "rule": "Five statements, each true or false, 1 point each. The student checks the statements they believe are true. A statement scores 1 point if it is checked and true, or unchecked and false; otherwise 0."
   },
-  "count": 669,
+  "count": 767,
   "chapters": {
     "foundations": "Foundations (midterm-prep sections 1-12)",
     "1": "Chapter 1: Next-token prediction and sampling",
@@ -28120,6 +28120,4122 @@
           "text": "\"Clean up\" is an acceptance criterion.",
           "correct": false,
           "explanation": "It is a vague instruction; a criterion is a checkable condition."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.1",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "idempotent",
+      "stem": "A Python function `charge(order_id)` will be called by an agent that retries after timeouts. Which statements correctly unpack \"make `charge` idempotent\" into checkable conditions? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A test can call it twice and assert exactly one charge record exists for that `order_id`.",
+          "correct": true,
+          "explanation": "That is a checkable form of the condition."
+        },
+        {
+          "label": "B",
+          "text": "Calling it twice with the same input returns the same text both times, whatever it changes.",
+          "correct": false,
+          "explanation": "Same return text says nothing about repeated side effects; the card could be charged twice."
+        },
+        {
+          "label": "C",
+          "text": "Calling it twice with the same `order_id` leaves the system in the same state as calling it once.",
+          "correct": true,
+          "explanation": "Idempotence is about the effect of repeated calls on state."
+        },
+        {
+          "label": "D",
+          "text": "A stored idempotency key for the `order_id` lets the second call detect the first and skip the charge.",
+          "correct": true,
+          "explanation": "A key lookup is a standard way to meet the condition."
+        },
+        {
+          "label": "E",
+          "text": "It finishes within a fixed time limit, so a retry cannot overlap the first call.",
+          "correct": false,
+          "explanation": "A time limit is a timeout, not idempotence; a slow first call can still be repeated."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.2",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "idempotent",
+      "stem": "Claude Code proposes: \"I added retry logic around `send_email(user)`; retries are safe because the function is idempotent.\" The function appends a row to an outbox table and calls an SMTP server on each call. Which statements judge the claim correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The claim is correct because the function returns `None` on each call.",
+          "correct": false,
+          "explanation": "The return value is not the criterion."
+        },
+        {
+          "label": "B",
+          "text": "The claim holds, since the outbox row shows the email was recorded.",
+          "correct": false,
+          "explanation": "A recorded row does not prevent a second send on retry."
+        },
+        {
+          "label": "C",
+          "text": "Each call appends a row and sends a message, so a repeated call changes the outside world twice.",
+          "correct": true,
+          "explanation": "That is the opposite of idempotent."
+        },
+        {
+          "label": "D",
+          "text": "Wrapping the call in `try/except` makes repeated calls produce one email.",
+          "correct": false,
+          "explanation": "Exception handling does not deduplicate effects."
+        },
+        {
+          "label": "E",
+          "text": "The claim is unsupported until a test shows two calls produce one email and one outbox row.",
+          "correct": true,
+          "explanation": "Idempotence is demonstrated by repeated calls, not asserted."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "idempotent",
+      "stem": "A user tells Claude: \"Make the nightly import safe to rerun.\" Choose the statements that compress or unpack this requirement correctly. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A one-line compression is: \"Make the import idempotent: upsert on the natural key instead of inserting.\"",
+          "correct": true,
+          "explanation": "Upsert on a key is a concrete way to get the effect."
+        },
+        {
+          "label": "B",
+          "text": "The import is safe to rerun once it catches exceptions and exits with code 0.",
+          "correct": false,
+          "explanation": "Exit code says nothing about duplicate rows."
+        },
+        {
+          "label": "C",
+          "text": "The import writes a log file with a matching name on each run.",
+          "correct": false,
+          "explanation": "A matching log name is not a property of the data state."
+        },
+        {
+          "label": "D",
+          "text": "Another one-line compression is: \"Make the import deterministic so it runs at the same time each night.\"",
+          "correct": false,
+          "explanation": "Deterministic concerns output for input, not schedule or rerun safety."
+        },
+        {
+          "label": "E",
+          "text": "Rerunning the import on the same file leaves the database with the same rows as one run.",
+          "correct": true,
+          "explanation": "This is the idempotent condition for the import."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "idempotent",
+      "stem": "Which pairs of HTTP-style operations match the idempotent label? Judge the statements for a Python API that an agent may retry. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "`PATCH /counter` with body `{\"increment\": 1}`, since the request body is the same each time.",
+          "correct": false,
+          "explanation": "Same request does not mean same state; each call adds one."
+        },
+        {
+          "label": "B",
+          "text": "`POST /orders` that creates a new order row for each request.",
+          "correct": false,
+          "explanation": "Each call adds a row, so repeats add more."
+        },
+        {
+          "label": "C",
+          "text": "`DELETE /sessions/42`, since the session is gone after the first call and later calls leave it gone.",
+          "correct": true,
+          "explanation": "The end state is the same after repeats."
+        },
+        {
+          "label": "D",
+          "text": "Any call that returns HTTP 200 counts as idempotent.",
+          "correct": false,
+          "explanation": "Status code does not describe repeated-call effects."
+        },
+        {
+          "label": "E",
+          "text": "`PUT /users/7` with a full replacement body, since repeating it leaves user 7 in the same state.",
+          "correct": true,
+          "explanation": "Replacement converges on one state."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.5",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "deterministic",
+      "stem": "A teammate asks Claude to \"make the summarizer deterministic.\" Which statements unpack that into checkable conditions? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The function is idempotent, meaning repeated calls do not change stored data.",
+          "correct": false,
+          "explanation": "Idempotence concerns state change, not output equality."
+        },
+        {
+          "label": "B",
+          "text": "The same input, with the same settings and code, yields the same output on repeated runs.",
+          "correct": true,
+          "explanation": "This is the definition as a test."
+        },
+        {
+          "label": "C",
+          "text": "A test runs the function twice and asserts the two outputs are equal.",
+          "correct": true,
+          "explanation": "That checks the condition directly."
+        },
+        {
+          "label": "D",
+          "text": "The output is correct on each input in the test set.",
+          "correct": false,
+          "explanation": "Correctness is a separate property; a wrong output can repeat."
+        },
+        {
+          "label": "E",
+          "text": "Random seeds and sampling parameters are fixed, or sampling is removed, so no hidden randomness remains.",
+          "correct": true,
+          "explanation": "Randomness is the usual source of variation."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.6",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "deterministic",
+      "stem": "A Python script calls `random.choice(examples)` to pick few-shot examples for a prompt. An eval shows scores moving between runs. Which fixes address the stated requirement \"same run, same prompt\"? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Lower the model temperature to 0.2 and leave the selection unseeded.",
+          "correct": false,
+          "explanation": "The prompt itself still varies between runs."
+        },
+        {
+          "label": "B",
+          "text": "Replace the random pick with a fixed list of example ids committed to the repo.",
+          "correct": true,
+          "explanation": "Fixed inputs remove the randomness."
+        },
+        {
+          "label": "C",
+          "text": "Raise `max_tokens` so the model has room to answer the same way.",
+          "correct": false,
+          "explanation": "Length limit does not control prompt selection."
+        },
+        {
+          "label": "D",
+          "text": "Call `random.seed(1234)` once before selecting examples.",
+          "correct": true,
+          "explanation": "A fixed seed makes the draws reproducible."
+        },
+        {
+          "label": "E",
+          "text": "Print the chosen examples to the log after each run.",
+          "correct": false,
+          "explanation": "Logging records the variation without removing it."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.7",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "deterministic",
+      "stem": "A Claude Code task says: \"The report generator must be deterministic.\" The code includes `datetime.now()` in the header. Which statements are correct? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Sorting the data rows makes the header stable.",
+          "correct": false,
+          "explanation": "Sorting does not touch the header."
+        },
+        {
+          "label": "B",
+          "text": "It is deterministic, since the body of the report is built from the same data.",
+          "correct": false,
+          "explanation": "One varying part changes the output."
+        },
+        {
+          "label": "C",
+          "text": "Passing the timestamp in as a parameter lets a test fix it and compare outputs.",
+          "correct": true,
+          "explanation": "Making the hidden input explicit allows equality checks."
+        },
+        {
+          "label": "D",
+          "text": "A snapshot test with a regex that ignores the header proves the generator is deterministic.",
+          "correct": false,
+          "explanation": "It masks the variation instead of removing it."
+        },
+        {
+          "label": "E",
+          "text": "Two runs at different times produce different header text, so the output is not identical for the same input.",
+          "correct": true,
+          "explanation": "The timestamp is a hidden input."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.8",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "tool_use / tool_result",
+      "stem": "Which statements correctly describe a `tool_use` block and a `tool_result` block in a Claude API conversation? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The application code decides whether to execute the requested call before it sends a `tool_result`.",
+          "correct": true,
+          "explanation": "That is the point where checks and gates sit."
+        },
+        {
+          "label": "B",
+          "text": "A `tool_use` block is produced by the model and names the tool and the arguments it wants run.",
+          "correct": true,
+          "explanation": "The model requests; it does not execute."
+        },
+        {
+          "label": "C",
+          "text": "A `tool_result` block is produced by the model after it runs the tool inside its weights.",
+          "correct": false,
+          "explanation": "Your code runs the tool and sends the result."
+        },
+        {
+          "label": "D",
+          "text": "A `tool_result` block carries the `tool_use_id` of the request it answers.",
+          "correct": true,
+          "explanation": "The id links result to request."
+        },
+        {
+          "label": "E",
+          "text": "A `tool_use` block contains the output the tool returned.",
+          "correct": false,
+          "explanation": "Output belongs in `tool_result`."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.9",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "tool_use / tool_result",
+      "stem": "A Python agent loop receives a response with `stop_reason == \"tool_use\"`. Which statements describe a correct next step? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Run the tool named in the `tool_use` block with its `input`, then send a `tool_result` with the matching id in the next user message.",
+          "correct": true,
+          "explanation": "That completes the loop turn."
+        },
+        {
+          "label": "B",
+          "text": "If the tool raised an error, return the error text in the `tool_result` so the model can adapt.",
+          "correct": true,
+          "explanation": "Errors are observations the model can use."
+        },
+        {
+          "label": "C",
+          "text": "Send the tool's output as an assistant message so the model sees it as its own words.",
+          "correct": false,
+          "explanation": "Results go back in a user message as `tool_result`."
+        },
+        {
+          "label": "D",
+          "text": "Treat the response text as the final answer and stop the loop.",
+          "correct": false,
+          "explanation": "The stop reason says the model wants a tool run."
+        },
+        {
+          "label": "E",
+          "text": "Skip the `tool_result` and send a new prompt, since the model remembers what it asked for.",
+          "correct": false,
+          "explanation": "A `tool_use` without a result breaks the conversation."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.10",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "tool_use / tool_result",
+      "stem": "Which one-line instruction to Claude Code correctly compresses: \"when the model asks to read a file, run the read and return the file contents to it\"? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Have the model read the file inside the prompt by pasting `tool_result` first.\"",
+          "correct": false,
+          "explanation": "The result follows a request; it is not pre-pasted by the model."
+        },
+        {
+          "label": "B",
+          "text": "\"Add a system prompt line saying files are visible.\"",
+          "correct": false,
+          "explanation": "That does not wire up any execution."
+        },
+        {
+          "label": "C",
+          "text": "\"Return a `tool_use` block containing the file text.\"",
+          "correct": false,
+          "explanation": "`tool_use` is the request direction."
+        },
+        {
+          "label": "D",
+          "text": "\"Handle `tool_use` for `read_file` by running it and returning a `tool_result` with the same `tool_use_id`.\"",
+          "correct": true,
+          "explanation": "It names both blocks and the link."
+        },
+        {
+          "label": "E",
+          "text": "\"Return the file text in `tool_result` content and set `is_error` only if the read failed.\"",
+          "correct": true,
+          "explanation": "This keeps success and failure distinct."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.11",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "approval gate",
+      "stem": "A requirement says: \"Add an approval gate before the agent deletes anything.\" Which statements unpack it into checkable conditions? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The approval request names the exact path or ids to be deleted.",
+          "correct": true,
+          "explanation": "An approver must see what is being approved."
+        },
+        {
+          "label": "B",
+          "text": "The delete call does not run until a person gives an explicit yes recorded for that action.",
+          "correct": true,
+          "explanation": "A gate blocks until approval."
+        },
+        {
+          "label": "C",
+          "text": "The agent writes a log line saying it is about to delete, then continues.",
+          "correct": false,
+          "explanation": "A log without a pause is not a gate."
+        },
+        {
+          "label": "D",
+          "text": "A test shows that with approval denied, the file still exists.",
+          "correct": true,
+          "explanation": "Denial must leave state unchanged."
+        },
+        {
+          "label": "E",
+          "text": "The model is told to ask, and the code also blocks the delete call until approval is recorded.",
+          "correct": true,
+          "explanation": "Enforcement sits in code."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.12",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "approval gate",
+      "stem": "A Claude Code session runs shell commands. Which setup is an approval gate for `git push`? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A hook that exits non-zero on `git push` until an approval flag exists.",
+          "correct": true,
+          "explanation": "Code enforces the pause."
+        },
+        {
+          "label": "B",
+          "text": "A permission rule set to ask, so each `git push` pauses for a person to confirm before it runs.",
+          "correct": true,
+          "explanation": "The tool call waits for a human."
+        },
+        {
+          "label": "C",
+          "text": "A line in CLAUDE.md saying \"please do not push without asking\".",
+          "correct": false,
+          "explanation": "This is advice; nothing blocks the command."
+        },
+        {
+          "label": "D",
+          "text": "A pre-run plan that lists a push as step 5, with no stop at that step.",
+          "correct": false,
+          "explanation": "Listing a step does not gate it."
+        },
+        {
+          "label": "E",
+          "text": "A system message reporting each push after it finished.",
+          "correct": false,
+          "explanation": "Notification after the fact does not gate."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.13",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "approval gate",
+      "stem": "An agent drafts customer emails and a manager must sign off. Which statements place the approval gate correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Between draft creation and the send call, with send disabled until approval is recorded.",
+          "correct": true,
+          "explanation": "The consequential step sits behind the gate."
+        },
+        {
+          "label": "B",
+          "text": "At the start of the session, once, covering the emails the agent drafts later.",
+          "correct": false,
+          "explanation": "Blanket approval cannot cover unseen content."
+        },
+        {
+          "label": "C",
+          "text": "At the send step the approver sees the final recipient list and text, not only the template.",
+          "correct": true,
+          "explanation": "Approval covers what will actually happen."
+        },
+        {
+          "label": "D",
+          "text": "Inside the model's reply, by asking itself whether the email is fine.",
+          "correct": false,
+          "explanation": "Self-approval is not an independent gate."
+        },
+        {
+          "label": "E",
+          "text": "After the emails are sent, the manager receives a summary to review.",
+          "correct": false,
+          "explanation": "The gate must come before the action."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.14",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "permission scope",
+      "stem": "Claude Code is asked to \"give the agent read access to the docs folder only.\" Which statements are a correct unpacking of that permission scope? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A path outside `docs/` reached through `../` is treated as outside the scope.",
+          "correct": true,
+          "explanation": "Scope checks use the resolved path."
+        },
+        {
+          "label": "B",
+          "text": "A test asks the agent to read `src/main.py` and the call is refused.",
+          "correct": true,
+          "explanation": "Out-of-scope reads must fail."
+        },
+        {
+          "label": "C",
+          "text": "The agent may read the rest of the repo once it has opened one file in `docs/`.",
+          "correct": false,
+          "explanation": "Scope is per target, not inherited by touching a file."
+        },
+        {
+          "label": "D",
+          "text": "Read tools may open files under `docs/`, and write and shell tools are not granted.",
+          "correct": true,
+          "explanation": "Scope names allowed actions on the target."
+        },
+        {
+          "label": "E",
+          "text": "The agent may edit files in `docs/` since it already reads them.",
+          "correct": false,
+          "explanation": "Reading does not confer writing."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.15",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "permission scope",
+      "stem": "Which one-line instruction best compresses: \"the agent may run the test suite but not install packages or touch the network\"? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Allow `pytest` as the only shell command and deny `pip`, `curl` and network access.\"",
+          "correct": true,
+          "explanation": "Names allowed command and denied ones."
+        },
+        {
+          "label": "B",
+          "text": "\"Grant the Bash tool and approve each command by hand.\"",
+          "correct": false,
+          "explanation": "A gate on every command is not the same scope."
+        },
+        {
+          "label": "C",
+          "text": "\"Run in a sandbox so mistakes are less serious.\"",
+          "correct": false,
+          "explanation": "A sandbox can still allow installs and network."
+        },
+        {
+          "label": "D",
+          "text": "\"Scope Bash to cover the shell commands the task might need, with network off.\"",
+          "correct": false,
+          "explanation": "The test command alone is the stated bound."
+        },
+        {
+          "label": "E",
+          "text": "\"Give the agent full shell access, and tell it not to install anything.\"",
+          "correct": false,
+          "explanation": "The prompt asks; the scope still allows."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.16",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "permission scope",
+      "stem": "A reviewer says the agent's permission scope is too broad. Which findings support that? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The file tool accepts any absolute path rather than a configured root.",
+          "correct": true,
+          "explanation": "Scope reaches beyond the task."
+        },
+        {
+          "label": "B",
+          "text": "The agent logs each tool call it makes.",
+          "correct": false,
+          "explanation": "Logging does not widen what it can do."
+        },
+        {
+          "label": "C",
+          "text": "The agent holds a database credential that can drop tables, though the task only reads rows.",
+          "correct": true,
+          "explanation": "Write power exceeds the need."
+        },
+        {
+          "label": "D",
+          "text": "The agent asks for approval before each file edit.",
+          "correct": false,
+          "explanation": "A gate narrows effective action."
+        },
+        {
+          "label": "E",
+          "text": "The agent has a read tool for a folder the task needs.",
+          "correct": false,
+          "explanation": "That matches the need."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.17",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "retrieval vs fine-tuning",
+      "stem": "A team wants the model to answer from last week's policy PDFs, which change often. Which statements pick and unpack the approach correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A check is to edit one policy sentence and see the answer change without retraining.",
+          "correct": true,
+          "explanation": "Retrieval changes behaviour without weight updates."
+        },
+        {
+          "label": "B",
+          "text": "Retrieval fits: fetch the current passages and place them in the context at question time.",
+          "correct": true,
+          "explanation": "Fresh content enters through the context."
+        },
+        {
+          "label": "C",
+          "text": "Fine-tuning fits better, since updating weights after each PDF change is cheap and instant.",
+          "correct": false,
+          "explanation": "Fine-tuning is slow and does not track daily changes well."
+        },
+        {
+          "label": "D",
+          "text": "The answer should cite the retrieved passage so a reader can verify it.",
+          "correct": true,
+          "explanation": "Citations make the grounding checkable."
+        },
+        {
+          "label": "E",
+          "text": "Retrieval changes the model's weights so the policy stays after the session.",
+          "correct": false,
+          "explanation": "Retrieval leaves weights unchanged."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.18",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "retrieval vs fine-tuning",
+      "stem": "A support bot must always reply in a fixed house format with a consistent tone, across thousands of unlike questions. Which statements are correct? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Fine-tuning on examples of the target format can teach the style by changing weights.",
+          "correct": true,
+          "explanation": "Style and format are learned behaviour."
+        },
+        {
+          "label": "B",
+          "text": "Fine-tuning is the way to add facts that did not exist at training time and change weekly.",
+          "correct": false,
+          "explanation": "That is a retrieval need."
+        },
+        {
+          "label": "C",
+          "text": "A system prompt with the format and a few examples is a cheaper first attempt before training.",
+          "correct": true,
+          "explanation": "Try the lighter option first."
+        },
+        {
+          "label": "D",
+          "text": "Retrieval of a style guide is required, because weights cannot hold a format.",
+          "correct": false,
+          "explanation": "Weights can hold a format; retrieval is optional."
+        },
+        {
+          "label": "E",
+          "text": "Retrieval and fine-tuning both update the weights, differing in how much data they use.",
+          "correct": false,
+          "explanation": "Only fine-tuning updates weights."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.19",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "retrieval vs fine-tuning",
+      "stem": "Claude Code is told: \"Build the question answering over our wiki with retrieval, not fine-tuning.\" Which statements are checkable conditions for that? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The model is asked to recall the wiki from memory of its training data.",
+          "correct": false,
+          "explanation": "That is not retrieval."
+        },
+        {
+          "label": "B",
+          "text": "The wiki content is stored in the model after indexing, so deleting a page needs retraining.",
+          "correct": false,
+          "explanation": "Content lives in the index, not in weights."
+        },
+        {
+          "label": "C",
+          "text": "At question time the code searches the wiki and puts the top passages into the prompt.",
+          "correct": true,
+          "explanation": "That is retrieval."
+        },
+        {
+          "label": "D",
+          "text": "A training job writes a new checkpoint of the model.",
+          "correct": false,
+          "explanation": "That would be fine-tuning."
+        },
+        {
+          "label": "E",
+          "text": "Model weights are updated after each wiki page is added.",
+          "correct": false,
+          "explanation": "That is fine-tuning."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.20",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "context window vs memory",
+      "stem": "A user complains: \"Claude forgot what we agreed yesterday.\" Which statements use context window and memory correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A larger context window means the model keeps facts from yesterday's session.",
+          "correct": false,
+          "explanation": "The window does not carry over between sessions."
+        },
+        {
+          "label": "B",
+          "text": "Memory, as in a CLAUDE.md or notes file, is saved text loaded into a new session's context.",
+          "correct": true,
+          "explanation": "Memory is stored outside and re-injected."
+        },
+        {
+          "label": "C",
+          "text": "A fix is to write the agreement into a file and load it at session start.",
+          "correct": true,
+          "explanation": "That carries it across sessions."
+        },
+        {
+          "label": "D",
+          "text": "Memory is the part of the weights that stores the user's earlier chats.",
+          "correct": false,
+          "explanation": "Weights are not updated by chats."
+        },
+        {
+          "label": "E",
+          "text": "The context window holds the tokens the model sees in this request.",
+          "correct": true,
+          "explanation": "That is its definition."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.21",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "context window vs memory",
+      "stem": "Claude Code's long session starts dropping early instructions as it grows. Which statements judge the situation correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Adding more rules to the chat is the same as saving them to memory.",
+          "correct": false,
+          "explanation": "Chat text is lost when the window rolls over."
+        },
+        {
+          "label": "B",
+          "text": "Putting the key rules in CLAUDE.md reloads them into the context at each session start.",
+          "correct": true,
+          "explanation": "Standing rules belong in memory text."
+        },
+        {
+          "label": "C",
+          "text": "Restarting the model process raises the window size.",
+          "correct": false,
+          "explanation": "Window size is set by the model."
+        },
+        {
+          "label": "D",
+          "text": "The memory file is full, so it should be emptied.",
+          "correct": false,
+          "explanation": "The symptom concerns the window."
+        },
+        {
+          "label": "E",
+          "text": "The conversation may be exceeding what fits in the context window, so earlier content is trimmed or summarized.",
+          "correct": true,
+          "explanation": "The window is finite."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.22",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "context window vs memory",
+      "stem": "Which one-line instruction best compresses: \"remember this preference for future sessions\"? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Save this preference to CLAUDE.md so it loads at the start of each session.\"",
+          "correct": true,
+          "explanation": "Saved text is memory."
+        },
+        {
+          "label": "B",
+          "text": "\"Fine-tune the model on this preference.\"",
+          "correct": false,
+          "explanation": "Weights are not the route for a user note."
+        },
+        {
+          "label": "C",
+          "text": "\"Keep this in the context window.\"",
+          "correct": false,
+          "explanation": "The window clears with the session."
+        },
+        {
+          "label": "D",
+          "text": "\"Increase the context window to 1M tokens.\"",
+          "correct": false,
+          "explanation": "A bigger window does not persist anything."
+        },
+        {
+          "label": "E",
+          "text": "\"Write this to the project memory file and confirm the file contents.\"",
+          "correct": true,
+          "explanation": "It names the store and a check."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.23",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "eval vs test",
+      "stem": "A developer says: \"Add a test for the prompt that classifies tickets.\" The model's labels vary a little between runs. Which statements place test and eval correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Running the prompt on three tickets and reading the answers once is an eval.",
+          "correct": false,
+          "explanation": "No scoring against criteria is defined."
+        },
+        {
+          "label": "B",
+          "text": "A test is a fixed pass or fail check, such as asserting the output is one of the allowed labels.",
+          "correct": true,
+          "explanation": "Tests assert exact conditions."
+        },
+        {
+          "label": "C",
+          "text": "An eval runs many labelled tickets and reports a score such as accuracy.",
+          "correct": true,
+          "explanation": "Scoring over a set is an eval."
+        },
+        {
+          "label": "D",
+          "text": "An eval is a test with a fixed expected string, where a difference fails it.",
+          "correct": false,
+          "explanation": "An eval scores quality over varying output."
+        },
+        {
+          "label": "E",
+          "text": "Checking the output parses as JSON with the field `label` is a test.",
+          "correct": true,
+          "explanation": "A structural pass or fail check."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.24",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "eval vs test",
+      "stem": "Which requirements correctly call for an eval rather than a plain test? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Compare two prompts on 200 labelled cases and pick the higher scoring one.\"",
+          "correct": true,
+          "explanation": "Comparison by score is eval."
+        },
+        {
+          "label": "B",
+          "text": "\"The function `parse_date` returns `2026-11-08` for `Nov 8, 2026`.\"",
+          "correct": false,
+          "explanation": "That is an exact unit test."
+        },
+        {
+          "label": "C",
+          "text": "\"At least 90% of summaries must cover the three required facts, scored by a rubric.\"",
+          "correct": true,
+          "explanation": "Graded quality over a set."
+        },
+        {
+          "label": "D",
+          "text": "\"The file exists after the build step.\"",
+          "correct": false,
+          "explanation": "A binary check, a test."
+        },
+        {
+          "label": "E",
+          "text": "\"The API response status is 200 for a valid request.\"",
+          "correct": false,
+          "explanation": "Fixed pass or fail check."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.25",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "eval vs test",
+      "stem": "Claude says \"I added an eval for the extractor\" and shows one `assert extract(\"a\") == \"b\"` in `test_extract.py`. Which statements judge this? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An eval would add a labelled set and a scoring rule with a threshold.",
+          "correct": true,
+          "explanation": "Those are the missing parts."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up instruction: \"Write the eval set of 50 labelled cases and report accuracy.\"",
+          "correct": true,
+          "explanation": "That turns the claim into evidence."
+        },
+        {
+          "label": "C",
+          "text": "It is an eval, since it checks model behaviour.",
+          "correct": false,
+          "explanation": "One exact assertion is a test."
+        },
+        {
+          "label": "D",
+          "text": "It is a test: one fixed input and exact expected output.",
+          "correct": true,
+          "explanation": "Pass or fail on a fixed case."
+        },
+        {
+          "label": "E",
+          "text": "It is acceptable as evidence of quality across inputs, since it passed.",
+          "correct": false,
+          "explanation": "One case says little about the rest."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.26",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "temperature / top-p",
+      "stem": "A user tells Claude: \"Make the generations less random.\" Which statements unpack this into settings correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Raise top-p to 1.0, which restricts sampling to the single most likely token.",
+          "correct": false,
+          "explanation": "Top-p 1.0 allows the full distribution."
+        },
+        {
+          "label": "B",
+          "text": "Raise the temperature, since a high value makes the model more careful.",
+          "correct": false,
+          "explanation": "High temperature flattens probabilities."
+        },
+        {
+          "label": "C",
+          "text": "Lower the temperature, which sharpens the token probabilities toward the likeliest tokens.",
+          "correct": true,
+          "explanation": "That is what temperature does."
+        },
+        {
+          "label": "D",
+          "text": "Lower top-p, which shrinks the set of tokens that can be sampled.",
+          "correct": true,
+          "explanation": "A smaller nucleus reduces variety."
+        },
+        {
+          "label": "E",
+          "text": "Set `max_tokens` low, which makes each token choice more predictable.",
+          "correct": false,
+          "explanation": "Length cap does not change choice."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.27",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "temperature / top-p",
+      "stem": "Which one-line instruction best compresses: \"I want the same answer on every run, as far as the API allows\"? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Add `be consistent` to the prompt and leave sampling alone.\"",
+          "correct": false,
+          "explanation": "Sampling settings are not changed."
+        },
+        {
+          "label": "B",
+          "text": "\"Set temperature to 0 and keep the prompt text fixed.\"",
+          "correct": true,
+          "explanation": "Removes most sampling variation."
+        },
+        {
+          "label": "C",
+          "text": "\"Set temperature to 0.9 and a seed, and expect identical answers.\"",
+          "correct": false,
+          "explanation": "High temperature still diverges; a seed may not exist for all APIs."
+        },
+        {
+          "label": "D",
+          "text": "\"Use greedy decoding by setting temperature to 0.\"",
+          "correct": true,
+          "explanation": "Greedy picks the top token each step."
+        },
+        {
+          "label": "E",
+          "text": "\"Set top-p to 1 and temperature to 1 for balance.\"",
+          "correct": false,
+          "explanation": "That keeps the full distribution."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.28",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "temperature / top-p",
+      "stem": "A brainstorming tool needs varied but not wild ideas. Which settings choices are correct? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Top-p limits sampling to the smallest set of tokens whose probabilities add to p.",
+          "correct": true,
+          "explanation": "That is nucleus sampling."
+        },
+        {
+          "label": "B",
+          "text": "Top-p scales the logits before softmax, the same operation as temperature.",
+          "correct": false,
+          "explanation": "Temperature scales logits; top-p truncates the set."
+        },
+        {
+          "label": "C",
+          "text": "Temperature 2 with top-p 1, since extremes give the best ideas.",
+          "correct": false,
+          "explanation": "Very high settings give incoherent text."
+        },
+        {
+          "label": "D",
+          "text": "A moderate temperature with top-p below 1, which allows variety while cutting very unlikely tokens.",
+          "correct": true,
+          "explanation": "Both controls play a part."
+        },
+        {
+          "label": "E",
+          "text": "Temperature 0, because variety needs one answer per prompt.",
+          "correct": false,
+          "explanation": "That gives the least variety."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.29",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "acceptance criteria",
+      "stem": "A ticket says \"the export should be fast and correct.\" Which statements turn this into acceptance criteria? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"The code passes review by the lead.\"",
+          "correct": false,
+          "explanation": "That is a process step, not a condition on the result."
+        },
+        {
+          "label": "B",
+          "text": "\"The export feels responsive to users.\"",
+          "correct": false,
+          "explanation": "Subjective; no check."
+        },
+        {
+          "label": "C",
+          "text": "Each criterion is written before the work starts, so it can decide acceptance.",
+          "correct": true,
+          "explanation": "Criteria precede the work."
+        },
+        {
+          "label": "D",
+          "text": "\"Exports of 10,000 rows finish in under 5 seconds on the CI machine.\"",
+          "correct": true,
+          "explanation": "Measurable condition."
+        },
+        {
+          "label": "E",
+          "text": "\"The CSV has a header row and the row count equals the source table's count.\"",
+          "correct": true,
+          "explanation": "A checkable correctness condition."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.30",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "acceptance criteria",
+      "stem": "Which one-line instruction best gives Claude Code the acceptance criteria for a login fix? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Done when a wrong password returns 401, a right one returns a token, and the new tests pass.\"",
+          "correct": true,
+          "explanation": "Three checkable conditions."
+        },
+        {
+          "label": "B",
+          "text": "\"Improve login code quality as much as possible.\"",
+          "correct": false,
+          "explanation": "No endpoint to judge."
+        },
+        {
+          "label": "C",
+          "text": "\"Make login work properly.\"",
+          "correct": false,
+          "explanation": "No check is named."
+        },
+        {
+          "label": "D",
+          "text": "\"Accept the change only if `pytest tests/test_login.py` passes and no other file changes.\"",
+          "correct": true,
+          "explanation": "A command and a scope condition."
+        },
+        {
+          "label": "E",
+          "text": "\"Fix login and tell me when you feel it is solid.\"",
+          "correct": false,
+          "explanation": "Relies on the agent's feeling."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.31",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "acceptance criteria",
+      "stem": "The agent reports \"done\". Which statements show a gap in acceptance criteria rather than in the work? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The task said \"make it better\" and the agent chose its own bar for done.",
+          "correct": true,
+          "explanation": "The bar was not set beforehand."
+        },
+        {
+          "label": "B",
+          "text": "The criterion \"should be robust\" cannot be checked by any command.",
+          "correct": true,
+          "explanation": "Not checkable."
+        },
+        {
+          "label": "C",
+          "text": "The criteria were written after the agent finished, shaped to match its output.",
+          "correct": true,
+          "explanation": "Criteria must precede the result."
+        },
+        {
+          "label": "D",
+          "text": "The task listed three criteria and the output fails one of them.",
+          "correct": false,
+          "explanation": "That is a work failure."
+        },
+        {
+          "label": "E",
+          "text": "The task never stated what output would count as success, so \"done\" has no test.",
+          "correct": true,
+          "explanation": "No criteria."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.32",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "diff review",
+      "stem": "A user asks Claude Code: \"Do a diff review of your change.\" Which statements unpack this correctly? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Confirm each removed line was meant to be removed.",
+          "correct": true,
+          "explanation": "Deletions need intent."
+        },
+        {
+          "label": "B",
+          "text": "Run the eval set and report the score.",
+          "correct": false,
+          "explanation": "Evaluation measures behaviour; a diff review reads the change."
+        },
+        {
+          "label": "C",
+          "text": "Rerun the whole task from the start and compare the new output with the old one.",
+          "correct": false,
+          "explanation": "That is a rerun, not a review."
+        },
+        {
+          "label": "D",
+          "text": "Flag any changed file the task did not mention.",
+          "correct": true,
+          "explanation": "Scope check."
+        },
+        {
+          "label": "E",
+          "text": "Read the lines added and removed and compare each against the requirements.",
+          "correct": true,
+          "explanation": "That is what the review covers."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.33",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "diff review",
+      "stem": "Claude's summary says \"small refactor of `utils.py`.\" The diff touches `utils.py`, `config.py` and deletes a test. Which statements are the right review findings? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The diff is too long to review, so approve on the summary.",
+          "correct": false,
+          "explanation": "Review needs the diff."
+        },
+        {
+          "label": "B",
+          "text": "The summary matches the diff, as `utils.py` was changed.",
+          "correct": false,
+          "explanation": "Other changes go unmentioned."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up: \"Explain why `config.py` changed and restore the deleted test, or justify removing it.\"",
+          "correct": true,
+          "explanation": "Asks for evidence and scope control."
+        },
+        {
+          "label": "D",
+          "text": "Deleting a test is acceptable in a refactor when the remaining tests pass.",
+          "correct": false,
+          "explanation": "A passing suite without that test hides lost coverage."
+        },
+        {
+          "label": "E",
+          "text": "The summary does not match the diff: two other files changed and a test was deleted.",
+          "correct": true,
+          "explanation": "Claim and code differ."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.34",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "diff review",
+      "stem": "Which one-line instruction best compresses: \"before I accept, show me exactly what changed and whether each change belongs to the task\"? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Commit the work with a clear message.\"",
+          "correct": false,
+          "explanation": "Commit does not review."
+        },
+        {
+          "label": "B",
+          "text": "\"Show `git diff` and map each hunk to a requirement; list anything outside the task.\"",
+          "correct": true,
+          "explanation": "Names the artifact and the mapping."
+        },
+        {
+          "label": "C",
+          "text": "\"Run the tests and tell me if they pass.\"",
+          "correct": false,
+          "explanation": "Tests do not reveal unrelated edits."
+        },
+        {
+          "label": "D",
+          "text": "\"Summarize what you did in one paragraph.\"",
+          "correct": false,
+          "explanation": "A summary is the agent's own description."
+        },
+        {
+          "label": "E",
+          "text": "\"Print the diff and mark hunks that have no requirement behind them.\"",
+          "correct": true,
+          "explanation": "Same check, other wording."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.35",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "planning before acting",
+      "stem": "A user tells Claude Code: \"Plan before acting, then change the billing module.\" Which statements unpack this into checkable conditions? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "After approval, the diff is checked against the files named in the plan.",
+          "correct": true,
+          "explanation": "The plan becomes a scope standard."
+        },
+        {
+          "label": "B",
+          "text": "The agent reads files and writes a plan listing files to change, without editing anything.",
+          "correct": true,
+          "explanation": "Planning stage is read-only."
+        },
+        {
+          "label": "C",
+          "text": "The plan counts as finished once it exists, whatever it says.",
+          "correct": false,
+          "explanation": "An unreviewed plan is not a gate."
+        },
+        {
+          "label": "D",
+          "text": "The agent edits the files while writing the plan, so the plan matches the edits.",
+          "correct": false,
+          "explanation": "Edits happened before approval."
+        },
+        {
+          "label": "E",
+          "text": "A person approves or amends the plan before the first edit.",
+          "correct": true,
+          "explanation": "The plan is a checkpoint."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.36",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "planning before acting",
+      "stem": "Which tasks justify requiring a plan before acting in Claude Code? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Printing the current directory.",
+          "correct": false,
+          "explanation": "Trivial, read-only."
+        },
+        {
+          "label": "B",
+          "text": "Renaming a function used in 40 files across several packages.",
+          "correct": true,
+          "explanation": "Wide reach, so scope needs agreement first."
+        },
+        {
+          "label": "C",
+          "text": "Changing a database migration that has already run in production.",
+          "correct": true,
+          "explanation": "Hard to undo; plan first."
+        },
+        {
+          "label": "D",
+          "text": "Reformatting a single local variable name.",
+          "correct": false,
+          "explanation": "Low risk and local."
+        },
+        {
+          "label": "E",
+          "text": "Fixing a typo in a README sentence.",
+          "correct": false,
+          "explanation": "A plan adds little."
+        }
+      ]
+    },
+    {
+      "id": "MA-k01.37",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: compress and decompress",
+      "source": "planning before acting",
+      "stem": "An agent's plan says: \"Step 3: update everything that needs updating.\" Which statements judge the plan? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "It is too vague to approve, since it names no files or conditions.",
+          "correct": true,
+          "explanation": "Cannot be reviewed against a diff."
+        },
+        {
+          "label": "B",
+          "text": "It is a good plan, since it leaves room for judgment.",
+          "correct": false,
+          "explanation": "It has no checkable content."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up: \"List the files for step 3 and what changes in each.\"",
+          "correct": true,
+          "explanation": "Makes the step reviewable."
+        },
+        {
+          "label": "D",
+          "text": "A good step names the file, the change and a check that it worked.",
+          "correct": true,
+          "explanation": "Plan steps need checks."
+        },
+        {
+          "label": "E",
+          "text": "Approve it and compare with the diff if something breaks.",
+          "correct": false,
+          "explanation": "Review should come before and after."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.1",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "idempotent, retry safety",
+      "stem": "An agent reports: \"Retries are now safe.\" The diff wraps `charge_card(order)` in a retry loop that runs again on a timeout. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Wrapping any call in a retry loop makes it safe to retry.",
+          "correct": false,
+          "explanation": "The loop does not change what a repeated call does."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up that turns the claim into evidence is: \"Write a test that calls charge_card twice with the same order and counts the charges.\"",
+          "correct": true,
+          "explanation": "The test observes the effect of a repeat."
+        },
+        {
+          "label": "C",
+          "text": "If the first call timed out, the caller knows it had no effect, so a retry is safe.",
+          "correct": false,
+          "explanation": "A timeout leaves the outcome unknown."
+        },
+        {
+          "label": "D",
+          "text": "A retry is safe only if repeating the call has the same effect as doing it once, which is what idempotent means.",
+          "correct": true,
+          "explanation": "Idempotent is the property retries rely on."
+        },
+        {
+          "label": "E",
+          "text": "One passing test with a single call shows that retries are safe.",
+          "correct": false,
+          "explanation": "A single call never exercises a repeat."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.2",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "scope violation, diff review",
+      "stem": "An agent ends its summary with: \"I tidied some formatting in `billing.py` too.\" Your instruction said not to touch `billing.py`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The change can be accepted because a formatter is deterministic.",
+          "correct": false,
+          "explanation": "Determinism says nothing about permission."
+        },
+        {
+          "label": "B",
+          "text": "Whitespace-only edits are not a scope violation because behaviour is unchanged.",
+          "correct": false,
+          "explanation": "The file was off limits."
+        },
+        {
+          "label": "C",
+          "text": "A constraint stated before the work is a preference, and the diff need not be checked against it.",
+          "correct": false,
+          "explanation": "It belongs to the acceptance criteria."
+        },
+        {
+          "label": "D",
+          "text": "A correct follow-up is: \"Revert `billing.py` and show `git diff --stat` so I can confirm only the allowed files changed.\"",
+          "correct": true,
+          "explanation": "The revert is checked against evidence."
+        },
+        {
+          "label": "E",
+          "text": "Editing a file outside the stated scope is a scope violation even when the change is harmless.",
+          "correct": true,
+          "explanation": "Scope is set by the instruction, not by the size of the change."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "claim vs evidence, acceptance criteria",
+      "stem": "An agent says about a new function: \"This should handle all cases.\" Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Should\" states a prediction; it is not evidence.",
+          "correct": true,
+          "explanation": "Nothing was run or shown."
+        },
+        {
+          "label": "B",
+          "text": "The claim becomes evidence once the agent lists the cases it thought about in prose.",
+          "correct": false,
+          "explanation": "A list in prose is still a claim."
+        },
+        {
+          "label": "C",
+          "text": "Naming the input classes turns \"all cases\" into acceptance criteria that tests can check.",
+          "correct": true,
+          "explanation": "Enumerated classes are checkable conditions."
+        },
+        {
+          "label": "D",
+          "text": "\"All cases\" defines a checkable condition by itself.",
+          "correct": false,
+          "explanation": "An unbounded set must be enumerated before it can be checked."
+        },
+        {
+          "label": "E",
+          "text": "A better instruction is: \"List the input classes as test cases (empty, None, duplicates, very long) and run them.\"",
+          "correct": true,
+          "explanation": "Cases become checkable when named and run."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "trivial tests, verification",
+      "stem": "An agent reports \"All tests pass\" after pytest prints `2 passed`. The two tests are `assert True` and one that imports the module. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A larger count of passing tests matters more than what each one asserts.",
+          "correct": false,
+          "explanation": "Assertions carry the evidence, not the count."
+        },
+        {
+          "label": "B",
+          "text": "A pass only shows that the existing checks did not fail; its weight depends on what they assert.",
+          "correct": true,
+          "explanation": "These checks cannot fail."
+        },
+        {
+          "label": "C",
+          "text": "A test with no assertion on the changed behaviour fails when the change is broken.",
+          "correct": false,
+          "explanation": "Without an assertion it cannot fail on the change."
+        },
+        {
+          "label": "D",
+          "text": "Passing tests mean the new function is verified.",
+          "correct": false,
+          "explanation": "No test touches the new behaviour."
+        },
+        {
+          "label": "E",
+          "text": "A good follow-up is: \"Rerun pytest and paste the line that says passed.\"",
+          "correct": false,
+          "explanation": "Rerunning the same trivial checks gives the same result."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.5",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "check-then-act race, atomic",
+      "stem": "An agent says: \"Safe for concurrent workers.\" The code is `if not os.path.exists(p): open(p, \"w\").write(data)`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Opening with mode \"x\" makes the check and the create one operation that fails if the file exists.",
+          "correct": true,
+          "explanation": "Exclusive create is atomic."
+        },
+        {
+          "label": "B",
+          "text": "Two workers can both see the file missing before either writes, which is a check-then-act race.",
+          "correct": true,
+          "explanation": "The gap between check and act is the race."
+        },
+        {
+          "label": "C",
+          "text": "Adding a short random sleep before the check removes the race.",
+          "correct": false,
+          "explanation": "It makes the race less likely, not impossible."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up that gives evidence is: \"Read the code again and confirm it looks safe.\"",
+          "correct": false,
+          "explanation": "Rereading produces no observation of concurrency."
+        },
+        {
+          "label": "E",
+          "text": "The code is safe because the check runs right before the write.",
+          "correct": false,
+          "explanation": "Proximity does not close the gap."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.6",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "claim vs code mismatch",
+      "stem": "An agent summarizes: \"Added input validation for empty emails.\" The diff changes one line: `email = email.strip()`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "When the summary and the diff disagree, the summary should win because it states intent.",
+          "correct": false,
+          "explanation": "The diff is what runs."
+        },
+        {
+          "label": "B",
+          "text": "The diff, not the summary, is the record of what changed.",
+          "correct": true,
+          "explanation": "Read the diff against the claim."
+        },
+        {
+          "label": "C",
+          "text": "The summary and the code disagree: stripping normalizes input, it does not reject it.",
+          "correct": true,
+          "explanation": "Nothing raises or returns an error."
+        },
+        {
+          "label": "D",
+          "text": "A validation claim is checked by passing an empty string and seeing it rejected.",
+          "correct": true,
+          "explanation": "Rejection is observable in the result."
+        },
+        {
+          "label": "E",
+          "text": "A good follow-up is: \"Show the line that rejects an empty email and a test that passes an empty string.\"",
+          "correct": true,
+          "explanation": "It asks for the code and a test."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.7",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "partial results",
+      "stem": "An agent reports: \"Processed the batch: 480 records written.\" The input had 500 records and the log shows 20 lines saying `skipped`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An exit code of 0 shows that every record was handled.",
+          "correct": false,
+          "explanation": "The program may exit normally after skipping."
+        },
+        {
+          "label": "B",
+          "text": "The next step is to rerun the whole batch without checking whether the write is idempotent.",
+          "correct": false,
+          "explanation": "A rerun can duplicate the 480."
+        },
+        {
+          "label": "C",
+          "text": "A summary of successes is complete when no exception reached the top.",
+          "correct": false,
+          "explanation": "Skips do not raise."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up is: \"Reconcile the counts: input 500 = written + skipped + failed, and list the skipped IDs.\"",
+          "correct": true,
+          "explanation": "Counts must add up."
+        },
+        {
+          "label": "E",
+          "text": "The result is partial: 480 of 500 were written and the claim leaves out the 20 skipped.",
+          "correct": true,
+          "explanation": "The report omits the failures."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.8",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "flaky test, claim vs code",
+      "stem": "An agent says: \"Fixed the flaky test.\" The diff adds `@retry(3)` above the test and changes nothing else. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A flaky test gives the same outcome on every run of the same code and inputs.",
+          "correct": false,
+          "explanation": "Flaky means the outcomes vary."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up is: \"Name what varies (time, order, network) and show a test that fails reliably before the fix.\"",
+          "correct": true,
+          "explanation": "It asks for the cause and a failing test."
+        },
+        {
+          "label": "C",
+          "text": "Lower failure rate with retries shows the flakiness is fixed.",
+          "correct": false,
+          "explanation": "The rate drops but the cause remains."
+        },
+        {
+          "label": "D",
+          "text": "A retry hides nondeterminism; it does not remove the cause.",
+          "correct": true,
+          "explanation": "The test can still fail for the same reason."
+        },
+        {
+          "label": "E",
+          "text": "A test that passes after a rerun is deterministic.",
+          "correct": false,
+          "explanation": "Deterministic means the same result every run."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.9",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "planning before acting, plan review",
+      "stem": "An agent presents this plan before editing: \"I'll refactor the module and update callers as needed.\" Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The plan is acceptable because \"as needed\" lets the agent adapt.",
+          "correct": false,
+          "explanation": "It gives the agent unbounded scope."
+        },
+        {
+          "label": "B",
+          "text": "The plan is too vague to approve: it names no files, order or checks.",
+          "correct": true,
+          "explanation": "There is nothing to compare the diff against."
+        },
+        {
+          "label": "C",
+          "text": "In plan mode the agent researches without editing and presents a plan for approval.",
+          "correct": true,
+          "explanation": "That is planning before acting."
+        },
+        {
+          "label": "D",
+          "text": "A plan is useful only after the code is written, so it can be compared with the result.",
+          "correct": false,
+          "explanation": "The plan is for approval before the change."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up is: \"List the files you will edit, the ones you will not touch, and how each step is checked, before any edit.\"",
+          "correct": true,
+          "explanation": "It makes the plan checkable."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.10",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "tool_use, tool_result, verification",
+      "stem": "An agent writes: \"I ran the tests and they pass.\" The transcript contains no tool call and no tool output. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The claim can be accepted because agents report what they did.",
+          "correct": false,
+          "explanation": "Reports can be wrong; check the evidence."
+        },
+        {
+          "label": "B",
+          "text": "The agent's own sentence counts as a tool_result.",
+          "correct": false,
+          "explanation": "A tool_result is what the tool returned."
+        },
+        {
+          "label": "C",
+          "text": "A tool_use is the output a tool returns, and a tool_result is the model's request to run it.",
+          "correct": false,
+          "explanation": "The request is the tool_use; the output is the tool_result."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up is: \"Confirm that you ran the tests.\"",
+          "correct": false,
+          "explanation": "A repeated claim is still not output."
+        },
+        {
+          "label": "E",
+          "text": "Without a tool_use and a tool_result in the transcript, the claim is unsupported.",
+          "correct": true,
+          "explanation": "Nothing shows a run."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.11",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "approval gate, permission scope",
+      "stem": "An agent says: \"I'll delete the old migration files and push to main now.\" It continues without pausing. Your setup lists `delete` and `git push` as ask-first. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An approval gate stops the action until a human decides.",
+          "correct": true,
+          "explanation": "A gate pauses before the action."
+        },
+        {
+          "label": "B",
+          "text": "Deleting files and pushing to a remote are hard to undo and should stop at an approval gate.",
+          "correct": true,
+          "explanation": "A human decision is needed before them."
+        },
+        {
+          "label": "C",
+          "text": "Listing delete and push as ask-first is a permission scope choice that makes the agent stop.",
+          "correct": true,
+          "explanation": "The scope sets which actions need approval."
+        },
+        {
+          "label": "D",
+          "text": "Your approval of the edit plan also covers a later push to a remote.",
+          "correct": false,
+          "explanation": "Approval is per action."
+        },
+        {
+          "label": "E",
+          "text": "A correct instruction is: \"Pause before any delete or push and show the exact paths and branch.\"",
+          "correct": true,
+          "explanation": "It names the actions and what to show."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.12",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "permission scope, least privilege",
+      "stem": "An agent reports: \"To debug, I read `~/.aws/credentials`.\" The permission scope was the project directory only. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A narrower scope is one that lists more directories.",
+          "correct": false,
+          "explanation": "Narrower means fewer paths and commands."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up is: \"List every file outside the project you read and whether any content appeared in output.\"",
+          "correct": true,
+          "explanation": "It checks the extent of the exposure."
+        },
+        {
+          "label": "C",
+          "text": "Being able to read the file means it was within scope.",
+          "correct": false,
+          "explanation": "Capability is not permission."
+        },
+        {
+          "label": "D",
+          "text": "Reading is not a violation because nothing was changed.",
+          "correct": false,
+          "explanation": "The secret may now sit in the transcript."
+        },
+        {
+          "label": "E",
+          "text": "Reading a file outside the allowed directories is out of scope even if nothing was modified.",
+          "correct": true,
+          "explanation": "Scope covers reads."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.13",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "cache, stale data, equivalence",
+      "stem": "An agent says: \"Reduced latency by caching.\" The diff adds `@functools.lru_cache` to `load_settings()`, which reads a file that operators edit. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "lru_cache notices when the file contents change.",
+          "correct": false,
+          "explanation": "It only compares arguments."
+        },
+        {
+          "label": "B",
+          "text": "A higher hit rate shows the change is correct.",
+          "correct": false,
+          "explanation": "Hits can be wrong values."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"State when the cache is invalidated and test it: edit the file, call again, expect the new value.\"",
+          "correct": true,
+          "explanation": "The test targets staleness."
+        },
+        {
+          "label": "D",
+          "text": "Faster output is not evidence of the same output; an equivalence check is needed.",
+          "correct": true,
+          "explanation": "Speed and correctness are separate."
+        },
+        {
+          "label": "E",
+          "text": "After the file changes, the cached function keeps returning the old value.",
+          "correct": true,
+          "explanation": "The cache key is the arguments, not the file."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.14",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "claim vs code mismatch, refactor",
+      "stem": "An agent says: \"Refactor complete, behavior unchanged.\" The diff changes a default argument from `timeout=10` to `timeout=20`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A refactor claim is checked against the diff for changed constants and defaults.",
+          "correct": true,
+          "explanation": "These are common silent changes."
+        },
+        {
+          "label": "B",
+          "text": "Changing a default stays within a refactor because the signature is the same.",
+          "correct": false,
+          "explanation": "Callers see different behaviour."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"Run the same inputs before and after and show the outputs match.\"",
+          "correct": true,
+          "explanation": "A characterization check supports the claim."
+        },
+        {
+          "label": "D",
+          "text": "The claim and the code disagree: callers that use the default now behave differently.",
+          "correct": true,
+          "explanation": "The default is behaviour."
+        },
+        {
+          "label": "E",
+          "text": "A default argument is part of a function's behaviour for callers that omit it.",
+          "correct": true,
+          "explanation": "Omitting the argument uses the default."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.15",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "pure function, mutable default",
+      "stem": "An agent says a new helper is \"pure\". The code is `def add(item, bucket=[]): bucket.append(item); return bucket`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Python creates a fresh default list on each call.",
+          "correct": false,
+          "explanation": "The default is made once at definition."
+        },
+        {
+          "label": "B",
+          "text": "The usual fix is to copy the list on the first call and reuse the copy afterward.",
+          "correct": false,
+          "explanation": "The fix is a `None` default and a new list per call."
+        },
+        {
+          "label": "C",
+          "text": "The function is not pure: the default list persists between calls.",
+          "correct": true,
+          "explanation": "State is shared across calls."
+        },
+        {
+          "label": "D",
+          "text": "It is pure because it returns a value.",
+          "correct": false,
+          "explanation": "Purity requires no hidden state."
+        },
+        {
+          "label": "E",
+          "text": "A check is to call it twice with the same argument and see that the results differ.",
+          "correct": true,
+          "explanation": "Same input, different output shows hidden state."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.16",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "error handling, silent failure",
+      "stem": "An agent says: \"Added error handling.\" The diff wraps the main work in `try: ... except Exception: pass`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The program is more robust because no exception reaches the user.",
+          "correct": false,
+          "explanation": "Failures are hidden, not handled."
+        },
+        {
+          "label": "B",
+          "text": "The handler silences failures; error handling means detecting and reporting or recovering.",
+          "correct": true,
+          "explanation": "Nothing is reported."
+        },
+        {
+          "label": "C",
+          "text": "Swallowed errors show up in the exit code as a nonzero status.",
+          "correct": false,
+          "explanation": "No exception escapes, so the exit code stays zero."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up is: \"Add a comment explaining why exceptions are ignored.\"",
+          "correct": false,
+          "explanation": "A comment does not make a failure observable."
+        },
+        {
+          "label": "E",
+          "text": "A catch-all `pass` is acceptable if a comment explains it.",
+          "correct": false,
+          "explanation": "A comment does not report the failure."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.17",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "deterministic, temperature",
+      "stem": "An agent builds a test around a Claude call and reports: \"It is deterministic: I set temperature to 0.\" The test compares exact text. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Setting Python's `random.seed` fixes the model's sampling on the server.",
+          "correct": false,
+          "explanation": "The sampling does not run in your process."
+        },
+        {
+          "label": "B",
+          "text": "Temperature 0 reduces variation but does not guarantee identical output on every call.",
+          "correct": true,
+          "explanation": "Other factors can change output."
+        },
+        {
+          "label": "C",
+          "text": "A sturdier test compares exact text, since text is what the user sees.",
+          "correct": false,
+          "explanation": "Exact text breaks on harmless wording changes."
+        },
+        {
+          "label": "D",
+          "text": "A follow-up is: \"Run the same prompt five times and diff the outputs.\"",
+          "correct": true,
+          "explanation": "It measures the variation."
+        },
+        {
+          "label": "E",
+          "text": "Temperature 0 guarantees byte-identical output on every call.",
+          "correct": false,
+          "explanation": "It is not a guarantee."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.18",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "retrieval, grounding, citation check",
+      "stem": "An agent says: \"Retrieval returned the relevant document, so the answer is grounded.\" The answer states a figure that does not appear in that document. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up is: \"Quote the sentence in the retrieved passage that supports the figure.\"",
+          "correct": true,
+          "explanation": "A quote can be compared with the source."
+        },
+        {
+          "label": "B",
+          "text": "A citation check compares a claim against the source text.",
+          "correct": true,
+          "explanation": "That is what the check does."
+        },
+        {
+          "label": "C",
+          "text": "The answer is grounded because the retrieved text was in the prompt.",
+          "correct": false,
+          "explanation": "Grounded means supported by the text."
+        },
+        {
+          "label": "D",
+          "text": "Retrieval puts text in the context; it does not guarantee the answer uses it.",
+          "correct": true,
+          "explanation": "The model may add content."
+        },
+        {
+          "label": "E",
+          "text": "A figure that is not in the sources is acceptable if it sounds plausible.",
+          "correct": false,
+          "explanation": "Plausible is not supported."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.19",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "verification, failing test first",
+      "stem": "An agent reports: \"I verified the fix by re-running the script; it printed `Done`.\" The script ends with `print(\"Done\")` unconditionally. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A test that fails before the change shows the test can detect the bug.",
+          "correct": true,
+          "explanation": "Otherwise its pass means little."
+        },
+        {
+          "label": "B",
+          "text": "Printed output is a tool_result, so the verification is complete.",
+          "correct": false,
+          "explanation": "A result is evidence only if it depends on the behaviour."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"Write a test that fails on the old code, then show it passes after the fix.\"",
+          "correct": true,
+          "explanation": "A failing-first test can tell the cases apart."
+        },
+        {
+          "label": "D",
+          "text": "The message `Done` is not evidence about the behaviour.",
+          "correct": true,
+          "explanation": "It prints whatever happens."
+        },
+        {
+          "label": "E",
+          "text": "Verification must be confirmable apart from the producer, so the script's own message cannot serve.",
+          "correct": true,
+          "explanation": "The script is the producer."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.20",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "tests, coverage of input classes",
+      "stem": "An agent reports: \"Added tests for the parser: 12 tests, all green.\" All 12 call the parser with the same valid string. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Twelve tests improve branch coverage over one test.",
+          "correct": false,
+          "explanation": "They repeat one path."
+        },
+        {
+          "label": "B",
+          "text": "Green tests prove the parser has no bugs.",
+          "correct": false,
+          "explanation": "They show only that these checks passed."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"Give a table of input classes (empty, malformed, unicode) with the test for each.\"",
+          "correct": true,
+          "explanation": "It maps classes to checks."
+        },
+        {
+          "label": "D",
+          "text": "The count of tests does not measure what they cover.",
+          "correct": true,
+          "explanation": "All twelve exercise one path."
+        },
+        {
+          "label": "E",
+          "text": "Another check is to break the parser on purpose and show that a test fails.",
+          "correct": true,
+          "explanation": "A test that cannot fail is not evidence."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.21",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "partial results, idempotent",
+      "stem": "An agent reports: \"The migration succeeded.\" The last log lines are `table 3 of 5 done` then `Terminated`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "No error message appeared, so the migration succeeded.",
+          "correct": false,
+          "explanation": "A killed process may print none."
+        },
+        {
+          "label": "B",
+          "text": "Rerunning from the start is safe without first checking whether the script is idempotent.",
+          "correct": false,
+          "explanation": "A rerun can duplicate rows."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"Rerun the script and report whether it prints succeeded.\"",
+          "correct": false,
+          "explanation": "Rerunning may repeat the stop and duplicate earlier rows."
+        },
+        {
+          "label": "D",
+          "text": "A resumable migration restarts from the first table on each run.",
+          "correct": false,
+          "explanation": "Resumable means it skips completed tables."
+        },
+        {
+          "label": "E",
+          "text": "The result is partial: three of five tables were migrated before the process stopped.",
+          "correct": true,
+          "explanation": "The log shows it stopped."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.22",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "read-modify-write race, atomic",
+      "stem": "An agent says: \"Incremented the counter safely.\" The code is `n = store.get(\"n\"); store.set(\"n\", n + 1)` in a store shared by several workers. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Two workers can read the same value and both write n + 1, so one increment is lost.",
+          "correct": true,
+          "explanation": "The read and write are separate steps."
+        },
+        {
+          "label": "B",
+          "text": "The code is safe because the two lines run one after the other.",
+          "correct": false,
+          "explanation": "Only within one worker."
+        },
+        {
+          "label": "C",
+          "text": "A check is to run one worker once and confirm the counter went up by one.",
+          "correct": false,
+          "explanation": "A single worker cannot expose the race."
+        },
+        {
+          "label": "D",
+          "text": "A `threading.Lock` in each worker process protects against workers in other processes.",
+          "correct": false,
+          "explanation": "A lock in one process is invisible to others."
+        },
+        {
+          "label": "E",
+          "text": "An atomic increment, such as Redis `INCR` or SQL `SET n = n + 1`, closes the gap.",
+          "correct": true,
+          "explanation": "The store does it in one step."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.23",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "context window vs memory",
+      "stem": "An agent says: \"I'll remember your preferences for next week; I used the context window.\" Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The context window holds tokens of the current conversation; it does not carry over to a new session.",
+          "correct": true,
+          "explanation": "The next session starts empty."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up is: \"Write the preferences into a memory file such as CLAUDE.md and show me the file.\"",
+          "correct": true,
+          "explanation": "A file persists."
+        },
+        {
+          "label": "C",
+          "text": "Anything said earlier remains available in a new session.",
+          "correct": false,
+          "explanation": "Only saved content persists."
+        },
+        {
+          "label": "D",
+          "text": "A memory file read at the start of a session is what makes standing instructions persist.",
+          "correct": true,
+          "explanation": "It loads each time."
+        },
+        {
+          "label": "E",
+          "text": "A longer context window gives the agent memory across sessions.",
+          "correct": false,
+          "explanation": "Length is not persistence."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.24",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "claim vs code mismatch, diff review",
+      "stem": "An agent summarizes: \"Updated 3 files: `parser.py`, `utils.py`, `README.md`.\" `git diff --stat` shows five files changed. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Files the agent thinks are minor can be left out of a summary.",
+          "correct": false,
+          "explanation": "The reader needs the full list."
+        },
+        {
+          "label": "B",
+          "text": "The summary is the diff, so no further check is needed.",
+          "correct": false,
+          "explanation": "The diff is the record."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"Paste `git diff --stat` and say why each file changed.\"",
+          "correct": true,
+          "explanation": "It gets the full list."
+        },
+        {
+          "label": "D",
+          "text": "The summary and the diff disagree about which files changed.",
+          "correct": true,
+          "explanation": "Two files are missing from the summary."
+        },
+        {
+          "label": "E",
+          "text": "An unlisted file is within scope because the summary covers the main work.",
+          "correct": false,
+          "explanation": "Scope is set by your instruction."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.25",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "claim vs evidence, failing test first",
+      "stem": "An agent says: \"Fixed the bug in `parse_date`; it works for the failing input.\" Only that one input was run. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Reading the diff for hard-coded constants checks the claim against the code.",
+          "correct": true,
+          "explanation": "Special-casing shows in the diff."
+        },
+        {
+          "label": "B",
+          "text": "A fix that special-cases the reported input would pass the one example and leave the bug in place.",
+          "correct": true,
+          "explanation": "Special-casing passes that input only."
+        },
+        {
+          "label": "C",
+          "text": "Fixing the failing input implies a general fix.",
+          "correct": false,
+          "explanation": "The fix could be narrow."
+        },
+        {
+          "label": "D",
+          "text": "One example shows the fix for that input only.",
+          "correct": true,
+          "explanation": "Other inputs were not run."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up is: \"Write the failing test for the reported input first, then add boundary inputs.\"",
+          "correct": true,
+          "explanation": "It widens the evidence."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.26",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "permission scope, tool_use",
+      "stem": "An agent says: \"I used an approved tool, so it's within scope.\" It called `run_shell` with `rm -rf build/`. Your permission allowed `run_shell` for `pytest` only. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Deleting `build/` is harmless, so it is not a scope violation.",
+          "correct": false,
+          "explanation": "Harm is not the test; permission is."
+        },
+        {
+          "label": "B",
+          "text": "A tighter setup is an allowlist of commands, such as `pytest`.",
+          "correct": true,
+          "explanation": "Anything else asks first."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"Tell me whether the commands were safe.\"",
+          "correct": false,
+          "explanation": "A judgment is not the record; the tool_use entries show the commands."
+        },
+        {
+          "label": "D",
+          "text": "Permission scope applies to the command given to the tool, not only to the tool name.",
+          "correct": true,
+          "explanation": "The arguments decide what happens."
+        },
+        {
+          "label": "E",
+          "text": "Allowing a tool allows every command through it.",
+          "correct": false,
+          "explanation": "Scope is narrower than the tool."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.27",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "eval vs test, acceptance criteria",
+      "stem": "An agent says: \"The eval passed: 8 of 10 graded answers were correct.\" Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Ten cases give a precise estimate of the true accuracy.",
+          "correct": false,
+          "explanation": "A small set leaves wide uncertainty."
+        },
+        {
+          "label": "B",
+          "text": "The pass threshold should have been written as acceptance criteria before the run.",
+          "correct": true,
+          "explanation": "Otherwise the threshold fits the result."
+        },
+        {
+          "label": "C",
+          "text": "8 of 10 means the system passes every case.",
+          "correct": false,
+          "explanation": "Two failed."
+        },
+        {
+          "label": "D",
+          "text": "An eval scores varying output, so its result is a rate rather than a single pass or fail.",
+          "correct": true,
+          "explanation": "8 of 10 is a rate."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up is: \"Show the two failures and the rubric used to grade.\"",
+          "correct": true,
+          "explanation": "The failures show the weakness."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.28",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "acting on a guess, verification",
+      "stem": "An agent reports: \"I couldn't open `config.yaml`, but the usual structure suggests the timeout key is `timeout_s`, so I edited that.\" Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Telling you it could not open the file was the right thing to report.",
+          "correct": true,
+          "explanation": "The failure is stated."
+        },
+        {
+          "label": "B",
+          "text": "The edit rests on a guess about a file the agent did not read.",
+          "correct": true,
+          "explanation": "The key may not exist."
+        },
+        {
+          "label": "C",
+          "text": "A follow-up is: \"Do not edit until you have read `config.yaml` and quoted the relevant keys.\"",
+          "correct": true,
+          "explanation": "Read first, then act."
+        },
+        {
+          "label": "D",
+          "text": "Disclosing the guess makes acting on it safe.",
+          "correct": false,
+          "explanation": "A disclosed guess is still a guess."
+        },
+        {
+          "label": "E",
+          "text": "The edit is reasonable because the usual structure is generally right.",
+          "correct": false,
+          "explanation": "This file may differ."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.29",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "mock, verification, acceptance criteria",
+      "stem": "An agent says: \"Done: the endpoint returns 200.\" It tested against a mock server that returns 200 for every request. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Acceptance criteria can leave out which dependencies are real, since a passing check is enough.",
+          "correct": false,
+          "explanation": "Without it an always-passing mock can satisfy the check."
+        },
+        {
+          "label": "B",
+          "text": "The test shows how the mock behaves, not the real service.",
+          "correct": true,
+          "explanation": "The mock always answers 200."
+        },
+        {
+          "label": "C",
+          "text": "A 200 from the mock shows the real integration works.",
+          "correct": false,
+          "explanation": "The mock never ran the real code."
+        },
+        {
+          "label": "D",
+          "text": "A 200 status means the body is correct.",
+          "correct": false,
+          "explanation": "Status and body are different."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up is: \"Make one request against staging and show the response body.\"",
+          "correct": true,
+          "explanation": "It uses the real dependency."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.30",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "planning before acting, approval gate",
+      "stem": "An agent shows this plan: \"Step 3: update the database schema. Step 4: deploy.\" It lists no check after step 3 and no way back. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The plan has no verification after an irreversible step and no rollback.",
+          "correct": true,
+          "explanation": "Step 3 may fail halfway."
+        },
+        {
+          "label": "B",
+          "text": "The plan is complete because the steps are in order.",
+          "correct": false,
+          "explanation": "Order is not checking."
+        },
+        {
+          "label": "C",
+          "text": "A plan should say what each step changes.",
+          "correct": true,
+          "explanation": "Reviewers need it to judge scope."
+        },
+        {
+          "label": "D",
+          "text": "A step that changes a live system needs a stated check and a way back even when it looks simple.",
+          "correct": true,
+          "explanation": "Simplicity does not remove the risk."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up is: \"Add an approval gate before step 3 and a check of its result before step 4.\"",
+          "correct": true,
+          "explanation": "It stops before and verifies after."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.31",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "claim vs evidence, partial results",
+      "stem": "An agent reports: \"Batch finished in 2 seconds for 10,000 files.\" Earlier runs on 100 files took 40 seconds. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Run time is outside what needs checking.",
+          "correct": false,
+          "explanation": "A surprising number is a signal."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up is: \"Report how many files you opened and show one output file.\"",
+          "correct": true,
+          "explanation": "A count and a sample are evidence."
+        },
+        {
+          "label": "C",
+          "text": "The speed is a reason to check that the files were read at all.",
+          "correct": true,
+          "explanation": "It is far out of line with earlier runs."
+        },
+        {
+          "label": "D",
+          "text": "A glob that matched nothing or a swallowed exception could explain the time.",
+          "correct": true,
+          "explanation": "Both give quick, empty runs."
+        },
+        {
+          "label": "E",
+          "text": "A fast run proves the code is efficient.",
+          "correct": false,
+          "explanation": "It may have done less work."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.32",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "check-then-act race, atomic",
+      "stem": "An agent says: \"Made `get_or_create` thread-safe by using a dict instead of a list.\" The function does `if k not in d: d[k] = make()`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Changing the container does not remove the check-then-act sequence.",
+          "correct": true,
+          "explanation": "Two threads can both pass the check."
+        },
+        {
+          "label": "B",
+          "text": "A follow-up is: \"Run it from 20 threads with the same key and count how many times `make` ran.\"",
+          "correct": true,
+          "explanation": "The count shows the race."
+        },
+        {
+          "label": "C",
+          "text": "A lock around the check and the create closes the gap.",
+          "correct": true,
+          "explanation": "They run as one unit."
+        },
+        {
+          "label": "D",
+          "text": "Every dict operation is atomic, so any code using a dict is thread-safe.",
+          "correct": false,
+          "explanation": "Single operations are; sequences are not."
+        },
+        {
+          "label": "E",
+          "text": "The GIL makes any sequence of Python operations atomic.",
+          "correct": false,
+          "explanation": "Threads can switch between lines."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.33",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "scope violation, diff review",
+      "stem": "An agent says: \"No changes outside the `parser` module.\" The diff also adds a line to `requirements.txt`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A follow-up is: \"Keep the dependency in the same commit and move on.\"",
+          "correct": false,
+          "explanation": "That accepts the change without testing the need."
+        },
+        {
+          "label": "B",
+          "text": "A new dependency is invisible at runtime.",
+          "correct": false,
+          "explanation": "It is imported and run."
+        },
+        {
+          "label": "C",
+          "text": "A new dependency is a change outside the module and should be asked about.",
+          "correct": true,
+          "explanation": "It changes what installs."
+        },
+        {
+          "label": "D",
+          "text": "A diff review covers source files only, since config files do not run.",
+          "correct": false,
+          "explanation": "Config and requirements change what runs."
+        },
+        {
+          "label": "E",
+          "text": "It is not behaviour, so it is outside what needs review.",
+          "correct": false,
+          "explanation": "A dependency changes the runtime."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.34",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "verification, independence",
+      "stem": "An agent says: \"I verified the answer: I asked Claude again and it agreed.\" Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Two runs agreeing is verification.",
+          "correct": false,
+          "explanation": "They share the same blind spots."
+        },
+        {
+          "label": "B",
+          "text": "Agreement across repeated runs proves the answer is true.",
+          "correct": false,
+          "explanation": "Consistent is not correct."
+        },
+        {
+          "label": "C",
+          "text": "Verification means checking against evidence you can confirm apart from the producer.",
+          "correct": true,
+          "explanation": "That is the definition."
+        },
+        {
+          "label": "D",
+          "text": "Agreement from the same producer is not an independent check.",
+          "correct": true,
+          "explanation": "It can repeat the same mistake."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up is: \"Check it against the source document, or run the code and show the output.\"",
+          "correct": true,
+          "explanation": "Evidence apart from the producer."
+        }
+      ]
+    },
+    {
+      "id": "MA-k02.35",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: reading agent output",
+      "source": "claim vs code mismatch, diff review",
+      "stem": "An agent summarizes: \"Implemented caching; tests pass.\" The diff adds the cache and also deletes `tests/test_cache.py`. Decide which statements are true. Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A diff review looks for removed assertions as well as added code.",
+          "correct": true,
+          "explanation": "Deleted checks hide failures."
+        },
+        {
+          "label": "B",
+          "text": "Reading the pass count alone is enough.",
+          "correct": false,
+          "explanation": "The count fell with the tests."
+        },
+        {
+          "label": "C",
+          "text": "Deleting the test explains why the suite passes.",
+          "correct": true,
+          "explanation": "The check that could fail is gone."
+        },
+        {
+          "label": "D",
+          "text": "Removing an outdated test is a normal part of adding a feature.",
+          "correct": false,
+          "explanation": "Nothing says this test was outdated."
+        },
+        {
+          "label": "E",
+          "text": "A follow-up is: \"Restore the test, run it, and show the result.\"",
+          "correct": true,
+          "explanation": "The result can be read."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.1",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "stable (sort)",
+      "stem": "A Python script sorts employee records by salary and then sorts the result by department. The team wants records grouped by department, with salary order kept inside each department. Which statements about \"stable\" in this sort are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Sorting by salary first and then by department gives the wanted grouping because the second sort is stable.",
+          "correct": true,
+          "explanation": "Ties in department keep the salary order."
+        },
+        {
+          "label": "B",
+          "text": "If the second sort were unstable, the two-pass approach would still keep salary order inside each department.",
+          "correct": false,
+          "explanation": "An unstable sort may reorder equal departments, so a single combined key would be needed."
+        },
+        {
+          "label": "C",
+          "text": "\"Stable\" here means the sort returns the same output when run on different inputs.",
+          "correct": false,
+          "explanation": "Stability is about ties within one input."
+        },
+        {
+          "label": "D",
+          "text": "\"Stable\" here means the sort does not crash on large lists.",
+          "correct": false,
+          "explanation": "It describes tie order, not robustness."
+        },
+        {
+          "label": "E",
+          "text": "Python's sorted keeps the original relative order of items whose keys are equal.",
+          "correct": true,
+          "explanation": "Equal keys keep their earlier order."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.2",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "stable (API)",
+      "stem": "A vendor release note says an endpoint of the Claude API is \"stable\", and a developer wants to build a client on it. Which statements about this sense of \"stable\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "\"Stable\" in an API and \"stable\" in a sort name the same property.",
+          "correct": false,
+          "explanation": "Tie order versus compatibility."
+        },
+        {
+          "label": "B",
+          "text": "A stable API returns the same response time on each call.",
+          "correct": false,
+          "explanation": "Latency is a different property."
+        },
+        {
+          "label": "C",
+          "text": "Pinning a dated model snapshot is a way to keep model behaviour steady between releases.",
+          "correct": true,
+          "explanation": "A pinned snapshot does not change under the client."
+        },
+        {
+          "label": "D",
+          "text": "A stable API keeps its documented fields and behaviour compatible across versions so existing clients keep working.",
+          "correct": true,
+          "explanation": "Stable means compatibility."
+        },
+        {
+          "label": "E",
+          "text": "A stable endpoint means the model returns identical text for repeated calls.",
+          "correct": false,
+          "explanation": "Output variation comes from sampling, not API stability."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.3",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "atomic (file write)",
+      "stem": "A Python function updates a config file by writing to a temporary file in the same folder and then calling os.replace to put it over the real file. A reader may open the config at any moment. Which statements about \"atomic\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Opening the config in \"w\" mode and writing it directly is atomic because Python does it in one call.",
+          "correct": false,
+          "explanation": "A reader can see a truncated or half-written file."
+        },
+        {
+          "label": "B",
+          "text": "An atomic update either completes in full or leaves no visible change to other readers.",
+          "correct": true,
+          "explanation": "No partial state is visible."
+        },
+        {
+          "label": "C",
+          "text": "An atomic write is seen by readers as either the old file or the new file, never a mixture.",
+          "correct": true,
+          "explanation": "Readers never see a partial file."
+        },
+        {
+          "label": "D",
+          "text": "In planning, an \"atomic task\" means a small step that can be checked alone, which is a different sense from an atomic write.",
+          "correct": true,
+          "explanation": "Two senses of the same word."
+        },
+        {
+          "label": "E",
+          "text": "Writing a temp file and then os.replace onto the target is a common way to get an atomic file update on one filesystem.",
+          "correct": true,
+          "explanation": "The replace step is a single rename."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.4",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "atomic (commit)",
+      "stem": "A user tells Claude Code: \"Make each commit atomic.\" The branch currently has one commit that fixes a bug and renames three modules. Which statements are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The mixed bug-fix and rename commit already satisfies the request.",
+          "correct": false,
+          "explanation": "It should be split into a fix commit and a rename commit."
+        },
+        {
+          "label": "B",
+          "text": "An atomic commit is applied by git as a database transaction that rolls back on failure.",
+          "correct": false,
+          "explanation": "That is the database sense, not the git sense."
+        },
+        {
+          "label": "C",
+          "text": "Atomic commits make review and revert easier because each can be undone on its own.",
+          "correct": true,
+          "explanation": "Separate changes revert separately."
+        },
+        {
+          "label": "D",
+          "text": "In git, an atomic commit holds one logical change.",
+          "correct": true,
+          "explanation": "One change per commit."
+        },
+        {
+          "label": "E",
+          "text": "An atomic commit has the fewest lines possible.",
+          "correct": false,
+          "explanation": "Size is not the test; one logical change is."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.5",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "serializable (data)",
+      "stem": "A Python tool returns a dictionary that includes a datetime value, and the result must be sent back to Claude as a tool_result. Which statements about \"serializable\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A tool_result accepts a Python dict object directly without conversion.",
+          "correct": false,
+          "explanation": "Content is text or blocks, so convert first."
+        },
+        {
+          "label": "B",
+          "text": "Serializable here means convertible to a text or byte format such as JSON and back.",
+          "correct": true,
+          "explanation": "This is the data sense."
+        },
+        {
+          "label": "C",
+          "text": "json.dumps converts a datetime object without any extra handling.",
+          "correct": false,
+          "explanation": "It raises TypeError."
+        },
+        {
+          "label": "D",
+          "text": "Passing a default= function to json.dumps is one way to convert types it cannot handle.",
+          "correct": true,
+          "explanation": "The function is called for unknown types."
+        },
+        {
+          "label": "E",
+          "text": "Serializable isolation in a database is the same property as an object being JSON-serializable.",
+          "correct": false,
+          "explanation": "Different meaning."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.6",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "serializable (isolation)",
+      "stem": "Two database transactions each read an account balance of 100, check that a withdrawal of 80 is allowed, and then subtract 80. The team wants only one to succeed. Which statements about \"serializable\" isolation are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Serializable isolation means each transaction's rows can be written to JSON.",
+          "correct": false,
+          "explanation": "Wrong sense."
+        },
+        {
+          "label": "B",
+          "text": "Serializable isolation works because Python's GIL runs the transactions on one thread.",
+          "correct": false,
+          "explanation": "The database enforces it, not the interpreter."
+        },
+        {
+          "label": "C",
+          "text": "A weaker isolation level can let both transactions read 100 and both subtract, which is a lost update.",
+          "correct": true,
+          "explanation": "This is the check-then-act race."
+        },
+        {
+          "label": "D",
+          "text": "Serializable isolation makes the outcome match some order of running the transactions one after another.",
+          "correct": true,
+          "explanation": "That is the definition."
+        },
+        {
+          "label": "E",
+          "text": "Under serializable isolation the two withdrawals cannot both commit from the same starting balance of 100.",
+          "correct": true,
+          "explanation": "One would abort or see the updated balance."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.7",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "cache (prompt caching)",
+      "stem": "A developer calls the Claude API with the same long system prompt and tool definitions on each request and wants lower cost and latency. Which statements about prompt caching are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Prompt caching reuses processing of an unchanged prompt prefix.",
+          "correct": true,
+          "explanation": "The prefix is the cached part."
+        },
+        {
+          "label": "B",
+          "text": "Prompt caching stores Claude's earlier answers and returns them when the same question repeats.",
+          "correct": false,
+          "explanation": "It caches input processing, not answers."
+        },
+        {
+          "label": "C",
+          "text": "Changing a sentence near the start of the prefix breaks reuse for the text after it.",
+          "correct": true,
+          "explanation": "The cache matches from the beginning."
+        },
+        {
+          "label": "D",
+          "text": "Prompt caching teaches the model the cached text, as fine-tuning does.",
+          "correct": false,
+          "explanation": "Weights are not changed."
+        },
+        {
+          "label": "E",
+          "text": "Putting the changing user text before the system prompt helps produce cache hits.",
+          "correct": false,
+          "explanation": "Stable content goes first."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.8",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "cache (lru_cache vs prompt)",
+      "stem": "A Python function ask(question) calls Claude and is decorated with functools.lru_cache. The same question is asked twice with temperature 1. Which statements about this \"cache\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Arguments to an lru_cache function need to be hashable, so passing a list raises TypeError.",
+          "correct": true,
+          "explanation": "Hashing is how entries are keyed."
+        },
+        {
+          "label": "B",
+          "text": "A cached function that depends on the current time or on external data can return stale values.",
+          "correct": true,
+          "explanation": "The cache does not know the world changed."
+        },
+        {
+          "label": "C",
+          "text": "lru_cache returns the stored result for the same arguments without running the function body again.",
+          "correct": true,
+          "explanation": "Second call skips the model."
+        },
+        {
+          "label": "D",
+          "text": "Because temperature is 1, the second call returns a fresh, different answer.",
+          "correct": false,
+          "explanation": "The cached answer is returned."
+        },
+        {
+          "label": "E",
+          "text": "lru_cache and API prompt caching are the same mechanism.",
+          "correct": false,
+          "explanation": "One is in your process, one is on the provider side."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.9",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "context (window)",
+      "stem": "A user told Claude Code a rule an hour ago and Claude now ignores it. The session is very long. Which statements about \"context\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Context is the tokens the model reads for a request, including earlier turns kept in the conversation.",
+          "correct": true,
+          "explanation": "Context is the input."
+        },
+        {
+          "label": "B",
+          "text": "A fact stated once in the conversation is visible to the model only while it is still inside the window.",
+          "correct": true,
+          "explanation": "Once outside the window it is not seen."
+        },
+        {
+          "label": "C",
+          "text": "A larger context window makes the model learn the rule permanently.",
+          "correct": false,
+          "explanation": "The window is not learning."
+        },
+        {
+          "label": "D",
+          "text": "When a conversation exceeds the context window, older content can be dropped or summarised, so the rule may no longer be seen.",
+          "correct": true,
+          "explanation": "Hence the lapse."
+        },
+        {
+          "label": "E",
+          "text": "Moving the rule into CLAUDE.md puts it in context at the start of each session.",
+          "correct": true,
+          "explanation": "Memory files are loaded at session start."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.10",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "context (more context)",
+      "stem": "A user asks Claude to \"give the model more context\" so a Python bug is diagnosed correctly. Which statements correctly unpack this request? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Adding context to a prompt changes the model's weights.",
+          "correct": false,
+          "explanation": "It changes the input only."
+        },
+        {
+          "label": "B",
+          "text": "Saying \"you remember our earlier chats\" supplies context from them even when they are not included.",
+          "correct": false,
+          "explanation": "Absent text is not visible."
+        },
+        {
+          "label": "C",
+          "text": "Pasting a whole log is as exact as naming the failing section, since the model reads all of it.",
+          "correct": false,
+          "explanation": "Irrelevant text can crowd out the relevant lines."
+        },
+        {
+          "label": "D",
+          "text": "Adding the failing file contents, the error text and the goal to the prompt adds context.",
+          "correct": true,
+          "explanation": "Context is what is in the prompt."
+        },
+        {
+          "label": "E",
+          "text": "In \"context window\", context is a limit measured in tokens.",
+          "correct": true,
+          "explanation": "Window size is counted in tokens."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.11",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "memory (persistent vs context)",
+      "stem": "A user says to Claude Code: \"Remember that we use pytest, so you know it next week.\" Nothing else is configured. Which statements about \"memory\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A CLAUDE.md file is discarded when the session that read it ends.",
+          "correct": false,
+          "explanation": "The file stays on disk and is read again next session."
+        },
+        {
+          "label": "B",
+          "text": "A Python list of messages in RAM survives a restart of the script.",
+          "correct": false,
+          "explanation": "Process memory is lost on exit."
+        },
+        {
+          "label": "C",
+          "text": "Model weights update after each chat so the model remembers the user.",
+          "correct": false,
+          "explanation": "Weights are fixed at inference."
+        },
+        {
+          "label": "D",
+          "text": "Saying \"remember this\" to Claude Code writes it to durable storage on its own.",
+          "correct": false,
+          "explanation": "Nothing is saved unless a file or store is written."
+        },
+        {
+          "label": "E",
+          "text": "Conversation history inside one session is context, not durable memory across sessions.",
+          "correct": true,
+          "explanation": "It disappears when the session ends."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.12",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "memory (agent)",
+      "stem": "A developer builds a Python agent for a support desk and wants it to recall customer preferences from last month. Which statements about \"memory\" in this design are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Appending notes to a JSON file that the agent reads at start is a memory store.",
+          "correct": true,
+          "explanation": "Notes persist outside the model."
+        },
+        {
+          "label": "B",
+          "text": "Fine-tuning after each chat is the usual way to give an agent memory of one user.",
+          "correct": false,
+          "explanation": "It is slow, costly and not per-user."
+        },
+        {
+          "label": "C",
+          "text": "The API server stores your message list between calls, so the code need not resend it.",
+          "correct": false,
+          "explanation": "The Messages API is stateless."
+        },
+        {
+          "label": "D",
+          "text": "Retrieving past notes into the prompt changes the model's weights so it remembers the customer.",
+          "correct": false,
+          "explanation": "Retrieval changes the input, not the weights."
+        },
+        {
+          "label": "E",
+          "text": "The message list sent in each API call is short-term conversation state that the code resends.",
+          "correct": true,
+          "explanation": "The code carries the state."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.13",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "agent vs workflow (fixed)",
+      "stem": "A Python script calls Claude to classify a ticket, calls Claude again to draft a reply, and then sends the email, in that fixed order every run. Which statements are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A fixed-path workflow is easier to test because the sequence of steps is predictable.",
+          "correct": true,
+          "explanation": "Fewer paths to cover."
+        },
+        {
+          "label": "B",
+          "text": "Wrapping the three calls in a function named agent makes it an agent.",
+          "correct": false,
+          "explanation": "A name does not give it a decision loop."
+        },
+        {
+          "label": "C",
+          "text": "A step in a workflow can call Claude with a prompt, and the program is still a workflow.",
+          "correct": true,
+          "explanation": "Model calls inside fixed steps are allowed."
+        },
+        {
+          "label": "D",
+          "text": "This is a workflow because code fixes the steps.",
+          "correct": true,
+          "explanation": "Path set in advance."
+        },
+        {
+          "label": "E",
+          "text": "A system where Claude picks among tools and loops until it judges the task done is an agent.",
+          "correct": true,
+          "explanation": "The model chooses the path."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.14",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "agent vs workflow (choice)",
+      "stem": "A team must handle support requests where the number and kind of steps differ per request, and one proposal uses an agent loop while another uses a fixed pipeline. Which statements are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Work whose steps cannot be listed in advance fits an agent loop.",
+          "correct": true,
+          "explanation": "The model decides the next step."
+        },
+        {
+          "label": "B",
+          "text": "Using an agent for a fixed three-step pipeline adds cost and variability for no gain.",
+          "correct": true,
+          "explanation": "Over-engineering."
+        },
+        {
+          "label": "C",
+          "text": "An agent loop needs no stop condition because the model decides when to end.",
+          "correct": false,
+          "explanation": "A step or time limit is still set."
+        },
+        {
+          "label": "D",
+          "text": "Work with the same steps in the same order each run needs an agent loop, since a loop adapts.",
+          "correct": false,
+          "explanation": "A fixed path fits a workflow."
+        },
+        {
+          "label": "E",
+          "text": "Switching from a workflow to an agent makes the outputs deterministic.",
+          "correct": false,
+          "explanation": "It adds run-time variability."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.15",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "tool vs skill",
+      "stem": "A team uses Claude Code and wants to add capabilities. They are comparing a tool with a skill. Which statements are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A skill is an API function that returns data from an external service.",
+          "correct": false,
+          "explanation": "That describes a tool."
+        },
+        {
+          "label": "B",
+          "text": "A tool_use block is how Claude requests a call to a tool.",
+          "correct": true,
+          "explanation": "Request side of the exchange."
+        },
+        {
+          "label": "C",
+          "text": "A skill is a packaged set of instructions, with optional scripts, that Claude loads when relevant.",
+          "correct": true,
+          "explanation": "Skills guide."
+        },
+        {
+          "label": "D",
+          "text": "A tool is a callable function with a schema that Claude can invoke to take an action.",
+          "correct": true,
+          "explanation": "Tools act."
+        },
+        {
+          "label": "E",
+          "text": "Installing a skill gives Claude a permission it did not have.",
+          "correct": false,
+          "explanation": "Permissions are set separately."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.16",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "tool vs skill (choice)",
+      "stem": "A team wants Claude to follow its code-review checklist and also to look up ticket status in an internal ticket database. Which statements about choosing a skill or a tool are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A skill that is only text can read the ticket database without any tool.",
+          "correct": false,
+          "explanation": "Reading data takes a callable action."
+        },
+        {
+          "label": "B",
+          "text": "A skill can tell Claude how and when to use a tool.",
+          "correct": true,
+          "explanation": "Instructions can reference tools."
+        },
+        {
+          "label": "C",
+          "text": "Looking up ticket status needs a tool, for example one exposed by an MCP server.",
+          "correct": true,
+          "explanation": "It requires an action."
+        },
+        {
+          "label": "D",
+          "text": "Writing the checklist as a tool with a schema is the right form for text guidance.",
+          "correct": false,
+          "explanation": "A tool is for action, not guidance."
+        },
+        {
+          "label": "E",
+          "text": "The checklist is instructions, so it fits a skill or CLAUDE.md.",
+          "correct": true,
+          "explanation": "Text guidance."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.17",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "prompt vs system prompt",
+      "stem": "A Python program calls the Anthropic Messages API with a system parameter and a messages list. Which statements about \"prompt\" and \"system prompt\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Prompt means only the text of the latest user message.",
+          "correct": false,
+          "explanation": "Prompt can mean the whole input."
+        },
+        {
+          "label": "B",
+          "text": "The system parameter holds standing instructions such as role and rules for the conversation.",
+          "correct": true,
+          "explanation": "System prompt is standing text."
+        },
+        {
+          "label": "C",
+          "text": "A rule placed in the system prompt is enforced by the API, so the model obeys it.",
+          "correct": false,
+          "explanation": "It guides, it does not guarantee."
+        },
+        {
+          "label": "D",
+          "text": "A user message in messages is treated as part of the system prompt.",
+          "correct": false,
+          "explanation": "The system prompt is the separate system parameter."
+        },
+        {
+          "label": "E",
+          "text": "The system prompt is stored by the model and reused in other conversations.",
+          "correct": false,
+          "explanation": "It is sent with each request."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.18",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "system prompt vs untrusted text",
+      "stem": "A developer builds a Python app that pastes retrieved web pages into Claude's input, and one page contains the text \"ignore your rules\". Which statements about where to place text are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A system-prompt rule reduces the chance that pasted instructions change behaviour, so checks outside the prompt are still needed.",
+          "correct": true,
+          "explanation": "Prompts are not enforcement."
+        },
+        {
+          "label": "B",
+          "text": "Untrusted text belongs in the user turn, clearly delimited and labelled as data.",
+          "correct": true,
+          "explanation": "Delimiting reduces confusion."
+        },
+        {
+          "label": "C",
+          "text": "Putting retrieved text in the system parameter would give any instructions in it standing authority.",
+          "correct": true,
+          "explanation": "Placement affects weight."
+        },
+        {
+          "label": "D",
+          "text": "Putting retrieved text in the system parameter is a safe way to make Claude treat it as data.",
+          "correct": false,
+          "explanation": "It does the opposite."
+        },
+        {
+          "label": "E",
+          "text": "The system prompt is hidden from the model's view of the conversation.",
+          "correct": false,
+          "explanation": "The model reads it."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.19",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "hallucination vs error",
+      "stem": "Claude's summary of a codebase cites a function parse_header that does not exist in the repository. Which statements about \"hallucination\" and \"error\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A hallucination is fluent output that states something not supported by the source or the facts.",
+          "correct": true,
+          "explanation": "The cited function is unsupported."
+        },
+        {
+          "label": "B",
+          "text": "An exception such as a 404 returned in a tool_result is an error, not a hallucination.",
+          "correct": true,
+          "explanation": "The tool reports it."
+        },
+        {
+          "label": "C",
+          "text": "A hallucinated claim can be checked by searching the repository for the named function.",
+          "correct": true,
+          "explanation": "Check against the source."
+        },
+        {
+          "label": "D",
+          "text": "A syntax error in generated Python is a hallucination.",
+          "correct": false,
+          "explanation": "It is an error caught by the interpreter."
+        },
+        {
+          "label": "E",
+          "text": "Asking Claude \"are you sure?\" does not by itself verify a claim; a check against the repository does.",
+          "correct": true,
+          "explanation": "Self-confirmation is not independent evidence."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.20",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "hallucination vs error (agent)",
+      "stem": "An agent reports \"I updated config.yaml\" but the file is unchanged, and another run of the agent hit a PermissionError from a write tool. Which statements are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A PermissionError is fixed by telling the agent in the prompt to be more careful, with no change to permissions.",
+          "correct": false,
+          "explanation": "A permission fault is fixed by scope or path."
+        },
+        {
+          "label": "B",
+          "text": "Both problems are fixed by raising the temperature.",
+          "correct": false,
+          "explanation": "Sampling does not cause either."
+        },
+        {
+          "label": "C",
+          "text": "A claimed update with no change on disk is a claim/code mismatch, a fabricated report.",
+          "correct": true,
+          "explanation": "The claim lacks evidence."
+        },
+        {
+          "label": "D",
+          "text": "A PermissionError counts as a hallucination because the model did not predict it.",
+          "correct": false,
+          "explanation": "A tool reported a real error."
+        },
+        {
+          "label": "E",
+          "text": "Running git diff or listing the file is a check that settles the first claim.",
+          "correct": true,
+          "explanation": "Evidence beats assertion."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.21",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "evaluation vs test",
+      "stem": "A team has a pytest suite for a function that parses model output into a dict and also has 200 graded questions for judging answer quality. Which statements about \"test\" and \"evaluation\" are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "An eval compares the output with one fixed expected string exactly.",
+          "correct": false,
+          "explanation": "That is a test; evals score varying output."
+        },
+        {
+          "label": "B",
+          "text": "A passing pytest suite shows the answer quality is good.",
+          "correct": false,
+          "explanation": "It only checks the code's fixed expectations."
+        },
+        {
+          "label": "C",
+          "text": "Running the evals removes the need for tests on the parsing code.",
+          "correct": false,
+          "explanation": "They check different things."
+        },
+        {
+          "label": "D",
+          "text": "An eval produces a single pass or fail for the whole run, as a test does.",
+          "correct": false,
+          "explanation": "Evals usually give scores or rates."
+        },
+        {
+          "label": "E",
+          "text": "A test checks a fixed expectation with a pass or fail result, such as the parser returning the expected dict.",
+          "correct": true,
+          "explanation": "Test = fixed pass/fail."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.22",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "evaluation vs test (instruction)",
+      "stem": "A user asks Claude Code: \"Evaluate my prompt change.\" Which statements about writing an exact instruction and judging the result are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A held-out set not used while editing the prompt gives a fairer estimate of performance on new inputs.",
+          "correct": true,
+          "explanation": "Avoids tuning to the cases."
+        },
+        {
+          "label": "B",
+          "text": "\"Run pytest\" evaluates the quality of the prompt.",
+          "correct": false,
+          "explanation": "Pytest checks fixed expectations of code."
+        },
+        {
+          "label": "C",
+          "text": "Using the same cases and the same scoring for both prompts makes the comparison fair.",
+          "correct": true,
+          "explanation": "Only the prompt differs."
+        },
+        {
+          "label": "D",
+          "text": "Tuning the prompt on the eval cases and then reporting those scores shows how it will do on new inputs.",
+          "correct": false,
+          "explanation": "That is overfitting to the cases."
+        },
+        {
+          "label": "E",
+          "text": "\"Run the 200-case eval on the old and new prompt and report both scores\" is an exact instruction.",
+          "correct": true,
+          "explanation": "Names cases, versions and output."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.23",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "MCP server vs client",
+      "stem": "A developer writes a Python MCP server with FastMCP that exposes a search function, and Claude Desktop connects to it. Which statements about \"server\" and \"client\" in MCP are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "The client is the host application, such as Claude Desktop or Claude Code, that connects to servers and relays tool calls.",
+          "correct": true,
+          "explanation": "Client consumes."
+        },
+        {
+          "label": "B",
+          "text": "The model's weights run inside the MCP server.",
+          "correct": false,
+          "explanation": "The model is separate."
+        },
+        {
+          "label": "C",
+          "text": "One server can be connected to by more than one client application, such as Claude Desktop and Claude Code.",
+          "correct": true,
+          "explanation": "The server is a separate process that clients connect to."
+        },
+        {
+          "label": "D",
+          "text": "The server exposes capabilities such as tools, resources and prompts.",
+          "correct": true,
+          "explanation": "Server offers."
+        },
+        {
+          "label": "E",
+          "text": "An MCP server can run locally on the user's machine and talk over stdio.",
+          "correct": true,
+          "explanation": "Local servers are common."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.24",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "MCP approval and roles",
+      "stem": "A Python MCP server exposes a delete_file tool, and the team asks where to put controls. Which statements about MCP roles are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "A local stdio script is not an MCP server, since \"server\" means a remote machine.",
+          "correct": false,
+          "explanation": "Server is a role, not a location."
+        },
+        {
+          "label": "B",
+          "text": "The server chooses which of the client's tools to run.",
+          "correct": false,
+          "explanation": "The client side, with the model, chooses."
+        },
+        {
+          "label": "C",
+          "text": "A path allowlist inside the server adds a second control on what the tool can touch.",
+          "correct": true,
+          "explanation": "Defence in two places."
+        },
+        {
+          "label": "D",
+          "text": "An approval gate is usually placed in the client or host, before the tool call is sent.",
+          "correct": true,
+          "explanation": "The host asks the user."
+        },
+        {
+          "label": "E",
+          "text": "The client sends a tools/call request and the server returns the result.",
+          "correct": true,
+          "explanation": "Request and response."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.25",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "model vs agent",
+      "stem": "A bug report says \"Claude deleted the file\". The team wants to separate model from agent. Which statements are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Switching to a larger model changes a chat system into an agent.",
+          "correct": false,
+          "explanation": "Tools and a loop make an agent."
+        },
+        {
+          "label": "B",
+          "text": "The word \"Claude\" names only the model, so a report need not say which layer acted.",
+          "correct": false,
+          "explanation": "It can name the model or a product that wraps it."
+        },
+        {
+          "label": "C",
+          "text": "Fine-tuning a model produces an agent.",
+          "correct": false,
+          "explanation": "Fine-tuning changes weights, not tools."
+        },
+        {
+          "label": "D",
+          "text": "An agent is a model combined with tools, instructions and a loop.",
+          "correct": true,
+          "explanation": "Agent adds action."
+        },
+        {
+          "label": "E",
+          "text": "A model has tool access built in, so it can run commands by itself.",
+          "correct": false,
+          "explanation": "A model only produces tokens; tools come from the harness."
+        }
+      ]
+    },
+    {
+      "id": "MA-k03.26",
+      "type": "multiple-answer",
+      "points": 5,
+      "chapter": null,
+      "group": "foundations",
+      "section": "Jargon test: false friends",
+      "source": "model vs agent (attribution)",
+      "stem": "A Claude Code run deleted a file the user wanted to keep, and the team is deciding what to change. Which statements about model and agent are true? Check each statement that is true.",
+      "statements": [
+        {
+          "label": "A",
+          "text": "Changing the model version alone fixes the issue regardless of permission settings.",
+          "correct": false,
+          "explanation": "The permission still allows delete."
+        },
+        {
+          "label": "B",
+          "text": "The model proposed the tool call and the harness executed it.",
+          "correct": true,
+          "explanation": "Proposal versus execution."
+        },
+        {
+          "label": "C",
+          "text": "The deletion was carried out by the model's weights.",
+          "correct": false,
+          "explanation": "Weights only produce tokens."
+        },
+        {
+          "label": "D",
+          "text": "If the permission scope allowed delete, the agent's configuration, not the model alone, decided what could run.",
+          "correct": true,
+          "explanation": "Scope sets what can happen."
+        },
+        {
+          "label": "E",
+          "text": "A good report names the model version and the tool and permission configuration.",
+          "correct": true,
+          "explanation": "Both layers matter."
         }
       ]
     }

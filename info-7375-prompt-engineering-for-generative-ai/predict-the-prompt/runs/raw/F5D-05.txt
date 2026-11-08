@@ -1,0 +1,8 @@
+1. Read app/triage.py to find the function that builds the classification prompt, calls Claude, and parses the category (billing / bug / how-to) and the drafted reply. Also read the existing tests to see what a ticket and a result look like.
+2. Check how the entry point behaves: confirm that save_reply(ticket_id, text) is the only database write, so I know which code path must not run while I am just trying things out.
+3. Write a small throwaway Python script (kept outside app/ and not committed) that imports the classification step directly and calls it with the Claude client, bypassing save_reply and the FastAPI endpoint, so nothing is written to the database.
+4. Prepare about 8 to 10 sample tickets by hand: at least two clear billing, two clear bug, two clear how-to, plus a few hard cases (a ticket mixing billing and a bug, a very short ticket, a vague or angry one, and one that is not English).
+5. Confirm the ANTHROPIC_API_KEY environment variable is set from config.py's expected source, then run the script once over all samples, printing the ticket, the predicted category, and the drafted reply side by side.
+6. Review the outputs against what I expected: note any wrong categories, replies that invent policy or facts not in the docs, and any parsing failures or malformed output.
+7. Re-run the ambiguous or failed cases a couple of times to see whether the answers are stable, since model output can vary between calls.
+8. Report back a short table of results (ticket, expected, actual, notes) with the problems found and a suggestion for any prompt or parsing change, without changing the project unless asked.

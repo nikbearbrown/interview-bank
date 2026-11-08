@@ -1,0 +1,8 @@
+1. Pin down what "try it on a few examples" means: I would run the existing classify-and-draft path in app/triage.py on a handful of realistic tickets, covering billing, bug, how-to, plus an ambiguous one and an empty or very long one.
+2. Make sure the run cannot hurt anything: save_reply writes to the database, so I would call the classification and drafting logic directly (or stub or patch save_reply, or point config.py at a throwaway test database) so no real replies get saved.
+3. Confirm the environment first: check that the Anthropic API key is available from the environment variable that config.py reads, and that the Python 3.12 dependencies are installed, without printing any secret.
+4. Write a small throwaway script (kept outside app/ and tests/) with 6 to 8 sample tickets, each with the label I expect, and have it call the triage function for each one.
+5. Run the script, capturing for every ticket the predicted category, the drafted reply, and any errors, timeouts, or malformed model output.
+6. Review the results by eye: is each category correct, is the reply on topic and polite, does it avoid inventing policies or facts, and does the output shape match what save_reply and POST /triage expect?
+7. Optionally exercise POST /triage end to end with FastAPI's TestClient on two or three of the same tickets (with save_reply stubbed), to confirm the HTTP layer returns the same results.
+8. Report a short table of ticket, expected category, actual category, and reply quality, call out any misclassifications or oddities, and suggest follow-ups (such as turning good examples into pytest cases in tests/) without changing the app unless asked.

@@ -1,0 +1,8 @@
+1. Read app/triage.py to see how the ticket text is passed to Claude, what prompt and model are used, and what shape the classification and drafted reply come back in.
+2. Build a small set of sample tickets, a few per category (billing, bug, how-to), plus one or two awkward ones (vague, mixed topic, very short, non-English), kept as plain data outside the production code.
+3. Run each sample through the classification and drafting logic in a throwaway script that calls Claude directly, without going through save_reply, so no database writes happen. Read the API key from the environment variable that config.py expects.
+4. For each example, record the ticket, the predicted category, and the drafted reply, then check by hand whether the category is right and whether the reply is sensible, polite, and consistent with the help articles in docs/.
+5. Also post a few of the same tickets to POST /triage on a locally running FastAPI app, pointed at a scratch or test database, to confirm the endpoint behaves end to end and the reply is actually saved.
+6. Note any misclassifications or odd replies and look for a pattern, such as the prompt not defining the categories clearly or the model returning output the code cannot parse.
+7. If the prompt needs adjusting, make a small change to the classification prompt in app/triage.py, then rerun the same examples to compare against the earlier results.
+8. Turn the good examples, with their expected categories, into pytest cases in tests/ that mock the Claude call so they run offline, and summarize the findings for the user.

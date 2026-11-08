@@ -1,0 +1,15 @@
+1. Decide what counts as retryable: for the Claude call, transient failures only (the SDK's connection errors, timeouts, rate-limit 429s and 5xx/overloaded responses); for `save_reply`, transient database errors such as lost connections or lock timeouts. Anything else (bad request, authentication, validation errors) should fail immediately, because retrying cannot fix it.
+
+2. Check the Anthropic SDK first: the client already retries some errors, so set `max_retries` and `timeout` explicitly on the client in `app/triage.py` (values read from `config.py`, with sensible defaults) rather than writing a second loop around the Claude call. Keep a small wrapper only if I need to retry on the parsed result, for example when the classification is not one of billing / bug / how-to.
+
+3. Write one small plain retry helper (a function or decorator in `app/triage.py`, or a tiny `app/retry.py`): a fixed number of attempts (say 3), exponential backoff with a little jitter, retrying only the exception types from step 1, logging each retry, and re-raising the last error when attempts run out. No new dependencies.
+
+4. Make `save_reply` safe to repeat before wrapping it, since a retry after a write that actually succeeded must not create a duplicate row. Use an upsert or a unique key on `ticket_id` so that repeating the write has the same effect as doing it once. Confirm this against how `save_reply` is written today.
+
+5. Wrap the Claude call and `save_reply` separately, not as one unit, so a failed save does not repeat the Claude call (extra cost, and a different reply the second time). Keep the draft reply in memory and retry only the save.
+
+6. Add the attempt count and backoff settings to `config.py`, taken from environment variables with defaults, so they can be tuned in the container without a code change.
+
+7. Update `app/api.py` only as far as needed: when retries are exhausted, return a clear error from `POST /triage` (for example 502 or 503) instead of an unhandled exception, and make sure the total retry time stays under the request timeout.
+
+8. Add pytest tests in `tests/` using a fake Claude client and a fake `save_reply` that fail a set number of times and then succeed. Cover: success after retries, giving up after the limit, non-retryable errors failing straight away, no duplicate write, and that the Claude call is not repeated when only the save fails. Patch the sleep function so the tests run fast.

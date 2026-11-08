@@ -1,6 +1,6 @@
 # INFO 7375: Prompt Engineering for Generative AI: jargon vocabulary test
 
-Updated 2026-11-06. The whole pool is now a **jargon vocabulary test, multiple-answer only**. The question it asks: can a student use the field's terms precisely, so they can talk precisely to a language model and to Claude Code? It is tested like a French or Hindi vocabulary test: name the exact term for a described behaviour, tell near-synonyms apart, spot the imprecise word in a prompt to Claude, choose the rewrite that uses the exact terms. There are **no essay questions**.
+Updated 2026-11-08. The whole pool is now a **jargon vocabulary test, multiple-answer only**. The question it asks: can a student use the field's terms precisely, so they can talk precisely to a language model and to Claude Code? It is tested like a French or Hindi vocabulary test: name the exact term for a described behaviour, tell near-synonyms apart, spot the imprecise word in a prompt to Claude, choose the rewrite that uses the exact terms. There are **no essay questions**.
 
 The markdown files are the source; `json/multiple-answer.json` is generated from them and includes the answers. The [glossary](/Users/bear/Documents/CoWork/bear-textbooks/books/interview-bank/info-7375-prompt-engineering-for-generative-ai/GLOSSARY-jargon-midterm.md) lists every tested term.
 
@@ -29,12 +29,17 @@ The markdown files are the source; `json/multiple-answer.json` is generated from
 | `j05-jargon-mcp.md` | Jargon test: MCP | 14 |
 | `j06-jargon-evaluation-and-governance.md` | Jargon test: evaluation, approval gates and governance | 14 |
 | `j07-jargon-prompts-to-claude-code.md` | Jargon test: saying it exactly to Claude Code | 16 |
-| | **Total** | **669** |
+| `k01-compress-and-decompress.md` | Fluency: a term and its checkable conditions | 37 |
+| `k02-reading-agent-output.md` | Fluency: reading confident agent claims, plans and diffs | 35 |
+| `k03-false-friends.md` | Fluency: terms with two meanings or confusable neighbours | 26 |
+| | **Total** | **767** |
+
+`k01` to `k03` (added 2026-11-08) go beyond vocabulary: unpack a term into checkable conditions, judge a confident agent claim against evidence, and pick the meaning that fits a context. A blind AI reader answered 14 questions from each file without the key and matched all 42 (210 of 210 statements).
 
 `j01` to `j07` are new jargon-first sets (sampling and tokens, prompt structure and contracts, agents and tools, retrieval and training, MCP, evaluation and governance, saying it exactly to Claude Code). The foundations and chapter files keep the original topics reworded to test term use; essay skills are folded into them.
 
 ## Conversion counts
-- Before: 989 multiple-answer questions and 943 essay prompts. Now: 669 multiple-answer questions, 0 essays.
+- Before: 989 multiple-answer questions and 943 essay prompts. Now: 767 multiple-answer questions (669 before the k sets), 0 essays.
 - Old chapter and foundations MA were merged or dropped as near-duplicates or non-vocabulary facts: see the per-file `scripts/convert-report-*.md` (agents' counts are approximate).
 - Essays not converted (calculation, code tracing, procedure, design opinion) are listed in those reports.
 

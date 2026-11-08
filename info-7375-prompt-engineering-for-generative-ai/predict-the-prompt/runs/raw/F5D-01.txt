@@ -1,0 +1,8 @@
+1. Read app/triage.py to find the classification prompt, the model call, and how the output is parsed, so I know exactly what the classifier receives and returns.
+2. Write a small script (outside the service path) that calls the classification function directly on a handful of sample tickets, and make sure it never calls save_reply so no database writes happen.
+3. Build 6 to 8 realistic example tickets: clear billing, clear bug, clear how-to, plus ambiguous, multi-issue, very short, and non-English or angry ones.
+4. Load the Anthropic API key from the environment variable that config.py already uses, and run each ticket through the classifier, capturing the label and any draft reply.
+5. Compare each result to the label I expect, and note wrong labels, malformed output, or replies that ignore the ticket.
+6. Optionally also send a couple of the tickets through POST /triage on a locally running app to confirm the endpoint works end to end, using a test or throwaway database.
+7. Summarize the results in a short table (ticket, expected, actual, notes) and point out any failure patterns.
+8. Only suggest prompt or code fixes if the results show problems; do not change the project unless asked.

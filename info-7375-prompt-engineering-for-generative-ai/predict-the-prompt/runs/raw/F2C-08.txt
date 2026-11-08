@@ -1,0 +1,15 @@
+1. Decide what the breaker protects: two separate failure domains, the Claude call (classify and draft) and the `save_reply` database write. Each gets its own breaker instance so a Claude outage does not trip the database path and vice versa.
+
+2. Write a small, dependency-free `CircuitBreaker` class (new module, e.g. `app/breaker.py`) with closed, open and half-open states, a consecutive-failure threshold, a cooldown timer using `time.monotonic()`, and a lock so concurrent FastAPI requests update it safely. Settings for threshold and cooldown go in `config.py`, read from environment variables with sane defaults.
+
+3. Decide which errors count as failures. For Claude, count timeouts, connection errors, 429 rate limits and 5xx (`anthropic.APIConnectionError`, `APITimeoutError`, `RateLimitError`, `InternalServerError`) but not 4xx caused by our own bad request (e.g. `BadRequestError`, `AuthenticationError`), which should surface immediately. For `save_reply`, count connection and operational database errors, not constraint or validation errors.
+
+4. Wrap the Claude call in `app/triage.py` with the breaker, combined with a bounded retry using exponential backoff and jitter, and set an explicit client timeout and `max_retries` on the Anthropic client so retries do not multiply inside the breaker. When the breaker is open, fail fast with a clear `ServiceUnavailable` error instead of waiting on a doomed call.
+
+5. Wrap `save_reply(ticket_id, text)` the same way, but keep retries to the safe case: make the write idempotent (upsert keyed on `ticket_id`) so a retry cannot create duplicate replies. If the breaker is open or retries are exhausted, keep the drafted reply so the Claude work is not lost, for example by returning it in the response flagged as unsaved or parking it in a small local retry queue.
+
+6. Define the degraded behavior in `app/api.py`: map the breaker-open error to an HTTP 503 with a `Retry-After` header equal to the remaining cooldown, and log each state transition (closed to open, open to half-open, back to closed) with the failure count, so the behavior is observable in container logs.
+
+7. Add pytest tests in `tests/` with a fake clock and stubbed Claude and database functions: trips after N consecutive failures, rejects calls while open without invoking the dependency, allows one probe after the cooldown, closes on probe success and re-opens on probe failure, ignores non-counted errors, and that the two breakers are independent. Add an API test for the 503 and `Retry-After` response.
+
+8. Verify with the full test suite, then a manual check by pointing the app at an unreachable endpoint (a bad base URL or a stopped database) to confirm it opens, fails fast and recovers. Note in a short comment or the README that breaker state is per process, since the service runs as one container.

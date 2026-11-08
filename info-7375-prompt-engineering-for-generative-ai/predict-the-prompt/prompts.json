@@ -1,0 +1,12 @@
+{
+ "F1": {"name":"Tool use: permission gate vs approval gate","slot":"Give the triage agent an `issue_refund(ticket_id, amount)` tool, protected by {X}.",
+   "variants":{"A":"a permission gate","B":"an approval gate","C":"a rate limit","D":"an audit log"}},
+ "F2": {"name":"Retry: idempotent vs plain","slot":"Make the Claude call and the `save_reply` write in `app/triage.py` more reliable by adding {X}.",
+   "variants":{"A":"an idempotent retry","B":"a plain retry","C":"a circuit breaker","D":"a timeout"}},
+ "F3": {"name":"Retrieval vs facts in the prompt","slot":"Make the reply drafter answer from the help articles by {X}.",
+   "variants":{"A":"retrieving the relevant articles for each ticket","B":"putting all 40 articles in the system prompt","C":"putting a short policy summary in the system prompt","D":"giving Claude a search tool for the articles"}},
+ "F4": {"name":"Planning before acting","slot":"Build a ticket-routing agent that {X}.",
+   "variants":{"A":"plans before acting","B":"acts step by step with no planning step","C":"plans before acting and gets a human to approve the plan","D":"reflects on each result before taking the next step"}},
+ "F5": {"name":"Eval with acceptance criteria vs 'make sure it works'","slot":"For the ticket classifier: {X}.",
+   "variants":{"A":"write an eval with acceptance criteria","B":"make sure it works","C":"write unit tests","D":"try it on a few examples"}}
+}

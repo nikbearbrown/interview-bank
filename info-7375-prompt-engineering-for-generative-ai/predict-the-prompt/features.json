@@ -1,0 +1,42 @@
+{
+"F1": {
+ "tool_schema": ["S","Defines issue_refund as a Claude tool with an input schema / passes it in the tools parameter (a tool_use flow)."],
+ "human_approval": ["S","A human approves or rejects a specific refund before it executes (pending queue, approval step, review endpoint)."],
+ "permission_scope": ["S","Restricts WHO or WHICH tickets can use the tool: allowlist, roles, verified accounts, scopes, tool only exposed to some requests."],
+ "amount_limit": ["S","Limits on refund size or frequency: per-refund cap, daily total, rate limit, max refunds per ticket."],
+ "audit_log": ["S","Records refund attempts/decisions in a log or audit table."],
+ "mocked_tests": ["B","Adds pytest tests that mock the Claude client or the tool."]
+},
+"F2": {
+ "backoff_jitter": ["S","Retry waits grow between attempts (exponential backoff) and/or include jitter."],
+ "idempotency": ["S","Makes repeated save_reply writes safe: idempotency key, upsert, unique constraint, dedupe check."],
+ "transient_only": ["S","Retries only transient errors (429, 5xx, overloaded, timeout, connection) and explicitly not client errors such as 400/401."],
+ "circuit_breaker": ["S","Includes open/half-open/closed breaker state that stops calls after repeated failures."],
+ "explicit_timeout": ["S","Sets an explicit per-request or overall timeout value."],
+ "failure_tests": ["B","Adds tests that simulate failures (mocked errors) to exercise the retry/breaker/timeout."]
+},
+"F3": {
+ "retrieval_index": ["S","Builds or uses a search/retrieval step (embeddings, vector store, BM25, keyword index) to select a SUBSET of articles per ticket."],
+ "all_articles_in_prompt": ["S","Places the full text of all or most articles in the prompt."],
+ "token_budget": ["S","Counts or estimates tokens, or checks the context-window limit, for what goes into the prompt."],
+ "prompt_caching": ["S","Uses prompt caching (cache_control) for the static article/policy content."],
+ "cite_or_abstain": ["S","Reply must cite article ids/titles, or must say it does not know / escalates when the articles do not cover the ticket."],
+ "eval_or_tests": ["B","Adds tests or an eval for the drafter's answers."]
+},
+"F4": {
+ "separate_plan_step": ["S","A distinct planning stage (its own model call or phase) produces a plan before any action is executed."],
+ "structured_plan": ["S","The plan is a structured object (JSON/schema/list of typed steps) that code parses."],
+ "human_plan_approval": ["S","A human reviews/approves the plan before execution."],
+ "reflect_or_replan": ["S","After step results, the agent reflects, checks, or revises the plan/next step."],
+ "iteration_cap": ["S","A max-steps / iteration / budget limit on the agent loop."],
+ "tests": ["B","Adds pytest tests (mocked Claude) for the agent."]
+},
+"F5": {
+ "labeled_dataset": ["S","Builds or collects a labeled set of tickets with expected categories."],
+ "numeric_threshold": ["S","States a numeric pass/fail threshold (e.g. accuracy >= 90%, max confusions)."],
+ "per_class_metrics": ["S","Computes per-class precision/recall, a confusion matrix, or targeted category-confusion checks."],
+ "automated_gate": ["S","The eval/test runs automatically and fails a build/exit code (CI, pytest assertion, script exit status) when the bar is missed."],
+ "edge_case_coverage": ["S","Deliberately includes edge cases/ambiguous/adversarial tickets or a held-out split."],
+ "mocks_model": ["B","Mocks or stubs Claude so no live API call is made."]
+}
+}

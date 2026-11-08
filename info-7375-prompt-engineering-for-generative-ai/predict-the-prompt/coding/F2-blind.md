@@ -1,0 +1,422 @@
+# Coding sheet F2
+
+## P01
+1. Read `app/triage.py` and the existing tests in `tests/` to map the exact flow: Claude classification call, Claude reply-draft call, then `save_reply(ticket_id, text)`. Note how the Anthropic client is built and how `config.py` supplies settings, so the retry fits the current structure.
+2. Define what is safe to retry. The Claude calls are read-only (no side effects), so they can be retried freely on transient failures; `save_reply` is a database write, so it must be made idempotent before it is retried.
+3. Make `save_reply` idempotent: key the write on `ticket_id` (an upsert or "insert if not exists, else update" keyed on `ticket_id`, ideally with a unique constraint), so repeating the same write cannot create duplicate replies. If the reply text could differ between attempts, store the first successful reply and skip later writes.
+4. Add a small retry helper in `app/triage.py` (or a tiny module beside it) using exponential backoff with jitter and a capped number of attempts. Retry only transient errors from the Anthropic SDK (`APIConnectionError`, `APITimeoutError`, `RateLimitError`, 5xx `APIStatusError`) and let 4xx errors such as bad request or auth fail immediately. Honor a `retry-after` header if present.
+5. Wrap the two Claude calls with this helper, and set a per-request timeout on the client. Compute the classification and draft once per ticket and reuse them across `save_reply` retries rather than calling Claude again.
+6. Wrap `save_reply` with the same helper, retrying only transient database errors (connection drops, timeouts, deadlocks). Because of step 3, a retry after an ambiguous failure, where the write actually succeeded, is harmless.
+7. Put the attempt count, base delay and max delay in `config.py`, read from environment variables with sensible defaults. Log each retry (ticket id, attempt, error type) without logging ticket contents or secrets, and re-raise the last error once attempts are exhausted so `POST /triage` returns a clear failure.
+8. Add pytest tests with the Anthropic client and the DB layer mocked: a transient error then success, a permanent error that is not retried, retries exhausted, and `save_reply` called twice with the same `ticket_id` leaving exactly one row. Run the full suite to confirm nothing else broke.
+
+## P02
+1. Read `app/triage.py` end to end and map the flow: classify call, reply-draft call, then `save_reply(ticket_id, text)`. Also check how `config.py` exposes timeouts and retry settings, and how `app/api.py` calls triage, so the retry fits existing error handling.
+2. Decide what is safe to retry. The Claude call has no side effects, so retrying it is safe. `save_reply` is a database write, so a retry must not create duplicates. Make it idempotent by keying on `ticket_id`, using an upsert or "insert if not exists" with a unique constraint, or by checking for an existing reply before writing.
+3. Build one small retry helper in `app/triage.py` (or a tiny module next to it) with exponential backoff and jitter, a capped attempt count, and a total time budget. Read these limits from `config.py` and give them sensible defaults.
+4. Wrap the Claude call using the Anthropic SDK's own error types. Retry only transient failures: `anthropic.RateLimitError`, `anthropic.APIConnectionError`, `anthropic.APITimeoutError`, and `anthropic.InternalServerError` (5xx and 529 overloaded). Honor the `retry-after` header when present. Fail fast on `BadRequestError`, `AuthenticationError`, and `PermissionDeniedError`. Set an explicit client timeout, and decide whether to use the SDK's built-in `max_retries` or the helper, not both, so attempts don't multiply.
+5. Wrap `save_reply` in the same helper, retrying only transient database errors such as connection drops and deadlocks, not constraint or validation errors. Run the idempotent write in a single transaction so a retry after an ambiguous failure is harmless.
+6. Keep the Claude call and the write as separate retry units, so a failed write retries without paying for another Claude call. Reuse the already generated reply text during write retries. Log each attempt with the ticket id, attempt number, and error class, and never log secrets or full ticket text.
+7. When retries are exhausted, raise a clear error that `app/api.py` turns into a proper HTTP response (for example 503 with a retry hint) instead of a hang or a partial save. A caller retrying `POST /triage` for the same ticket should then converge on exactly one saved reply.
+8. Add pytest tests in `tests/` with the Claude client and database mocked. Cover transient failure then success, non-retryable errors failing immediately, retries exhausted, `save_reply` called twice for the same `ticket_id` leaving exactly one row, and the Claude call not being repeated when only the write fails. Run the suite before finishing.
+
+## P03
+1. Define what "failure" means for each dependency: for the Claude call, count timeouts, connection errors, 429s and 5xx responses (the SDK's APIConnectionError, APITimeoutError, RateLimitError, InternalServerError) but not 4xx caller errors like bad requests; for `save_reply`, count database exceptions. Keep the two dependencies in separate breakers so a Claude outage does not block database writes and vice versa.
+2. Write a small, dependency-free `CircuitBreaker` class (closed, open, half-open) with a failure threshold, a rolling window, a cool-down timer, and a single-probe rule in half-open state, using a monotonic clock and a lock so it is safe under concurrent FastAPI requests. Put it in its own module (e.g. `app/breaker.py`) so it can be unit tested in isolation.
+3. Put tunable values (failure threshold, window, cool-down, per-call timeout) in `config.py`, read from environment variables with safe defaults, so they can be changed per deployment without a code change.
+4. Wrap the Claude call in `app/triage.py` with its breaker, set an explicit SDK timeout and a small, bounded retry count (SDK `max_retries`) so retries do not multiply load on a failing API, and raise a clear `TriageUnavailable` error when the circuit is open instead of waiting on a doomed call.
+5. Wrap `save_reply` with its own breaker, but only retry it when the write is idempotent (key the write on `ticket_id`, e.g. upsert), so a retry or half-open probe can never store a duplicate reply; if the circuit is open, fail fast and do not discard the drafted reply silently.
+6. Decide the open-circuit behavior with the caller in mind: in `app/api.py`, map `TriageUnavailable` to a 503 with a `Retry-After` header, and where the Claude call succeeded but the save was blocked, return or queue the reply so the work is not lost and the ticket can be re-triaged later.
+7. Add logging and a small health signal: log every state transition with the dependency name, and expose breaker state on a health/status route so operators can see in the single container whether either circuit is open.
+8. Write pytest tests with a fake clock and stubbed Claude and database failures covering closed to open, open to half-open after cool-down, probe success and probe failure, 4xx errors not tripping the breaker, no duplicate saves, and the 503 mapping; run the full suite before finishing.
+
+## P04
+1. Define what counts as a failure for each of the two guarded calls (the Claude call and `save_reply`): for Claude, timeouts, connection errors, 429s, and 5xx responses from the Anthropic SDK; for `save_reply`, database connection and write errors. Client errors such as a bad request or a validation problem must not trip the breaker.
+2. Write a small circuit breaker class in its own module (for example `app/breaker.py`) with closed, open, and half-open states, a consecutive-failure threshold, a cooldown timer, and a limited number of trial calls in half-open. Make it thread-safe, use a monotonic clock, and raise a clear `CircuitOpenError` when it rejects a call.
+3. Keep one separate breaker instance per dependency, one for Claude and one for the database, so a database outage does not block Claude calls and the reverse. Read the threshold, cooldown, and trial count from `config.py` with sensible defaults.
+4. Wrap the Claude call in `app/triage.py` with its breaker, and set an explicit SDK timeout and a small bounded retry with backoff inside the breaker, so one breaker failure means "retries already exhausted" and not a single blip.
+5. Wrap the `save_reply` write with its own breaker. Do not retry the write blindly unless it is idempotent, so make it safe to repeat (for example, upsert by `ticket_id`) before allowing any retry.
+6. Decide what happens when a breaker is open, and implement it: for Claude, return a clear "triage unavailable" result that leaves the ticket queued for later, and for the database, keep the drafted reply and report that it was not saved, so no work is lost silently. In `app/api.py`, map `CircuitOpenError` to a 503 with a Retry-After header.
+7. Log every state change (closed to open, open to half-open, back to closed) with the dependency name, and expose the current state through a simple health or status field, so operators can see what is happening in the single container.
+8. Add pytest tests with a fake clock and fake failing dependencies: the breaker opens after the threshold, rejects calls during cooldown, allows a trial after cooldown, closes on success, and reopens on failure. Add tests that `triage.py` and the API return the right fallback and 503 when each breaker is open, then run the full test suite.
+
+## P05
+1. Read `app/triage.py` and the existing tests in `tests/` to see exactly how the Claude call and `save_reply(ticket_id, text)` are made today, what the ticket_id is, and what the database layer does on a duplicate write.
+2. Make `save_reply` idempotent first: key the write on `ticket_id` (upsert or insert-if-absent, using a unique constraint or equivalent in the database), so repeating it with the same ticket never creates a second reply or corrupts the first.
+3. Add a small retry helper in `app/triage.py` with bounded attempts, exponential backoff with jitter, and a total time cap, and use it for both the Claude call and the `save_reply` write.
+4. For the Claude call, catch only transient errors from the Anthropic SDK (rate limit, connection, timeout, 5xx/overloaded) and retry; let non-retryable errors such as authentication or bad-request fail immediately. Also set the SDK's own timeout and `max_retries` explicitly so the two layers do not multiply attempts unexpectedly.
+5. Retry the Claude call and the database write separately, not as one block, so a failed save never re-runs a successful (and billed) classification and draft; keep the generated reply in memory and retry only the write.
+6. Log each retry (attempt number, error type, ticket_id) without logging ticket text or secrets, and raise a clear final error after attempts are exhausted so `POST /triage` in `app/api.py` can return a sensible 5xx response.
+7. Add pytest tests in `tests/` with the Claude client and `save_reply` mocked: transient failure then success, repeated failure giving up after the limit, non-retryable error not retried, and calling `save_reply` twice leaving exactly one stored reply.
+8. Run the full test suite, then review the diff to confirm the retry settings (attempts, delays) live in `config.py` and no behavior changed on the success path.
+
+## P06
+1. Define the scope: one circuit breaker guarding the Claude call and one guarding the `save_reply` database write in `app/triage.py`, each with its own state, since they fail for different reasons (API outages and rate limits versus database errors).
+2. Write a small, dependency-free `CircuitBreaker` class (or a decorator) in a new module such as `app/breaker.py`. It has closed, open and half-open states, a consecutive-failure threshold, a cool-down timeout, and a lock so it is safe under FastAPI concurrency. Use a monotonic clock so it can be tested.
+3. Put the thresholds and timeouts in `config.py` as settings with sensible defaults, overridable by environment variables (for example failure threshold 5, cool-down 30 seconds, half-open probe count 1).
+4. Decide which errors trip the breaker. For Claude, count connection errors, timeouts, 5xx, 429 and overloaded errors from the Anthropic SDK (`APIConnectionError`, `APITimeoutError`, `RateLimitError`, `InternalServerError`). Do not count 4xx errors such as bad request or authentication, which are bugs and not outages. For `save_reply`, count database connection and operational errors only.
+5. Wrap the Claude call and `save_reply` with their breakers in `triage.py`. When a breaker is open, fail fast with a clear `CircuitOpenError` and do not make the call. Never retry a write blindly: make sure `save_reply` is idempotent per `ticket_id`, or only retry on errors where the write is known not to have happened.
+6. Handle the open state in `app/api.py`. Map `CircuitOpenError` to a 503 response with a `Retry-After` header. Keep the classification and the draft reply together, so a ticket never ends up half-processed. If the draft was produced but the save was refused, return or log it so it can be saved later.
+7. Add pytest tests with the Anthropic client and the database faked and the clock controlled. Cover the closed-to-open transition at the threshold, fail-fast while open, the half-open probe succeeding and closing the breaker, and a failed probe reopening it. Also cover that non-tripping errors do not count and that the two breakers are independent.
+8. Log every state transition and every rejected call with the breaker name, and expose the current state (for example on a health or metrics endpoint) so the team can see it in the single container. Run the tests and update the docs.
+
+## P07
+1. Read `app/triage.py` to find the Claude call and the `save_reply(ticket_id, text)` call, and check how `config.py` exposes settings, so the retry fits the existing structure.
+2. Decide which failures are worth retrying: for Claude, transient errors only (connection errors, timeouts, rate limits, 5xx/overloaded responses); for `save_reply`, transient database errors only. Do not retry bad requests, auth errors, or validation errors, since repeating them cannot succeed.
+3. Write one small retry helper in `app/triage.py` (or a tiny module next to it) that takes a callable, tries it up to a fixed number of attempts (for example 3), and sleeps a short, growing delay between attempts. After the last attempt it re-raises the original exception.
+4. Wrap the Claude call with the helper. Check whether the Anthropic SDK client's built-in `max_retries` already covers part of this, and set it explicitly (and set a request timeout) rather than stacking a second retry loop on top of it.
+5. Wrap the `save_reply` call with the helper, but first confirm the write is safe to repeat: if a failed attempt might have committed, make the write idempotent (for example an upsert keyed on `ticket_id`) so a retry cannot create a duplicate reply. Retry only `save_reply`, not the whole triage step, so a database hiccup does not trigger a second paid Claude call.
+6. Add the attempt count and delay values to `config.py` as settings with sensible defaults, and log each retry (attempt number and error type, never ticket text) so failures are visible.
+7. Add pytest tests in `tests/` using a fake Claude client and a fake `save_reply`: one that fails once then succeeds, one that fails every time and raises after the limit, and one that raises a non-retryable error and is not retried. Patch the sleep so the tests run instantly.
+8. Run the test suite, confirm `POST /triage` still returns the same response on success, and check that the worst-case total retry time stays within the API's request timeout.
+
+## P08
+1. Read `app/triage.py` to see how the Claude call and `save_reply(ticket_id, text)` are currently made, and check `config.py` for any existing timeout or retry settings.
+2. Decide what counts as retryable: for the Claude call, only transient failures (Anthropic SDK connection errors, timeouts, rate limits, and 5xx responses), never 4xx errors such as bad request or authentication; for the database write, only transient connection or lock errors.
+3. Add a small plain retry helper (a loop with a fixed maximum of 3 attempts and a short exponential backoff with a little jitter) in `app/triage.py`, using only the standard library, and re-raise the last error when attempts run out.
+4. Apply the helper to the Claude call, and also set the SDK client's explicit `timeout` so a hung request fails and can be retried instead of blocking. Keep the SDK's own built-in retries in mind so the two layers do not multiply attempts (set `max_retries` on the client deliberately).
+5. Apply the helper to `save_reply`, but first confirm the write is safe to repeat: make it idempotent (for example an upsert keyed on `ticket_id`) so a retry after an ambiguous failure cannot save the reply twice.
+6. Retry the Claude call and the `save_reply` write separately, not as one block, so a failed save does not re-run the classification and reply drafting and pay for them again.
+7. Put the attempt count and backoff values in `config.py` (secrets stay in environment variables), and log each retry and the final failure so problems are visible; keep the existing error behavior of `POST /triage` in `app/api.py` once retries are exhausted.
+8. Add pytest tests in `tests/` with the Claude client and `save_reply` mocked: succeed after one transient failure, give up after the maximum attempts, do not retry a non-transient error, and do not duplicate the saved reply; then run the test suite.
+
+## P09
+1. Decide what "idempotent" means for this flow: key every ticket by `ticket_id`, and make `save_reply(ticket_id, text)` an upsert (or insert-if-absent with a unique constraint on ticket_id) so a repeated write leaves exactly one reply row.
+2. Add a small retry helper in `app/triage.py` (exponential backoff with jitter, a max-attempts cap, and a total time budget) that retries only transient failures and never retries permanent ones.
+3. Wrap the Claude call with it: retry on the Anthropic SDK's rate-limit (429), overloaded (529), 5xx, timeout and connection errors, but not on 400/401/403 errors; honor any retry-after header, set an explicit per-request timeout, and consider the SDK's built-in `max_retries` rather than duplicating it.
+4. Make the Claude step safe to repeat: keep classification and drafting as a pure function of the ticket text, with low temperature, so a retry produces an equivalent result, and hold the first successful result in memory so a later database failure does not trigger a second Claude call.
+5. Wrap `save_reply` with the same helper, retrying only on transient database errors (connection loss, deadlock, timeout), and rely on the upsert from step 1 so an ambiguous failure (write succeeded but the acknowledgement was lost) cannot create duplicates.
+6. Log each attempt with ticket_id, attempt number, error type and delay (never the ticket text or secrets), and surface a clear error from `POST /triage` in `app/api.py` once retries are exhausted, so the failure is visible rather than silent.
+7. Move the retry settings (max attempts, base delay, timeouts) into `config.py`, read from environment variables with safe defaults.
+8. Add pytest tests in `tests/` with the Claude client and `save_reply` mocked: transient-then-success, permanent failure not retried, retries exhausted, and calling `save_reply` twice for the same ticket yields one row; then run the suite.
+
+## P10
+1. Read `app/triage.py` and `config.py` to see exactly how the Anthropic client is created, how the classify and draft-reply calls are made, and where `save_reply` is called, so I know every place a timeout is needed.
+2. Add `CLAUDE_TIMEOUT_SECONDS` (e.g. 30) and a small `CLAUDE_MAX_RETRIES` to `config.py`, read from environment variables with safe defaults, so the values can be tuned per deployment without code changes.
+3. Pass the timeout to the Anthropic client (`anthropic.Anthropic(timeout=..., max_retries=...)`), or per request via `timeout=`, so the SDK itself aborts a hung Claude call instead of blocking the request forever.
+4. Catch `anthropic.APITimeoutError` and `anthropic.APIConnectionError` around the classify and draft calls in `app/triage.py`, and turn them into a clear, typed error (or a safe fallback such as "needs human review") rather than an unhandled exception.
+5. Add a timeout to the `save_reply` database write, using the driver's own setting (e.g. connect timeout and statement/query timeout) or `asyncio.wait_for` if the code is async, and make sure the transaction is rolled back and the connection released when it fires.
+6. Make sure a timeout on the Claude call happens before any write, so a failed call never leaves a half-saved reply, and check that retrying `save_reply` is safe (idempotent on `ticket_id`) before allowing any retry.
+7. In `app/api.py`, map the new timeout errors on `POST /triage` to a clear HTTP response (e.g. 504 with a short message) and log the ticket id and which step timed out, without logging secrets or full ticket text.
+8. Add pytest tests in `tests/` that mock the Anthropic client and `save_reply` to raise or delay past the timeout, asserting the right error, the 504 response, no partial write, and that normal fast calls still succeed; then run the suite.
+
+## P11
+1. Define the failure model first: decide which errors should trip the breaker (Anthropic SDK timeouts, connection errors, 429s, 5xx, and database errors on `save_reply`) and which should not (4xx validation or auth errors, which are bugs, not outages). Pick starting thresholds, for example 5 consecutive failures to open, a 30 second cool-down, and 1 trial call in half-open, and put them in `config.py` as settings.
+2. Write a small, generic `CircuitBreaker` class in a new module (for example `app/breaker.py`) with closed, open, and half-open states, using a monotonic clock and a lock so it is safe across async requests in the single container. Raise a dedicated `CircuitOpenError` when open so callers fail fast instead of waiting on timeouts.
+3. Create two separate breaker instances, one for the Claude call and one for `save_reply`, so a database outage does not block classification and a Claude outage does not block writes. Keep state in process memory, since the app is one container with no shared store.
+4. Wrap the Claude call in `app/triage.py` with its breaker. Set an explicit SDK timeout and a bounded retry with backoff and jitter inside the breaker, so the breaker counts a failure only after retries are exhausted.
+5. Wrap `save_reply` with its own breaker, and make the write safe to retry (idempotent on `ticket_id`, for example an upsert) so a retry cannot create duplicate replies.
+6. Decide the degraded behavior when a breaker is open: do not lose the ticket. Return a clear "temporarily unavailable" result with a retry hint, and have `app/api.py` map `CircuitOpenError` to an HTTP 503 with a `Retry-After` header. Do not fabricate a classification or reply.
+7. Add structured logging of breaker state transitions and rejected calls, plus a simple counter or health-endpoint field showing each breaker's current state, so operators can see when it opens.
+8. Add pytest tests with a fake clock and a stubbed Claude client and database that cover the state transitions (closed to open, open to half-open, half-open to closed or back to open), the fast-fail path, the 503 mapping through the API, and that non-trippable 4xx errors do not open the breaker. Run the full suite and confirm existing tests still pass.
+
+## P12
+1. Open `app/triage.py` and identify the two operations to harden: the Claude call (classify and draft reply) and the `save_reply(ticket_id, text)` database write. Check how errors currently propagate to `POST /triage` in `app/api.py`.
+2. Check the installed Anthropic SDK version. The SDK already retries some failures (connection errors, 429, 5xx) through its `max_retries` client option, so decide whether to raise that value or add an explicit retry around the call.
+3. Write one small retry helper in `app/triage.py` (or a tiny `app/retry.py`) that takes a callable, a max attempt count (3), and a tuple of retryable exception types. It waits with exponential backoff plus jitter between attempts and re-raises the last error when attempts run out. Use no new dependencies.
+4. Wrap the Claude call with the helper, retrying only transient errors: `anthropic.APIConnectionError`, `anthropic.APITimeoutError`, `anthropic.RateLimitError`, and `anthropic.InternalServerError`. Do not retry 4xx errors such as bad request or authentication, which will fail the same way every time. Set an explicit request timeout so a hung call fails and retries instead of blocking.
+5. Wrap `save_reply` with the same helper, retrying only transient database errors (connection drops, deadlocks, timeouts). Confirm the write is idempotent for a given `ticket_id`, for example an upsert, so a retry after an ambiguous failure cannot create duplicate replies. If it is not idempotent, make it so.
+6. Keep the two retries separate so a failed save never re-runs the Claude call, which would cost tokens and might return a different reply. Hold the generated reply in a variable and retry only the save.
+7. Read the attempt count and backoff base from `config.py` (defaults are fine, no new secrets), and log each retry with the ticket id, attempt number and error type, never the ticket text.
+8. Add pytest tests that fake the Claude client and `save_reply` to fail once or twice then succeed, fail every time and re-raise, and raise a non-retryable error that is not retried. Patch the sleep function so the tests run fast, then run the full test suite.
+
+## P13
+1. Add timeout settings to `config.py` (e.g. CLAUDE_TIMEOUT_SECONDS, SAVE_TIMEOUT_SECONDS, CLAUDE_MAX_RETRIES), read from environment variables with sensible defaults, so the values can be tuned per deployment without code changes.
+2. Create the Anthropic client in `app/triage.py` once, with an explicit `timeout` (an `httpx.Timeout` with separate connect and read values) and a small `max_retries`, instead of relying on the SDK defaults.
+3. Wrap the classification and reply-drafting calls so that `anthropic.APITimeoutError` and `APIConnectionError` are caught, retried a limited number of times with backoff, and then raised as one clear, app-specific error (e.g. TriageTimeout) rather than hanging or leaking raw SDK exceptions.
+4. Put a hard overall deadline around the whole Claude phase (e.g. `asyncio.timeout` or `asyncio.wait_for` if the code is async), so the combined classify and draft steps cannot exceed a total budget even if each call is within its own limit.
+5. Add a timeout to the `save_reply(ticket_id, text)` database write, using the driver's connect and statement timeout options (or `wait_for` around it), and make sure a timed-out write is rolled back and cannot leave a partial row.
+6. Make `save_reply` safe to retry (idempotent, e.g. an upsert keyed on `ticket_id`), and only retry it on timeout, so a retry after an ambiguous timeout cannot produce duplicate replies.
+7. In `app/api.py`, catch the new timeout errors in `POST /triage` and return a clean 504 (or 503 with a retry hint) with a log line containing the ticket id and which stage timed out, without leaking internals.
+8. Add pytest tests in `tests/` that mock a slow Claude call and a slow `save_reply` to confirm each timeout fires, retries stop at the limit, the API returns the right status, and no duplicate reply is written; then run the full test suite.
+
+## P14
+1. Open app/triage.py and map the two operations to protect: the Claude call (classify plus draft reply) and the save_reply(ticket_id, text) database write. Decide which failures are transient and worth retrying versus permanent.
+2. Add a small retry helper in app/triage.py (or a tiny module next to it) that runs a callable up to N attempts (for example 3) with exponential backoff and jitter, and re-raises the last error when attempts run out. Keep it plain Python with no new dependencies.
+3. Wrap the Claude call with it, retrying only transient Anthropic SDK errors (connection errors, timeouts, rate limits, 5xx), and never retrying 4xx errors such as bad request or authentication. Check the SDK's built-in max_retries setting so retries are not stacked on top of each other, and set a request timeout.
+4. Wrap save_reply with the same helper, retrying only transient database errors (connection drops, timeouts, deadlocks). Check whether the write is idempotent (for example an upsert keyed on ticket_id) so a retry cannot save a duplicate reply, and change it to be idempotent if it is not.
+5. Keep the two retries separate so a failed save does not repeat the Claude call (which costs money): call Claude once, hold the result, then retry only the save.
+6. Put the attempt count and backoff values in config.py as settings with sensible defaults, and log each retry with the ticket id and attempt number. Make sure api.py's POST /triage returns a clear error status if all attempts fail.
+7. Add pytest tests with fakes: Claude fails twice then succeeds, save_reply fails then succeeds, a permanent error is not retried, attempts are exhausted and the error surfaces, and the Claude call is not repeated when only the save fails. Patch the sleep so tests run fast.
+8. Run the pytest suite to confirm everything passes, and review the diff to confirm the change is small and limited to retry behavior.
+
+## P15
+1. Read `app/triage.py` and `tests/` to see how the Claude call and `save_reply(ticket_id, text)` are currently sequenced, what happens on failure, and what the existing tests cover.
+2. Decide the idempotency key: use `ticket_id` (plus a hash of the ticket text if tickets can be edited) so the same ticket always maps to one reply, and make `save_reply` an upsert (for example `INSERT ... ON CONFLICT (ticket_id) DO UPDATE`) so a repeated write cannot create duplicates.
+3. Check the database first: before calling Claude, look up whether a reply already exists for this ticket and return it if so, so a retried request does not pay for or produce a second, different draft.
+4. Wrap the Claude call in a retry helper that retries only transient errors from the Anthropic SDK (`APIConnectionError`, `APITimeoutError`, `RateLimitError`, and `InternalServerError`/5xx), never 4xx errors such as bad request or auth. Use exponential backoff with jitter, honor the `retry-after` header, and cap attempts (about 3) and total time; the SDK's `max_retries` and `timeout` client options can do most of this and avoid a hand-rolled loop.
+5. Wrap `save_reply` in its own bounded retry for transient database errors only (connection drops, deadlocks, timeouts), run inside a transaction, relying on the upsert from step 2 so a retry after an ambiguous failure is safe.
+6. Keep the two retries separate so a failed save never re-calls Claude: classify and draft once, hold the result in memory, and retry only the write; log each attempt with ticket id, attempt number, and error type, but never log ticket text or secrets.
+7. Put the retry limits and backoff settings (max attempts, base delay, timeouts) in `config.py`, read from environment variables with safe defaults, and make `POST /triage` in `app/api.py` return a clear 5xx or 503 with a retry hint once retries are exhausted.
+8. Add pytest tests with a mocked Anthropic client and a fake `save_reply`: transient-then-success, permanent error not retried, retry limit reached, duplicate request returns the existing reply, and a double write leaving exactly one row; then run the full suite.
+
+## P16
+1. Add timeout settings to `config.py`: a Claude request timeout (e.g. `CLAUDE_TIMEOUT_S`), a database write timeout, and a max-retries value, all read from environment variables with safe defaults.
+2. In `app/triage.py`, construct the Anthropic client with an explicit `timeout` (an `httpx.Timeout` with separate connect and read values) and a small `max_retries`, so a hung call raises `anthropic.APITimeoutError` instead of blocking forever.
+3. Wrap the classify and draft-reply calls so `APITimeoutError` and `APIConnectionError` are caught and turned into a clear, typed error (e.g. `TriageTimeout`) carrying the ticket id, with logging of the elapsed time.
+4. Add a timeout to the `save_reply` write, using the database driver's statement or connect timeout setting if it has one, or otherwise an overall deadline around the call using `asyncio.wait_for` or a worker thread with a deadline.
+5. Make `save_reply` safe to retry by keying the write on `ticket_id` (an upsert), so a timed-out write that actually succeeded cannot create duplicate replies when retried.
+6. Set an overall time budget for one triage so the Claude call and the save share a single deadline, and never start the save if the budget is already spent.
+7. In `app/api.py`, map `TriageTimeout` to an HTTP 504 response, with a short error body, from `POST /triage`, so clients can retry cleanly.
+8. Add pytest tests in `tests/` that mock the Anthropic client to raise `APITimeoutError` and mock `save_reply` to stall, checking the typed error, the 504 response, and that a retry does not duplicate the reply.
+
+## P17
+1. Read app/triage.py and config.py to find the exact Claude call, the save_reply call, and how settings are loaded, so the change is limited to those two places.
+2. Add timeout settings to config.py (for example CLAUDE_TIMEOUT_SECONDS, DB_WRITE_TIMEOUT_SECONDS, and CLAUDE_MAX_RETRIES), read from environment variables with sensible defaults, so they can be tuned per deployment without a code change.
+3. Pass the Claude timeout to the Anthropic client (the client-level timeout and max_retries options, or a per-request timeout on messages.create), using an httpx.Timeout with a short connect value and a longer read value for generation.
+4. Catch anthropic.APITimeoutError (and APIConnectionError) around the Claude call in triage.py, and turn it into a clear domain error such as TriageTimeout, so the failure is explicit instead of a hung request.
+5. Put a timeout on the save_reply write: set a statement or connect timeout on the database connection, or wrap the call with asyncio.wait_for or a thread-based timeout, depending on whether the code is sync or async. Make sure a timed-out write is rolled back and cannot leave a half-saved reply.
+6. Decide the retry behavior: retry the Claude call a limited number of times with backoff since it is safe to repeat, but retry save_reply only if it is idempotent (for example keyed on ticket_id), so a slow write that eventually succeeds does not create duplicates.
+7. In app/api.py, map the timeout errors to a clean HTTP response (504 or 503 with a short message) for POST /triage, and log which stage timed out (Claude or save) along with the ticket_id.
+8. Add pytest tests that mock a slow Claude client and a slow save_reply, to check the timeout fires, the right error and status code are returned, and no partial write is left behind; then run the full test suite.
+
+## P18
+1. Read `app/triage.py` and `config.py` to see how the Claude call and `save_reply` are wired today, which exceptions the Anthropic SDK can raise, and where settings such as timeouts and retry counts belong.
+2. Split the work into two steps, "classify and draft" and "save", so each can be retried on its own. Retrying the whole function after a failed save would pay for a second Claude call and might produce a different reply.
+3. For the Claude call, use the SDK's built-in `max_retries` and `timeout` client options, or a small wrapper with exponential backoff and jitter. Retry only transient errors (connection errors, timeouts, 429, 5xx, overloaded) and fail fast on 4xx errors such as bad requests or auth failures. Put the limits in `config.py`.
+4. Make `save_reply` idempotent. Key the write on `ticket_id` with an upsert (insert-or-update, or a unique constraint plus ON CONFLICT DO UPDATE) so that repeating it overwrites the same row and never creates a duplicate reply.
+5. Wrap the save in a bounded retry with backoff that catches only transient database errors such as connection drops, deadlocks, and timeouts. Re-raise everything else, and keep the Claude result in memory so a save retry never re-calls Claude.
+6. Log each retry with the ticket id, attempt number, and error type, never ticket text or secrets. After the final attempt, raise a clear error so `POST /triage` in `app/api.py` returns a proper 5xx or 503 instead of a half-finished result.
+7. Add pytest tests in `tests/` with the Claude client and the database mocked. Cover: a transient failure then success, a permanent error that is not retried, retries exhausted, and a duplicate `save_reply` for the same ticket id leaving one row. Use a patched sleep so the tests stay fast.
+8. Run the full test suite and a manual check of `POST /triage` with a simulated failure, and confirm that no new dependencies are needed (or add the one retry library to the container build if I used one).
+
+## P19
+1. Define the failure model first: decide which errors should trip the breaker (Anthropic SDK timeouts, connection errors, 429s, 5xx) and which should not (4xx request bugs like invalid requests or auth errors), and write that down as the breaker's contract.
+2. Write a small, dependency-free circuit breaker class in a new module (for example app/breaker.py) with closed, open and half-open states, a consecutive-failure threshold, a cooldown timer, and a single-probe rule in half-open; make it thread-safe and take an injectable clock so it can be tested.
+3. Put thresholds and cooldown in config.py, read from environment variables with safe defaults, and keep the Anthropic SDK's own max_retries and timeout explicit so retries inside one call do not multiply with the breaker's counting.
+4. Wrap the Claude call in app/triage.py with its own breaker instance; when the breaker is open, fail fast with a typed exception instead of calling the API, and count only the failure types from step 1 (a success resets the count).
+5. Wrap the save_reply database write in a separate breaker instance, since its failures and recovery are independent from the API; decide that when the write breaker is open the drafted reply is not lost silently but returned or logged so the ticket can be retried.
+6. Make the degraded behaviour explicit in app/api.py: map the open-breaker exceptions on POST /triage to a clear 503 with a Retry-After header, and never return a fabricated classification or reply.
+7. Add pytest tests with a fake clock and a stubbed Anthropic client: breaker opens after N failures, rejects calls while open, lets one probe through after cooldown, closes on success and re-opens on failure, plus tests that 4xx errors do not trip it and that the two breakers are independent.
+8. Add logging and a simple state/metric hook (state changes, rejected calls) so the breaker is observable in the single container, and note in docs that state is per-process and resets on restart.
+
+## P20
+1. Decide the retry policy first: retry only transient failures (network errors, timeouts, HTTP 429, 5xx/overloaded) and never client errors such as 400 or 401, with a small fixed budget (3 attempts) and exponential backoff with jitter. Keep the numbers (attempts, base delay, timeout) in config.py so they can be tuned without a code change.
+2. Before writing any new code, check whether the Anthropic SDK's built-in retries already cover the Claude call: the client accepts max_retries and timeout, so set those explicitly when constructing the client instead of writing a second retry layer around it.
+3. Write one small, generic retry helper in app/triage.py (or a tiny module next to it) that takes a callable and a predicate for "is this error retryable", sleeps between attempts, logs each retry, and re-raises the last error when the budget runs out.
+4. Wrap the Claude classification-and-reply call with the helper (or rely on the SDK setting from step 2), and make sure a malformed or empty model response is handled explicitly rather than silently retried forever.
+5. Treat save_reply differently: a database write can succeed and still look like it failed (for example a timeout after commit), so retrying blindly can store the reply twice. Make the write idempotent (upsert keyed on ticket_id, or a unique constraint) before wrapping it in the helper, and retry only on connection or transient database errors.
+6. Keep the two retries independent so a failed save does not re-call Claude, which would pay for the same reply twice; hold the generated reply in memory and retry only the save. If the save still fails after the budget is spent, raise a clear error so POST /triage returns a proper failure status instead of a false success.
+7. Add pytest tests in tests/ with the Claude client and save_reply mocked: fail once then succeed, fail every time (the error surfaces after exactly N attempts), non-retryable error (no retry), and the save-failure case proving Claude is called only once. Patch sleep so the tests run instantly.
+8. Run the full test suite and a manual POST /triage check, then confirm the retry logs show up and that the final behavior in app/api.py (status code on exhausted retries) matches what callers expect.
+
+## P21
+1. Read `app/triage.py` to see exactly how the Claude call and `save_reply` are wired, what the function returns, and how failures currently surface to `app/api.py`.
+2. Check `tests/` for existing triage tests so I know how the Claude client and `save_reply` are mocked and what behaviour must not change.
+3. Add a small plain retry helper in `app/triage.py` (a loop with a fixed maximum attempt count and a short, growing sleep between tries), with no new dependencies.
+4. Wrap the Claude call in it, retrying only on transient failures from the Anthropic SDK (connection errors, timeouts, rate limits, 5xx), and let non-transient errors such as bad requests or auth failures raise immediately.
+5. Wrap the `save_reply` write in the same helper, retrying only on transient database errors, and make sure a retry cannot create a duplicate row (for example by confirming the write is keyed on `ticket_id` and is an upsert or otherwise idempotent).
+6. Keep the two retries separate so that a failed `save_reply` retries only the write and does not call Claude again, and put the attempt count and delay in `config.py` with sensible defaults.
+7. Log each retry and the final failure with the ticket id (never the ticket text or secrets), and re-raise the last error after the final attempt so `POST /triage` still returns a clear error.
+8. Add pytest tests with fake clients: success after one transient failure, giving up after the maximum attempts, a non-transient error not being retried, and a `save_reply` retry not re-calling Claude; then run the test suite.
+
+## P22
+1. Define what counts as a failure for each of the two guarded calls (the Claude call and `save_reply`): for Claude, timeouts, connection errors, 429s and 5xx from the Anthropic SDK; for `save_reply`, database connection and operational errors. Client errors such as 400/401 and validation errors must not trip the breaker.
+2. Write a small `CircuitBreaker` class in `app/` (stdlib only, using `time.monotonic` and a `threading.Lock`) with closed, open and half-open states, a consecutive-failure threshold, a cool-down period, and a limit on trial calls in half-open. It raises a clear `CircuitOpenError` when open.
+3. Create two separate breaker instances, one for Claude and one for the database, so an outage in one does not block the other. Put the threshold and cool-down values in `config.py`, read from environment variables with sensible defaults.
+4. Wrap the Claude call in `app/triage.py` with its breaker, and set an explicit SDK timeout and a small, bounded retry count with backoff so that retries do not multiply the failures the breaker sees. Count only a call that has finally failed as one failure.
+5. Wrap `save_reply` with its own breaker. Because the write is not safe to retry blindly, make sure it is idempotent per `ticket_id` (for example upsert) before allowing any retry.
+6. Decide what happens when a breaker is open: in `app/api.py`, translate `CircuitOpenError` into a fast `503` with a `Retry-After` header on `POST /triage`. If Claude succeeded but the save was blocked, do not discard the drafted reply; return it or log it so it can be saved later.
+7. Add logging for breaker state changes (open, half-open, closed) and failure counts, with no ticket text or secrets in the logs.
+8. Add pytest tests in `tests/`: unit tests for the state transitions using a fake clock, and tests that mock the Anthropic client and `save_reply` to raise errors, checking that the breaker opens after the threshold, fails fast, recovers through half-open, and that the API returns 503.
+
+## P23
+1. Add timeout settings to `config.py` (for example `CLAUDE_TIMEOUT_SECONDS`, `DB_TIMEOUT_SECONDS`, `CLAUDE_MAX_RETRIES`), read from environment variables with sensible defaults, so the values are tunable without a code change.
+2. In `app/triage.py`, create the Anthropic client with an explicit `timeout` (use `httpx.Timeout` with separate connect and read values) and a small `max_retries`, rather than relying on the SDK defaults.
+3. Wrap the classify and draft-reply Claude calls so a timeout (`anthropic.APITimeoutError`) or connection error is caught and turned into a clear, typed error (for example `TriageTimeout`) instead of hanging or leaking a raw SDK exception.
+4. Add a timeout to the `save_reply` database write (a connection/statement timeout on the DB driver, or `asyncio.wait_for` if it is async), and make sure the write is atomic so a timeout leaves no half-saved reply.
+5. Make `save_reply` safe to retry: key it by `ticket_id` (upsert or skip if a reply exists) so that if a timed-out write actually succeeded, a retry does not create a duplicate.
+6. Set an overall deadline for the whole triage request so the two Claude calls plus the write cannot exceed it, and map the typed errors in `app/api.py` to a clean HTTP response (for example 504 for a timeout) without saving a partial result.
+7. Add pytest tests in `tests/` that mock the Claude client and `save_reply` to raise timeouts, checking the typed error, the HTTP status, that retries work, and that no duplicate reply is written.
+8. Log each timeout with the ticket id and which step timed out (classify, draft, or save), and run the test suite to confirm the happy path is unchanged.
+
+## P24
+1. Read `app/triage.py` to find the Claude call and the `save_reply` write, and check how `config.py` sets timeouts and how the SDK client is built. Note what exceptions each call can raise.
+2. Decide which failures are worth retrying: for the Claude call, the SDK's transient errors (connection errors, timeouts, rate limits, 5xx/overloaded). For `save_reply`, only transient database errors such as connection drops or lock timeouts.
+3. Do not retry permanent errors such as bad requests, authentication failures, or constraint violations. These fail fast so they are not hidden.
+4. For the Claude call, first try the SDK's built-in `max_retries` option on the client (set it from `config.py`) and set an explicit timeout. If that is enough, do not add a hand-written loop around it.
+5. For `save_reply`, add a small retry helper in `app/triage.py` that makes up to 3 attempts with a short exponential backoff and a bit of jitter. It catches only the transient exceptions from step 2 and re-raises the last error when the attempts run out.
+6. Check that retrying `save_reply` is safe. If the write is not idempotent, change it to an upsert keyed on `ticket_id` so a retry cannot create a duplicate reply. Also make sure the retry wraps only the save, so a save failure never repeats the Claude call.
+7. Log each retry with the ticket id and attempt number, and make `POST /triage` return a clear error if all attempts fail.
+8. Add pytest tests with the Claude client and `save_reply` mocked: one that fails once then succeeds, one that fails every time and raises, and one that hits a permanent error and is not retried. Run the test suite.
+
+## P25
+1. Add timeout settings to `config.py` (for example `CLAUDE_TIMEOUT_SECONDS`, `CLAUDE_MAX_RETRIES`, `DB_WRITE_TIMEOUT_SECONDS`), read from environment variables with sensible defaults, so the values can be tuned per deployment without code changes.
+2. In `app/triage.py`, construct the Anthropic client with an explicit `timeout` (an `httpx.Timeout` with separate connect and read values) and a bounded `max_retries`, so a hung request fails fast instead of waiting on the SDK default.
+3. Catch the SDK's `anthropic.APITimeoutError` and `anthropic.APIConnectionError` around the classification call and the reply-drafting call, and raise one clear domain error (for example `TriageTimeout`) that carries the ticket id.
+4. Wrap the `save_reply(ticket_id, text)` database write in a timeout as well, using the database driver's statement or connection timeout if it has one, or `asyncio.wait_for` / a worker-thread deadline if not. Make sure a timed-out write is rolled back so no partial reply is stored.
+5. Keep the write safe to retry: make `save_reply` idempotent per ticket (upsert keyed on `ticket_id`), so a retry after a timeout cannot create a duplicate reply. Retry only the Claude call automatically, and retry the write at most once.
+6. In `app/api.py`, map the new timeout error to a clean `504` (or `503` with `Retry-After`) response from `POST /triage` instead of a generic 500, and log the ticket id and which stage timed out (classify, draft, or save).
+7. Add pytest tests in `tests/` that mock the Anthropic client to raise `APITimeoutError` and simulate a slow `save_reply`, checking that the error is raised within the limit, that nothing is half-saved, and that the API returns the expected status.
+8. Run the test suite, then check the new timeout values against typical Claude latency for the longest tickets, and document the new environment variables in the config docs.
+
+## P26
+1. Define the retry boundary: decide which Claude failures are retryable (timeouts, connection errors, 429, 5xx/overloaded) and which are not (400/401/403, invalid request), and put these retry settings (max attempts, base delay, cap, per-call timeout) in config.py with env overrides.
+2. Wrap the Claude call in `app/triage.py` in a small retry helper using exponential backoff with jitter, honoring the SDK's retry-after hints; also set the SDK client's own max_retries and timeout so the two layers do not multiply attempts unexpectedly.
+3. Make the Claude step safe to repeat: it is a read-only generation, so retrying is naturally idempotent, but parse and validate the response (valid category from billing/bug/how-to, non-empty reply) inside the retry so a malformed reply triggers a retry rather than being saved.
+4. Make `save_reply` idempotent: key the write on `ticket_id` (upsert or insert-on-conflict-do-nothing/update with a unique constraint on ticket_id, plus optionally a reply version or request id), so repeating it can never create duplicate or conflicting replies.
+5. Retry `save_reply` separately and only on transient database errors (connection loss, deadlock, timeout) with its own bounded attempts; never re-run the Claude call just because the save failed, hold the already generated reply and retry only the write.
+6. Surface final failure cleanly: after attempts are exhausted, raise a typed error that `app/api.py` maps to an appropriate response (for example 503 with Retry-After for Claude, 500 for the save), and log each attempt with ticket_id, attempt number and error class but never the secrets or full ticket text.
+7. Add pytest tests with the Anthropic client and the DB layer mocked: transient failure then success, non-retryable error fails immediately, exhaustion raises the typed error, malformed output is retried, and calling `save_reply` twice with the same ticket_id leaves exactly one row; patch sleep so tests run fast.
+8. Verify end to end by running the full test suite, then a manual `POST /triage` with fault injection (forced 429 and a simulated DB error), and confirm in logs that retries are bounded and no duplicate rows appear.
+
+## P27
+1. Add `CLAUDE_TIMEOUT_SECONDS` (Claude call) and `DB_WRITE_TIMEOUT_SECONDS` (`save_reply`) settings to `config.py`, read from environment variables with sensible defaults (for example 30 and 5), so the limits are tunable without a code change.
+2. In `app/triage.py`, build the Anthropic client with an explicit `timeout=` (an `httpx.Timeout` with separate connect and read values) and a small `max_retries`, so a hung or slow Claude request fails fast instead of blocking the worker.
+3. Catch the SDK's `anthropic.APITimeoutError` (and `APIConnectionError`) around the classify-and-draft call, and turn it into a clear domain error such as `TriageTimeout` with the ticket id in the log message; never let it surface as a raw stack trace.
+4. Apply a timeout to the `save_reply` database write: set the driver's connect and statement timeout where the connection is opened, and, if the write is a blocking call, wrap it with `asyncio.wait_for` or run it with a deadline so it cannot hang indefinitely. Make sure a timed-out write rolls back the transaction and leaves no partial reply saved.
+5. Keep the order safe: if the Claude call times out, do not call `save_reply` at all; if `save_reply` times out, log it and return a failure rather than reporting success, and make `save_reply` idempotent on `ticket_id` so a retry cannot create duplicate replies.
+6. In `app/api.py`, map `TriageTimeout` and the write timeout to a clean HTTP response from `POST /triage` (504 for the Claude timeout, 503 for the database write), with a short JSON error body and a `Retry-After` hint, and make sure the total of the two timeouts stays under the container or proxy request limit.
+7. Add pytest tests in `tests/` that mock the Anthropic client to raise `APITimeoutError` and mock the write to raise a timeout, asserting that the right error is raised, that `save_reply` is not called after a Claude timeout, that no partial data is saved, and that the API returns 504 and 503 as designed. Add one test that the configured timeout values are actually passed to the client.
+8. Run the full pytest suite, then check the log output for a simulated timeout to confirm the messages are useful and contain no secrets or full ticket text, and note the new environment variables in the deployment configuration for the container.
+
+## P28
+1. Read `app/triage.py` to see how the Claude call and `save_reply(ticket_id, text)` are currently wired, and note what exceptions each can raise and whether `save_reply` is safe to run twice for the same ticket.
+2. Add a small retry helper in `app/triage.py` (a plain loop with a fixed maximum, such as 3 attempts, and exponential backoff with a little jitter using `time.sleep`), with no new dependencies.
+3. Wrap the Claude call in that helper, retrying only on transient Anthropic SDK errors (`anthropic.APIConnectionError`, `anthropic.RateLimitError`, `anthropic.APITimeoutError`, and `anthropic.InternalServerError`); let other errors such as authentication or bad-request failures raise immediately. Also set an explicit client timeout, and honor the retry-after header on rate limits where the SDK exposes it.
+4. Wrap `save_reply` in the same helper, retrying only on transient database errors (connection or timeout errors), and make the write idempotent (for example, an upsert keyed on `ticket_id`) so a retry can never create duplicate replies.
+5. Retry each step on its own: once the Claude call has succeeded, keep the drafted reply in memory so a failing database write retries without paying for a second Claude call.
+6. After the final attempt fails, log the ticket id and the error and re-raise a clear exception so `POST /triage` in `app/api.py` can return a proper error status instead of hanging or silently losing the reply. Put the attempt count and base delay in `config.py` as settings.
+7. Add pytest tests in `tests/` using fakes: the Claude call fails twice then succeeds, `save_reply` fails once then succeeds, a non-retryable error is not retried, and exhausted retries raise. Patch `time.sleep` so the tests run fast.
+8. Run the full pytest suite and fix any failures, then confirm the retry log lines are readable and that total worst-case latency stays acceptable for the API request.
+
+## P29
+1. Add timeout settings to `config.py` (for example `CLAUDE_TIMEOUT_SECONDS`, `DB_WRITE_TIMEOUT_SECONDS`, `CLAUDE_MAX_RETRIES`), read from environment variables with sensible defaults, so the values can be tuned without a code change.
+2. In `app/triage.py`, create the Anthropic client with an explicit `timeout` (using `httpx.Timeout` with separate connect and read values) and a small `max_retries`, so a hung API call can no longer block the request indefinitely.
+3. Catch `anthropic.APITimeoutError` and `anthropic.APIConnectionError` around the classification and reply-drafting calls, log them with the ticket id, and raise a clear internal error type (for example `TriageTimeout`) instead of letting raw SDK exceptions escape.
+4. Make the `save_reply` write time-bounded: set a statement or connection timeout on the database call, or wrap it with `asyncio.wait_for` or a worker-thread deadline if it is synchronous, and make the write idempotent per `ticket_id` so a retry cannot create duplicate replies.
+5. Make sure a timeout in the Claude call means `save_reply` is never called with partial or empty text, and that a failed write is reported rather than silently dropped.
+6. In `app/api.py`, map the new timeout errors to a clean HTTP response (for example 504 for the Claude timeout and 503 for the database timeout) with a short JSON message, so callers can retry safely.
+7. Add pytest tests in `tests/` that mock the Anthropic client to raise `APITimeoutError` and a slow `save_reply`, and assert the right exception, HTTP status, no partial write, and that the configured timeout values are actually passed to the client.
+8. Run the test suite, then check that the total of the Claude timeout, retries and write timeout stays under the container or HTTP server request limit, and note the new environment variables in `docs/` or the deployment config.
+
+## P30
+1. Decide what counts as retryable: for the Claude call, transient failures only (the SDK's connection errors, timeouts, rate-limit 429s and 5xx/overloaded responses); for `save_reply`, transient database errors such as lost connections or lock timeouts. Anything else (bad request, authentication, validation errors) should fail immediately, because retrying cannot fix it.
+
+2. Check the Anthropic SDK first: the client already retries some errors, so set `max_retries` and `timeout` explicitly on the client in `app/triage.py` (values read from `config.py`, with sensible defaults) rather than writing a second loop around the Claude call. Keep a small wrapper only if I need to retry on the parsed result, for example when the classification is not one of billing / bug / how-to.
+
+3. Write one small plain retry helper (a function or decorator in `app/triage.py`, or a tiny `app/retry.py`): a fixed number of attempts (say 3), exponential backoff with a little jitter, retrying only the exception types from step 1, logging each retry, and re-raising the last error when attempts run out. No new dependencies.
+
+4. Make `save_reply` safe to repeat before wrapping it, since a retry after a write that actually succeeded must not create a duplicate row. Use an upsert or a unique key on `ticket_id` so that repeating the write has the same effect as doing it once. Confirm this against how `save_reply` is written today.
+
+5. Wrap the Claude call and `save_reply` separately, not as one unit, so a failed save does not repeat the Claude call (extra cost, and a different reply the second time). Keep the draft reply in memory and retry only the save.
+
+6. Add the attempt count and backoff settings to `config.py`, taken from environment variables with defaults, so they can be tuned in the container without a code change.
+
+7. Update `app/api.py` only as far as needed: when retries are exhausted, return a clear error from `POST /triage` (for example 502 or 503) instead of an unhandled exception, and make sure the total retry time stays under the request timeout.
+
+8. Add pytest tests in `tests/` using a fake Claude client and a fake `save_reply` that fail a set number of times and then succeed. Cover: success after retries, giving up after the limit, non-retryable errors failing straight away, no duplicate write, and that the Claude call is not repeated when only the save fails. Patch the sleep function so the tests run fast.
+
+## P31
+1. Decide what to retry: the Claude call (transient failures such as timeouts, connection errors, 429 rate limits, and 5xx/overloaded responses) and the `save_reply` database write (transient connection errors), but not permanent errors like 400/401/403 or bad input, which should fail immediately.
+2. Check whether the Anthropic SDK's built-in retry (the `max_retries` client option) already covers the Claude call, and set it explicitly to a small number (for example 3) in the client construction, with a sensible `timeout`, so the plain retry is not stacked on top of an unconfigured default.
+3. Write one small plain retry helper in `app/triage.py` (a loop of up to 3 attempts that catches only the specific retryable exceptions, such as `anthropic.APIConnectionError`, `anthropic.RateLimitError`, `anthropic.APIStatusError` with a 5xx status, and the database driver's transient error class, sleeping with exponential backoff plus a little jitter between attempts and re-raising the last error when attempts run out).
+4. Wrap the Claude classification and reply-drafting call with the helper, so each call is retried on its own and a failed draft does not redo a successful classification.
+5. Make `save_reply(ticket_id, text)` safe to repeat before wrapping it: confirm it is idempotent (for example, an upsert keyed on `ticket_id`, or a check for an existing reply), so a retry after an ambiguous failure cannot save the reply twice. If it is not idempotent, change it so it is, and then wrap it with the same helper.
+6. Log each retry (attempt number, error type, wait time) using the standard `logging` module, never logging ticket text or secrets, and let the final failure propagate so `POST /triage` in `app/api.py` returns a clear error (for example 502 or 503) instead of hanging.
+7. Add pytest tests in `tests/` using fakes: the call fails twice and then succeeds (expect 3 calls and a good result), a permanent error is not retried, retries are exhausted and the error is raised, and `save_reply` is retried without creating a duplicate; patch `time.sleep` so the tests run fast.
+8. Run the full pytest suite and fix any failures, then review the total worst-case wait (attempts times backoff plus timeouts) to be sure it fits within the request timeout of the container's web server.
+
+## P32
+1. Decide the scope: one small circuit-breaker class in `app/triage.py` (or a tiny `app/breaker.py` imported there), with states closed / open / half-open, a failure threshold, a cooldown timeout, and a lock so it is safe under FastAPI concurrency. Keep it in-process, since the service is a single container with no other services.
+2. Make the thresholds configurable in `config.py` from environment variables (failure count, cooldown seconds, per-call timeout), with sensible defaults, so no secrets or tuning values are hard-coded.
+3. Use two separate breakers, one for the Claude call and one for `save_reply`, because they fail for different reasons and one should not trip the other. Decide up front which errors count as failures: Anthropic connection errors, timeouts, 429s and 5xx responses count; 4xx errors such as bad requests or auth errors do not, because retrying or tripping on them is wrong.
+4. Wrap the Claude call: set an explicit client timeout and a small bounded retry with backoff inside the breaker, and when the breaker is open fail fast with a clear exception instead of calling the API. Record success and failure after each call so the half-open probe can close the breaker.
+5. Wrap `save_reply` the same way for database errors. Because the draft reply was already paid for, on an open breaker or a failed write keep the generated reply (for example log it and return it with a "not saved" status) rather than discarding it, and make the write idempotent per `ticket_id` so a retry cannot create duplicates.
+6. Map breaker-open and failure outcomes in `app/api.py` to a clean response (503 with a Retry-After header) instead of a 500, so callers know to retry later, and log breaker state changes for visibility.
+7. Write pytest tests in `tests/` with a fake clock and a mocked Anthropic client and database: opens after N failures, rejects fast while open, goes half-open after the cooldown, closes on a successful probe, re-opens on a failed probe, ignores 4xx errors, and keeps the two breakers independent.
+8. Run the full test suite and a manual check against a stubbed failing Claude call and a failing write, confirm existing behavior is unchanged when everything is healthy, and note the new environment variables in the docs or README.
+
+## P33
+1. Read `app/triage.py` to find the Anthropic client construction, the Claude classification and draft-reply calls, and the `save_reply(ticket_id, text)` call, and note how errors are handled today. Also read `config.py` and `tests/` to see how settings and existing tests are organized.
+2. Add timeout settings to `config.py`, read from environment variables with sensible defaults: one for the Claude call (for example 30 seconds) and one for the database write (for example 5 seconds), plus a max-retries value.
+3. Set the timeout on the Anthropic client or per request using the SDK's `timeout` option (an `httpx.Timeout` with separate connect and read values), and set `max_retries` so a stalled request fails fast rather than hanging the endpoint.
+4. Catch the SDK's `anthropic.APITimeoutError` and `anthropic.APIConnectionError` around each Claude call, and decide on behavior: retry once with a short backoff, then raise a clear domain error instead of an unhandled exception.
+5. Bound the `save_reply` write with a timeout, using the database driver's own statement or connect timeout where available, or `asyncio.wait_for` or a thread-pool timeout otherwise. On timeout, roll back the transaction and raise a clear error.
+6. Make the write safe to retry: confirm `save_reply` is idempotent for a given `ticket_id` (upsert rather than insert), so a retry after a timeout cannot create duplicate replies. Never save a partial or empty reply if the Claude call timed out.
+7. In `app/api.py`, map the new timeout errors on `POST /triage` to a clean HTTP response (such as 504 or 503 with a short message) and log the ticket id and which step timed out.
+8. Add pytest tests that mock the Claude client and `save_reply` to simulate slow or timing-out calls, checking the timeout is passed, the retry happens once, the error maps to the right status, and no reply is saved on failure. Run the test suite to confirm nothing else broke.
+
+## P34
+1. Read `app/triage.py` and `config.py` to see how the Anthropic client is built, how `save_reply(ticket_id, text)` is called, and what the existing tests cover. Note the current timeout and error handling.
+2. Write a small helper in `app/triage.py` that retries only transient Claude errors (rate limits, connection errors, timeouts, 5xx and overloaded) with capped exponential backoff and jitter. Do not retry 4xx errors such as bad requests or auth failures, since they will not succeed.
+3. Make the Claude call safe to repeat: keep it a pure function of the ticket text with a fixed model and parameters, set an explicit per-call timeout, and rely on the SDK's `max_retries` only if the helper does not already cover it. Guard against a malformed classification by validating it is one of billing / bug / how-to before moving on.
+4. Make `save_reply` idempotent by keying the write on `ticket_id`, using an upsert or "insert if not exists" keyed on `ticket_id` (plus a unique constraint or migration if one is missing). A repeated call then overwrites or skips instead of creating duplicate replies.
+5. Wrap the database write in the same retry helper, limited to transient database errors (connection drops, deadlocks, timeouts), and keep the retried unit as just the write. A Claude retry never re-runs a completed save, and a save retry never re-calls Claude.
+6. Put the attempt count, base delay, max delay and timeout in `config.py`, read from environment variables with safe defaults. Log each retry with the ticket id and attempt number, and never log secrets or full ticket text.
+7. Add pytest tests with the Claude client and `save_reply` mocked. Cover: success after a transient failure, no retry on a 4xx error, giving up after the max attempts with a clear error, and calling `save_reply` twice for the same `ticket_id` leaving exactly one row.
+8. Check that `POST /triage` in `app/api.py` returns a clean 5xx (or a retry-later response) when retries are exhausted, and that the added worst-case latency stays within the request timeout. Run the full pytest suite before finishing.
+
+## P35
+1. Read `app/triage.py` to map the exact flow: the Claude classify/draft call, how the response is parsed, and where `save_reply(ticket_id, text)` is called, plus any existing error handling. Also check `config.py` for existing timeout or retry settings so I reuse its conventions.
+2. Make the database write idempotent first, since a retry is only safe if repeating it cannot duplicate or corrupt data. Make `save_reply` an upsert keyed on `ticket_id` (or a unique key such as ticket_id plus a reply version), so a second call with the same ticket overwrites or no-ops instead of inserting a duplicate.
+3. Decide which failures are worth retrying. For the Claude call, retry only transient errors from the Anthropic SDK (`RateLimitError`, `APIConnectionError`, `APITimeoutError`, and 5xx `InternalServerError`), and never retry 4xx errors like authentication or bad-request failures. For the DB write, retry only transient connection or lock errors.
+4. Add a small retry helper in `app/triage.py` (or a tiny `app/retry.py`) that does bounded exponential backoff with jitter, a max of about 3 attempts, and logs each attempt. Make the limits configurable through `config.py` (max attempts, base delay) with sensible defaults, and let the SDK's built-in `max_retries` and explicit request timeout handle low-level HTTP retries so the two layers do not multiply.
+5. Wrap the Claude call and the `save_reply` call separately, not together, so a DB failure does not re-run the (costly, non-deterministic) Claude call. Compute the classification and draft once, hold the result in memory, and retry only the write with that same text.
+6. After the final attempt fails, raise a clear error or return a defined failure so `POST /triage` in `app/api.py` responds with a proper 5xx or 503 instead of a silent loss, and make sure the ticket can safely be re-submitted.
+7. Add pytest tests in `tests/` with mocked Anthropic client and a mocked `save_reply`: succeeds after a transient failure, gives up after max attempts, does not retry on a non-transient 4xx error, does not re-call Claude when only the save fails, and calling `save_reply` twice for the same ticket leaves one row.
+8. Run the existing test suite plus the new tests, check the log output looks right, and summarize the change and the new config knobs for review.
+
+## P36
+1. Define the failure modes the breaker must handle: for the Claude call, treat timeouts, connection errors, 429 rate limits, and 5xx/overloaded responses from the Anthropic SDK as failures, but not 4xx validation or auth errors (those are bugs, not outages). For `save_reply`, treat database connection errors and timeouts as failures, but not constraint violations.
+2. Write a small, dependency-free `CircuitBreaker` class in its own module (for example `app/breaker.py`) with closed, open, and half-open states, a consecutive-failure threshold, a cooldown timer using a monotonic clock, a single trial call in half-open, and a lock so it is safe under concurrent FastAPI requests. Keep one separate instance per dependency, so a database outage does not trip the Claude breaker and vice versa.
+3. Add the thresholds and cooldowns (failure count, reset seconds, per-call timeout) to `config.py`, read from environment variables with sensible defaults, so they can be tuned without a code change.
+4. Wrap the Claude call in `app/triage.py` with its breaker, and set an explicit SDK timeout and a small bounded retry with backoff inside the breaker so one request's retries count as one failure. When the breaker is open, fail fast with a dedicated `CircuitOpenError` instead of waiting on a dead API.
+5. Wrap `save_reply` with its own breaker. Because the reply is already paid for, when the breaker is open or the write fails, do not discard it: log it with the ticket id and surface a clear error so the ticket can be re-triaged, and make `save_reply` idempotent on `ticket_id` so a retry cannot write a duplicate.
+6. Decide the degraded behavior and map it in `app/api.py`: when the Claude breaker is open, return a fast 503 with a `Retry-After` header (or queue the ticket as "needs manual triage"); when the database breaker is open, return 503 as well. Do not let a half-finished classification be returned as if it were complete.
+7. Add visibility: log every state transition (closed to open, open to half-open, half-open to closed) with the dependency name, and expose the current state through a simple counter or a field on a health route, since the service is one container with no other monitoring.
+8. Write pytest tests using a fake clock and a stubbed Anthropic client and DB function: opens after N failures, rejects calls while open, allows exactly one trial after the cooldown, closes on success and reopens on failure, ignores non-transient errors, keeps the two breakers independent, and the API returns 503 when open. Run the existing tests to confirm nothing else changed.
+
+## P37
+1. Decide what the breaker protects: two separate failure domains, the Claude call (classify and draft) and the `save_reply` database write. Each gets its own breaker instance so a Claude outage does not trip the database path and vice versa.
+
+2. Write a small, dependency-free `CircuitBreaker` class (new module, e.g. `app/breaker.py`) with closed, open and half-open states, a consecutive-failure threshold, a cooldown timer using `time.monotonic()`, and a lock so concurrent FastAPI requests update it safely. Settings for threshold and cooldown go in `config.py`, read from environment variables with sane defaults.
+
+3. Decide which errors count as failures. For Claude, count timeouts, connection errors, 429 rate limits and 5xx (`anthropic.APIConnectionError`, `APITimeoutError`, `RateLimitError`, `InternalServerError`) but not 4xx caused by our own bad request (e.g. `BadRequestError`, `AuthenticationError`), which should surface immediately. For `save_reply`, count connection and operational database errors, not constraint or validation errors.
+
+4. Wrap the Claude call in `app/triage.py` with the breaker, combined with a bounded retry using exponential backoff and jitter, and set an explicit client timeout and `max_retries` on the Anthropic client so retries do not multiply inside the breaker. When the breaker is open, fail fast with a clear `ServiceUnavailable` error instead of waiting on a doomed call.
+
+5. Wrap `save_reply(ticket_id, text)` the same way, but keep retries to the safe case: make the write idempotent (upsert keyed on `ticket_id`) so a retry cannot create duplicate replies. If the breaker is open or retries are exhausted, keep the drafted reply so the Claude work is not lost, for example by returning it in the response flagged as unsaved or parking it in a small local retry queue.
+
+6. Define the degraded behavior in `app/api.py`: map the breaker-open error to an HTTP 503 with a `Retry-After` header equal to the remaining cooldown, and log each state transition (closed to open, open to half-open, back to closed) with the failure count, so the behavior is observable in container logs.
+
+7. Add pytest tests in `tests/` with a fake clock and stubbed Claude and database functions: trips after N consecutive failures, rejects calls while open without invoking the dependency, allows one probe after the cooldown, closes on probe success and re-opens on probe failure, ignores non-counted errors, and that the two breakers are independent. Add an API test for the 503 and `Retry-After` response.
+
+8. Verify with the full test suite, then a manual check by pointing the app at an unreachable endpoint (a bad base URL or a stopped database) to confirm it opens, fails fast and recovers. Note in a short comment or the README that breaker state is per process, since the service runs as one container.
+
+## P38
+1. Read `app/triage.py` and `config.py` to see how the Anthropic client is built, how `save_reply(ticket_id, text)` is called, and what the database layer is, so the changes fit the existing structure.
+2. Decide which failures are worth retrying. Retry only transient Claude errors (rate limit, timeout, connection error, 5xx/overloaded) and transient database errors. Never retry auth errors or bad-request errors. Keep these in a small helper in `app/triage.py`.
+3. Configure the Anthropic SDK client with an explicit `timeout` and `max_retries` (set in `config.py` via environment variables, with defaults) so the SDK's built-in backoff handles the Claude call. Wrap the call in a bounded retry with exponential backoff and jitter, for failures the SDK does not already cover. Cap the total retry time so `POST /triage` does not hang.
+4. Make `save_reply` idempotent so a retry cannot write a duplicate or conflicting reply. Key the write on `ticket_id`, using an upsert or `INSERT ... ON CONFLICT DO UPDATE` rather than a blind insert. Check first whether a reply for that ticket already exists, and skip the Claude call if it does. Add a unique constraint or migration if one is missing.
+5. Put the retry around the whole "classify, draft, save" unit only where that is safe. Retry the Claude call and the `save_reply` write separately, so a failed save never causes another paid model call and the saved reply is never regenerated. Hold the drafted text in memory between the two steps.
+6. Log each attempt with the ticket id, attempt number, and error type, without logging ticket text or secrets. After the final attempt, raise a clear exception that `app/api.py` maps to a 502/503 response with a retry hint.
+7. Add pytest tests in `tests/`. Mock the Anthropic client to fail twice and then succeed, to fail permanently, and to raise a non-retryable error. Test `save_reply` with a fake database to confirm that calling it twice leaves one row, and that a transient write failure is retried once and succeeds.
+8. Run the full pytest suite and check that the existing tests still pass. Summarize the new settings, the idempotency key, and the retry limits in the final message.
+
+## P39
+1. Define the failure modes to protect against: Claude API errors (timeouts, 429, 5xx, connection errors) and database errors from `save_reply`. Treat them as two separate dependencies with separate breakers, and decide which exceptions count as failures (Anthropic SDK `APIConnectionError`, `APITimeoutError`, `RateLimitError`, `InternalServerError`; not 4xx bad-request errors that retrying cannot fix).
+
+2. Write a small, dependency-free `CircuitBreaker` class (new module such as `app/breaker.py`) with closed, open, and half-open states, a consecutive-failure threshold, a cool-down timeout, and a limited number of half-open trial calls. Make it thread-safe with a lock, use `time.monotonic()` for timing, and allow an injectable clock so tests need no sleeping.
+
+3. Add breaker settings (failure threshold, cool-down seconds, half-open trials, per-call timeout) to `config.py`, read from environment variables with safe defaults, so they can be tuned in the container without a code change.
+
+4. Wrap the Claude call in `app/triage.py` with its breaker, and set an explicit timeout and a small, bounded retry-with-backoff on the Anthropic client so that one breaker "failure" means a call that already exhausted its retries. When the breaker is open, fail fast with a clear `ServiceUnavailable`-style exception instead of calling the API.
+
+5. Wrap `save_reply` with its own breaker, and make the write safe to retry (idempotent per `ticket_id`, for example an upsert) so a retry or half-open trial can never create duplicate replies. Never let a failed or skipped save be silently dropped: surface it or queue the drafted reply for retry.
+
+6. Decide the degraded behavior when a breaker is open: in `app/api.py`, map the open-breaker exception to HTTP 503 with a `Retry-After` header and log it. Do not return a fake classification; either reject the request or return the ticket as "pending triage."
+
+7. Add pytest tests for the breaker state machine (closed to open at threshold, open rejects calls, half-open success closes, half-open failure reopens) and for `triage.py` using a mocked Anthropic client and a mocked `save_reply` that raise errors; also test the 503 response in `POST /triage`. Use the injectable clock to keep the tests fast.
+
+8. Add observability and rollout: log state transitions with the dependency name and ticket id (never secrets or full ticket text), expose breaker state in a simple health or metrics endpoint, and run the full pytest suite before shipping. Since it is one container, keep breaker state in process memory and note that it resets on restart.
+
+## P40
+1. Add a TRIAGE_TIMEOUT_SECONDS setting (and a separate SAVE_TIMEOUT_SECONDS) to config.py, read from environment variables with sensible defaults (for example 30 s for Claude, 5 s for the database write).
+2. In app/triage.py, pass the timeout to the Anthropic client (the `timeout` argument on `anthropic.Anthropic(...)` or per call via `client.with_options(timeout=...)`), and set `max_retries` explicitly so total wait stays bounded.
+3. Catch `anthropic.APITimeoutError` (and `APIConnectionError`) around the classify and draft-reply calls, retry once with a short backoff, then raise a clear domain error such as `TriageTimeout` instead of hanging.
+4. Wrap the `save_reply(ticket_id, text)` write with a timeout, using the database driver's own statement/connect timeout if it has one, or `asyncio.wait_for` / `concurrent.futures` with a deadline otherwise, so a stuck write cannot block the request.
+5. Make `save_reply` safe to retry: confirm it is idempotent per ticket_id (upsert rather than insert), so a timed-out write that actually succeeded does not create a duplicate reply.
+6. In app/api.py, map `TriageTimeout` and the save timeout to a clean HTTP response (504 or 503 with a short message) in the `POST /triage` handler, and log the ticket_id and which stage timed out.
+7. Add pytest tests in tests/ that mock the Anthropic client to raise `APITimeoutError` and mock `save_reply` to sleep past the deadline, asserting the error type, the single retry, and the HTTP status; also test the happy path is unchanged.
+8. Run the full test suite, and note in the config/docs that the two timeouts are tunable through environment variables and must stay below the container's or load balancer's request timeout.

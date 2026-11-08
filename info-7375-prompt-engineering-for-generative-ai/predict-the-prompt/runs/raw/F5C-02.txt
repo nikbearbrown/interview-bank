@@ -1,0 +1,8 @@
+1. Read `app/triage.py`, `app/api.py`, `config.py`, and the existing `tests/` to learn how classification, reply drafting, and `save_reply(ticket_id, text)` are structured, and to match the current pytest conventions and fixtures.
+2. Decide the seams to isolate: the Anthropic client call and `save_reply` (the database write) must both be replaced in tests, so no test touches the network, a real API key, or the database.
+3. Add a pytest fixture that supplies a fake Anthropic client returning canned responses (a JSON or text classification plus a drafted reply), and a fixture that monkeypatches `save_reply` with a recorder, plus env vars set via `monkeypatch.setenv` so `config.py` loads without real secrets.
+4. Write parametrized unit tests for classification covering the three categories (billing, bug, how-to), each with a representative ticket and a canned model response, asserting the parsed label is correct.
+5. Write edge-case tests: an unexpected or malformed model label, empty or whitespace-only ticket text, very long ticket text, and the SDK raising an API error or timeout, asserting the code's intended behavior (fallback, clear exception, or no save) in each case.
+6. Write tests for the reply flow that assert `save_reply` is called exactly once with the right `ticket_id` and the drafted text, and is not called when classification or drafting fails.
+7. Add endpoint tests for `POST /triage` using FastAPI's `TestClient` with the Claude call and `save_reply` patched, checking the success response shape and the 422 response for a missing or invalid body.
+8. Run `pytest` to confirm the new tests pass and run offline, check they fail when the behavior is deliberately broken, and keep all test data small and free of real customer information.

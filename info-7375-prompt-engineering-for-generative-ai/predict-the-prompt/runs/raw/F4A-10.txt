@@ -1,0 +1,15 @@
+1. Define the agent's contract first: input is a ticket (id and text), and the output is one of a fixed set of actions (classify as billing, bug, or how-to; draft a reply; save the reply; or escalate to a human). Write down what counts as success and which action is the only side effect (the `save_reply` database write), so the plan step can be checked against it.
+
+2. Add a planning stage in `app/triage.py` that calls Claude with only read-only information (the ticket text and the list of available actions) and asks for a short structured plan as JSON: the classification, which docs articles are needed (if any), what the reply should cover, and whether to save or escalate. Validate the plan against a Pydantic schema and reject or retry if it is malformed or proposes an unknown action.
+
+3. Keep the model call and the write separate: planning produces no side effects, and `save_reply` is never reachable from the planning call. Give the model no tool that can write, so the only way a write happens is through the code that executes an approved plan.
+
+4. Build the execution stage so it runs the plan step by step in plain Python: select the relevant articles from the 40 docs by classification (loading only the few needed, not all 600-word articles), call Claude to draft the reply using that context, and check the draft against the plan (right category, covers the planned points, no invented policies or refunds) before anything is saved.
+
+5. Add a gate before `save_reply`: save only if the plan validated, the draft passed the check, and the model's confidence is above a configured threshold in `config.py`. Otherwise mark the ticket for human review and do not write a reply. Make `save_reply` idempotent per ticket_id so retries cannot create duplicate rows.
+
+6. Wire it into `POST /triage` in `app/api.py`: return the plan, the classification, the draft, and the outcome (saved or escalated) in the response, with clear error codes for bad input and for upstream Claude failures. Add timeouts, a bounded retry count, and a cap on plan steps so the agent cannot loop. Keep the API key in an environment variable read through `config.py`.
+
+7. Test with pytest using a fake Claude client that returns canned plans and drafts: cases for each category, a malformed plan, a plan with an unknown action, a draft that fails the check, a low-confidence ticket, a retry that must not double-save, and a test that proves `save_reply` is never called during planning. Add a small set of real example tickets run against the live model as a separate, opt-in marker.
+
+8. Roll out safely in the single container: log each plan and outcome (without secrets or full customer text), first deploy in a shadow mode that records plans and drafts but skips `save_reply`, compare against human decisions for a period, then enable saving once the escalation rate and the error rate look acceptable.

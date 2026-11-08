@@ -1,0 +1,8 @@
+1. Read app/triage.py to find the classify-and-draft function, the Claude call, the prompt text, and where save_reply is invoked, so I know what the classifier takes in and returns.
+2. Identify how to run the classifier without side effects: call only the classification part, or stub or mock save_reply so no database write happens while trying examples.
+3. Check config.py and the environment for the Anthropic API key (read from environment variables only) and confirm which model the classifier uses.
+4. Write about 8 to 10 short example tickets covering billing, bug, and how-to, plus tricky cases: ambiguous, mixed-topic, very short, non-English, and one with an injection-style instruction in the ticket text.
+5. Run the classifier on each example in a throwaway script or a Python REPL, outside the app code, and record the label and the draft reply for each.
+6. Compare each result with the label I expected, and note misclassifications, malformed outputs (label not in the three allowed values), and replies that are off-tone or contradict the help articles in docs/.
+7. Confirm nothing was written to the database, and that no secrets were printed or saved in the outputs.
+8. Report a short table of ticket, expected label, actual label, and a one-line note, and suggest prompt or test changes only if I saw failures, without editing the project unless asked.

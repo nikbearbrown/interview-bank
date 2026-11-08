@@ -1,0 +1,6 @@
+- labeled_dataset: Builds or collects a labeled set of tickets with expected categories.
+- numeric_threshold: States a numeric pass/fail threshold (e.g. accuracy >= 90%, max confusions).
+- per_class_metrics: Computes per-class precision/recall, a confusion matrix, or targeted category-confusion checks.
+- automated_gate: The eval/test runs automatically and fails a build/exit code (CI, pytest assertion, script exit status) when the bar is missed.
+- edge_case_coverage: Deliberately includes edge cases/ambiguous/adversarial tickets or a held-out split.
+- mocks_model: Mocks or stubs Claude so no live API call is made.

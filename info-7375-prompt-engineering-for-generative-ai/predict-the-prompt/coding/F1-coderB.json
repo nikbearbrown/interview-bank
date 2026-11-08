@@ -1,0 +1,10 @@
+{
+"P01":{"tool_schema":1,"human_approval":0,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1},
+"P06":{"tool_schema":1,"human_approval":1,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1},
+"P11":{"tool_schema":1,"human_approval":0,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1},
+"P16":{"tool_schema":1,"human_approval":1,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1},
+"P21":{"tool_schema":1,"human_approval":1,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1},
+"P26":{"tool_schema":1,"human_approval":0,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1},
+"P31":{"tool_schema":1,"human_approval":1,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1},
+"P36":{"tool_schema":1,"human_approval":1,"permission_scope":1,"amount_limit":1,"audit_log":1,"mocked_tests":1}
+}

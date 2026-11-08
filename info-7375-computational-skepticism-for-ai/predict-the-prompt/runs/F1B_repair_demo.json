@@ -1,0 +1,138 @@
+{
+ "note": "repair-protocol demo: F1B prompt + appended 'Report accuracy at a 0.5 threshold, not calibration.' 10 plans (two further plans from a second sub-agent were sampled by mistake and discarded)",
+ "prompt": "You are a data analyst on a small team. Write the analysis plan for the task below. Format: a numbered list of at most 8 steps, one or two sentences each, no code, no preamble, no closing remarks.\n\nTask: A hospital has a model that outputs a predicted probability of 30-day readmission for each patient. You have 12,000 patients, each with the model's predicted probability and the true outcome (readmitted yes/no). Your job: check the accuracy of the predicted probabilities. Report accuracy at a 0.5 threshold, not calibration.",
+ "model": "claude-sonnet-5-5 (sub-agent)",
+ "date": "2026-11-08",
+ "runs": [
+  {
+   "id": "F1B-R1-01",
+   "plan": "1. Load the 12,000 records and validate them: confirm probabilities lie in [0,1], outcomes are binary, and there are no missing or duplicate patients.\n2. Compute the base rate of 30-day readmission, since accuracy must be judged against the majority-class baseline.\n3. Apply the 0.5 threshold to convert each predicted probability into a predicted readmitted yes/no label.\n4. Build the confusion matrix (TP, FP, TN, FN) from predicted labels versus true outcomes.\n5. Compute accuracy as (TP+TN)/12,000 and compare it with the accuracy of always predicting the majority class.\n6. Add a 95% confidence interval for accuracy (e.g., Wilson or bootstrap) to convey uncertainty.\n7. Report sensitivity and specificity alongside accuracy so the reader can see how class imbalance affects the headline number.\n8. Write up the result as requested, accuracy at the 0.5 threshold only, and state that calibration was deliberately not assessed."
+  },
+  {
+   "id": "F1B-R1-02",
+   "plan": "1. Inspect the dataset of 12,000 patients for data quality: range of probabilities, valid binary outcomes, missing values, and duplicates.\n2. Tabulate the outcome distribution to know the readmission prevalence.\n3. Dichotomize predictions at 0.5: probability >= 0.5 is predicted readmitted, otherwise not.\n4. Cross-tabulate predicted class against actual outcome to form the confusion matrix.\n5. Calculate overall accuracy from the matrix and compute a bootstrap confidence interval around it.\n6. Compare accuracy to the trivial baseline of predicting everyone as the majority class, because accuracy can be misleading when readmission is rare.\n7. Report precision and recall for the readmitted class as supporting context.\n8. Summarize findings in a short report focused on 0.5-threshold accuracy, noting calibration is out of scope per the request."
+  },
+  {
+   "id": "F1B-R1-03",
+   "plan": "1. Load the data and run sanity checks on the probability column (values between 0 and 1) and outcome column (binary, no missing).\n2. Compute the overall readmission rate.\n3. Create predicted labels by thresholding the probabilities at 0.5.\n4. Compute the confusion matrix and the overall accuracy.\n5. Calculate the majority-class baseline accuracy to show whether the model beats a naive guess.\n6. Quantify uncertainty in accuracy with a binomial/Wilson 95% interval given n=12,000.\n7. Report sensitivity, specificity, and positive predictive value to expose any imbalance-driven weakness.\n8. Present the 0.5-threshold accuracy result clearly, and mention that calibration was not examined as instructed."
+  },
+  {
+   "id": "F1B-R1-04",
+   "plan": "1. Verify the 12,000-row table: one row per patient, probability in [0,1], outcome coded 0/1, no nulls.\n2. Record the prevalence of readmission, which sets the baseline accuracy.\n3. Convert probabilities to hard predictions using the 0.5 cutoff.\n4. Count true positives, false positives, true negatives and false negatives.\n5. Report accuracy = (TP+TN)/N, with a confidence interval from a bootstrap of patients.\n6. Contrast it against the no-skill baseline that predicts the more common outcome for everyone.\n7. Include sensitivity and specificity in a small table so the accuracy figure is interpretable.\n8. Deliver a concise summary of accuracy at 0.5 and explicitly state that calibration was excluded from scope."
+  },
+  {
+   "id": "F1B-R1-05",
+   "plan": "1. Clean and validate the data: check ranges, outcome coding, missingness, and duplicates among the 12,000 patients.\n2. Compute the proportion of patients actually readmitted within 30 days.\n3. Label each patient as predicted readmit if the probability is at least 0.5.\n4. Build the 2x2 confusion matrix comparing predictions to actual outcomes.\n5. Derive accuracy, and put a 95% interval around it.\n6. Benchmark against the majority-class accuracy to judge whether the figure is meaningful.\n7. Add recall and precision for the readmitted class, since a high accuracy can hide poor detection of readmissions.\n8. Report the result as the 0.5-threshold accuracy only, with a note that calibration was not evaluated."
+  },
+  {
+   "id": "F1B-R1-06",
+   "plan": "1. Read in the data and confirm it is well formed: 12,000 unique patients, probabilities in [0,1], binary outcomes.\n2. Calculate the observed readmission rate to understand class balance.\n3. Apply the fixed 0.5 threshold to produce binary predictions.\n4. Form the confusion matrix and compute accuracy.\n5. Estimate sampling uncertainty for accuracy using a Wilson interval.\n6. Compare against the always-predict-majority baseline accuracy.\n7. Report sensitivity and specificity next to accuracy for completeness.\n8. Write a brief summary stating the accuracy at 0.5, and noting that probability calibration was intentionally left out."
+  },
+  {
+   "id": "F1B-R1-07",
+   "plan": "1. Check data integrity first: probability bounds, binary outcome values, missing entries, and repeated patient IDs.\n2. Determine the outcome prevalence among the 12,000 patients.\n3. Turn probabilities into class predictions at the 0.5 threshold.\n4. Produce the confusion matrix from predictions versus true readmission status.\n5. Compute accuracy and a bootstrap 95% confidence interval.\n6. Compute the majority-class baseline so the accuracy can be put in context.\n7. List sensitivity, specificity, and precision as secondary metrics.\n8. Report 0.5-threshold accuracy as the main deliverable and state that calibration was not assessed, as requested."
+  },
+  {
+   "id": "F1B-R1-08",
+   "plan": "1. Load the 12,000 records and run basic validation on both columns (range, coding, nulls, duplicates).\n2. Compute the share of patients readmitted, giving the baseline accuracy of a naive classifier.\n3. Classify patients as predicted readmissions when probability >= 0.5.\n4. Tabulate the confusion matrix.\n5. Compute accuracy and its confidence interval.\n6. Check how accuracy compares with the naive baseline, and flag if the gain is small or absent.\n7. Add sensitivity and specificity to show where the errors fall.\n8. Report accuracy at the 0.5 threshold in a short write-up, noting calibration is outside the requested scope."
+  },
+  {
+   "id": "F1B-R1-09",
+   "plan": "1. Import the 12,000 patient rows and verify that every probability is within [0,1], every outcome is yes/no, and no patient appears twice.\n2. Measure how common 30-day readmission is in this sample.\n3. Predict readmission whenever the model's probability is 0.5 or higher, and no readmission otherwise.\n4. Compare the predictions with the true outcomes in a confusion matrix.\n5. Calculate accuracy from the matrix and attach a 95% confidence interval.\n6. Calculate the accuracy of a model that always predicts the majority outcome, to see how much the hospital model really adds.\n7. Report sensitivity and specificity so the accuracy number is not read in isolation.\n8. State the final 0.5-threshold accuracy plainly, and note that calibration was not analyzed because it was not requested."
+  },
+  {
+   "id": "F1B-R1-10",
+   "plan": "1. Audit the dataset: 12,000 rows, probabilities between 0 and 1, outcomes binary, no missing or duplicated patients.\n2. Compute the readmission prevalence.\n3. Apply a 0.5 cutoff to the predicted probabilities to get predicted classes.\n4. Construct the confusion matrix against the true outcomes.\n5. Compute accuracy and a Wilson or bootstrap interval for it.\n6. Compare with the majority-class baseline, since with a low readmission rate even a useless model can score high accuracy.\n7. Report recall and precision for readmitted patients as context.\n8. Provide a short summary of accuracy at the 0.5 threshold, explicitly leaving calibration out of scope."
+  }
+ ],
+ "codes": {
+  "F1B-R1-01": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-02": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-03": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-04": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-05": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-06": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-07": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-08": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-09": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  },
+  "F1B-R1-10": {
+   "a": 0,
+   "b": 0,
+   "c": 1,
+   "d": 0,
+   "e": 0,
+   "f": 0
+  }
+ },
+ "freq": {
+  "a": 0,
+  "b": 0,
+  "c": 10,
+  "d": 0,
+  "e": 0,
+  "f": 0
+ }
+}

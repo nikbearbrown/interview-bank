@@ -1,0 +1,6 @@
+- retrieval_index: Builds or uses a search/retrieval step (embeddings, vector store, BM25, keyword index) to select a SUBSET of articles per ticket.
+- all_articles_in_prompt: Places the full text of all or most articles in the prompt.
+- token_budget: Counts or estimates tokens, or checks the context-window limit, for what goes into the prompt.
+- prompt_caching: Uses prompt caching (cache_control) for the static article/policy content.
+- cite_or_abstain: Reply must cite article ids/titles, or must say it does not know / escalates when the articles do not cover the ticket.
+- eval_or_tests: Adds tests or an eval for the drafter's answers.

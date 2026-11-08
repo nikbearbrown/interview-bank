@@ -1,0 +1,8 @@
+1. Read app/triage.py and tests/ to learn how classification, reply drafting and save_reply are structured, and what pytest conventions and fixtures already exist.
+2. Decide the seam to test: separate the Claude call from the parsing and routing logic, so the tests can exercise the classifier without any network access or real API key.
+3. Write a fake Anthropic client (a stub with a messages.create that returns canned responses) and monkeypatch it into app/triage.py, so no test touches the real SDK or needs the secrets in config.py.
+4. Replace save_reply with a recording fake (or monkeypatch it), so no test writes to the database and each test can assert what was saved, for which ticket_id, and how many times.
+5. Write parametrized tests for the happy path: one canned ticket each for billing, bug and how-to, asserting the returned category and that a non-empty draft reply is saved.
+6. Write edge-case tests: an unexpected or malformed model response (unknown label, empty text, extra whitespace or casing), an Anthropic SDK error or timeout, and an empty or very long ticket, asserting the code fails safely and does not save a bad reply.
+7. Add one API test for POST /triage using FastAPI's TestClient with the fake client, checking the status code and response shape for a valid ticket and for an invalid request body.
+8. Run pytest, confirm the tests pass offline and deterministically, and check that coverage includes every branch in the classification logic.

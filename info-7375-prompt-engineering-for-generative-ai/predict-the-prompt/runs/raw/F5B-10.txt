@@ -1,0 +1,8 @@
+1. Run the existing pytest suite first to get a baseline, and read app/triage.py, app/api.py and config.py to see how the Claude call, the classification parsing, and save_reply are wired together.
+2. Check config.py for the model name, API key loading from the environment, timeouts and retries, and confirm the Anthropic client is created once and fails clearly if the key is missing.
+3. Make the classifier output reliable: have Claude return a structured result (category limited to billing / bug / how-to, plus the draft reply) and validate it in code, with a safe fallback or retry when the output is malformed or the label is unexpected.
+4. Separate classification from the database write so the classifier can be tested alone, and make sure save_reply is only called after a valid result and is not run during tests (mock it or use a test database).
+5. Write pytest tests with the Anthropic client mocked: one per category, a malformed response, an API error or timeout, and an empty or very long ticket, plus a test of POST /triage through FastAPI's TestClient.
+6. Build a small labeled set of sample tickets (including ambiguous ones) and run the real Claude model on it once, with a test key and save_reply stubbed, to measure accuracy and inspect the misclassifications and the reply quality; adjust the prompt and re-run.
+7. Check the docs/ question: decide whether the reply needs the help articles, and if so, retrieve only the few relevant articles per ticket rather than sending all 40 in every request.
+8. Run the full suite plus an end-to-end call against the container with a test key, confirm the API returns the right status codes and the saved reply matches, and report the accuracy numbers and any remaining failure cases.

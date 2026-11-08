@@ -1,0 +1,6 @@
+- separate_plan_step: A distinct planning stage (its own model call or phase) produces a plan before any action is executed.
+- structured_plan: The plan is a structured object (JSON/schema/list of typed steps) that code parses.
+- human_plan_approval: A human reviews/approves the plan before execution.
+- reflect_or_replan: After step results, the agent reflects, checks, or revises the plan/next step.
+- iteration_cap: A max-steps / iteration / budget limit on the agent loop.
+- tests: Adds pytest tests (mocked Claude) for the agent.

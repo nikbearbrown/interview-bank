@@ -33,9 +33,12 @@ The markdown files are the source; `json/multiple-answer.json` is generated from
 | `j04-jargon-shaders-materials.md` | Jargon test: shaders and materials | 12 |
 | `j05-jargon-sprites-rigs-colliders-states.md` | Jargon test: sprite sheets, rigs, colliders and state machines | 8 |
 | `j06-jargon-from-essays.md` | Jargon test: from the essay prompts | 32 |
-| | **Total** | **600** |
+| `k01-compress-and-decompress.md` | Compress and decompress: a term and its checkable constraints | 29 |
+| `k02-reading-agent-output.md` | Reading agent output: confident claims, scope violations, follow-ups that give evidence | 29 |
+| `k03-false-friends.md` | False friends: words with two meanings or confusable neighbours | 20 |
+| | **Total** | **678** |
 
-`j01` to `j06` are the jargon-first sets on camera, animation, game movement, shaders and materials, and sprite sheets, rigs, colliders and state machines. The others keep the original topics (engine vocabulary, chapters 0 to 14, agent/MCP workflows) reworded to test term use. Chapter 15 (final project) is not in the pool.
+`k01` to `k03` (added 2026-11-08) test applied use rather than recall: unpack a term into constraints, judge an agent's confident claim, and tell false friends apart. `j01` to `j06` are the jargon-first sets on camera, animation, game movement, shaders and materials, and sprite sheets, rigs, colliders and state machines. The others keep the original topics (engine vocabulary, chapters 0 to 14, agent/MCP workflows) reworded to test term use. Chapter 15 (final project) is not in the pool.
 
 ## Layout
 - `multiple-answer/`: one document per set.

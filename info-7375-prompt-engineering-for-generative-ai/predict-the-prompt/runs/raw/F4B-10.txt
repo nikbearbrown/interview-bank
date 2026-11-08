@@ -1,0 +1,8 @@
+1. Define the agent's tools as Anthropic tool schemas in app/triage.py: classify_ticket (billing / bug / how-to), search_docs (keyword lookup over the 40 markdown articles in docs/), draft_reply, and save_reply(ticket_id, text) as the only database write.
+2. Write a short system prompt that tells Claude to act one step at a time: after each tool result it picks the next action, with no up-front plan or task list, and it stops by calling save_reply or by routing to a human.
+3. Implement the loop with the Anthropic SDK Messages API: send the ticket, run any tool_use block Claude returns, append the tool_result to the message history, and call Claude again until it returns end_turn.
+4. Keep the loop safe: cap it at a fixed number of iterations, return tool errors to Claude as tool_result errors instead of raising, and make save_reply idempotent per ticket_id so a retry cannot write twice.
+5. Have search_docs return only the few most relevant article snippets, not whole 600-word articles, so the context stays small as the loop runs.
+6. Update POST /triage in app/api.py to call the agent loop and return the category, the reply, and the list of steps taken. Read the API key and model name from environment variables through config.py.
+7. Write pytest tests in tests/ with a mocked Anthropic client that returns scripted tool_use sequences. Cover a normal route for each of the three categories, a tool error, and the iteration cap, and check that save_reply runs exactly once.
+8. Run the tests, then try a few sample tickets through the local container and review the step traces for wrong turns, such as saving before classifying, and tighten the system prompt and tool descriptions where needed.

@@ -1,0 +1,15 @@
+1. Define the retrieval design before touching code: the 40 articles in `docs/` are about 600 words each, so index them by article (title, path, text) and let Claude fetch them on demand through a tool instead of pasting all of them into the prompt.
+
+2. Add a new module, for example `app/kb.py`, that loads every markdown file from `docs/` at startup into memory, splits each into a title and body, and exposes `search_articles(query, k=3)` (simple keyword or BM25-style scoring, no new services) and `get_article(article_id)`, both returning plain dicts with id, title, and text.
+
+3. Define two tool schemas for the Anthropic SDK (`search_help_articles` taking a query string, `get_help_article` taking an id), with clear descriptions so Claude knows to search before drafting any reply.
+
+4. Rewrite the reply-drafting call in `app/triage.py` to run a tool-use loop: send the ticket plus the tool list to `client.messages.create`, and while `stop_reason == "tool_use"` execute each requested tool locally, append a `tool_result` message, and call Claude again. Cap the loop at a small number of turns so a confused model cannot run forever.
+
+5. Change the system prompt to say: answer only from the retrieved articles, cite the article ids used, and if the search returns nothing relevant, say so and flag the ticket for a human rather than inventing an answer. Keep the classification step (billing / bug / how-to) separate and unchanged.
+
+6. Keep `save_reply(ticket_id, text)` outside the tool loop: it is a database write, so Claude never gets it as a tool, and it is only called once on the final reply text after the loop ends. Return the cited article ids alongside the reply so `POST /triage` in `app/api.py` can include them in its response.
+
+7. Write pytest tests in `tests/` that need no network: unit-test the search function on a few fixture markdown files, and test the tool loop with a stubbed Anthropic client that returns a scripted `tool_use` turn followed by a final text turn, asserting the tool result is fed back, the loop cap holds, and `save_reply` is called exactly once.
+
+8. Check quality with a small set of sample tickets whose correct article is known: confirm the right article is retrieved and cited, and the no-match case is flagged. Then tune the search scoring or the number of results, and keep the API key read from the environment through `config.py` as before.

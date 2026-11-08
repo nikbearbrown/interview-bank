@@ -1,0 +1,8 @@
+1. Read `app/triage.py` to see exactly how the Claude call and `save_reply` are wired, what the function returns, and how failures currently surface to `app/api.py`.
+2. Check `tests/` for existing triage tests so I know how the Claude client and `save_reply` are mocked and what behaviour must not change.
+3. Add a small plain retry helper in `app/triage.py` (a loop with a fixed maximum attempt count and a short, growing sleep between tries), with no new dependencies.
+4. Wrap the Claude call in it, retrying only on transient failures from the Anthropic SDK (connection errors, timeouts, rate limits, 5xx), and let non-transient errors such as bad requests or auth failures raise immediately.
+5. Wrap the `save_reply` write in the same helper, retrying only on transient database errors, and make sure a retry cannot create a duplicate row (for example by confirming the write is keyed on `ticket_id` and is an upsert or otherwise idempotent).
+6. Keep the two retries separate so that a failed `save_reply` retries only the write and does not call Claude again, and put the attempt count and delay in `config.py` with sensible defaults.
+7. Log each retry and the final failure with the ticket id (never the ticket text or secrets), and re-raise the last error after the final attempt so `POST /triage` still returns a clear error.
+8. Add pytest tests with fake clients: success after one transient failure, giving up after the maximum attempts, a non-transient error not being retried, and a `save_reply` retry not re-calling Claude; then run the test suite.

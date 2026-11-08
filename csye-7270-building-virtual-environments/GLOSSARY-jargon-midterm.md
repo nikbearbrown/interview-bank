@@ -1055,3 +1055,27 @@ Each table gives the term and one plain sentence. Meanings hold for Godot, Unity
 - "A normal map for colour" is **albedo**. "Fragment shader moves vertices" is a **vertex shader**.
 - "A trigger that blocks" is a **collider**. "A bone in a sprite sheet" is a **rig** (bones) or a **sprite sheet** (frames), not both.
 - "Fast on a fast PC" means the movement is missing **delta time**.
+
+## Compress, read and tell apart (sets k01 to k03)
+
+| Term | Meaning |
+|---|---|
+| Unpacking a term | Turning a word into constraints you can check, such as a window length, a trigger and a result |
+| Compressing a behaviour | Choosing the one exact term that names a described behaviour |
+| Monitoring / monitorable | Area setting for detecting others / area setting for being detectable by other areas |
+| Call down, signal up | A parent calls its child's methods; a child tells its parent by emitting a signal |
+| Apex | The highest point of a jump |
+| Cutting the jump | Reducing upward velocity on button release, only while rising, for variable jump height |
+| Double scaling | Multiplying by delta and then handing the result to a call that already applies the time step |
+| Evidence versus claim | A claim says it works; evidence is output, a measurement or a failing-then-passing test |
+| Baseline | The measurement taken before a change, so the change can be compared with it |
+| Scope violation | The agent changed something it was told not to touch, or was never asked to touch |
+| Tautological test | A test whose expected value was copied from the code's own output, so it cannot find a wrong formula |
+| Mutation check | Break the code on purpose and confirm the test fails |
+| False friend | A word with two meanings, or a near neighbour, that sounds like the one you meant |
+| Scene versus level | A scene is a saved node tree (any size); a level is a playable area, usually built as a scene |
+| Stable | Depends on context: no jitter, a stable release, or a sort that keeps equal items in order |
+| Normal versus normal map | A direction at a point on a surface / a texture storing that direction per texel |
+| Static | StaticBody (physics), static typing (script), static lighting (rendering) |
+| Origin versus pivot | The point a position refers to / the point rotation happens around |
+| TileSet versus TileMap | The palette of tiles and their shapes / the node that places tiles on a grid |

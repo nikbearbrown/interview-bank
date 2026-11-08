@@ -1,0 +1,8 @@
+1. Read `app/triage.py` to see exactly how the classification and reply-drafting prompts are built, which model is called, and what shape the output has (label plus reply text). This tells me what I am actually testing before I run anything.
+2. Read `config.py` and confirm the Anthropic API key comes from an environment variable. If it is not set in my shell, ask the user to provide it rather than guessing or hard-coding anything.
+3. Write a small set of 6 to 8 realistic sample tickets in a scratch file outside the project: a clear billing one, a clear bug, a clear how-to, an ambiguous one that mixes categories, a very short one, an angry or off-topic one, and one with odd formatting or non-English text.
+4. Run the classification and drafting logic on those tickets in a throwaway script, calling the model but NOT `save_reply`, so nothing is written to the database. If the code does not allow separating the model call from the save, stub or mock `save_reply` in the script only.
+5. For each ticket, record the predicted category, the drafted reply, and anything odd (wrong label, reply that ignores the question, invented policy or facts, malformed output).
+6. Optionally exercise `POST /triage` through FastAPI's test client with a couple of the same tickets, with `save_reply` patched out, to confirm the endpoint wiring and response shape match what the direct calls gave.
+7. Compare results against what I expected for each ticket, and look for patterns in the failures (for example, the ambiguous ticket always going to "how-to").
+8. Report back to the user with a short table of ticket, expected label, actual label, and reply quality notes, plus any suggested prompt fixes. Do not change project files unless asked.

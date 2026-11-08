@@ -1,0 +1,15 @@
+1. Define the goal and a baseline: build a small set of sample tickets (billing, bug, how-to) with the help article that should answer each, and record what the current drafter in `app/triage.py` produces for them so any change can be compared against it.
+
+2. Add a `app/retrieval.py` module that loads the 40 markdown files in `docs/` once at startup, splits each into sections of a few hundred words, and keeps the title and file name with each chunk.
+
+3. Implement retrieval in pure Python, starting with a simple keyword/BM25-style scorer (no new service, since the deployment is one container). Given a ticket's text, return the top 3 chunks. Leave the function interface narrow so embeddings could replace the scorer later without touching the caller.
+
+4. Change the reply-drafting call in `app/triage.py` so the prompt includes the retrieved chunks, each labelled with its source file, inside clearly delimited tags. Tell Claude to answer only from those articles, to cite the article it used, and to say it cannot answer and flag the ticket for a human when the articles do not cover the question.
+
+5. Keep classification as it is, but pass the category to retrieval as a hint, for example a small boost for articles that match it. Keep `save_reply(ticket_id, text)` as the only database write, called after the draft is produced, and record which articles were used in the saved result.
+
+6. Handle failure cases: if retrieval finds nothing above a minimum score, skip the articles and use the "cannot answer, escalate" path rather than letting Claude guess. Cap the total retrieved text to keep token use and latency predictable, and surface Anthropic SDK errors cleanly in `POST /triage`.
+
+7. Add pytest tests in `tests/`: unit tests for loading, chunking and ranking against fixture markdown; tests that the prompt contains the retrieved text and source labels; and a test with the Anthropic client mocked, with `save_reply` mocked, to confirm the write happens once and no real API call is made. Run the sample tickets from step 1 against the real model once by hand and compare with the baseline.
+
+8. Roll out with a config flag in `config.py` (on by default after checking), keeping secrets in environment variables. Rebuild the single container so the `docs/` files are included, and review a sample of live drafts for wrong or invented answers before removing the flag.

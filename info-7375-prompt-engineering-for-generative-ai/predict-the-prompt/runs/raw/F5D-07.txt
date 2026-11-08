@@ -1,0 +1,8 @@
+1. Read app/triage.py to find the exact function that builds the classification prompt, calls Claude, and parses the result, and note the output shape (label plus draft reply) and where save_reply is called.
+2. Choose 6 to 8 realistic example tickets covering billing, bug, and how-to, plus a few hard cases (ambiguous, multi-issue, very short, non-English, empty text), and write them down as plain test data.
+3. Run the classifier on these examples in a way that cannot write to the database, by stubbing or monkeypatching save_reply so no real rows are saved, and with the API key read only from the environment variable.
+4. Call the classification step (and the reply draft) for each example through the Anthropic SDK, and record the input, the label returned, and the drafted reply side by side.
+5. Compare each returned label against the label I expect, and note any misclassifications, malformed or unparseable outputs, and replies that are off-topic or make claims not supported by docs/.
+6. Check behavior on the hard cases: errors from the SDK, timeouts, empty or very long tickets, and whether the code fails safely instead of saving a bad reply.
+7. If I find problems, adjust the prompt or parsing in triage.py minimally, rerun the same examples, and compare before and after.
+8. Turn the useful examples into pytest cases in tests/ that mock the Claude call (so tests are fast, free, and deterministic), run pytest, and report the results table and any issues found.

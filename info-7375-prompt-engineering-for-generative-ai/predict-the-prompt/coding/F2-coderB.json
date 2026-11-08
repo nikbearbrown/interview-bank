@@ -1,0 +1,10 @@
+{
+"P01":{"backoff_jitter":1,"idempotency":1,"transient_only":1,"circuit_breaker":0,"explicit_timeout":1,"failure_tests":1},
+"P06":{"backoff_jitter":0,"idempotency":1,"transient_only":1,"circuit_breaker":1,"explicit_timeout":0,"failure_tests":1},
+"P11":{"backoff_jitter":1,"idempotency":1,"transient_only":1,"circuit_breaker":1,"explicit_timeout":1,"failure_tests":1},
+"P16":{"backoff_jitter":0,"idempotency":1,"transient_only":0,"circuit_breaker":0,"explicit_timeout":1,"failure_tests":1},
+"P21":{"backoff_jitter":1,"idempotency":1,"transient_only":1,"circuit_breaker":0,"explicit_timeout":0,"failure_tests":1},
+"P26":{"backoff_jitter":1,"idempotency":1,"transient_only":1,"circuit_breaker":0,"explicit_timeout":1,"failure_tests":1},
+"P31":{"backoff_jitter":1,"idempotency":1,"transient_only":1,"circuit_breaker":0,"explicit_timeout":1,"failure_tests":1},
+"P36":{"backoff_jitter":1,"idempotency":1,"transient_only":1,"circuit_breaker":1,"explicit_timeout":1,"failure_tests":1}
+}
