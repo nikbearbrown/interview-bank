@@ -1,6 +1,6 @@
 # INFO 7375 Prompt Engineering: exam cheat sheet
 
-**Status: DRAFT v0.2, 2026-11-09, for TA review.** v0.2 adds items 30 to 42 and extends items 6, 8, 10, 11 and 25 from the instructor's class notes. Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
+**Status: DRAFT v0.2, 2026-11-09, for TA review.** v0.2 adds items 30 to 43 and extends items 6, 8, 10, 11 and 25 from the instructor's class notes. Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
 
 Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks/books/interview-bank/info-7375-prompt-engineering-for-generative-ai/GLOSSARY-jargon-midterm.md).
 
@@ -14,7 +14,7 @@ Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks
 
 **What it tests.** Concepts, not dates or names, and the things an AI cannot do for you: deciding what to do, checking the result, owning the outcome. It does not test layer widths, formulas or recurrent networks.
 
-**Where it stops.** Items 21 to 29 (fine-tuning, training and Hugging Face) are the newest. Their sources are chapter 9, Hugging Face's documentation and two papers. Items 21 to 26 also state general practice from the instructor's discussion; no single source was read for them *(not checked)*. They have no practice questions yet (marked "none yet"). A dagger (†) marks a practice question that exists in the instructor's local pool but is not pushed yet. Items 30 to 42 (added 2026-11-09) come from the instructor's class notes and the chapters named in each item; none has practice questions yet.
+**Where it stops.** Items 21 to 29 (fine-tuning, training and Hugging Face) are the newest. Their sources are chapter 9, Hugging Face's documentation and two papers. Items 21 to 26 also state general practice from the instructor's discussion; no single source was read for them *(not checked)*. They have no practice questions yet (marked "none yet"). A dagger (†) marks a practice question that exists in the instructor's local pool but is not pushed yet. Items 30 to 43 (added 2026-11-09) come from the instructor's class notes and the chapters named in each item; none has practice questions yet.
 
 ## The ten-second version
 
@@ -214,6 +214,10 @@ Practice: none yet
 Go to: [chapter 4](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/04-the-agent-loop.md)
 Practice: none yet
 
+**43. Instruction files: CLAUDE.md and AGENTS.md** *(common usage and the vendor's documentation, checked 2026-11-09; the course text does not discuss these files)*. A coding agent starts every session with a fresh context window, so it does not remember your project. An instruction file is standing text that the program around the model loads into the context at the start of each session: how to work in this project, what to do, what never to do, and which check to run before handing work back. CLAUDE.md is the file Claude Code reads. AGENTS.md is a tool-neutral file that other coding agents read; Claude Code can read it too, or a one-line CLAUDE.md can import it, which is what this course repository does (its CLAUDE.md is the single line `@AGENTS.md`). Why use them: they persist across sessions, they give people and tools one shared set of conventions, and they are the place to write the scope, the constraints and the check (this course's AGENTS.md names `scripts/validate_course.py`). What they are not: a gate. The file is context, a request, and is not enforced; a rule that must hold is enforced outside the model, with a permission rule, a hook, a test or a protected branch. They are also an instruction channel: whoever can edit the file steers the agent, so review changes to it like code. Keep it short and specific, because a long or self-contradicting file is followed less reliably, and remember the agent sees it only if the program loads it.
+Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md), [chapter 5](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/05-tools-and-permissions.md), [chapter 9](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/09-training-and-configuration.md), [chapter 12](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/12-memory-and-multiple-agents.md), [Claude Code memory documentation](https://code.claude.com/docs/en/memory)
+Practice: none yet
+
 ## For the TAs: please review this sheet
 
 **What we need from you.** Read it as a student would the night before the exam, and tell us:
@@ -223,7 +227,7 @@ Practice: none yet
 3. **Coverage.** Anything the exam is likely to ask that is missing, or anything here that will not be asked?
 4. **Length.** Where would you cut so it fits a quick read?
 5. **Go to links.** Does each one lead to the place the idea is really taught? Any that are broken?
-6. **Open questions for the instructor:** the scoring rule for the multiple-answer questions; whether items 21 to 29 are on the exam and how deep; whether the date and recurrent-network items in the older student study guide should be removed. Whether items 30 to 42 (added 2026-11-09) are on the exam; the instructor's sentences for probability versus likelihood and for sample versus population, which the course text does not give.
+6. **Open questions for the instructor:** the scoring rule for the multiple-answer questions; whether items 21 to 29 are on the exam and how deep; whether the date and recurrent-network items in the older student study guide should be removed. Whether items 30 to 43 (added 2026-11-09) are on the exam; the instructor's sentences for probability versus likelihood and for sample versus population, which the course text does not give.
 
 **How to send it.** Open an issue on this repository titled "Cheat sheet feedback" with the item number and your suggestion, or propose an edit as a pull request. One item per comment helps.
 
@@ -232,4 +236,4 @@ Practice: none yet
 | Date | Who | What changed |
 |---|---|---|
 | 2026-11-04 | Claude | First draft (v0.1) from the instructor's notes; not reviewed by anyone yet |
-| 2026-11-09 | Claude | v0.2 from the instructor's class notes: added items 30 to 42 (observability and the trace, provenance, stop conditions, cost versus risk, harness, chain of thought, fluency trap, baseline, prompt versus system prompt, tools, sandboxes, plausibility, latency); extended items 6, 8, 10, 11 and 25; three new lines in the ten-second version; not reviewed by anyone yet |
+| 2026-11-09 | Claude | v0.2 from the instructor's class notes: added items 30 to 43 (observability and the trace, provenance, stop conditions, cost versus risk, harness, chain of thought, fluency trap, baseline, prompt versus system prompt, tools, sandboxes, plausibility, latency, instruction files); extended items 6, 8, 10, 11 and 25; three new lines in the ten-second version; not reviewed by anyone yet |
