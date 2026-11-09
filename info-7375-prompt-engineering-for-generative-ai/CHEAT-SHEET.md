@@ -1,6 +1,6 @@
 # INFO 7375 Prompt Engineering: exam cheat sheet
 
-**Status: DRAFT v0.2, 2026-11-09, for TA review.** v0.2 adds items 30 to 43 and extends items 6, 8, 10, 11 and 25 from the instructor's class notes. Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
+**Status: DRAFT v0.2, 2026-11-09, for TA review.** v0.2 adds items 30 to 44 and extends items 6, 8, 10, 11 and 25 from the instructor's class notes. Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
 
 Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks/books/interview-bank/info-7375-prompt-engineering-for-generative-ai/GLOSSARY-jargon-midterm.md).
 
@@ -14,7 +14,7 @@ Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks
 
 **What it tests.** Concepts, not dates or names, and the things an AI cannot do for you: deciding what to do, checking the result, owning the outcome. It does not test layer widths, formulas or recurrent networks.
 
-**Where it stops.** Items 21 to 29 (fine-tuning, training and Hugging Face) are the newest. Their sources are chapter 9, Hugging Face's documentation and two papers. Items 21 to 26 also state general practice from the instructor's discussion; no single source was read for them *(not checked)*. They have no practice questions yet (marked "none yet"). A dagger (†) marks a practice question that exists in the instructor's local pool but is not pushed yet. Items 30 to 43 (added 2026-11-09) come from the instructor's class notes and the chapters named in each item; none has practice questions yet.
+**Where it stops.** Items 21 to 29 (fine-tuning, training and Hugging Face) are the newest. Their sources are chapter 9, Hugging Face's documentation and two papers. Items 21 to 26 also state general practice from the instructor's discussion; no single source was read for them *(not checked)*. They have no practice questions yet (marked "none yet"). A dagger (†) marks a practice question that exists in the instructor's local pool but is not pushed yet. Items 30 to 44 (added 2026-11-09) come from the instructor's class notes and the chapters named in each item; none has practice questions yet.
 
 ## The ten-second version
 
@@ -62,7 +62,7 @@ Practice: foundations MA-7.1, MA-7.2, MA-8.1, MA-8.2, ES-7.1, ES-8.1
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md), [chapter 2](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/02-prompt-contracts-and-evaluation.md), [chapter 6](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/06-claude-code-and-diff-review.md), [chapter 13](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/13-evaluation-and-approval-gates.md), [chapter 15](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/15-supervised-capstone.md)
 Practice: foundations MA-9.1 to MA-9.3, ES-9.1, ES-9.2; ch13
 
-**7. Format validity is not factual validity.** Valid JSON can hold a false answer. A validator checks the shape, not whether the claim is true. One prompt run three times gives three samples, not a measurement.
+**7. Format validity is not factual validity.** Valid JSON can hold a false answer. A validator checks the shape, not whether the claim is true. One prompt run three times gives three samples, not a measurement. Validation and verification are separated in item 44.
 Go to: [chapter 2](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/02-prompt-contracts-and-evaluation.md)
 Practice: foundations MA-10.1 to MA-10.3, ES-10.1, ES-10.2
 
@@ -218,6 +218,10 @@ Practice: none yet
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md), [chapter 5](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/05-tools-and-permissions.md), [chapter 9](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/09-training-and-configuration.md), [chapter 12](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/12-memory-and-multiple-agents.md), [Claude Code memory documentation](https://code.claude.com/docs/en/memory)
 Practice: none yet
 
+**44. Verification and validation.** The two words are used with different depths in different sources, so say which you mean. In this course's text, a *validator* checks structure against a contract: required fields, types, allowed values, a path inside the approved folder. That is mechanical, code can do it, and it passes meaningless content that has the right shape (ten meaningless files that were long enough passed a presence check). *Verification* asks whether the substance holds: does the answer follow from the source it cites, did the tool really do the job. It consults something outside the producer (a test run, a reference, a recomputation, a read-back), and a check run by the system that produced the answer is not independent of it. Producing and verifying are different operations (the solve-verify asymmetry): a trustworthy check fails differently from the thing it checks. *Common usage in engineering, not the course text:* verification is "did we build it right, against the specification" and validation is "did we build the right thing, for the real need", so validation is the deeper question, the opposite depth from the course's validator. Either way, passing a validator shows the shape passed; it does not show the claim is true or the need is met. Tool evidence is evidence of something specific: a successful write shows bytes were written, not that the file meets the assignment. Output is cheap and verification is not, so budget for it and match its depth to the risk (item 33).
+Go to: [chapter 2](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/02-prompt-contracts-and-evaluation.md), [chapter 6](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/06-claude-code-and-diff-review.md), [chapter 10](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/10-planning-before-acting.md), [chapter 11](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/11-tool-use-and-verification.md), [chapter 15](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/15-supervised-capstone.md)
+Practice: for the format-validity half, see item 7; none yet for the rest
+
 ## For the TAs: please review this sheet
 
 **What we need from you.** Read it as a student would the night before the exam, and tell us:
@@ -227,7 +231,7 @@ Practice: none yet
 3. **Coverage.** Anything the exam is likely to ask that is missing, or anything here that will not be asked?
 4. **Length.** Where would you cut so it fits a quick read?
 5. **Go to links.** Does each one lead to the place the idea is really taught? Any that are broken?
-6. **Open questions for the instructor:** the scoring rule for the multiple-answer questions; whether items 21 to 29 are on the exam and how deep; whether the date and recurrent-network items in the older student study guide should be removed. Whether items 30 to 43 (added 2026-11-09) are on the exam; the instructor's sentences for probability versus likelihood and for sample versus population, which the course text does not give.
+6. **Open questions for the instructor:** the scoring rule for the multiple-answer questions; whether items 21 to 29 are on the exam and how deep; whether the date and recurrent-network items in the older student study guide should be removed. Whether items 30 to 44 (added 2026-11-09) are on the exam; the instructor's sentences for probability versus likelihood and for sample versus population, which the course text does not give.
 
 **How to send it.** Open an issue on this repository titled "Cheat sheet feedback" with the item number and your suggestion, or propose an edit as a pull request. One item per comment helps.
 
@@ -236,4 +240,4 @@ Practice: none yet
 | Date | Who | What changed |
 |---|---|---|
 | 2026-11-04 | Claude | First draft (v0.1) from the instructor's notes; not reviewed by anyone yet |
-| 2026-11-09 | Claude | v0.2 from the instructor's class notes: added items 30 to 43 (observability and the trace, provenance, stop conditions, cost versus risk, harness, chain of thought, fluency trap, baseline, prompt versus system prompt, tools, sandboxes, plausibility, latency, instruction files); extended items 6, 8, 10, 11 and 25; three new lines in the ten-second version; item 21 gained a plain definition of optimization and item 24 the learning-rate trade-off; not reviewed by anyone yet |
+| 2026-11-09 | Claude | v0.2 from the instructor's class notes: added items 30 to 44 (observability and the trace, provenance, stop conditions, cost versus risk, harness, chain of thought, fluency trap, baseline, prompt versus system prompt, tools, sandboxes, plausibility, latency, instruction files, verification and validation); extended items 6, 8, 10, 11 and 25; three new lines in the ten-second version; item 21 gained a plain definition of optimization and item 24 the learning-rate trade-off; not reviewed by anyone yet |
