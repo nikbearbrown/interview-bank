@@ -1,6 +1,6 @@
 # INFO 7375 Prompt Engineering: exam cheat sheet
 
-**Status: DRAFT v0.2, 2026-11-09, for TA review.** v0.2 adds items 30 to 40 and extends items 6, 8, 10, 11 and 25 from the instructor's class notes. Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
+**Status: DRAFT v0.2, 2026-11-09, for TA review.** v0.2 adds items 30 to 42 and extends items 6, 8, 10, 11 and 25 from the instructor's class notes. Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
 
 Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks/books/interview-bank/info-7375-prompt-engineering-for-generative-ai/GLOSSARY-jargon-midterm.md).
 
@@ -14,7 +14,7 @@ Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks
 
 **What it tests.** Concepts, not dates or names, and the things an AI cannot do for you: deciding what to do, checking the result, owning the outcome. It does not test layer widths, formulas or recurrent networks.
 
-**Where it stops.** Items 21 to 29 (fine-tuning, training and Hugging Face) are the newest. Their sources are chapter 9, Hugging Face's documentation and two papers. Items 21 to 26 also state general practice from the instructor's discussion; no single source was read for them *(not checked)*. They have no practice questions yet (marked "none yet"). A dagger (†) marks a practice question that exists in the instructor's local pool but is not pushed yet. Items 30 to 40 (added 2026-11-09) come from the instructor's class notes and the chapters named in each item; none has practice questions yet.
+**Where it stops.** Items 21 to 29 (fine-tuning, training and Hugging Face) are the newest. Their sources are chapter 9, Hugging Face's documentation and two papers. Items 21 to 26 also state general practice from the instructor's discussion; no single source was read for them *(not checked)*. They have no practice questions yet (marked "none yet"). A dagger (†) marks a practice question that exists in the instructor's local pool but is not pushed yet. Items 30 to 42 (added 2026-11-09) come from the instructor's class notes and the chapters named in each item; none has practice questions yet.
 
 ## The ten-second version
 
@@ -206,6 +206,14 @@ Practice: none yet
 Go to: [chapter 5](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/05-tools-and-permissions.md), [chapter 6](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/06-claude-code-and-diff-review.md), [chapter 8](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/08-mcp-from-scratch.md), [chapter 3](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/03-chat-assistant-agent.md)
 Practice: none yet
 
+**41. Plausibility and the plausibility audit.** Plausibility is whether an output could even be true given what you already know. The plausibility audit is the check you make before you verify: it consults no source, it runs on your own model of how the thing should behave, and it decides whether a source needs consulting and what the verification should look for. Say your verdict, what to look for and why before you look anything up; if you say "I audited it by running the tests," verification has leaked in. Plausibility is a first screen, not evidence, and it fails when: the error is outside your own knowledge (so understand or build the thing yourself first); the output is fluent by construction (a language model produces plausible continuations, so the audit is weakest against the model's own errors); the question has one correct answer (compute or compare it instead); a clean form is mistaken for a trustworthy plan; or the context that decides what is plausible is not in the plan. How deep to audit follows cost versus risk (item 33).
+Go to: [chapter 6](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/06-claude-code-and-diff-review.md), [chapter 13](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/13-evaluation-and-approval-gates.md), [chapter 5](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/05-tools-and-permissions.md), [chapter 10](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/10-planning-before-acting.md), [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md)
+Practice: none yet
+
+**42. Latency (elapsed time)** *(common usage; the course text does not use the word)*. Latency, here, is how long a run or a step took: the end time minus the start time, also called elapsed, duration or wall-clock time. The course text says only that a turn budget is not a time limit: it counts turns, puts no timeout around a slow tool, and cannot interrupt a wait that never returns, so a time bound is a separate control. A long run is not progress, and the reference trace holds no timestamps, so how long it took is not observable unless you recorded it.
+Go to: [chapter 4](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/04-the-agent-loop.md)
+Practice: none yet
+
 ## For the TAs: please review this sheet
 
 **What we need from you.** Read it as a student would the night before the exam, and tell us:
@@ -215,7 +223,7 @@ Practice: none yet
 3. **Coverage.** Anything the exam is likely to ask that is missing, or anything here that will not be asked?
 4. **Length.** Where would you cut so it fits a quick read?
 5. **Go to links.** Does each one lead to the place the idea is really taught? Any that are broken?
-6. **Open questions for the instructor:** the scoring rule for the multiple-answer questions; whether items 21 to 29 are on the exam and how deep; whether the date and recurrent-network items in the older student study guide should be removed. Whether items 30 to 40 (added 2026-11-09) are on the exam; the instructor's sentences for probability versus likelihood and for sample versus population, which the course text does not give.
+6. **Open questions for the instructor:** the scoring rule for the multiple-answer questions; whether items 21 to 29 are on the exam and how deep; whether the date and recurrent-network items in the older student study guide should be removed. Whether items 30 to 42 (added 2026-11-09) are on the exam; the instructor's sentences for probability versus likelihood and for sample versus population, which the course text does not give.
 
 **How to send it.** Open an issue on this repository titled "Cheat sheet feedback" with the item number and your suggestion, or propose an edit as a pull request. One item per comment helps.
 
@@ -224,4 +232,4 @@ Practice: none yet
 | Date | Who | What changed |
 |---|---|---|
 | 2026-11-04 | Claude | First draft (v0.1) from the instructor's notes; not reviewed by anyone yet |
-| 2026-11-09 | Claude | v0.2 from the instructor's class notes: added items 30 to 40 (observability and the trace, provenance, stop conditions, cost versus risk, harness, chain of thought, fluency trap, baseline, prompt versus system prompt, tools, sandboxes); extended items 6, 8, 10, 11 and 25; three new lines in the ten-second version; not reviewed by anyone yet |
+| 2026-11-09 | Claude | v0.2 from the instructor's class notes: added items 30 to 42 (observability and the trace, provenance, stop conditions, cost versus risk, harness, chain of thought, fluency trap, baseline, prompt versus system prompt, tools, sandboxes, plausibility, latency); extended items 6, 8, 10, 11 and 25; three new lines in the ten-second version; not reviewed by anyone yet |
