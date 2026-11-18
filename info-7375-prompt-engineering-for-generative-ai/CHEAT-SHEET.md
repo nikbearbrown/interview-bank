@@ -1,6 +1,6 @@
 # INFO 7375 Prompt Engineering: exam cheat sheet
 
-**Status: DRAFT v0.2, 2026-11-09, for TA review.** v0.2 adds items 30 to 44 and extends items 6, 8, 10, 11 and 25 from the instructor's class notes. Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
+**Status: DRAFT v0.3, 2026-11-16, for TA review.** v0.3 adds items 45 to 50 and extends items 1, 3, 4, 8, 17 and 38 from the instructor's 2026-11-16 exam notes (v0.2 added items 30 to 44). Written by Claude from the instructor's notes and the question bank. **The instructor has not signed it off.** Statements that rest on general knowledge, not on a source that was read, are marked *(not checked)*.
 
 Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks/books/interview-bank/info-7375-prompt-engineering-for-generative-ai/GLOSSARY-jargon-midterm.md).
 
@@ -9,6 +9,10 @@ Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks
 **What this is.** One quick sheet of what you need to know for the midterm, in plain words. Each item says what to know, and where to go if you do not know it yet.
 
 **How to use it.** Read the "ten-second version" first. For any line you cannot say in your own words, follow its **Go to**. **Practice** lines point to the practice questions in this repository.
+
+**Your own sheet.** In the exam you may use a cheat sheet you write yourself. This sheet is a study aid for making it, not the sheet you bring in.
+
+**Not on the exam.** The A2A (agent-to-agent) protocol. Delegating work to another agent is still on it (item 17).
 
 **What the exam asks.** Multiple-answer questions: each statement is true or false on its own. A statement is not false just because it sounds strong; decide whether it is true. The scoring rule is the instructor's to confirm.
 
@@ -20,6 +24,10 @@ Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks
 
 - A model is a function with learned weights; a prompt never changes the weights.
 - A language model predicts the next token; it can be fluent and wrong.
+- Say next token, not next word: a token is a piece of text, and one word can be several tokens.
+- Temperature changes the shares, never the order, and never makes an answer more correct.
+- Hand exact work (arithmetic, counting, checking) to a script or tool, not to the model's text.
+- Have your own plan first, then ask the agent for its plan, and compare.
 - Self-attention learns context; positional encoding adds order; an embedding captures meaning from use.
 - Format validity is not factual validity: a green check shows the shape passed.
 - An agent loop is a model proposing and a controller acting, observing and feeding back.
@@ -36,7 +44,7 @@ Term list: see the [jargon glossary](/Users/bear/Documents/CoWork/bear-textbooks
 
 ## Part A: How a language model works
 
-**1. Model and language model.** A model is a function from input to output whose parameters (weights) are learned from data. A language model gives a probability for the next token given the tokens so far. Text comes out by predicting, sampling one token, appending it and repeating (autoregressive). Sending a prompt does not change the weights; changing a prompt, context or setting is not training.
+**1. Model and language model.** A model is a function from input to output whose parameters (weights) are learned from data. A language model gives a probability for the next token given the tokens so far. Text comes out by predicting, sampling one token, appending it and repeating (autoregressive). Sending a prompt does not change the weights; changing a prompt, context or setting is not training. **Say "next token," never "next word":** the model produces tokens, which are decoded into the text the user reads. That text is often words, but can be half a word mid-stream, code, numbers or JSON.
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md)
 Practice: foundations MA-2.1, MA-2.2, ES-2.1; MA-1.1, MA-1.2, ES-1.1 (why models improved)
 
@@ -44,11 +52,16 @@ Practice: foundations MA-2.1, MA-2.2, ES-2.1; MA-1.1, MA-1.2, ES-1.1 (why models
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md)
 Practice: foundations MA-4.1 to MA-4.7, ES-4.1 to ES-4.6
 
-**3. The transformer, at overview depth.** Two parts: one learns the context with self-attention, the other predicts next-token probabilities. Self-attention lets each token weigh the others. Positional encoding adds word order, which attention alone lacks. An encoder reads; a decoder produces. A feedforward network (multi-layer perceptron) is the common way a network turns inputs into predictions. Transformers train in parallel, which matters at internet scale, but generate one token at a time.
+**3. The transformer, at overview depth.** Two parts: one learns the context with self-attention, the other predicts next-token probabilities. Self-attention lets each token weigh the others. Positional encoding adds word order, which attention alone lacks. An encoder reads; a decoder produces. A feedforward network (multi-layer perceptron) is the common way a network turns inputs into predictions. Transformers train in parallel, which matters at internet scale, but generate one token at a time. **"In parallel" for the two parts means the book's sense:** two learned parts sharing one stream of vectors, repeated in every layer. In the original design, attention runs first and the feed-forward network second inside each layer; they do not compute at the same time.
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md)
 Practice: foundations MA-3.1 to MA-3.4, MA-6.1 to MA-6.4, ES-3.1 to ES-3.3, ES-6.1 to ES-6.3
 
-**4. Softmax and temperature.** Logits are raw scores, one per vocabulary token. Softmax turns them into probabilities that sum to one. A lower temperature sharpens them (more repeatable); a higher one flattens them (more varied). Sampling means the same prompt can give different answers.
+**4. Softmax and temperature.** Logits are raw scores, one per vocabulary token. Softmax turns them into probabilities that sum to one. A lower temperature sharpens them (more repeatable); a higher one flattens them (more varied). Sampling means the same prompt can give different answers. You don't need the formula; you do need these:
+- **Softmax keeps the order** (the highest score gets the highest probability), stretches the gaps, and gives every token some share above zero.
+- **Temperature (T) is a parameter of softmax:** every score is divided by T first. It is a setting chosen per request, not a learned weight, and it must be positive.
+- **Changing T changes the shares, not the order.** With scores 1, 2, 3, the top share is about 87% at T = 0.5 and 51% at T = 2. Lower T never makes an answer more correct: it controls concentration, not truth.
+- **No positive T makes the model always pick one token.** The top share approaches 100% but never reaches it, and tied top scores stay split. T = 0 isn't softmax at all; APIs that accept it switch to "take the top token."
+- **Why subtract the maximum score first:** exponentials of large scores overflow (a score of 1,000 is too big for a computer). Subtracting the maximum makes the top weight exactly 1 and leaves the probabilities exactly the same.
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md)
 Practice: foundations MA-5.1 to MA-5.3, ES-5.1; ch01
 
@@ -68,7 +81,7 @@ Practice: foundations MA-10.1 to MA-10.3, ES-10.1, ES-10.2
 
 ## Part C: Agents and verification
 
-**8. The agent loop.** A policy (the model) proposes the next action; a controller (the program around it) runs it, observes the result and feeds it back; the loop repeats until a stop. A system that can search, read files or run code is acting; one that only returns text is not, even with the same model. There is more than one agent loop, so when one is described, read its steps: who proposes, who runs, what comes back to the model, who holds the stop, the unit of the budget, and the exits. In some loops the result is fed back to the model; in others it is only recorded. "Finished" means the loop returned, not that the answer is right.
+**8. The agent loop.** **An agent is a language model in a loop that can act:** it proposes an action, a program runs it, and the result comes back, until a stop. A policy (the model) proposes the next action; a controller (the program around it) runs it, observes the result and feeds it back; the loop repeats until a stop. A system that can search, read files or run code is acting; one that only returns text is not, even with the same model. There is more than one agent loop, so when one is described, read its steps: who proposes, who runs, what comes back to the model, who holds the stop, the unit of the budget, and the exits. In some loops the result is fed back to the model; in others it is only recorded. "Finished" means the loop returned, not that the answer is right.
 Go to: [chapter 4](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/04-the-agent-loop.md), [chapter 11](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/11-tool-use-and-verification.md)
 Practice: foundations MA-11.1, MA-11.2, ES-11.1; ch04
 
@@ -106,7 +119,7 @@ Practice: ch08
 Go to: [chapter 8](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/08-mcp-from-scratch.md), [chapter 7](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/07-retrieval-and-cowork.md)
 Practice: ch08, ch07
 
-**17. Agents talking to agents.** A2A lets one agent hand work to another; MCP connects an agent to tools and context. The design question is whether to do the task or delegate it, and what comes back. Keep three questions apart: who is this agent (identity), may it have this task and information (authorization), and did it do the work correctly (correctness, which only evidence answers). Delegating does not hand off responsibility.
+**17. Delegating to another agent.** *(The A2A protocol itself is not on the exam.)* The design question is whether to do the task or delegate it, and what comes back. Keep three questions apart: who is this agent (identity), may it have this task and information (authorization), and did it do the work correctly (correctness, which only evidence answers). Delegating does not hand off responsibility.
 Go to: [chapter 12](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/12-memory-and-multiple-agents.md)
 Practice: ch12
 
@@ -194,7 +207,7 @@ Practice: none yet
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md), [chapter 2](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/02-prompt-contracts-and-evaluation.md), [chapter 9](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/09-training-and-configuration.md)
 Practice: none yet
 
-**38. Prompt versus system prompt.** A prompt is the request for this turn; a system prompt is standing text in the input. Both are requests, not gates: a rule that must hold goes in code between the request and the system, not in a sentence. Revising a system prompt can change behavior a lot while the weights stay the same.
+**38. Prompt versus system prompt.** A prompt is the request for this turn; a system prompt is standing text in the input. The developer usually writes the system prompt, it is sent again with every turn, it goes in its own field in Claude's API, and the user usually doesn't see it; the user writes the prompt each turn. Both are requests, not gates: a rule that must hold goes in code between the request and the system, not in a sentence. Revising a system prompt can change behavior a lot while the weights stay the same.
 Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md), [chapter 5](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/05-tools-and-permissions.md), [chapter 9](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/09-training-and-configuration.md)
 Practice: none yet
 
@@ -222,6 +235,32 @@ Practice: none yet
 Go to: [chapter 2](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/02-prompt-contracts-and-evaluation.md), [chapter 6](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/06-claude-code-and-diff-review.md), [chapter 10](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/10-planning-before-acting.md), [chapter 11](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/11-tool-use-and-verification.md), [chapter 15](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/15-supervised-capstone.md)
 Practice: for the format-validity half, see item 7; none yet for the rest
 
+## Part G: Effort, context, skills and checking an agent's work (added 2026-11-16)
+
+**45. Effort.** Effort is a setting for how thoroughly Claude works on a task: low, medium, high, extra high or max. Higher effort can mean considering more possibilities, more tool calls and more edge cases checked. It is a behavioural signal, not a fixed token budget or time. It is not the model (raising effort doesn't turn a smaller model into a larger one) and not temperature (temperature is randomness in the token choice; effort is how much work happens before the answer). Higher costs more time and tokens and is not automatically better: low suits quick work you'll check yourself; high suits work where checking is the hard part. *(Anthropic's Effort documentation and Claude Code docs, read 2026-10-12 for the film.)*
+Go to: film "Spending Your Effort" (https://youtu.be/Iacxb_FagOA)
+Practice: none yet
+
+**46. Context.** Context is everything the model sees for this request: the system prompt, the conversation so far, pasted text and files, retrieved passages and tool results. The context window is the most it can take, in tokens. It is the only thing the model knows besides its training, and the only way to give it private or current information. There is no memory between turns: the whole transcript is sent again each turn, and memory features work by putting saved text back in. More is not always better: it costs tokens, can distract, and is more to leak (item 11). Ways to add it: paste or attach; a system prompt or instruction file (item 43); retrieval (item 12); tools, APIs and MCP (items 13 to 16). (Inside the transformer, "context" also means what self-attention gathers from nearby tokens, item 3.)
+Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md), [chapter 7](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/07-retrieval-and-cowork.md)
+Practice: none yet
+
+**47. Skills.** A skill is a folder with a `SKILL.md` file: instructions for one kind of task, plus optional scripts, templates and reference files. Its `name` and `description` are always loaded (about 100 tokens); the instructions load only when a request matches the description; extra files are read, and scripts run, only when needed ("progressive disclosure"). A skill is not a tool (a tool is an action the program runs; a skill is know-how that may tell Claude to use tools), not MCP (MCP connects to outside systems), not a system prompt or `CLAUDE.md` (those always load) and not training (the weights never change). Use skills only from trusted sources: a skill can direct Claude to run code. *(Anthropic's Agent Skills overview, read 2026-11-16; the course text does not define skills.)*
+Go to: film "Agent Decomposition: Skills vs Tools" (https://youtu.be/lEHW1W9xtsI)
+Practice: none yet
+
+**48. Hand exact work to scripts and tools.** "Route deterministic work out of the stochastic layers": a question with one right answer (arithmetic, counting, dates, sorting, checking a format) goes to a script or tool, which gives the same tested answer every time. The model produces the plausible answer and sounds equally sure when it's wrong (item 36). Exact facts from a real system come from an API or database; retrieval finds relevant passages but is approximate (item 12). The model is still useful for choosing the calculation, writing the script and explaining the result.
+Go to: [chapter 5](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/05-tools-and-permissions.md)
+Practice: none yet
+
+**49. Your plan first, then the agent's plan.** Before handing a multi-step task to an agent, state the goal and the problem, and write down your own idea of the plan. Then ask the agent for its explicit plan (in Claude Code, Plan Mode), compare the two, and look into every step where they differ, before any file changes. Your plan is the baseline (item 37) and the "decide before it runs" step (item 6). Put the people in the plan as named steps: the agent drafts, computes, searches and proposes; a person sets the goal and the limits, chooses sources and tools, approves anything irreversible (send, publish, pay, delete), checks results with evidence the agent doesn't control, and owns the decision. Delegating the task does not delegate the responsibility.
+Go to: [chapter 1](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/01-next-token-prediction-and-sampling.md), [chapter 3](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/03-chat-assistant-agent.md), [chapter 10](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/10-planning-before-acting.md)
+Practice: none yet
+
+**50. Results you can verify.** A good agent result makes checking easy: each item carries a link to its source (for a job search, the actual posting). "Did it exist?" and "does it still exist?" are different questions: postings are taken down, so check the links. A script can check that links still load (item 48), but a page that loads can still say "no longer accepting applications," so read it. When a model turns a plain-language request into searches, keep three things visible: the results, the evidence for each, and the search logic (queries, sources, why each result was kept or dropped). The agent saying it checked is testimony, not evidence (item 10).
+Go to: [chapter 7](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/07-retrieval-and-cowork.md), [chapter 11](https://github.com/nikbearbrown/info-7375-prompt-engineering-for-generative-ai/blob/main/chapters/11-tool-use-and-verification.md)
+Practice: none yet
+
 ## For the TAs: please review this sheet
 
 **What we need from you.** Read it as a student would the night before the exam, and tell us:
@@ -241,3 +280,4 @@ Practice: for the format-validity half, see item 7; none yet for the rest
 |---|---|---|
 | 2026-11-04 | Claude | First draft (v0.1) from the instructor's notes; not reviewed by anyone yet |
 | 2026-11-09 | Claude | v0.2 from the instructor's class notes: added items 30 to 44 (observability and the trace, provenance, stop conditions, cost versus risk, harness, chain of thought, fluency trap, baseline, prompt versus system prompt, tools, sandboxes, plausibility, latency, instruction files, verification and validation); extended items 6, 8, 10, 11 and 25; three new lines in the ten-second version; item 21 gained a plain definition of optimization and item 24 the learning-rate trade-off; not reviewed by anyone yet |
+| 2026-11-16 | Claude | v0.3 from the instructor's 2026-11-16 exam notes: added Part G, items 45 to 50 (effort, context, skills, exact work to scripts and tools, your plan first then the agent's plan, results you can verify); extended items 1 (token not word), 3 ("in parallel" in the book's sense), 4 (softmax: T as a parameter, shares, never one token, subtracting the maximum), 8 (one-line agent definition), 17 (retitled; A2A off the exam) and 38 (who writes the system prompt); four new lines in the ten-second version; noted that students write their own exam sheet. Not reviewed by anyone yet |
