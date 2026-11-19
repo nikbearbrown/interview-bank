@@ -124,7 +124,7 @@ Full term list: [GLOSSARY-jargon-midterm.md](/Users/bear/Documents/CoWork/bear-t
 
 **6. Bias in the pipeline.** The ten ways in (above). Representation, label, historical and aggregation bias; omitted variables; differential measurement error; redundant encoding and proxies. Disaggregated and intersectional evaluation instead of a pooled metric. Confounder, mediator, collider; confounding by indication. Ladder of causation (association, intervention, counterfactual); do operator; average treatment effect; fundamental problem of causal inference; exchangeability and positivity. Feedback loops. Model cards and external audits.
 
-**7. Fairness metrics.** Criteria above. Impossibility result: calibration and equal error rates cannot both hold when base rates differ, except trivially. Accuracy-fairness trade-off and Pareto frontier. Individual fairness (similar people, similar outcomes; Lipschitz). Counterfactual fairness uses a causal graph; path-specific fairness blocks some paths. Generalized entropy index splits inequality into between-group and within-group parts.
+**7. Fairness metrics.** Criteria above. Impossibility result: calibration and equal error rates cannot both hold when base rates differ, except trivially. Accuracy-fairness trade-off and Pareto frontier. Individual fairness (similar people, similar outcomes; Lipschitz). Counterfactual fairness uses a causal graph (causal graphs: not on the exam; in the glossary to look up and study); path-specific fairness blocks some paths. Generalized entropy index splits inequality into between-group and within-group parts.
 
 ## Wrong word, right word
 
