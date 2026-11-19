@@ -1,6 +1,6 @@
 # INFO 7375 Computational Skepticism for AI: exam cheat sheet
 
-**Status: DRAFT v0.1, 2026-11-08, for TA review.** Written by Claude from the jargon glossary and the question bank. **The instructor has not signed it off.** Every definition below is taken from the glossary; the few lines that add general knowledge are marked *(not checked)*.
+**Status: DRAFT v0.1, 2026-11-08, for TA review.** Written by Claude from the jargon glossary and the question bank. **The instructor has not signed it off.** The "Ten ways in" section was added on 2026-11-19 at the instructor's request. Every definition below is taken from the glossary; the few lines that add general knowledge are marked *(not checked)*.
 
 Full term list: [GLOSSARY-jargon-midterm.md](/Users/bear/Documents/CoWork/bear-textbooks/books/info-7375-computational-skepticism-for-ai/exams/GLOSSARY-jargon-midterm.md). Practice: [practice-exams](/Users/bear/Documents/CoWork/bear-textbooks/books/info-7375-computational-skepticism-for-ai/exams/practice-exams) and the [question bank](/Users/bear/Documents/CoWork/bear-textbooks/books/info-7375-computational-skepticism-for-ai/exams/question-bank/INDEX.md).
 
@@ -89,6 +89,25 @@ Full term list: [GLOSSARY-jargon-midterm.md](/Users/bear/Documents/CoWork/bear-t
 | Pre- vs in- vs post-processing | change the data / change the training objective / adjust outputs |
 | Fairness through unawareness | drops the attribute; proxies still carry it |
 
+## Ten ways in: where bias enters (Chapter 6)
+
+**Recommended for your sheet** (Professor Bear, 2026-11-19). One case on the exam turns on a bias, and it asks you to name which kind of bias it is. "It is biased" does not identify the problem; the way in does, and the way in decides the check and the fix. Chapter 6 calls these the ten entry points where bias, an estimate that misses its target on average, is born.
+
+| Way in | Where it enters | The tell |
+|---|---|---|
+| Selection bias | Who got into the sample depended on what happened to them (a "complete labs within six hours" query drops the sickest patients) | Did getting in depend on the outcome? More data from the same query only gives a sharper wrong answer |
+| Sampling bias | Selection's special case: a group was hard to reach (a survey sent out through LinkedIn) | Compare the sample with known population sizes, then reweight |
+| Confirmation bias | The researcher's belief shapes which data is collected, kept and reported | Was the hypothesis fixed before the outcomes were seen (pre-registration)? |
+| Observer bias | A labeler's prior leaks into one measurement (the annotator who knows the past diagnosis) | Agreement between labelers (Cohen's kappa) changes when they are blinded |
+| Self-report bias | People's reports about themselves lean toward what looks good (vote more, drink less) | Check against an outside record |
+| Data-coding bias | Judgment is needed to put free text into categories ("not bad": positive or neutral?) | Low agreement on certain items, not certain people |
+| Publication bias | Significant results get published; null results stay in drawers | A lopsided funnel plot |
+| Data-entry bias | Typing errors that follow a pattern (the right code is buried, so the nearest one gets picked) | Outlier and consistency checks, verified against the source |
+| Historical bias | Nothing is wrong with the data: it faithfully records a world you do not want to copy (ten years of promotion records) | The model is accurate, and its accuracy is the harm |
+| Implicit bias | The unconscious associations of the people in the pipeline: the medium the human-judgment ways flow through, not one point | A gap between groups in an audit is a flag, not a verdict |
+
+**Where it lives** (Chapter 6's three flavors): in the **sample** (dataset bias: selection, sampling, data entry), in the **labels** (label bias: observer, data coding, historical, self-report), or in the **structure** the model is deployed into (structural bias: implicit, confirmation, structural amplification). A sample problem is fixed by resampling or reweighting; a label problem by fixing the labeling process or the proxy; a structural problem cannot be fixed from inside the model or the dataset.
+
 ## By chapter
 
 **Foundations.** Conditional probability, chain rule, independence (P(A and B) = P(A)P(B)); base rate fallacy and the transposed conditional (prosecutor's fallacy); central limit theorem needs finite variance; Cauchy has no mean, so averages never settle; Anscombe's quartet means plot your data; Simpson's paradox is a reversal when groups merge; correlation zero does not mean independent; precision vs accuracy; aleatoric (irreducible) vs epistemic (reducible with data) uncertainty.
@@ -103,7 +122,7 @@ Full term list: [GLOSSARY-jargon-midterm.md](/Users/bear/Documents/CoWork/bear-t
 
 **5. Explainability.** Interpretable by design vs post-hoc. LIME is a local surrogate; scaffolding can fool perturbation-based explainers. Shapley properties: efficiency, symmetry, dummy, additivity. TreeSHAP is exact for trees; KernelSHAP approximates. Marginal vs conditional value function. Sanity checks: model and data randomization tests; deletion test. Counterfactual explanation: proximity, sparsity, actionability, recourse. Rashomon effect: many models fit equally, explain differently. Chain-of-thought can be unfaithful rationalization; test by intervention. Probes need a control task (selectivity).
 
-**6. Bias in the pipeline.** Representation, label, historical and aggregation bias; omitted variables; differential measurement error; redundant encoding and proxies. Disaggregated and intersectional evaluation instead of a pooled metric. Confounder, mediator, collider; confounding by indication. Ladder of causation (association, intervention, counterfactual); do operator; average treatment effect; fundamental problem of causal inference; exchangeability and positivity. Feedback loops. Model cards and external audits.
+**6. Bias in the pipeline.** The ten ways in (above). Representation, label, historical and aggregation bias; omitted variables; differential measurement error; redundant encoding and proxies. Disaggregated and intersectional evaluation instead of a pooled metric. Confounder, mediator, collider; confounding by indication. Ladder of causation (association, intervention, counterfactual); do operator; average treatment effect; fundamental problem of causal inference; exchangeability and positivity. Feedback loops. Model cards and external audits.
 
 **7. Fairness metrics.** Criteria above. Impossibility result: calibration and equal error rates cannot both hold when base rates differ, except trivially. Accuracy-fairness trade-off and Pareto frontier. Individual fairness (similar people, similar outcomes; Lipschitz). Counterfactual fairness uses a causal graph; path-specific fairness blocks some paths. Generalized entropy index splits inequality into between-group and within-group parts.
 
